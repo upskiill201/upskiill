@@ -29,6 +29,7 @@ import { SpinModule } from './spin/spin.module';
 import { StreakModule } from './streak/streak.module';
 import { ReferralModule } from './referral/referral.module';
 import { ShareCardModule } from './share-card/share-card.module';
+import { CertificateModule } from './certificate/certificate.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { EarningsModule } from './earnings/earnings.module';
 import { SiteModule } from './site/site.module';
@@ -76,6 +77,7 @@ import { EmailModule } from './email/email.module';
     StreakModule,
     ReferralModule,
     ShareCardModule,
+    CertificateModule,
     AnalyticsModule,
     EarningsModule,
     SiteModule,

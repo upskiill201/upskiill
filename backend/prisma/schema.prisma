@@ -37,6 +37,8 @@ model User {
   referredBy          Referral?                 @relation("ReferralReferred")
   // Shareable milestone cards (see ShareCard)
   shareCards          ShareCard[]
+  // Course completion certificates (see Certificate)
+  certificates        Certificate[]
   // Creator → learner nudges and cheers (see CreatorNudge)
   nudgesSent          CreatorNudge[]            @relation("NudgeCreator")
   nudgesReceived      CreatorNudge[]            @relation("NudgeLearner")
@@ -309,6 +311,7 @@ model Course {
   userCourseProgresses UserCourseProgress[]
   community            Community?
   creatorNudges        CreatorNudge[]
+  certificates         Certificate[]
   posts                Post[]
   weeklyXpRows         CourseWeeklyXp[]
   views                CourseView[]
@@ -3007,8 +3010,29 @@ model CheckoutIntent {
   @@map("checkout_intents")
 }
 
-/// A learner's stable invite code (the ?ref= in their invite link). Kept apart
-/// from the username so an invite link never breaks when a handle changes.
+/// A course completion certificate. Issued the first time an eligible learner
+/// (every published lesson really completed — tested-out lessons don't count)
+/// asks for it, so learners who finished before certificates existed get one
+/// too. `data` is the snapshot printed on it; `code` is the public credential
+/// ID behind teyro.app/c/<code>.
+model Certificate {
+  id          String    @id @default(uuid())
+  code        String    @unique
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  data        Json
+  completedAt DateTime
+  issuedAt    DateTime  @default(now())
+  /// Set by an admin when a certificate is withdrawn; the verify page says so.
+  revokedAt   DateTime?
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+  @@map("certificates")
+}
+
 /// A milestone the learner chose to share (streak, chapter, league podium...).
 /// `data` is a server-computed snapshot rendered into the share image, so no
 /// number on a card ever comes from the client. One row per milestone: sharing
@@ -3032,6 +3056,8 @@ model ShareCard {
   @@map("share_cards")
 }
 
+/// A learner's stable invite code (the ?ref= in their invite link). Kept apart
+/// from the username so an invite link never breaks when a handle changes.
 model ReferralCode {
   userId    String   @id
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

@@ -18,6 +18,7 @@ import type { Metadata } from 'next';
 import { Baloo_2 } from 'next/font/google';
 import {
   Audience,
+  Certificates,
   Creators,
   Faq,
   Features,
@@ -70,6 +71,7 @@ export default function Home() {
           are hidden for now (founder, 2026-10-18). The components stay in
           Sections.tsx; add them back here to bring them back. */}
       <Features />
+      <Certificates />
       <Audience />
       <Creators />
       <Faq />

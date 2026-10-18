@@ -18,6 +18,7 @@ import {
   GraduationCap,
   Laptop,
   Repeat,
+  ShieldCheck,
   Smartphone,
   Sparkles,
   Workflow,
@@ -175,8 +176,8 @@ export function Tracks() {
 //
 // Teyro's purpose, said plainly: people stay relevant as work changes. Copy
 // rule (same as everywhere on this page): no job guarantees, no invented
-// statistics, nothing Teyro doesn't do (there are no certificates or job
-// placement). What it does do is teach coding and AI through daily practice.
+// statistics, nothing Teyro doesn't do (there is no job placement). What it
+// does do is teach coding and AI through daily practice.
 
 const RELEVANT = [
   {
@@ -325,6 +326,47 @@ function Split({
         </Reveal>
       </div>
     </section>
+  );
+}
+
+// ─── Certificates ────────────────────────────────────────────────────────────
+//
+// Every course ends in a certificate (backend/src/certificate): issued on
+// completing every published lesson, verifiable at teyro.app/c/<code>, with a
+// one-tap LinkedIn add. The picture is the real renderer's output
+// (/c/SAMPLE23/image in dev) saved as public/certificate-sample.webp.
+
+export function Certificates() {
+  return (
+    <Split
+      id="certificates"
+      eyebrow="Certificates"
+      title={
+        <>
+          Finish it. <em>Prove it.</em>
+        </>
+      }
+      copy="Complete every lesson of any Teyro course and you earn a certificate with your name, the skills you practised and a credential ID anyone can check."
+      points={['A certificate for every course you finish', 'A QR code and link that verify it in seconds', 'Add it to LinkedIn, download it or print it']}
+      visual={
+        <div className={s.certVisual}>
+          <Image
+            src="/certificate-sample.webp"
+            alt="A Teyro certificate of completion for Python for Beginners"
+            width={1200}
+            height={848}
+            sizes="(max-width: 768px) 92vw, 560px"
+            className={s.certImg}
+          />
+          <span className={s.certBadge}>
+            <ShieldCheck size={18} strokeWidth={2.6} aria-hidden="true" />
+            Verified by Teyro
+          </span>
+        </div>
+      }
+      flip
+      tint
+    />
   );
 }
 
@@ -534,6 +576,11 @@ const FAQ = [
     question: 'How much time does it take?',
     answer:
       'As little as a few minutes a day. You pick a daily goal when you start, and Teyro reminds you to keep your streak going.',
+  },
+  {
+    question: 'Do I get a certificate?',
+    answer:
+      'Yes. Finish every lesson of a course and you get a certificate with your name, the skills you practised and a credential ID anyone can verify. Download it, print it or add it to LinkedIn.',
   },
   {
     question: 'Do I need to download an app?',

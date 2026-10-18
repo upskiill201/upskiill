@@ -43,7 +43,7 @@ export default async function SharePage({ params }: Props) {
   const join = card.refCode ? `/start?ref=${encodeURIComponent(card.refCode)}` : '/start';
 
   return (
-    <main className="min-h-dvh bg-[var(--bg-section)] text-[var(--text-primary)]">
+    <div className="min-h-dvh bg-[var(--bg-section)] text-[var(--text-primary)]">
       <RememberInvite code={card.refCode} />
 
       <div className="mx-auto grid max-w-5xl items-center gap-8 px-4 pb-16 pt-6 sm:px-6 md:grid-cols-[minmax(0,400px)_1fr] md:gap-16 md:pt-12">
@@ -84,6 +84,6 @@ export default async function SharePage({ params }: Props) {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

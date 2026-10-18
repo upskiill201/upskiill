@@ -40,8 +40,9 @@ export const TEYRO = {
   // homepage: installs to Home Screen, no app store, works offline
   platforms: 'Runs in the browser and installs to your Home Screen on iPhone and Android in one tap — no app store',
   platformsShort: 'Web + Home Screen app',
-  // backend has no certificate issuance
-  certificates: 'No completion certificates yet',
+  // backend/src/certificate: issued on completing every published lesson,
+  // verifiable at teyro.app/c/<code>, LinkedIn add-to-profile link
+  certificates: 'A verifiable certificate for every course you finish, ready for LinkedIn',
   // there is no ad code anywhere in the frontend
   ads: 'No ads',
   offline: 'Opens instantly and keeps working offline once installed',
@@ -50,7 +51,7 @@ export const TEYRO = {
 /** Honest limits — every comparison page shows these. */
 export const TEYRO_LIMITS = [
   'Coding and AI only — no languages, maths or creative skills',
-  'No completion certificates yet',
+  'Certificates are Teyro’s own, not accredited by a university or employer',
   'A young catalogue: fewer courses than the big marketplaces',
   'No native app store listing; it installs from the browser instead',
 ] as const;

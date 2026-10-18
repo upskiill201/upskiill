@@ -173,6 +173,7 @@ import { CONFIDENCE_OPTIONS, ReflectStep } from './steps/ReflectStep';
 import { FixMistakes } from './steps/FixMistakes';
 import styles from './Lesson.module.css';
 import ShareMilestoneButton from '@/components/share/ShareMilestoneButton';
+import CertificatePill from '@/components/certificates/CertificatePill';
 import { isLessonMilestone, isStreakMilestone, type ShareCardRequest } from '@/lib/share/types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- lesson payload is creator JSON */
@@ -1083,6 +1084,9 @@ export function LessonPlayer({
             : outro === 'level' && levelDone
               ? { kind: 'COURSE_COMPLETE', courseId }
               : null;
+  // The course's last lesson: its certificate is ready (issued on first ask).
+  const courseFinished =
+    realFinish && ((outro === 'unit' && Boolean(unit?.courseComplete)) || (outro === 'level' && Boolean(levelDone)));
 
   /** After the in-lesson screens: the community welcome if earned, then out. */
   const endOutro = (dest: 'home' | 'next' = 'home') => {
@@ -1449,9 +1453,10 @@ export function LessonPlayer({
       {/* The finish screens have no chrome — the lesson is over. */}
       {outro ? (
         <div className="relative shrink-0 h-[calc(env(safe-area-inset-top)+16px)]">
-          {outroShare && (
-            <div className="absolute right-4 top-[calc(env(safe-area-inset-top)+12px)] z-[3]">
-              <ShareMilestoneButton key={JSON.stringify(outroShare)} request={outroShare} />
+          {(outroShare || courseFinished) && (
+            <div className="absolute right-4 top-[calc(env(safe-area-inset-top)+12px)] z-[3] flex items-center gap-2">
+              {courseFinished && <CertificatePill courseId={courseId} />}
+              {outroShare && <ShareMilestoneButton key={JSON.stringify(outroShare)} request={outroShare} />}
             </div>
           )}
         </div>
