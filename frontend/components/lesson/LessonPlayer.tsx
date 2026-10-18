@@ -172,6 +172,8 @@ import { LearnStep } from './steps/LearnStep';
 import { CONFIDENCE_OPTIONS, ReflectStep } from './steps/ReflectStep';
 import { FixMistakes } from './steps/FixMistakes';
 import styles from './Lesson.module.css';
+import ShareMilestoneButton from '@/components/share/ShareMilestoneButton';
+import { isLessonMilestone, isStreakMilestone, type ShareCardRequest } from '@/lib/share/types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- lesson payload is creator JSON */
 
@@ -1062,6 +1064,26 @@ export function LessonPlayer({
   // The next lesson, opened from the last screen (not across an Original level).
   const nextUp = journey?.next && !levelDone ? journey.next : null;
 
+  // The milestone this finish screen can be shared as (a Share pill top-right).
+  // Only real, first-time completions — never a replay, preview or review.
+  const lessonsDone = Array.isArray(result?.completedLessons) ? (result.completedLessons as unknown[]).length : 0;
+  const realFinish = Boolean(result?.isNewCompletion) && !isReview && !simulate && !adminReviewMode;
+  const outroShare: ShareCardRequest | null = !realFinish
+    ? null
+    : outro === 'streak' && streakBeat && isStreakMilestone(result?.newStreakDays ?? 0)
+      ? { kind: 'STREAK' }
+      : outro === 'complete' && lessonsDone === 1
+        ? { kind: 'COURSE_STARTED', courseId }
+        : outro === 'complete' && isLessonMilestone(lessonsDone)
+          ? { kind: 'LESSONS', courseId }
+          : outro === 'unit' && unit
+            ? unit.courseComplete
+              ? { kind: 'COURSE_COMPLETE', courseId }
+              : { kind: 'CHAPTER_COMPLETE', sectionId: unit.sectionId }
+            : outro === 'level' && levelDone
+              ? { kind: 'COURSE_COMPLETE', courseId }
+              : null;
+
   /** After the in-lesson screens: the community welcome if earned, then out. */
   const endOutro = (dest: 'home' | 'next' = 'home') => {
     const leave = () => {
@@ -1426,7 +1448,13 @@ export function LessonPlayer({
 
       {/* The finish screens have no chrome — the lesson is over. */}
       {outro ? (
-        <div className="shrink-0 h-[calc(env(safe-area-inset-top)+16px)]" />
+        <div className="relative shrink-0 h-[calc(env(safe-area-inset-top)+16px)]">
+          {outroShare && (
+            <div className="absolute right-4 top-[calc(env(safe-area-inset-top)+12px)] z-[3]">
+              <ShareMilestoneButton key={JSON.stringify(outroShare)} request={outroShare} />
+            </div>
+          )}
+        </div>
       ) : (
         <LessonTopBar
           progress={progress}
