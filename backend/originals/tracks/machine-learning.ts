@@ -1,5 +1,6 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './machine-learning/beginner/u01';
+import u02 from './machine-learning/beginner/u02';
 
 /**
  * Machine Learning for Beginners — storyline "Halima's Empty Chairs".
@@ -40,8 +41,8 @@ const track: OriginalTrackDef = {
         'Spot leakage, overfitting and unfairness before they ship',
       ],
       skills: ['Machine learning', 'Python', 'pandas', 'scikit-learn', 'Model evaluation', 'Responsible AI'],
-      upcomingUnits: 12,
-      units: [u01],
+      upcomingUnits: 11,
+      units: [u01, u02],
     },
   ],
 };
