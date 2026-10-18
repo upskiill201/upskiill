@@ -28,6 +28,7 @@ import type { OriginalTrackDef } from '../src/originals/originals-authoring.type
 import { buildContentBlocks, keys, lessonXp, stableId } from '../src/originals/originals-content';
 import { lintTrack, mainFormat, type LintIssue } from '../src/originals/originals-lint';
 import { hasCode, verifyTrackCode } from '../src/originals/originals-code-verify';
+import { TOOLKIT_CHECKS, toolkitSelfTestTrack } from '../src/originals/teyro-ai-selftest';
 import { ORIGINALS_PRICING, levelLabel } from '../src/originals/originals.policy';
 import { TEYRO_ACCOUNT } from '../originals/teyro-account';
 
@@ -301,6 +302,14 @@ async function main() {
     if (hasCode(track)) console.log(`
 (running the Python in ${track.slug}...)`);
     ok = report(track, await verifyTrackCode(track)) && ok;
+  }
+  // The AI Stack's practice toolkit (teyro_ai.py) and shop data: lessons depend on its exact behaviour.
+  if (!ONLY || ONLY === 'the-ai-stack') {
+    console.log('\n(checking the teyro_ai practice toolkit...)');
+    const toolkit = (await verifyTrackCode(toolkitSelfTestTrack())).filter((i) => i.level === 'error');
+    for (const i of toolkit) console.log(`  ✗ teyro_ai toolkit: ${i.message}`);
+    console.log(`  teyro_ai toolkit: ${TOOLKIT_CHECKS.length} behaviours, ${toolkit.length} failing`);
+    ok = toolkit.length === 0 && ok;
   }
   if (EXPORT) selected.forEach(exportPreview);
 

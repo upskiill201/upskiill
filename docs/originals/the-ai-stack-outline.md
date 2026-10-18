@@ -1,6 +1,6 @@
 # The AI Stack — Course Outline
 
-> AI category. **Status: DRAFT for the founder's approval (2026-10-18).** Nothing is built yet.
+> AI category. **Status: APPROVED (2026-10-18).** Practice toolkit, shop data, placement and Chapter 1 are built on `feat/ai-stack-original`.
 > Rules: docs/ORIGINALS_PLAYBOOK.md (§7 coding Originals, §8a storylines). Cast: docs/originals/CAST.md.
 > Fits between AI at Work (using AI tools) and Machine Learning for Beginners (how models learn). This one is about **how AI products are built**, layer by layer.
 
@@ -190,7 +190,7 @@ Checkpoints are lessons 5, 10 and 15; the Chapter Challenge is lesson 20. Each c
 
 ## What has to be built before writing
 
-1. **Practice toolkit:** `frontend/public/python/teyro_ai.py`, loaded by the browser worker and the checker the same way `teyro_datasets.py` is. It contains `count_tokens`, `embed`, `PracticeModel` (grounded replies, an "I don't know" path, a hallucination path, tool-call requests), price cards and a tiny vector store. Fully deterministic, with unit tests.
+1. **Practice toolkit (built):** `frontend/public/python/teyro_ai.py`, loaded by the browser worker and the checker the same way `teyro_datasets.py` is. It contains `count_tokens`, `embed`, `PracticeModel` (grounded replies, an "I don't know" path, a hallucination path, tool-call requests), price cards and a tiny vector store. Fully deterministic. Its behaviour is pinned by `backend/src/originals/teyro-ai-selftest.ts` (16 checks, run by `npm run originals`).
 2. **Shop data:** `rao_products.csv`, `rao_policies.md`, `rao_orders.csv` and `rao_questions.csv` in `teyro_datasets.py`, with a fixed seed and a numbers table recorded here.
 3. **Runner:** load pydantic and jsonschema on import, as is already done for pandas and scikit-learn (small downloads).
 4. **Placement:** add the slug to `PLACEMENT_TRACKS` if approved.
