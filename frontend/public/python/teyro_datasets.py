@@ -218,6 +218,143 @@ def __teyro_build_clinic_visits():
 __teyro_clinic_visits_header = 'clinic_id,patients_per_week,avg_wait_days,sms_rate,avg_distance_km,no_show_rate'
 
 
+# ---------------------------------------------------------------------------
+# The AI Stack: Mr Rao's online clothing shop in Pune (made-up data).
+#
+#   rao_products.csv   120 products: name, category, occasion, price, sizes,
+#                      stock and a one-line description (for search and RAG)
+#   rao_orders.csv     300 November orders with a status (for tool calling)
+#   rao_policies.md    the shop's real help page: delivery, returns, sizes,
+#                      payment, help (for RAG; teyro_ai's PracticeModel makes
+#                      up different answers when it isn't given this page)
+#   rao_questions.csv  30 customer questions with the answer each must contain
+#                      (the evaluation set)
+
+__teyro_rao_policies = """# Mr Rao's shop: customer help
+
+## Delivery
+- Orders in Pune arrive in 1 to 2 days.
+- Orders to the rest of India arrive in 3 to 6 days.
+- Delivery is free on orders over ₹999. Below that, delivery costs ₹79.
+- We ship within 24 hours of payment, Monday to Saturday.
+
+## Returns and exchanges
+- You can return or exchange an item within 7 days of delivery.
+- Items must be unworn, with the tags still on.
+- Refunds go back to the original payment method within 5 working days.
+- Sale items and custom-stitched items cannot be returned.
+
+## Sizes
+- Kurtas and kurtis come in S, M, L, XL and XXL.
+- Sarees and dupattas are free size.
+- Every product page has a size chart in inches.
+
+## Payment
+- We accept UPI, debit and credit cards, and cash on delivery.
+- Cash on delivery is available for orders up to ₹5,000.
+
+## Help
+- Our team answers WhatsApp messages from 10 a.m. to 7 p.m., Monday to Saturday.
+- For a damaged or wrong item, send a photo within 48 hours of delivery.
+"""
+
+# category: (gender, low price, high price, sizes, fabrics, occasions)
+__teyro_rao_categories = {
+    'kurta': ('men', 799, 2499, 'S/M/L/XL/XXL', ['cotton', 'linen', 'silk'], ['everyday', 'festive', 'office']),
+    'kurti': ('women', 599, 1999, 'S/M/L/XL/XXL', ['cotton', 'rayon', 'chanderi'], ['everyday', 'office', 'festive']),
+    'saree': ('women', 1499, 6999, 'Free size', ['silk', 'cotton', 'georgette'], ['festive', 'wedding', 'everyday']),
+    'lehenga': ('women', 3999, 12999, 'S/M/L', ['silk', 'georgette'], ['wedding', 'festive']),
+    'sherwani': ('men', 5999, 14999, '38/40/42/44', ['silk', 'brocade'], ['wedding']),
+    'nehru jacket': ('men', 1299, 2999, 'S/M/L/XL', ['cotton', 'silk'], ['festive', 'office']),
+    'dupatta': ('women', 399, 1299, 'Free size', ['chiffon', 'cotton', 'silk'], ['festive', 'everyday']),
+    'juttis': ('women', 699, 1999, '5/6/7/8/9', ['leather', 'embroidered'], ['festive', 'wedding', 'everyday']),
+    'kids kurta set': ('kids', 599, 1499, '2-4Y/4-6Y/6-8Y/8-10Y', ['cotton', 'silk'], ['festive', 'everyday']),
+}
+__teyro_rao_colours = ['Red', 'Maroon', 'Navy', 'Mustard', 'White', 'Green', 'Pink', 'Black', 'Peach', 'Teal']
+__teyro_rao_phrases = {
+    'everyday': 'comfortable for everyday wear',
+    'office': 'smart enough for the office',
+    'festive': 'for festivals and parties',
+    'wedding': 'for weddings and receptions',
+}
+
+
+def __teyro_build_rao():
+    rng = __teyro_random.Random(2027)
+    names = list(__teyro_rao_categories)
+    products = []
+    for i in range(120):
+        category = names[i % len(names)]
+        gender, low, high, sizes, fabrics, occasions = __teyro_rao_categories[category]
+        colour = rng.choice(__teyro_rao_colours)
+        fabric = rng.choice(fabrics)
+        occasion = rng.choice(occasions)
+        price = rng.randrange((low + 1) // 100, (high + 1) // 100 + 1) * 100 - 1
+        in_stock = 1 if rng.random() < 0.85 else 0
+        name = f'{colour} {fabric} {category}'
+        description = f'{name} for {gender}, {__teyro_rao_phrases[occasion]}'
+        products.append(['P' + str(101 + i), name, category, gender, occasion, price, sizes, in_stock, description])
+
+    cities = ['Pune', 'Pune', 'Pune', 'Pune', 'Mumbai', 'Bengaluru', 'Delhi', 'Hyderabad', 'Chennai', 'Nagpur']
+    statuses = ['Delivered', 'Shipped', 'Out for delivery', 'Packed', 'Returned', 'Cancelled']
+    orders = []
+    for i in range(300):
+        day = rng.randrange(1, 31)
+        count = rng.choice([1, 1, 1, 2, 2, 3])
+        items = [rng.choice(products) for _ in range(count)]
+        total = sum(p[5] for p in items)
+        status = rng.choices(statuses, weights=[55, 15, 8, 10, 7, 5])[0]
+        payment = rng.choices(['UPI', 'Card', 'Cash on delivery'], weights=[55, 25, 20])[0]
+        orders.append(['R-' + str(1001 + i), '2026-11-' + str(day).zfill(2), rng.choice(cities), count,
+                       total, payment, status])
+    return products, orders
+
+
+# Handwritten: each question, its topic, and a phrase the correct answer must contain.
+__teyro_rao_questions = [
+    ['Q01', 'How long does delivery to Pune take?', 'delivery', '1 to 2 days'],
+    ['Q02', 'How many days for delivery to Delhi?', 'delivery', '3 to 6 days'],
+    ['Q03', 'Is delivery free?', 'delivery', '₹999'],
+    ['Q04', 'How much is delivery on a small order?', 'delivery', '₹79'],
+    ['Q05', 'When do you ship my order after I pay?', 'delivery', '24 hours'],
+    ['Q06', 'Can I return a kurta?', 'returns', '7 days'],
+    ['Q07', 'What is your return policy?', 'returns', '7 days'],
+    ['Q08', 'Can I return something I wore once?', 'returns', 'unworn'],
+    ['Q09', 'When will I get my refund?', 'returns', '5 working days'],
+    ['Q10', 'Can I return a sale item?', 'returns', 'cannot be returned'],
+    ['Q11', 'Can I exchange for a different size?', 'returns', '7 days'],
+    ['Q12', 'What sizes do kurtas come in?', 'size', 'XXL'],
+    ['Q13', 'Do you have a size chart?', 'size', 'size chart'],
+    ['Q14', 'What size is a saree?', 'size', 'free size'],
+    ['Q15', 'Do kurtis come in XL?', 'size', 'XL'],
+    ['Q16', 'Can I pay with UPI?', 'payment', 'UPI'],
+    ['Q17', 'Do you take cash on delivery?', 'payment', 'cash on delivery'],
+    ['Q18', 'Is there a limit for cash on delivery?', 'payment', '₹5,000'],
+    ['Q19', 'Can I pay by credit card?', 'payment', 'credit cards'],
+    ['Q20', 'When can I message your team on WhatsApp?', 'help', '10 a.m. to 7 p.m.'],
+    ['Q21', 'My item arrived damaged. What do I do?', 'help', 'photo'],
+    ['Q22', 'I got the wrong item.', 'help', '48 hours'],
+    ['Q23', 'Do you deliver on Sunday?', 'delivery', 'Monday to Saturday'],
+    ['Q24', 'Can I return a custom-stitched kurta?', 'returns', 'cannot be returned'],
+    ['Q25', 'Do refunds go to my card?', 'returns', 'original payment method'],
+    ['Q26', 'Is the dupatta free size?', 'size', 'free size'],
+    ['Q27', 'How do I talk to a person?', 'help', 'WhatsApp'],
+    ['Q28', 'Do you have a discount code?', 'price', 'NOT IN POLICY'],
+    ['Q29', 'Do you sell shoes for men?', 'products', 'NOT IN POLICY'],
+    ['Q30', 'Can you deliver to Dubai?', 'delivery', 'NOT IN POLICY'],
+]
+
+
+def __teyro_csv_rows(header, rows):
+    import csv as _csv
+    import io as _io
+    buf = _io.StringIO()
+    writer = _csv.writer(buf, lineterminator='\n')
+    writer.writerow(header)
+    writer.writerows(rows)
+    return buf.getvalue()
+
+
 def __teyro_csv_with(header, rows):
     return '\n'.join([header] + [','.join(str(v) for v in r) for r in rows]) + '\n'
 
@@ -237,6 +374,15 @@ def __teyro_files():
             __teyro_appointments_header, __teyro_make_messy_appointments(appointments))
         __teyro_cache['clinic_visits.csv'] = __teyro_csv_with(
             __teyro_clinic_visits_header, __teyro_build_clinic_visits())
+        products, orders = __teyro_build_rao()
+        __teyro_cache['rao_products.csv'] = __teyro_csv_rows(
+            ['product_id', 'name', 'category', 'gender', 'occasion', 'price_rupees', 'sizes', 'in_stock', 'description'],
+            products)
+        __teyro_cache['rao_orders.csv'] = __teyro_csv_rows(
+            ['order_id', 'order_date', 'city', 'items', 'total_rupees', 'payment', 'status'], orders)
+        __teyro_cache['rao_questions.csv'] = __teyro_csv_rows(
+            ['question_id', 'question', 'topic', 'answer_must_include'], __teyro_rao_questions)
+        __teyro_cache['rao_policies.md'] = __teyro_rao_policies
     return __teyro_cache
 
 
