@@ -1,6 +1,7 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './ai-stack/beginner/u01';
 import u02 from './ai-stack/beginner/u02';
+import u03 from './ai-stack/beginner/u03';
 
 /**
  * The AI Stack — storyline "Ask Rao".
@@ -43,8 +44,8 @@ const track: OriginalTrackDef = {
       skills: ['AI stack', 'LLMs', 'RAG', 'Vector search', 'AI agents', 'AI evaluation', 'Python'],
       // Cover: frontend/public/originals, designed in originals/covers.
       thumbnailUrl: '/originals/the-ai-stack.jpg',
-      upcomingUnits: 9,
-      units: [u01, u02],
+      upcomingUnits: 8,
+      units: [u01, u02, u03],
     },
   ],
 };
