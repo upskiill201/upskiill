@@ -40,6 +40,8 @@ const track: OriginalTrackDef = {
         'Evaluate, trace and govern an AI product',
       ],
       skills: ['AI stack', 'LLMs', 'RAG', 'Vector search', 'AI agents', 'AI evaluation', 'Python'],
+      // Cover: frontend/public/originals, designed in originals/covers.
+      thumbnailUrl: '/originals/the-ai-stack.jpg',
       upcomingUnits: 10,
       units: [u01],
     },

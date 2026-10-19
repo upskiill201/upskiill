@@ -53,7 +53,7 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 | Working name | Home | Life stage | Best for |
 |---|---|---|---|
 | Lucía | Mexico City, Mexico | Mid-career marketer, newly promoted to lead a small team | Speak Like a CEO, AI at Work, Clear Writing at Work |
-| Arjun | Bengaluru, India | Freelance developer juggling international clients | Clear Writing at Work, Acing Job Interviews, Python |
+| Arjun | Bengaluru, India | Freelance developer juggling international clients | Clear Writing at Work, Acing Job Interviews, Python, The AI Stack (team lead) |
 | Grace | Manchester, UK | Career-changer, 44: 18 years a ward nurse, now a junior UX researcher at Kinwell, a Manchester health-tech company (The Art of Small Talk, lead). Warm, funny, blunt, brilliant under pressure; freezes in rooms full of strangers and slips into "Nurse Mode" ("And how are we feeling today?") when nervous. Son Jayden, 17. | The Art of Small Talk (lead), Acing Job Interviews |
 | Kofi | Accra, Ghana | Final-year secondary-school student, 17, who wants to study Biomedical Engineering. Funny, competitive, a last-minute worker with big plans; makes beats on his phone and plays football. | Study Smarter with AI (lead) |
 
@@ -69,6 +69,7 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 - **Ada's office ajo:** Ada runs the rotating savings group at work. Members (Tunde and others) appear as names in her code, not as characters.
 - **Remi's job (Leadership track):** Synergix offers Remi a job at the end of his internship; as a junior analyst he leads the refund fix across five teams (How to Lead Without Being the Boss), and is then asked to lead the delivery-times project.
 - **Arjun's first team (How to Set Clear Expectations):** Arjun takes on two junior subcontractors, Kavya (Pune) and Joel (Kochi), to build Mr Rao's online shop before the Diwali sale. Mr Rao is the same client who reads only the first line of every email (How to Make People Listen to You).
+- **Ask Rao (The AI Stack):** after the Diwali sale, Mr Rao sends one line, "Add AI. Like ChatGPT. For my shop. How much?" Arjun gives the job to Kavya and Joel, who build Ask Rao, a shop assistant, one layer of the AI stack per chapter. Mr Rao stays narrated and reads only first lines.
 - **Miracle in Lagos (How to Motivate a Team):** Miracle chose the Lagos health-tech startup, Afiya. Eighteen months later she is asked to lead Afiya's Clinic Success team (Bisi, Chidi, Halima, Emmanuel) before 300 clinics go live; her boss is Folake, the COO.
 - **Halima's Empty Chairs (Machine Learning for Beginners):** after the 300-clinic rollout, and with Chidi staying, Folake wants "AI to fix no-shows" (about 1 in 5 bookings). Halima builds the predictor on 12 weeks of bookings from 8 pilot clinics, including Gumel, a small rural clinic. Miracle mentors her; Chidi is the sceptic; Emmanuel owns the booking export; Bisi makes the reminder calls.
 
@@ -113,8 +114,8 @@ These appear in one Original only and don't join the shared cast.
 | Tomás | Leadership track | Junior marketer on Lucía's team. Eager, fast, makes mistakes fast and sometimes hides them. |
 | Carmen | Leadership track | Nopal's marketing director, Lucía's boss. Direct, busy, fair; wants no surprises. |
 | Njeri | How to Lead Without Being the Boss | Synergix warehouse supervisor in Nairobi. 20 years on the floor; has seen five head-office projects come and go. Blunt, funny, knows exactly why things really break. Becomes Remi's strongest ally once he listens. |
-| Kavya | How to Set Clear Expectations | Junior developer in Pune, 23, one of Arjun's first two subcontractors. Fast, ambitious, funny; says "done" when things are 80% done. |
-| Joel | How to Set Clear Expectations | Junior developer in Kochi, 26, Arjun's other subcontractor. Careful and thorough; waits to be told everything, and goes quiet when unsure. |
+| Kavya | How to Set Clear Expectations (and The AI Stack) | Junior developer in Pune, 23, one of Arjun's first two subcontractors. Fast, ambitious, funny; says "done" when things are 80% done. Co-leads The AI Stack: builds Ask Rao fast, breaks it, and learns why each layer exists. |
+| Joel | How to Set Clear Expectations (and The AI Stack) | Junior developer in Kochi, 26, Arjun's other subcontractor. Careful and thorough; waits to be told everything, and goes quiet when unsure. Co-leads The AI Stack: learns every layer properly; his notebook becomes the course map. |
 | Bisi | How to Motivate a Team (and Machine Learning for Beginners) | Afiya's first support hire in Lagos, 4 years on the Clinic Success team. Warm, very funny, quietly cynical after three managers in two years. |
 | Chidi | How to Motivate a Team (and Machine Learning for Beginners) | Clinic Success's top performer at Afiya. Sharp, fast, bored; has a job offer from a bank in his inbox. |
 | Halima | How to Motivate a Team (and Machine Learning for Beginners) | Newest on Clinic Success at Afiya, a former nurse from Kano. Quiet, brilliant with clinics, unsure she belongs in tech. Leads Machine Learning for Beginners: she builds a no-show predictor for Afiya's clinics, with Miracle as her mentor. |
