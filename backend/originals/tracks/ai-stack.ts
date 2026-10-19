@@ -3,6 +3,7 @@ import u01 from './ai-stack/beginner/u01';
 import u02 from './ai-stack/beginner/u02';
 import u03 from './ai-stack/beginner/u03';
 import u04 from './ai-stack/beginner/u04';
+import u05 from './ai-stack/beginner/u05';
 
 /**
  * The AI Stack — storyline "Ask Rao".
@@ -45,8 +46,8 @@ const track: OriginalTrackDef = {
       skills: ['AI stack', 'LLMs', 'RAG', 'Vector search', 'AI agents', 'AI evaluation', 'Python'],
       // Cover: frontend/public/originals, designed in originals/covers.
       thumbnailUrl: '/originals/the-ai-stack.jpg',
-      upcomingUnits: 7,
-      units: [u01, u02, u03, u04],
+      upcomingUnits: 6,
+      units: [u01, u02, u03, u04, u05],
     },
   ],
 };
