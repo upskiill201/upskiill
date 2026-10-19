@@ -1,6 +1,6 @@
 # The AI Stack — Course Outline
 
-> AI category. **Status: APPROVED (2026-10-18).** Practice toolkit, shop data, placement and Chapter 1 are built on `feat/ai-stack-original`.
+> AI category. **Status: APPROVED (2026-10-18).** Practice toolkit, shop data, placement and Chapter 1 merged to staging (PR 375); cover on `feat/ai-stack-cover`.
 > Rules: docs/ORIGINALS_PLAYBOOK.md (§7 coding Originals, §8a storylines). Cast: docs/originals/CAST.md.
 > Fits between AI at Work (using AI tools) and Machine Learning for Beginners (how models learn). This one is about **how AI products are built**, layer by layer.
 
