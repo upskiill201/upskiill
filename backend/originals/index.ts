@@ -4,6 +4,7 @@ import formatTour from './tracks/format-tour';
 import studySmarter from './tracks/study-smarter';
 import python from './tracks/python';
 import typescript from './tracks/typescript';
+import htmlCss from './tracks/html-css';
 import corporateJargon from './tracks/corporate-jargon';
 import smallTalk from './tracks/small-talk';
 import makePeopleListen from './tracks/make-people-listen';
@@ -20,4 +21,4 @@ import { launchLineup } from './tracks/launch-lineup';
  * Add a Track here once its file exists. Tracks with no units yet are
  * checked but never loaded.
  */
-export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, typescript, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, ...launchLineup, formatTour];
+export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, typescript, htmlCss, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, ...launchLineup, formatTour];

@@ -86,6 +86,7 @@ These three join the shared cast. They first appear in Study Smarter with AI and
 - Miracle mentors Kofi, Clinton and David as one online study group (weekly video call plus a group chat).
 - Clinton and David go to the same school in Buea; Clinton moved there from Bamenda.
 - Kofi meets Clinton and David through Miracle's group.
+- **Kofi Goes Live (HTML & CSS for Beginners):** the summer after Study Smarter with AI, twelve weeks before Kofi starts university. Kofi makes beats on his phone as **Mensah Beats**; a small Accra event, Sound Up Saturdays, offers him a set and asks for his website, so he builds one. Miracle (just started at Afiya in Lagos) mentors him on video calls; Clinton ("Head of Quality, unpaid") and David are his first fans; Efua reviews his pages; Ama, his sister, tests them. Map markers count down from "12 weeks to uni" to "Launch night". The Intermediate level continues at university with JavaScript.
 
 ## Course-only characters
 
@@ -93,7 +94,7 @@ These appear in one Original only and don't join the shared cast.
 
 | Name | Course | Who |
 |---|---|---|
-| Efua | Study Smarter with AI | Kofi's classmate in Accra. Top of the class, with famous handwritten notes; she doesn't trust AI. |
+| Efua | Study Smarter with AI (and HTML & CSS for Beginners) | Kofi's classmate in Accra. Top of the class, with famous handwritten notes; she doesn't trust AI. In HTML & CSS for Beginners she reviews Kofi's website with impeccable taste and no patience for ugly pages; her near-compliments are a running joke. |
 | Mrs Asante | Study Smarter with AI | Kofi's Chemistry teacher. Strict and fair, and gives surprise quizzes. |
 | Brian Otieno | Corporate Jargon | Remi's manager at Synergix (Nairobi), Head of Strategy & Operations. Speaks almost entirely in jargon; kind, generous, brilliant at reading people. Was a confused Synergix intern himself 15 years ago and kept a notebook translating it all. |
 | Zanele Dlamini | Corporate Jargon (and Data Science for Beginners) | The other Synergix intern, from Johannesburg. Uses jargon confidently and often wrongly; a genius with spreadsheets. Remi's rival, then his best friend at work. Grew up in Soweto; English is her third language (isiZulu, then Afrikaans), and she quietly rehearses important messages. Later a junior analyst at Synergix: in Data Science for Beginners she learns Python and pandas to find out why 1 in 3 deliveries is late. |
@@ -119,6 +120,7 @@ These appear in one Original only and don't join the shared cast.
 | Chidi | How to Motivate a Team | Clinic Success's top performer at Afiya. Sharp, fast, bored; has a job offer from a bank in his inbox. |
 | Halima | How to Motivate a Team | Newest on Clinic Success at Afiya, a former nurse from Kano. Quiet, brilliant with clinics, unsure she belongs in tech. |
 | Folake | How to Motivate a Team | Afiya's COO, Miracle's boss. Fast, demanding, fair; thinks motivation is "a pizza problem" until shown otherwise. |
+| Ama | HTML & CSS for Beginners | Kofi's sister, 10, Osu (Accra). His "user tester": blunt, curious, finds bugs in thirty seconds ("if Ama can't find the play button, nobody can"). Wants her own section on his site ("Ama's corner"). |
 | Emmanuel | How to Motivate a Team | Clinic Success agent at Afiya. The funniest person on the team, does the minimum, always eating chin chin. Not lazy: bored, and quietly brilliant at fixing the same bug twice. |
 
 ## Decisions
