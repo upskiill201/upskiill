@@ -153,6 +153,9 @@ async function getPython(): Promise<PyodideLike> {
     // The AI Stack's practice toolkit, installed the same way the browser worker does.
     const toolkit = readPythonFile('teyro_ai.py');
     if (toolkit) py.globals.get('__teyro_install')('teyro_ai', toolkit);
+    // Working with AI Coding Agents' practice agent, installed the same way.
+    const agent = readPythonFile('teyro_agent.py');
+    if (agent) py.globals.get('__teyro_install')('teyro_agent', agent);
     return py;
   })();
   return pyPromise;
