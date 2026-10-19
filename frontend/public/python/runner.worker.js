@@ -24,6 +24,15 @@ const INDEX_URL = 'https://cdn.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/ful
 const HARNESS = `
 import builtins, io, sys
 
+def __teyro_install(name, src):
+    # A built-in practice module (teyro_ai.py), importable from any program.
+    import os
+    folder = os.getcwd()
+    with open(os.path.join(folder, name + '.py'), 'w') as f:
+        f.write(src)
+    if folder not in sys.path:
+        sys.path.insert(0, folder)
+
 def __teyro_describe(e):
     name = type(e).__name__
     line = None
@@ -53,9 +62,9 @@ def __teyro_run(src, stdin_lines, exprs):
 
     # import this prints the Zen only on first import: forget it so every run shows it.
     sys.modules.pop('this', None)
-    # Fresh copies of the practice datasets (teyro_datasets.py) for any program that reads a CSV.
+    # Fresh copies of the practice datasets (teyro_datasets.py) for any program that reads a CSV or .md file.
     _write = globals().get('__teyro_write_datasets')
-    if _write is not None and '.csv' in src:
+    if _write is not None and ('.csv' in src or '.md' in src):
         _write()
     ns = {'__name__': '__main__', '__builtins__': builtins}
     saved = (sys.stdout, sys.stderr, builtins.input)
@@ -112,6 +121,13 @@ const ready = (async () => {
       if (res.ok) pyodide.runPython(await res.text());
     } catch {
       /* no practice datasets: programs that read them will say the file is missing */
+    }
+    try {
+      // The AI Stack's practice toolkit: "from teyro_ai import PracticeModel".
+      const res = await fetch('/python/teyro_ai.py');
+      if (res.ok) pyodide.globals.get('__teyro_install')('teyro_ai', await res.text());
+    } catch {
+      /* no toolkit: importing teyro_ai will say the module is missing */
     }
     self.postMessage({ type: 'ready' });
   } catch (err) {

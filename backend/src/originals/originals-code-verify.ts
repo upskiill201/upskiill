@@ -23,6 +23,15 @@ import type { LintIssue } from './originals-lint';
 const HARNESS = `
 import builtins, io, sys
 
+def __teyro_install(name, src):
+    # A built-in practice module (teyro_ai.py), importable from any program.
+    import os
+    folder = os.getcwd()
+    with open(os.path.join(folder, name + '.py'), 'w') as f:
+        f.write(src)
+    if folder not in sys.path:
+        sys.path.insert(0, folder)
+
 def __teyro_describe(e):
     name = type(e).__name__
     line = None
@@ -52,9 +61,9 @@ def __teyro_run(src, stdin_lines, exprs):
 
     # import this prints the Zen only on first import: forget it so every run shows it.
     sys.modules.pop('this', None)
-    # Fresh copies of the practice datasets (teyro_datasets.py) for any program that reads a CSV.
+    # Fresh copies of the practice datasets (teyro_datasets.py) for any program that reads a CSV or .md file.
     _write = globals().get('__teyro_write_datasets')
-    if _write is not None and '.csv' in src:
+    if _write is not None and ('.csv' in src or '.md' in src):
         _write()
     ns = {'__name__': '__main__', '__builtins__': builtins}
     saved = (sys.stdout, sys.stderr, builtins.input)
@@ -102,11 +111,11 @@ interface PyodideLike {
  * The practice datasets the browser loads (frontend/public/python), found
  * from wherever the checker runs: the repo root or backend/.
  */
-function readDatasets(): string | null {
+function readPythonFile(name: string): string | null {
   const candidates = [
-    join(process.cwd(), '..', 'frontend', 'public', 'python', 'teyro_datasets.py'),
-    join(process.cwd(), 'frontend', 'public', 'python', 'teyro_datasets.py'),
-    join(__dirname, '..', '..', '..', 'frontend', 'public', 'python', 'teyro_datasets.py'),
+    join(process.cwd(), '..', 'frontend', 'public', 'python', name),
+    join(process.cwd(), 'frontend', 'public', 'python', name),
+    join(__dirname, '..', '..', '..', 'frontend', 'public', 'python', name),
   ];
   const found = candidates.find((p) => existsSync(p));
   return found ? readFileSync(found, 'utf8') : null;
@@ -139,8 +148,11 @@ async function getPython(): Promise<PyodideLike> {
     };
     const py = await loadPyodide();
     py.runPython(HARNESS);
-    const datasets = readDatasets();
+    const datasets = readPythonFile('teyro_datasets.py');
     if (datasets) py.runPython(datasets);
+    // The AI Stack's practice toolkit, installed the same way the browser worker does.
+    const toolkit = readPythonFile('teyro_ai.py');
+    if (toolkit) py.globals.get('__teyro_install')('teyro_ai', toolkit);
     return py;
   })();
   return pyPromise;
