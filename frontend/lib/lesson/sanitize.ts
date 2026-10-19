@@ -131,6 +131,7 @@ function parseRichCard(c: any, cid: string): RichLearnCard | null {
       return {
         id: cid,
         kind: 'tryIt',
+        ...(c.language === 'typescript' ? { language: 'typescript' as const } : {}),
         title: optStr(c.title, 200),
         code: str(c.code, LIMITS.codeChars),
         caption: optStr(c.caption, 300),
@@ -301,7 +302,7 @@ export function parseExercise(e: any, i: number): Exercise | null {
       return {
         ...base,
         kind: 'writeCode',
-        language: 'python',
+        language: e.language === 'typescript' ? 'typescript' : 'python',
         starter: str(e.starter, LIMITS.codeChars),
         solution: str(e.solution, LIMITS.codeChars),
         hint: optStr(e.hint, 600),
@@ -313,7 +314,7 @@ export function parseExercise(e: any, i: number): Exercise | null {
   }
 }
 
-/** One hidden check: only the tests that are strings survive. */
+/** One hidden check: only the tests that are strings (or a true no-type-errors flag) survive. */
 function parseCheck(c: any): CodeCheck {
   const test = (v: unknown) => (typeof v === 'string' ? v.slice(0, 500) : undefined);
   return {
@@ -322,6 +323,8 @@ function parseCheck(c: any): CodeCheck {
     ...(test(c?.outputEquals) !== undefined ? { outputEquals: test(c.outputEquals) } : {}),
     ...(test(c?.expr) !== undefined ? { expr: test(c.expr) } : {}),
     ...(test(c?.codeIncludes) !== undefined ? { codeIncludes: test(c.codeIncludes) } : {}),
+    ...(c?.noTypeErrors === true ? { noTypeErrors: true } : {}),
+    ...(test(c?.typeErrorIncludes) !== undefined ? { typeErrorIncludes: test(c.typeErrorIncludes) } : {}),
   };
 }
 

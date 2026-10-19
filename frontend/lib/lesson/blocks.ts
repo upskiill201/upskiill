@@ -39,6 +39,9 @@ export const CODE_LANGUAGES = [
 ] as const;
 export type CodeLanguage = (typeof CODE_LANGUAGES)[number];
 
+/** Languages the in-browser code runner can run (lib/code). */
+export type RunLanguage = 'python' | 'typescript';
+
 export const CODE_LANGUAGE_LABEL: Record<CodeLanguage, string> = {
   javascript: 'JavaScript',
   typescript: 'TypeScript',
@@ -215,12 +218,14 @@ export type RichLearnCard =
   /** Quick-fire: is each statement a myth or a fact? */
   | (CardBase & { kind: 'myth'; statements: { text: string; isFact: boolean; explain: string }[] })
   /**
-   * Try it live: runnable, editable Python in the learner's browser
-   * (lib/code). Done once it has run without an error. `stdin` feeds input();
-   * `challenge` is a nudge to change the code and run it again.
+   * Try it live: runnable, editable code in the learner's browser
+   * (lib/code), Python unless `language` says TypeScript. Done once it has
+   * run without an error (and, for TypeScript, without type errors).
+   * `stdin` feeds input(); `challenge` is a nudge to change the code and run it again.
    */
   | (CardBase & {
       kind: 'tryIt';
+      language?: RunLanguage;
       title?: string;
       code: string;
       caption?: string;
@@ -368,17 +373,21 @@ export interface CodeCheck {
   expr?: string;
   /** The code uses this, e.g. `for ` or `f"` (for "use a loop" style tasks). */
   codeIncludes?: string;
+  /** TypeScript: the code type-checks with no errors. */
+  noTypeErrors?: boolean;
+  /** TypeScript: the checker reports a type error whose message contains this (a lesson about that error). */
+  typeErrorIncludes?: string;
 }
 
 /**
- * Write and run (Python): the learner writes code, runs it in the browser
+ * Write and run (Python or TypeScript): the learner writes code, runs it in the browser
  * as often as they like (free, no hearts), and CHECK unlocks once every
  * hidden check passes. A hint is always there; the solution appears after
  * two failed runs, and using it costs the combo, never hearts.
  */
 export interface WriteCodeExercise extends ExerciseBase {
   kind: 'writeCode';
-  language: 'python';
+  language: RunLanguage;
   /** What the editor starts with (may be empty). */
   starter: string;
   solution: string;
@@ -685,9 +694,10 @@ export function richLearnCardIssue(c: RichLearnCard): string | null {
 /** Problems with one hidden check on a Write and run exercise (mirrors the backend). */
 export function codeCheckIssue(c: CodeCheck): string | null {
   if (blank(c.message)) return 'Every check needs a message for the learner.';
-  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes].filter((t) => t !== undefined);
+  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes, c.noTypeErrors, c.typeErrorIncludes].filter((t) => t !== undefined);
   if (tests.length !== 1) return 'Every check tests exactly one thing.';
-  return blank(tests[0]) ? 'A check has nothing to test.' : null;
+  if (c.noTypeErrors !== undefined) return c.noTypeErrors === true ? null : 'A type-error check must be true.';
+  return blank(tests[0] as string) ? 'A check has nothing to test.' : null;
 }
 
 export function validateExercise(ex: Exercise): string | null {

@@ -65,7 +65,7 @@ function lintLesson(
   push: (level: LintIssue['level'], message: string) => void,
 ) {
   // ── Server rules: the same checks publishing runs ──────────────────────
-  const blocks = buildContentBlocks(lesson, keys.lesson(track, level, unit, lesson));
+  const blocks = buildContentBlocks(lesson, keys.lesson(track, level, unit, lesson), track.runner);
   const state = phaseStateFromBlocks(blocks);
   for (const e of [...(state.learn?.errors ?? []), ...(state.apply?.errors ?? [])]) push('error', e);
 

@@ -13,6 +13,49 @@ export interface PlaygroundExample {
   code: string;
 }
 
+/** TypeScript starters for the playground's TypeScript mode (type-checked, strict). */
+export const TS_EXAMPLES: PlaygroundExample[] = [
+  {
+    id: 'ts-hello',
+    label: 'Hello',
+    code: `// Change the name and press Run.
+const name: string = "Grace";
+console.log(\`Hello, \${name}!\`);
+`,
+  },
+  {
+    id: 'ts-types',
+    label: 'Catch a bug',
+    code: `// TypeScript checks this before it runs.
+// Fix the line it points at.
+let sessions: number = 3;
+sessions = "four";
+console.log(sessions);
+`,
+  },
+  {
+    id: 'ts-shape',
+    label: 'A booking',
+    code: `type Status = "booked" | "cancelled";
+
+interface Booking {
+  code: string;
+  time: string;
+  status: Status;
+}
+
+const today: Booking[] = [
+  { code: "P-014", time: "10:00", status: "booked" },
+  { code: "P-022", time: "11:00", status: "cancelled" },
+];
+
+for (const b of today) {
+  console.log(\`\${b.time}  \${b.code}  \${b.status}\`);
+}
+`,
+  },
+];
+
 export const EXAMPLES: PlaygroundExample[] = [
   {
     id: 'hello',

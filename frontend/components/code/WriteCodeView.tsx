@@ -54,6 +54,7 @@ export function WriteCodeView({
         runLabel={passed ? 'Run again' : 'Run'}
         minLines={Math.max(4, exercise.starter.split('\n').length + 1)}
         label={exercise.prompt}
+        language={exercise.language}
         onRun={(run) => {
           onResponse(
             run.allPassed

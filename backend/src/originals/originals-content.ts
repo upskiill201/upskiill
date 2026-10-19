@@ -6,6 +6,7 @@ import type {
   OriginalLevel,
   OriginalTrackDef,
   OriginalUnit,
+  RunLanguage,
 } from './originals-authoring.types';
 
 /**
@@ -39,16 +40,18 @@ function localId(lessonKey: string, part: string): string {
   return `${part}_${createHash('sha1').update(`${lessonKey}:${part}`).digest('hex').slice(0, 10)}`;
 }
 
-export function buildCard(card: AuthoredCard, lessonKey: string, i: number): Record<string, unknown> {
+export function buildCard(card: AuthoredCard, lessonKey: string, i: number, runner: RunLanguage = 'python'): Record<string, unknown> {
   const id = localId(lessonKey, `c${i}`);
   if (card.kind === 'check') {
     const { answer, ...rest } = card;
     return { id, ...rest, correctIndex: answer };
   }
+  // Python cards stay exactly as they were stored before TypeScript existed.
+  if (card.kind === 'tryIt' && runner !== 'python') return { id, ...card, language: runner };
   return { id, ...card };
 }
 
-export function buildExercise(ex: AuthoredExercise, lessonKey: string, i: number): Record<string, unknown> {
+export function buildExercise(ex: AuthoredExercise, lessonKey: string, i: number, runner: RunLanguage = 'python'): Record<string, unknown> {
   const id = localId(lessonKey, `e${i}`);
   const optionsOf = (options: { text: string; why?: string }[]) =>
     options.map((o, j) => ({
@@ -122,7 +125,7 @@ export function buildExercise(ex: AuthoredExercise, lessonKey: string, i: number
       return {
         ...base,
         kind: 'writeCode',
-        language: 'python',
+        language: runner,
         starter: ex.starter ?? '',
         solution: ex.solution,
         ...(ex.hint ? { hint: ex.hint } : {}),
@@ -146,10 +149,10 @@ export function buildExercise(ex: AuthoredExercise, lessonKey: string, i: number
 }
 
 /** `Lesson.contentBlocks` for one written lesson. */
-export function buildContentBlocks(lesson: OriginalLesson, lessonKey: string) {
+export function buildContentBlocks(lesson: OriginalLesson, lessonKey: string, runner: RunLanguage = 'python') {
   return {
     learn: [
-      { type: 'learnCards', value: lesson.learn.map((c, i) => buildCard(c, lessonKey, i)) },
+      { type: 'learnCards', value: lesson.learn.map((c, i) => buildCard(c, lessonKey, i, runner)) },
       { type: 'whatYouWillLearn', value: lesson.outcomes },
     ],
     apply: [
@@ -157,7 +160,7 @@ export function buildContentBlocks(lesson: OriginalLesson, lessonKey: string) {
         type: 'exercises',
         value: {
           scenario: lesson.apply.scenario ?? '',
-          items: lesson.apply.items.map((e, i) => buildExercise(e, lessonKey, i)),
+          items: lesson.apply.items.map((e, i) => buildExercise(e, lessonKey, i, runner)),
         },
       },
     ],

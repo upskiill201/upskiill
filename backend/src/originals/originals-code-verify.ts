@@ -5,6 +5,7 @@ import type {
   OriginalTrackDef,
 } from './originals-authoring.types';
 import type { LintIssue } from './originals-lint';
+import { verifyTypeScriptTrack } from './originals-ts-verify';
 
 /**
  * Runs every piece of Python in a Track before it can be loaded, with the
@@ -236,6 +237,8 @@ export async function verifyTrackCode(
   track: OriginalTrackDef,
 ): Promise<LintIssue[]> {
   if (!hasCode(track)) return [];
+  // TypeScript tracks are type-checked and run by the TypeScript compiler, not Python.
+  if (track.runner === 'typescript') return verifyTypeScriptTrack(track);
   const allCode: string[] = [];
   for (const level of track.levels)
     for (const unit of level.units)

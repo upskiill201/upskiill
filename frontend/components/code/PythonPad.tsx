@@ -1,9 +1,10 @@
 'use client';
 
 /**
- * Teyro's Python pad: an editor, a row of quick keys, Run, and the output,
- * all running in the learner's browser (lib/code/pythonRunner). Used by
- * Try it live (Learn), Write and run (Apply) and the Code playground.
+ * Teyro's code pad: an editor, a row of quick keys, Run, and the output,
+ * all running in the learner's browser (lib/code/pythonRunner, or
+ * lib/code/tsRunner for `language="typescript"`). Used by Try it live
+ * (Learn), Write and run (Apply) and the Code playground.
  *
  * The editor is a transparent textarea over a highlighted copy of the code:
  * native typing, selection, undo and mobile keyboards, with colour. Python
@@ -15,13 +16,17 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { AlertTriangle, Check, Loader2, Play, RotateCcw, X } from 'lucide-react';
 import { highlightCode } from '@/lib/lesson/highlight';
-import type { CodeCheck } from '@/lib/lesson/blocks';
+import type { CodeCheck, RunLanguage } from '@/lib/lesson/blocks';
 import { getPythonStatus, onPythonStatus, retryPython, warmPython, type PythonStatus } from '@/lib/code/pythonRunner';
+import { getTypeScriptStatus, onTypeScriptStatus, retryTypeScript, warmTypeScript } from '@/lib/code/tsRunner';
 import {
   explainError,
+  explainJsError,
+  explainTypeError,
   runAndCheck,
   straightenQuotes,
   TIMEOUT_MESSAGE,
+  TIMEOUT_MESSAGE_TS,
   usesInput,
   type CheckResult,
   type GradedRun,
@@ -49,11 +54,42 @@ const QUICK_KEYS: { label: string; insert: string; aria?: string }[] = [
   { label: ',', insert: ',' },
 ];
 
+const TS_INDENT = '  ';
+const TS_QUICK_KEYS: { label: string; insert: string; aria?: string }[] = [
+  { label: 'Tab', insert: TS_INDENT, aria: 'Indent' },
+  { label: '(', insert: '(' },
+  { label: ')', insert: ')' },
+  { label: '"', insert: '"' },
+  { label: '`', insert: '`', aria: 'Insert backtick' },
+  { label: ':', insert: ':' },
+  { label: ';', insert: ';' },
+  { label: '=', insert: '=' },
+  { label: '{', insert: '{' },
+  { label: '}', insert: '}' },
+  { label: '[', insert: '[' },
+  { label: ']', insert: ']' },
+  { label: '.', insert: '.' },
+  { label: '=>', insert: ' => ', aria: 'Insert arrow' },
+  { label: '|', insert: ' | ', aria: 'Insert union bar' },
+  { label: '<', insert: '<' },
+  { label: '>', insert: '>' },
+  { label: '+', insert: '+' },
+  { label: ',', insert: ',' },
+];
+
+/** What each runner is called in the UI. */
+const RUNNER_NAME: Record<RunLanguage, string> = { python: 'Python', typescript: 'TypeScript' };
+
+/** Keep a runner's status (loading, ready...) in React state. */
+export function useRunnerStatus(language: RunLanguage = 'python'): PythonStatus {
+  const [status, setStatus] = useState<PythonStatus>(() => (language === 'typescript' ? getTypeScriptStatus() : getPythonStatus()));
+  useEffect(() => (language === 'typescript' ? onTypeScriptStatus(setStatus) : onPythonStatus(setStatus)), [language]);
+  return status;
+}
+
 /** Keep Python's status in React state. */
 export function usePythonStatus(): PythonStatus {
-  const [status, setStatus] = useState<PythonStatus>(() => getPythonStatus());
-  useEffect(() => onPythonStatus(setStatus), []);
-  return status;
+  return useRunnerStatus('python');
 }
 
 // ─── Editor ──────────────────────────────────────────────────────────────
@@ -69,6 +105,7 @@ interface EditorProps {
   label: string;
   fileName?: string;
   onReset?: () => void;
+  language?: RunLanguage;
 }
 
 export function CodeEditor({
@@ -80,16 +117,21 @@ export function CodeEditor({
   maxLines = 16,
   onRun,
   label,
-  fileName = 'main.py',
+  fileName,
   onReset,
+  language = 'python',
 }: EditorProps) {
+  const ts = language === 'typescript';
+  const indentUnit = ts ? TS_INDENT : INDENT;
+  const keys = ts ? TS_QUICK_KEYS : QUICK_KEYS;
+  const file = fileName ?? (ts ? 'main.ts' : 'main.py');
   const ta = useRef<HTMLTextAreaElement>(null);
   const hl = useRef<HTMLPreElement>(null);
   const gutter = useRef<HTMLDivElement>(null);
   const lineCount = value.split('\n').length;
   const shown = Math.min(Math.max(lineCount, minLines), maxLines);
   // A trailing newline needs something after it, or the last line collapses.
-  const html = useMemo(() => highlightCode(value.endsWith('\n') ? `${value} ` : value || ' ', 'python'), [value]);
+  const html = useMemo(() => highlightCode(value.endsWith('\n') ? `${value} ` : value || ' ', language), [value, language]);
 
   const syncScroll = () => {
     const t = ta.current;
@@ -133,10 +175,10 @@ export function CodeEditor({
     const currentLine = before.slice(lineStart);
     if (e.key === 'Tab' && !e.shiftKey && t.selectionStart === t.selectionEnd) {
       e.preventDefault();
-      insert(INDENT);
+      insert(indentUnit);
     } else if (e.key === 'Tab' && e.shiftKey) {
       e.preventDefault();
-      const lead = /^ {1,4}/.exec(currentLine)?.[0].length ?? 0;
+      const lead = (ts ? /^ {1,2}/ : /^ {1,4}/).exec(currentLine)?.[0].length ?? 0;
       if (lead) {
         t.setSelectionRange(lineStart, lineStart + lead);
         insert('');
@@ -144,11 +186,18 @@ export function CodeEditor({
     } else if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       const indent = /^[ \t]*/.exec(currentLine)?.[0] ?? '';
-      const opens = /:\s*(#.*)?$/.test(currentLine);
-      insert(`\n${indent}${opens ? INDENT : ''}`);
-    } else if (e.key === 'Backspace' && t.selectionStart === t.selectionEnd && /^ +$/.test(currentLine) && currentLine.length >= 4) {
+      // Python indents after a colon; TypeScript after an opening bracket.
+      const opens = ts ? /[{([]\s*(\/\/.*)?$/.test(currentLine) : /:\s*(#.*)?$/.test(currentLine);
+      insert(`\n${indent}${opens ? indentUnit : ''}`);
+    } else if (
+      e.key === 'Backspace' &&
+      t.selectionStart === t.selectionEnd &&
+      /^ +$/.test(currentLine) &&
+      currentLine.length >= indentUnit.length
+    ) {
       e.preventDefault();
-      const remove = currentLine.length % 4 === 0 ? 4 : currentLine.length % 4;
+      const unit = indentUnit.length;
+      const remove = currentLine.length % unit === 0 ? unit : currentLine.length % unit;
       insert('', remove);
     }
   };
@@ -156,7 +205,7 @@ export function CodeEditor({
   return (
     <div className={styles.editor}>
       <div className={styles.editorBar}>
-        <span className={styles.fileName}>{fileName}</span>
+        <span className={styles.fileName}>{file}</span>
         {onReset && !readOnly && (
           <button type="button" className={styles.barButton} onClick={onReset} aria-label="Reset the code">
             <RotateCcw size={14} strokeWidth={2.5} aria-hidden="true" /> Reset
@@ -196,7 +245,7 @@ export function CodeEditor({
       </div>
       {!readOnly && (
         <div className={styles.keys} role="toolbar" aria-label="Insert symbol">
-          {QUICK_KEYS.map((k) => (
+          {keys.map((k) => (
             <button
               key={k.label}
               type="button"
@@ -220,7 +269,9 @@ export function CodeEditor({
 
 // ─── Output ──────────────────────────────────────────────────────────────
 
-export function RunOutput({ run }: { run: GradedRun }) {
+export function RunOutput({ run, language = 'python' }: { run: GradedRun; language?: RunLanguage }) {
+  const ts = language === 'typescript';
+  const typeErrors = run.typeErrors ?? [];
   if (run.timedOut) {
     return (
       <div className={styles.output} role="status">
@@ -229,7 +280,7 @@ export function RunOutput({ run }: { run: GradedRun }) {
           <div className={styles.errorTitle}>
             <AlertTriangle size={18} aria-hidden="true" /> Stopped: it ran too long
           </div>
-          <p className={styles.errorExplain}>{TIMEOUT_MESSAGE}</p>
+          <p className={styles.errorExplain}>{ts ? TIMEOUT_MESSAGE_TS : TIMEOUT_MESSAGE}</p>
         </div>
       </div>
     );
@@ -240,10 +291,28 @@ export function RunOutput({ run }: { run: GradedRun }) {
         <span>Output</span>
         <span>{run.ms} ms</span>
       </div>
+      {typeErrors.length > 0 && (
+        <div className={styles.errorBox}>
+          <div className={styles.errorTitle}>
+            <AlertTriangle size={18} aria-hidden="true" />
+            {typeErrors.length === 1 ? '1 type error' : `${typeErrors.length} type errors`}
+          </div>
+          {typeErrors.slice(0, 3).map((d, i) => (
+            <div key={i}>
+              <p className={styles.errorExplain}>{explainTypeError(d)}</p>
+              <p className={styles.errorRaw}>
+                {d.line ? `Line ${d.line}: ` : ''}TS{d.code}: {d.message}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
       {run.stdout ? (
         <pre className={styles.stdout}>{run.stdout}</pre>
       ) : !run.error ? (
-        <p className={styles.empty}>Your program ran, but didn&apos;t print anything. Use print() to show something.</p>
+        <p className={styles.empty}>
+          Your program ran, but didn&apos;t print anything. Use {ts ? 'console.log()' : 'print()'} to show something.
+        </p>
       ) : null}
       {run.error && (
         <div className={styles.errorBox}>
@@ -251,7 +320,7 @@ export function RunOutput({ run }: { run: GradedRun }) {
             <AlertTriangle size={18} aria-hidden="true" /> {run.error.type}
             {run.error.line ? ` on line ${run.error.line}` : ''}
           </div>
-          <p className={styles.errorExplain}>{explainError(run.error)}</p>
+          <p className={styles.errorExplain}>{ts ? explainJsError(run.error) : explainError(run.error)}</p>
           <p className={styles.errorRaw}>
             {run.error.type}: {run.error.message}
           </p>
@@ -304,6 +373,8 @@ export interface PythonPadProps {
   fileName?: string;
   /** Extra buttons next to Run (hint, solution). */
   actions?: React.ReactNode;
+  /** Which runner: Python (default) or TypeScript. */
+  language?: RunLanguage;
 }
 
 export function PythonPad({
@@ -317,21 +388,23 @@ export function PythonPad({
   runLabel = 'Run',
   minLines,
   maxLines,
-  label = 'Python code',
+  label,
   fileName,
   actions,
+  language = 'python',
 }: PythonPadProps) {
-  const status = usePythonStatus();
+  const status = useRunnerStatus(language);
+  const name = RUNNER_NAME[language];
   const [running, setRunning] = useState(false);
   const [run, setRun] = useState<GradedRun | null>(null);
   const [typedInput, setTypedInput] = useState('');
   const inputId = useId();
 
-  // Start loading Python as soon as a pad is on screen.
+  // Start loading the runner as soon as a pad is on screen.
   // eslint-disable-next-line react-hooks/exhaustive-deps -- warm once, for the code first shown
-  useEffect(() => warmPython(value), []);
+  useEffect(() => (language === 'typescript' ? warmTypeScript() : warmPython(value)), [language]);
 
-  const needsInputBox = !stdin && usesInput(value);
+  const needsInputBox = !stdin && usesInput(value, language);
 
   const execute = useCallback(async () => {
     if (running) return;
@@ -340,9 +413,10 @@ export function PythonPad({
     playHaptic('medium', false);
     try {
       const lines = stdin ?? typedInput.split('\n').filter((l, i, all) => l !== '' || i < all.length - 1);
-      const result = await runAndCheck(value, checks ?? [], lines);
+      const result = await runAndCheck(value, checks ?? [], lines, language);
       setRun(result);
-      const good = checks?.length ? result.allPassed : !result.error && !result.timedOut;
+      const clean = !result.error && !result.timedOut && (result.typeErrors?.length ?? 0) === 0;
+      const good = checks?.length ? result.allPassed : clean;
       if (result.error || result.timedOut) {
         playSound('wrong');
         playHaptic('error', false);
@@ -356,7 +430,7 @@ export function PythonPad({
     } finally {
       setRunning(false);
     }
-  }, [running, stdin, typedInput, value, checks, onRun]);
+  }, [running, stdin, typedInput, value, checks, onRun, language]);
 
   const loading = status === 'loading' || (running && status !== 'ready');
 
@@ -366,12 +440,13 @@ export function PythonPad({
         value={value}
         onChange={onChange}
         readOnly={readOnly}
-        errorLine={run?.error?.line ?? null}
+        errorLine={run?.error?.line ?? run?.typeErrors?.[0]?.line ?? null}
         minLines={minLines}
         maxLines={maxLines}
         onRun={() => void execute()}
-        label={label}
+        label={label ?? `${name} code`}
         fileName={fileName}
+        language={language}
         onReset={resetTo !== undefined && value !== resetTo ? () => onChange(resetTo) : undefined}
       />
 
@@ -410,14 +485,18 @@ export function PythonPad({
         <div className={styles.runRow}>
           <button type="button" className={styles.run} onClick={() => void execute()} disabled={running}>
             {running ? <Loader2 size={18} className="animate-spin" aria-hidden="true" /> : <Play size={18} fill="currentColor" aria-hidden="true" />}
-            {running ? (loading ? 'Starting Python' : 'Running') : runLabel}
+            {running ? (loading ? `Starting ${name}` : 'Running') : runLabel}
           </button>
           {actions}
-          {status === 'loading' && !running && <span className={styles.status}>Warming up Python...</span>}
+          {status === 'loading' && !running && <span className={styles.status}>Warming up {name}...</span>}
           {status === 'error' && (
             <span className={`${styles.status} ${styles.statusError}`}>
-              Python couldn&apos;t load.{' '}
-              <button type="button" className={styles.ghost} onClick={() => retryPython()}>
+              {name} couldn&apos;t load.{' '}
+              <button
+                type="button"
+                className={styles.ghost}
+                onClick={() => (language === 'typescript' ? retryTypeScript() : retryPython())}
+              >
                 Try again
               </button>
             </span>
@@ -425,7 +504,7 @@ export function PythonPad({
         </div>
       )}
 
-      {run && <RunOutput run={run} />}
+      {run && <RunOutput run={run} language={language} />}
     </div>
   );
 }
