@@ -56,6 +56,44 @@ for (const b of today) {
   },
 ];
 
+/** Web page starters for the playground's HTML & CSS mode (live preview, no scripts). */
+export const HTML_EXAMPLES: PlaygroundExample[] = [
+  {
+    id: 'html-hello',
+    label: 'Hello',
+    code: `<h1>Hello, I'm Kofi</h1>
+<p>Change my name to yours and watch the page change.</p>
+`,
+  },
+  {
+    id: 'html-styled',
+    label: 'With style',
+    code: `<style>
+  body { font-family: sans-serif; background: #071233; color: white; padding: 24px; }
+  h1 { color: #ff9600; }
+</style>
+
+<h1>Mensah Beats</h1>
+<p>Beats made on a phone in Accra.</p>
+`,
+  },
+  {
+    id: 'html-card',
+    label: 'A card',
+    code: `<style>
+  .card { border: 3px solid #0172fd; border-radius: 16px; padding: 16px; max-width: 280px; }
+  .card h2 { margin: 0 0 8px; }
+</style>
+
+<div class="card">
+  <h2>Sunrise in Osu</h2>
+  <p>Beat 1 · 92 BPM</p>
+  <audio controls src="beat-1.mp3"></audio>
+</div>
+`,
+  },
+];
+
 export const EXAMPLES: PlaygroundExample[] = [
   {
     id: 'hello',

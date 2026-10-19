@@ -8,6 +8,7 @@
 import type { CodeCheck, RunLanguage } from '@/lib/lesson/blocks';
 import { runPython, type PythonError, type RawRunResult } from './pythonRunner';
 import { runTypeScript, type TypeDiagnostic } from './tsRunner';
+import { renderAndCheckHtml } from './htmlRunner';
 
 export interface CheckResult {
   message: string;
@@ -69,6 +70,11 @@ export async function runAndCheck(
   language: RunLanguage = 'python',
 ): Promise<GradedRun> {
   const clean = straightenQuotes(code);
+  if (language === 'html') {
+    // A page, not a program: render it and check the result (htmlRunner.ts, domChecks.ts).
+    const page = await renderAndCheckHtml(clean, checks);
+    return { ...page, allPassed: page.checks.length > 0 && page.checks.every((r) => r.passed) };
+  }
   const exprs = checks.filter((c) => c.expr !== undefined).map((c) => c.expr as string);
   const run = language === 'typescript' ? await runTypeScript(clean, { exprs }) : await runPython(clean, { stdin, exprs });
   const results = gradeChecks(checks, clean, run, language);

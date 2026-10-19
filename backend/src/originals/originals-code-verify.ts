@@ -6,6 +6,7 @@ import type {
 } from './originals-authoring.types';
 import type { LintIssue } from './originals-lint';
 import { verifyTypeScriptTrack } from './originals-ts-verify';
+import { verifyHtmlTrack } from './originals-html-verify';
 
 /**
  * Runs every piece of Python in a Track before it can be loaded, with the
@@ -239,6 +240,8 @@ export async function verifyTrackCode(
   if (!hasCode(track)) return [];
   // TypeScript tracks are type-checked and run by the TypeScript compiler, not Python.
   if (track.runner === 'typescript') return verifyTypeScriptTrack(track);
+  // HTML & CSS tracks render each page in jsdom and run the page checks.
+  if (track.runner === 'html') return verifyHtmlTrack(track);
   const allCode: string[] = [];
   for (const level of track.levels)
     for (const unit of level.units)

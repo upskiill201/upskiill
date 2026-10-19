@@ -11,6 +11,8 @@
  * `phaseStateFromBlocks` returns null and the client's completion flags stand.
  */
 
+import { domTestIssue } from '../originals/originals-dom-checks';
+
 /* eslint-disable @typescript-eslint/no-explicit-any -- validating untyped creator JSON */
 
 /** Bite-size: a lesson video longer than this should be split up. */
@@ -19,7 +21,7 @@ export const MAX_VIDEO_SECONDS = 15 * 60;
 // exercises: 30 so a Teyro Originals Checkpoint (25–30 exercises) fits.
 const LIMITS = { learnCards: 30, exercises: 30, options: 6, lines: 30, pairs: 8, blanks: 6, bank: 12 };
 const RICH = { beats: 14, choiceOptions: 4, turns: 10, replies: 3, steps: 8, notes: 6, hotspots: 8, statements: 6, stdin: 10, checks: 8 };
-const CAST = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel'];
+const CAST = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'ama'];
 const BLANK_RE = /\[\[(\d+)\]\]/g;
 
 const blank = (s: unknown) => typeof s !== 'string' || !s.trim();
@@ -164,7 +166,7 @@ function richLearnCardProblem(c: any): string | null {
     }
     case 'tryIt':
       if (blank(c.code)) return 'A Try it live card has no code.';
-      if (c.language !== undefined && c.language !== 'python' && c.language !== 'typescript') return 'A Try it live card must be Python or TypeScript.';
+      if (c.language !== undefined && c.language !== 'python' && c.language !== 'typescript' && c.language !== 'html') return 'A Try it live card must be Python, TypeScript or HTML.';
       return list(c.stdin).length > RICH.stdin ? `Try it live allows up to ${RICH.stdin} lines of input.` : null;
     default:
       return 'A Learn card has an unknown type.';
@@ -228,7 +230,7 @@ export function exerciseProblem(e: any): string | null {
     }
     case 'writeCode': {
       const checks = Array.isArray(e.checks) ? e.checks : [];
-      if (e.language !== 'python' && e.language !== 'typescript') return 'A Write and run exercise must be Python or TypeScript.';
+      if (e.language !== 'python' && e.language !== 'typescript' && e.language !== 'html') return 'A Write and run exercise must be Python, TypeScript or HTML.';
       if (blank(e.solution)) return 'A Write and run exercise has no solution.';
       if (checks.length === 0 || checks.length > RICH.checks) return `A Write and run exercise needs 1 to ${RICH.checks} checks.`;
       if (Array.isArray(e.stdin) && e.stdin.length > RICH.stdin) return `Write and run allows up to ${RICH.stdin} lines of input.`;
@@ -242,9 +244,10 @@ export function exerciseProblem(e: any): string | null {
 /** One hidden check on a Write and run exercise. Mirrors codeCheckIssue in the frontend. */
 function codeCheckProblem(c: any): string | null {
   if (blank(c?.message)) return 'A code check has no message for the learner.';
-  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes, c.noTypeErrors, c.typeErrorIncludes].filter((t) => t !== undefined);
+  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes, c.noTypeErrors, c.typeErrorIncludes, c.dom].filter((t) => t !== undefined);
   if (tests.length !== 1) return 'A code check must test exactly one thing.';
   if (c.noTypeErrors !== undefined) return c.noTypeErrors === true ? null : 'A type-error check must be true.';
+  if (c.dom !== undefined) return domTestIssue(c.dom);
   return blank(tests[0]) ? 'A code check has nothing to test.' : null;
 }
 

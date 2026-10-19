@@ -25,6 +25,7 @@ import {
   type LearnCard,
   type McqVariant,
 } from './blocks';
+import type { DomTest } from '@/lib/code/domChecks';
 
 const str = (v: unknown, max: number = LIMITS.textChars): string =>
   typeof v === 'string' ? v.slice(0, max) : '';
@@ -131,7 +132,7 @@ function parseRichCard(c: any, cid: string): RichLearnCard | null {
       return {
         id: cid,
         kind: 'tryIt',
-        ...(c.language === 'typescript' ? { language: 'typescript' as const } : {}),
+        ...(c.language === 'typescript' || c.language === 'html' ? { language: c.language as 'typescript' | 'html' } : {}),
         title: optStr(c.title, 200),
         code: str(c.code, LIMITS.codeChars),
         caption: optStr(c.caption, 300),
@@ -302,7 +303,7 @@ export function parseExercise(e: any, i: number): Exercise | null {
       return {
         ...base,
         kind: 'writeCode',
-        language: e.language === 'typescript' ? 'typescript' : 'python',
+        language: e.language === 'typescript' || e.language === 'html' ? e.language : 'python',
         starter: str(e.starter, LIMITS.codeChars),
         solution: str(e.solution, LIMITS.codeChars),
         hint: optStr(e.hint, 600),
@@ -325,7 +326,24 @@ function parseCheck(c: any): CodeCheck {
     ...(test(c?.codeIncludes) !== undefined ? { codeIncludes: test(c.codeIncludes) } : {}),
     ...(c?.noTypeErrors === true ? { noTypeErrors: true } : {}),
     ...(test(c?.typeErrorIncludes) !== undefined ? { typeErrorIncludes: test(c.typeErrorIncludes) } : {}),
+    ...(parseDom(c?.dom) ? { dom: parseDom(c.dom) } : {}),
   };
+}
+
+/** A page check (HTML): a selector plus optional count/text/attr/style; anything else is dropped. */
+function parseDom(d: any): DomTest | undefined {
+  if (!d || typeof d.selector !== 'string' || !d.selector.trim()) return undefined;
+  const s = (v: unknown) => (typeof v === 'string' ? v.slice(0, 300) : undefined);
+  const n = (v: unknown) => (typeof v === 'number' && Number.isInteger(v) && v >= 0 && v < 1000 ? v : undefined);
+  const out: DomTest = { selector: d.selector.slice(0, 200) };
+  if (n(d.count) !== undefined) out.count = n(d.count);
+  if (n(d.min) !== undefined) out.min = n(d.min);
+  if (s(d.text) !== undefined) out.text = s(d.text);
+  if (s(d.attr) !== undefined) out.attr = s(d.attr);
+  if (s(d.attrValue) !== undefined) out.attrValue = s(d.attrValue);
+  if (s(d.style) !== undefined) out.style = s(d.style);
+  if (s(d.styleValue) !== undefined) out.styleValue = s(d.styleValue);
+  return out;
 }
 
 /** The exercises a learner can actually take: parsed AND complete. */

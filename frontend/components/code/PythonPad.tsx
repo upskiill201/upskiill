@@ -34,6 +34,7 @@ import {
 import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import styles from './PythonPad.module.css';
+import { HtmlPad } from './HtmlPad';
 
 const INDENT = '    ';
 const QUICK_KEYS: { label: string; insert: string; aria?: string }[] = [
@@ -77,13 +78,37 @@ const TS_QUICK_KEYS: { label: string; insert: string; aria?: string }[] = [
   { label: ',', insert: ',' },
 ];
 
+const HTML_QUICK_KEYS: { label: string; insert: string; aria?: string }[] = [
+  { label: 'Tab', insert: TS_INDENT, aria: 'Indent' },
+  { label: '<', insert: '<' },
+  { label: '>', insert: '>' },
+  { label: '/', insert: '/' },
+  { label: '</', insert: '</', aria: 'Insert closing tag start' },
+  { label: '=', insert: '=' },
+  { label: '"', insert: '"' },
+  { label: '{', insert: '{' },
+  { label: '}', insert: '}' },
+  { label: ':', insert: ':' },
+  { label: ';', insert: ';' },
+  { label: '.', insert: '.' },
+  { label: '#', insert: '#' },
+  { label: '-', insert: '-' },
+  { label: '!', insert: '!' },
+];
+
 /** What each runner is called in the UI. */
-const RUNNER_NAME: Record<RunLanguage, string> = { python: 'Python', typescript: 'TypeScript' };
+const RUNNER_NAME: Record<RunLanguage, string> = { python: 'Python', typescript: 'TypeScript', html: 'HTML' };
 
 /** Keep a runner's status (loading, ready...) in React state. */
 export function useRunnerStatus(language: RunLanguage = 'python'): PythonStatus {
-  const [status, setStatus] = useState<PythonStatus>(() => (language === 'typescript' ? getTypeScriptStatus() : getPythonStatus()));
-  useEffect(() => (language === 'typescript' ? onTypeScriptStatus(setStatus) : onPythonStatus(setStatus)), [language]);
+  const [status, setStatus] = useState<PythonStatus>(() =>
+    language === 'html' ? 'ready' : language === 'typescript' ? getTypeScriptStatus() : getPythonStatus(),
+  );
+  useEffect(() => {
+    // HTML needs nothing to load: the browser already speaks it.
+    if (language === 'html') return;
+    return language === 'typescript' ? onTypeScriptStatus(setStatus) : onPythonStatus(setStatus);
+  }, [language]);
   return status;
 }
 
@@ -122,16 +147,17 @@ export function CodeEditor({
   language = 'python',
 }: EditorProps) {
   const ts = language === 'typescript';
-  const indentUnit = ts ? TS_INDENT : INDENT;
-  const keys = ts ? TS_QUICK_KEYS : QUICK_KEYS;
-  const file = fileName ?? (ts ? 'main.ts' : 'main.py');
+  const html = language === 'html';
+  const indentUnit = ts || html ? TS_INDENT : INDENT;
+  const keys = html ? HTML_QUICK_KEYS : ts ? TS_QUICK_KEYS : QUICK_KEYS;
+  const file = fileName ?? (html ? 'index.html' : ts ? 'main.ts' : 'main.py');
   const ta = useRef<HTMLTextAreaElement>(null);
   const hl = useRef<HTMLPreElement>(null);
   const gutter = useRef<HTMLDivElement>(null);
   const lineCount = value.split('\n').length;
   const shown = Math.min(Math.max(lineCount, minLines), maxLines);
   // A trailing newline needs something after it, or the last line collapses.
-  const html = useMemo(() => highlightCode(value.endsWith('\n') ? `${value} ` : value || ' ', language), [value, language]);
+  const highlighted = useMemo(() => highlightCode(value.endsWith('\n') ? `${value} ` : value || ' ', language), [value, language]);
 
   const syncScroll = () => {
     const t = ta.current;
@@ -186,8 +212,15 @@ export function CodeEditor({
     } else if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       const indent = /^[ \t]*/.exec(currentLine)?.[0] ?? '';
-      // Python indents after a colon; TypeScript after an opening bracket.
-      const opens = ts ? /[{([]\s*(\/\/.*)?$/.test(currentLine) : /:\s*(#.*)?$/.test(currentLine);
+      // Python indents after a colon; TypeScript after an opening bracket; HTML after an opening tag or {.
+      const opens = html
+        ? (/<([a-z][a-z0-9-]*)\b[^>]*>\s*$/i.test(currentLine) &&
+            !/<\/[^>]+>\s*$/.test(currentLine) &&
+            !/<(br|img|input|meta|link|hr|source)\b[^>]*>\s*$/i.test(currentLine)) ||
+          /\{\s*$/.test(currentLine)
+        : ts
+          ? /[{([]\s*(\/\/.*)?$/.test(currentLine)
+          : /:\s*(#.*)?$/.test(currentLine);
       insert(`\n${indent}${opens ? indentUnit : ''}`);
     } else if (
       e.key === 'Backspace' &&
@@ -222,7 +255,7 @@ export function CodeEditor({
         </div>
         <div className={styles.area}>
           <pre ref={hl} className={styles.highlight} aria-hidden="true">
-            <code dangerouslySetInnerHTML={{ __html: html }} />
+            <code dangerouslySetInnerHTML={{ __html: highlighted }} />
           </pre>
           <textarea
             ref={ta}
@@ -330,10 +363,10 @@ export function RunOutput({ run, language = 'python' }: { run: GradedRun; langua
   );
 }
 
-export function CheckList({ checks, results }: { checks: CodeCheck[]; results: CheckResult[] | null }) {
+export function CheckList({ checks, results, title = 'Your program should' }: { checks: CodeCheck[]; results: CheckResult[] | null; title?: string }) {
   return (
     <div className={styles.checks}>
-      <p className={styles.checksTitle}>Your program should</p>
+      <p className={styles.checksTitle}>{title}</p>
       {checks.map((c, i) => {
         const r = results?.[i];
         const cls = r ? (r.passed ? styles.checkPass : styles.checkFail) : '';
@@ -377,7 +410,12 @@ export interface PythonPadProps {
   language?: RunLanguage;
 }
 
-export function PythonPad({
+/** The pad for any runner language. HTML gets the live page (HtmlPad); Python and TypeScript run as programs. */
+export function PythonPad(props: PythonPadProps) {
+  return props.language === 'html' ? <HtmlPad {...props} /> : <ProgramPad {...props} />;
+}
+
+function ProgramPad({
   value,
   onChange,
   resetTo,

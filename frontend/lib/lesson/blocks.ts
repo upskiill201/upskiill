@@ -20,6 +20,8 @@
  * keep the two in step.
  */
 
+import { domTestIssue, type DomTest } from '@/lib/code/domChecks';
+
 // ─── Shared ────────────────────────────────────────────────────────────────
 
 export const CODE_LANGUAGES = [
@@ -39,8 +41,8 @@ export const CODE_LANGUAGES = [
 ] as const;
 export type CodeLanguage = (typeof CODE_LANGUAGES)[number];
 
-/** Languages the in-browser code runner can run (lib/code). */
-export type RunLanguage = 'python' | 'typescript';
+/** Languages the in-browser code runner can run (lib/code). 'html' = a live page (HTML + CSS). */
+export type RunLanguage = 'python' | 'typescript' | 'html';
 
 export const CODE_LANGUAGE_LABEL: Record<CodeLanguage, string> = {
   javascript: 'JavaScript',
@@ -135,7 +137,7 @@ export type LearnCard =
 // to be finished before Continue.
 
 /** The shared Originals cast (docs/originals/CAST.md). */
-export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel'] as const;
+export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'ama'] as const;
 export type CastId = (typeof CAST_IDS)[number];
 export const CAST_NAMES: Record<CastId, string> = {
   ada: 'Ada',
@@ -173,6 +175,7 @@ export const CAST_NAMES: Record<CastId, string> = {
   halima: 'Halima',
   folake: 'Folake',
   emmanuel: 'Emmanuel',
+  ama: 'Ama',
 };
 
 /** Who says a story line: the narrator (Tey's voice-over), Tey, or a cast member. */
@@ -377,6 +380,8 @@ export interface CodeCheck {
   noTypeErrors?: boolean;
   /** TypeScript: the checker reports a type error whose message contains this (a lesson about that error). */
   typeErrorIncludes?: string;
+  /** HTML: a check on the rendered page (lib/code/domChecks.ts). For HTML, outputIncludes/outputEquals read the page's text. */
+  dom?: DomTest;
 }
 
 /**
@@ -694,9 +699,10 @@ export function richLearnCardIssue(c: RichLearnCard): string | null {
 /** Problems with one hidden check on a Write and run exercise (mirrors the backend). */
 export function codeCheckIssue(c: CodeCheck): string | null {
   if (blank(c.message)) return 'Every check needs a message for the learner.';
-  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes, c.noTypeErrors, c.typeErrorIncludes].filter((t) => t !== undefined);
+  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes, c.noTypeErrors, c.typeErrorIncludes, c.dom].filter((t) => t !== undefined);
   if (tests.length !== 1) return 'Every check tests exactly one thing.';
   if (c.noTypeErrors !== undefined) return c.noTypeErrors === true ? null : 'A type-error check must be true.';
+  if (c.dom !== undefined) return domTestIssue(c.dom);
   return blank(tests[0] as string) ? 'A check has nothing to test.' : null;
 }
 

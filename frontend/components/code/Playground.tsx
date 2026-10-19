@@ -16,7 +16,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Check, Eye, Lightbulb, SquareTerminal, Trophy } from 'lucide-react';
-import { CHALLENGES, EXAMPLES, TS_EXAMPLES, type PlaygroundChallenge } from '@/lib/code/playground';
+import { CHALLENGES, EXAMPLES, HTML_EXAMPLES, TS_EXAMPLES, type PlaygroundChallenge } from '@/lib/code/playground';
 import type { RunLanguage } from '@/lib/lesson/blocks';
 import { fireConfetti } from '@/lib/confetti';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -27,7 +27,9 @@ import styles from './Playground.module.css';
 
 const DRAFT_KEY = 'teyro.playground.draft';
 /** TypeScript keeps its own draft, so switching language never loses either one. */
-const draftKey = (language: RunLanguage) => (language === 'typescript' ? `${DRAFT_KEY}.ts` : DRAFT_KEY);
+const draftKey = (language: RunLanguage) => (language === 'python' ? DRAFT_KEY : `${DRAFT_KEY}.${language === 'typescript' ? 'ts' : 'html'}`);
+const EXAMPLES_FOR: Record<RunLanguage, typeof EXAMPLES> = { python: EXAMPLES, typescript: TS_EXAMPLES, html: HTML_EXAMPLES };
+const PROGRAM_LABEL: Record<RunLanguage, string> = { python: 'Your Python program', typescript: 'Your TypeScript program', html: 'Your web page' };
 const LANGUAGE_KEY = 'teyro.playground.language';
 const DONE_KEY = 'teyro.playground.done';
 
@@ -58,7 +60,7 @@ export function Playground() {
         </span>
         <div>
           <h1 className={styles.title}>Code playground</h1>
-          <p className={styles.sub}>Write and run Python or TypeScript right here, on any device. Nothing to install.</p>
+          <p className={styles.sub}>Write and run Python, TypeScript or a web page right here, on any device. Nothing to install.</p>
         </div>
       </header>
 
@@ -99,12 +101,15 @@ function FreeCode() {
 }
 
 function FreeCodeEditor() {
-  const [language, setLanguage] = useState<RunLanguage>(() => (readStore(LANGUAGE_KEY) === 'typescript' ? 'typescript' : 'python'));
+  const [language, setLanguage] = useState<RunLanguage>(() => {
+    const saved = readStore(LANGUAGE_KEY);
+    return saved === 'typescript' || saved === 'html' ? saved : 'python';
+  });
   return <FreeCodeFor key={language} language={language} onLanguage={setLanguage} />;
 }
 
 function FreeCodeFor({ language, onLanguage }: { language: RunLanguage; onLanguage: (l: RunLanguage) => void }) {
-  const examples = language === 'typescript' ? TS_EXAMPLES : EXAMPLES;
+  const examples = EXAMPLES_FOR[language];
   // The last draft on this device for this language, else the first example.
   const [code, setCode] = useState(() => readStore(draftKey(language)) ?? examples[0].code);
   useEffect(() => {
@@ -119,6 +124,7 @@ function FreeCodeFor({ language, onLanguage }: { language: RunLanguage; onLangua
           [
             ['python', 'Python'],
             ['typescript', 'TypeScript'],
+            ['html', 'HTML & CSS'],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -169,7 +175,7 @@ function FreeCodeFor({ language, onLanguage }: { language: RunLanguage; onLangua
         minLines={10}
         maxLines={24}
         language={language}
-        label={language === 'typescript' ? 'Your TypeScript program' : 'Your Python program'}
+        label={PROGRAM_LABEL[language]}
       />
       <p className={styles.note}>Your code is saved on this device as you type.</p>
     </section>

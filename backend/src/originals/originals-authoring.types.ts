@@ -8,6 +8,8 @@
  * docs/ORIGINALS_PLAYBOOK.md; `npm run originals` checks them.
  */
 
+import type { DomTest } from './originals-dom-checks';
+
 export type CodeLanguage =
   | 'javascript'
   | 'typescript'
@@ -23,12 +25,12 @@ export type CodeLanguage =
   | 'dart'
   | 'plaintext';
 
-/** Languages the in-browser code runner can run (frontend/lib/code). */
-export type RunLanguage = 'python' | 'typescript';
+/** Languages the in-browser code runner can run (frontend/lib/code). 'html' = a live page (HTML + CSS). */
+export type RunLanguage = 'python' | 'typescript' | 'html';
 
 /** The shared cast (docs/originals/CAST.md). */
 /** Course-only characters (efua, asante; brian, zanele, achieng, kamau, felix, pauline, emeka, wanjiku; jayden, priya, femi; diego; marta, sofia, tomas, carmen) are listed in CAST.md too. */
-export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel';
+export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel' | 'ama';
 export type Speaker = 'narrator' | 'tey' | CastId;
 
 // ─── Learn cards ───────────────────────────────────────────────────────────
@@ -88,6 +90,8 @@ export interface AuthoredCodeCheck {
   noTypeErrors?: boolean;
   /** TypeScript: a type error whose message contains this is reported (a lesson about that error). */
   typeErrorIncludes?: string;
+  /** HTML: a check on the rendered page (originals-dom-checks.ts). For HTML, outputIncludes/outputEquals read the page's text. */
+  dom?: DomTest;
 }
 
 export type AuthoredExercise =
@@ -218,7 +222,8 @@ export interface OriginalTrackDef {
   format?: 'full' | 'short';
   /**
    * The language every Try it live card and Write and run exercise in this
-   * track runs in. Default: Python. 'typescript' = type-checked TypeScript.
+   * track runs in. Default: Python. 'typescript' = type-checked TypeScript;
+   * 'html' = a live page (HTML + CSS), checked with page checks (`dom`).
    */
   runner?: RunLanguage;
   levels: OriginalLevel[];

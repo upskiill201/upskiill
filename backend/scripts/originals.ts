@@ -299,7 +299,7 @@ async function main() {
   for (const track of selected) {
     // Every Try it live card and Write and run solution, run in real Python (or type-checked TypeScript).
     if (hasCode(track)) console.log(`
-(running the ${track.runner === 'typescript' ? 'TypeScript' : 'Python'} in ${track.slug}...)`);
+(running the ${track.runner === 'typescript' ? 'TypeScript' : track.runner === 'html' ? 'HTML pages' : 'Python'} in ${track.slug}...)`);
     ok = report(track, await verifyTrackCode(track)) && ok;
   }
   if (EXPORT) selected.forEach(exportPreview);
