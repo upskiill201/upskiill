@@ -11,6 +11,7 @@ import h04 from './get-hired-get-ahead/how-to-get-hired/u04';
 import h05 from './get-hired-get-ahead/how-to-get-hired/u05';
 import a01 from './get-hired-get-ahead/how-to-get-ahead-at-work/u01';
 import a02 from './get-hired-get-ahead/how-to-get-ahead-at-work/u02';
+import a03 from './get-hired-get-ahead/how-to-get-ahead-at-work/u03';
 
 /**
  * Get Hired, Get Ahead (Career). Outline: docs/originals/get-hired-get-ahead-outline.md
@@ -107,8 +108,8 @@ const track: OriginalTrackDef = {
       ],
       skills: ['Onboarding', 'Workplace skills', 'Career growth', 'Promotion', 'Career planning', 'Career change'],
       thumbnailUrl: '/originals/how-to-get-ahead-at-work.jpg',
-      upcomingUnits: 3,
-      units: [a01, a02],
+      upcomingUnits: 2,
+      units: [a01, a02, a03],
     },
   ],
 };

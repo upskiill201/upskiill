@@ -480,6 +480,35 @@ All 18 founder topics are covered: 12 chapters have one topic each, and three ch
 | 19 | Your impact record | Set up your own impact record | Step-by-step |
 | 20 | **Chapter Challenge: worth more** | | Mixed (climax) |
 
+## Level 3 (How to Get Ahead at Work), Chapter 3 — The promotion conversation (written 2026-10-20)
+
+**Story:** month six. Probation passed and the salary review (negotiated in How to Get Hired) brings Clinton to 330,000 XAF. He asks for Developer and hears "not yet". He asks what Ngozi would need to see, reads the career ladder line by line, and agrees two gaps (leading work with others, design docs) and a date (1 March). He leads the retry-service rebuild with Kemi and writes its design doc; Paul reviews it and praises it in public (sponsorship). **Choice (l01):** argue, sulk, or ask what it takes. **Choice (l11):** a recruiter offers "Developer now" in Yaoundé. **Choice (l17):** Amadou (named extra) is promoted first. **Climax (l20):** Developer from 1 April; Ngozi wants him to lead the sync-service split. Learner kit, piece 3: a promotion case.
+
+**Sources mentioned:** mentor vs sponsor (Hewlett, 2013), qualitative.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | "Not yet" | Respond well to "not yet" | Story (choice) |
+| 2 | How promotions work | Describe how promotion decisions are often made | Reading |
+| 3 | Deserve vs. evidence | Ask for a promotion with evidence | Before / After |
+| 4 | Find the criteria | Find written promotion criteria | Step-by-step |
+| 5 | **Checkpoint: the plan on paper** | | Mixed review |
+| 6 | The ladder, line by line | Read a career ladder line by line | Tap to explore |
+| 7 | From "not yet" to "by when" | Agree a date to revisit a promotion | Chat with Tey |
+| 8 | The gap plan | Pick the gaps that matter most | Step-by-step |
+| 9 | Don't hint, ask | Recognise hinting | Before / After |
+| 10 | **Checkpoint: signed off** | | Mixed review |
+| 11 | The recruiter's message | Handle outside interest honestly | Story (choice) |
+| 12 | Mentors and sponsors | Tell a mentor from a sponsor | Card deck |
+| 13 | Promotion and pay | Understand how pay often links to levels | Chat with Tey |
+| 14 | The promotion case | Write a one-page promotion case | Step-by-step |
+| 15 | **Checkpoint: Paul's comment** | | Mixed review |
+| 16 | Promotion myths | Spot promotion myths | Myth or Fact |
+| 17 | When a peer goes first | Handle a peer's promotion gracefully | Story (choice) |
+| 18 | Clinton's case | Recognise a strong promotion case | Tap to explore |
+| 19 | Your promotion case | Write your own promotion case | Step-by-step |
+| 20 | **Chapter Challenge: 1 March** | | Mixed (climax) |
+
 ## Facts (checked 2026-10-20; sources go in each lesson's author notes)
 
 - **Employers look for problem-solving and teamwork first.** In NACE's *Job Outlook 2025*, about 90% of US employers look for problem-solving evidence on graduate résumés and roughly 80% look for teamwork. More than three-quarters want communication; initiative, work ethic and technical skills each matter to over 70%. Nearly two-thirds use skills-based hiring. (NACE, 2025. A US survey, so say so.)
