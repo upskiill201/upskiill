@@ -147,9 +147,9 @@ const lesson: OriginalLesson = {
   },
   deepen: {
     title: 'Go further',
-    summary: 'Chapter 13 shows you how to install Node.js and run TypeScript on your own computer.',
+    summary: 'Real-World TypeScript, the third course in this track, shows you how to install Node.js and run TypeScript on your own computer.',
   },
-  notes: 'Node.js: first released 2009 (Ryan Dahl). Avoid specific Node version claims about built-in TypeScript support here; that belongs in Chapter 13 and must be re-checked then.',
+  notes: 'Node.js: first released 2009 (Ryan Dahl). Avoid specific Node version claims about built-in TypeScript support here; that belongs in Real-World TypeScript (Chapter 4, Tidy code) and must be re-checked then.',
 };
 
 export default lesson;

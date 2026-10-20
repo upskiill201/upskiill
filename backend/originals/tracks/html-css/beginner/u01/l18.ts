@@ -14,7 +14,7 @@ const lesson: OriginalLesson = {
       steps: [
         { title: 'Kofi\'s page', body: 'Kofi\'s site is for his music: beats, gigs, bookings. You\'ve been helping him build it, and you\'ll keep going.', code: '<h1>Mensah Beats</h1>\n<p>Beats made on a phone in Accra.</p>', language: 'html' },
         { title: 'Your page', body: 'From today, you build your own page too, about whatever you like: your work, a hobby, your city, your dog. It\'s yours.', code: '<h1>Your name</h1>\n<p>One true line about you.</p>', language: 'html' },
-        { title: 'It grows every chapter', body: 'Every Chapter Challenge adds something to your page: lists, links, pictures, colours, layout. By the last chapter it\'s a real website, and you publish it on the internet with a link to share.' },
+        { title: 'It grows every chapter', body: 'Every Chapter Challenge adds something to your page: lists, links, pictures, colours, layout. By the end of this course it\'s a real website, and you publish it on the internet with a link to share.' },
         { title: 'Keep it safe', body: 'Use your first name, a nickname or a made-up one. Never put your address, phone number or anything private on a public page.' },
       ],
     },

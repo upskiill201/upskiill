@@ -3,6 +3,22 @@
 > Teyro Original, Coding. **Status: APPROVED (2026-10-18)** as proposed: Grace leads, Session Booker, "TypeScript for Beginners" / "Grace Ships It". Full-length course for complete beginners. The TypeScript runner is built; Chapter 1 (20 lessons) is written in backend/originals/tracks/typescript/beginner/u01.
 > Rules: docs/ORIGINALS_PLAYBOOK.md (§7 coding Originals, §8a storylines). Cast: docs/originals/CAST.md.
 
+## Update (2026-10-20): three courses, 5 chapters each
+
+Founder, 2026-10-20: courses should have 5 chapters, like Get Hired, Get Ahead. The track becomes **three courses (levels), 5 chapters × 20 lessons each** (track `format: 'focused'`, track title "TypeScript", track slug unchanged). The 13 planned chapters become 15: the old Chapter 13 ("Session Booker 1.0") was overloaded, so it splits into three. This supersedes the 13-chapter table below where they differ. Chapter 1 (written) is unchanged, except that its "Chapter 13" mentions now point to Real-World TypeScript.
+
+| Level | Course (slug) | Storyline | Chapters | Markers |
+|---|---|---|---|---|
+| 1 | **TypeScript for Beginners** (`typescript-for-beginners`) | Grace Ships It | Hello, TypeScript · Names and types · Times and numbers · Working with text · Booked or not? | v0.0 → v0.4 |
+| 2 | **TypeScript Functions and Objects** (`typescript-functions-and-objects`) | The Booker Grows | The participant list (arrays) · Round and round (loops) · Write it once (functions) · The shape of a booking (objects, interfaces) · Lists of bookings (map, filter, find, sort) | v0.5 → v0.85 |
+| 3 | **Real-World TypeScript** (`real-world-typescript`) | Session Booker 1.0 | When something's missing (null, narrowing, unknown) · One type, many shapes (unions, Record, first generics, never) · Talking to the outside world (async/await, fetch, checking untrusted JSON) · Tidy code (modules, tsconfig, running TypeScript with Node on a computer) · Session Booker 1.0 | v0.9 → v1.0 |
+
+**Course 1 finale (v0.4):** the Booker can check one booking: a typed name, time, length and status, with a clear message when something's wrong. Priya uses it for the first time.
+
+**Course 3, Chapter 5 — Session Booker 1.0:** the full tool for the UX team, built from everything so far, plus a short code review with Arjun and a "what I'd do next" note (React is the Intermediate track's job).
+
+Each course has its own free stretch (Chapter 1, lessons 1–5), course details and cover. Course details for Courses 2 and 3 are added to `typescript.ts` when their Chapter 1 is written. Covers: `backend/originals/covers/typescript-for-beginners.html`, `typescript-functions-and-objects.html`, `real-world-typescript.html`.
+
 ## Why this course
 
 TypeScript is JavaScript with types: you describe what your data looks like, and the editor catches mistakes **before** the code runs. It is now one of the most used languages on GitHub and the default for new web apps, so "learn TypeScript" is a real job skill.

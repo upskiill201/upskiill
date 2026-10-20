@@ -3,6 +3,22 @@
 > Teyro Original, Coding. **Status: APPROVED (2026-10-19)** as proposed: Kofi leads, two pages (Kofi's site + the learner's own), Ama as user tester, "HTML & CSS for Beginners" / "Kofi Goes Live". Full-length course for complete beginners.
 > Rules: docs/ORIGINALS_PLAYBOOK.md (§7 coding Originals, §8a storylines). Cast: docs/originals/CAST.md.
 
+## Update (2026-10-20): three courses, 5 chapters each
+
+Founder, 2026-10-20: courses should have 5 chapters, like Get Hired, Get Ahead. The track becomes **three courses (levels), 5 chapters × 20 lessons each** (track `format: 'focused'`, track title "HTML & CSS", track slug unchanged so Find my level keeps working). The 13 planned chapters become 15: publishing moves up to the end of Course 1 (so every learner finishes Course 1 with a live site), and the old Chapter 13 splits into accessibility, search and the launch. This supersedes the 13-chapter table below where they differ. Chapters 1–3 (written) are unchanged.
+
+| Level | Course (slug) | Storyline | Chapters | Markers |
+|---|---|---|---|---|
+| 1 | **HTML & CSS for Beginners** (`html-css-for-beginners`) | Kofi Goes Live | Hello, web · Words on the page · Links, pictures and sound · Hello, CSS · Colour, type and go live | 12 → 8 weeks to uni |
+| 2 | **Responsive Web Design with CSS** (`responsive-web-design-css`) | Kofi's Site Grows Up | Boxes everywhere · Classes and the cascade · Lining things up (Flexbox) · The beat grid (Grid) · Phones first | 7 → 3 weeks to uni |
+| 3 | **Build and Launch a Website** (`build-and-launch-a-website`) | Kofi Goes Pro | Book me (forms) · Make it move · Everyone can use it (accessibility) · Found on search (metadata, sharing previews, fast images) · Launch night | 2 weeks to uni → Launch night |
+
+**Course 1, Chapter 5 — Colour, type and go live (8 weeks to uni):** choosing colours and fonts (the old Chapter 5) in lessons 1–15, then publishing v1 for free in lessons 16–20 (the publishing part of the old Chapter 13). Climax: Kofi sends the organiser of Sound Up Saturdays a real link. The learner publishes their own page.
+
+**Course 3, Chapter 5 — Launch night:** Mensah Beats v2.0, a full relaunch with layout, forms, motion, accessibility and search basics in place, plus the learner's finished personal site and a short "how I built it" write-up.
+
+Each course has its own free stretch (Chapter 1, lessons 1–5), course details and cover. Course details for Courses 2 and 3 are added to `html-css.ts` when their Chapter 1 is written (same as Get Hired, Get Ahead). Covers: `backend/originals/covers/responsive-web-design-css.html` and `build-and-launch-a-website.html`.
+
 ## Why this course
 
 HTML and CSS are how every web page is built: HTML says what's on the page, CSS says how it looks. They're the most common first step into coding (about 6 in 10 developers use them, Stack Overflow Developer Survey 2025), and the most rewarding one: **from the first lesson, you see something real that you made.**
