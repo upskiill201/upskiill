@@ -1,5 +1,6 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './price-product/beginner/u01';
+import u02 from './price-product/beginner/u02';
 
 /**
  * How to Price a Product or Service — storyline "Clinton's Price Card".
@@ -39,8 +40,8 @@ const track: OriginalTrackDef = {
         'Raise and defend prices without losing your best customers',
       ],
       skills: ['Pricing', 'Unit economics', 'Margins', 'Break-even analysis', 'Value-based pricing', 'Entrepreneurship'],
-      upcomingUnits: 4,
-      units: [u01],
+      upcomingUnits: 3,
+      units: [u01, u02],
     },
   ],
 };
