@@ -50,7 +50,7 @@ Grace (44, Manchester) spent 18 years as a ward nurse. She can calm a frightened
 1. The raised voice (Story) · 2. The calm-down sequence (Steps) · 3. Name it to tame it (Reading) · 4. Harsh start vs soft start (Compare) · **5 Checkpoint** · 6. What to say when it's heating up (Chat) · 7. De-escalation myths (Myth) · 8. Calming a group or a call (Cards) · 9. Ward rules v2 (Explore) · **10 Challenge: the meeting that boils over**
 
 ### Ch3 · That's not what I meant · *"Resolving misunderstandings"* (covers *How to Resolve Misunderstandings*)
-1. "Fine." (Story) · 2. Tone in writing (Reading) · 3. The ladder of inference (Cards) · 4. Intent vs impact (Compare) · **5 Checkpoint** · 6. Checking what they meant (Steps) · 7. Misunderstanding myths (Myth) · 8. Clearing it up (Chat) · 9. Ward rules v3 (Explore) · **10 Challenge: the two-day cold war**
+1. "Fine." (Story) · 2. Tone in writing (Reading) · 3. The ladder of inference (Cards) · 4. Intent vs impact (Compare) · **5 Checkpoint** · 6. Checking what they meant (Steps) · 7. Misunderstanding myths (Myth) · 8. Clearing it up (Chat) · 9. Ward rules v3 (Explore) · **10 Challenge: three messages**
 
 ### Ch4 · That's not fair · *"Responding to unfair criticism"* (covers *How to Respond to Unfair Criticism*)
 1. "Just opinions" (Story) · 2. Your three triggers (Reading) · 3. What's right in it? (Chat) · 4. Reacting vs responding (Compare) · **5 Checkpoint** · 6. Disagreeing calmly (Steps) · 7. Criticism myths (Myth) · 8. When criticism is public (Cards) · 9. Ward rules v4 (Explore) · **10 Challenge: answering Callum**

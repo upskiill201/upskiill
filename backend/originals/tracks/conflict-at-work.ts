@@ -1,6 +1,7 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './conflict-at-work/beginner/u01';
 import u02 from './conflict-at-work/beginner/u02';
+import u03 from './conflict-at-work/beginner/u03';
 
 /**
  * How to Manage Conflict at Work — storyline "Grace Keeps the Peace".
@@ -41,8 +42,8 @@ const track: OriginalTrackDef = {
         'Set and hold boundaries without damaging relationships',
       ],
       skills: ['Conflict resolution', 'De-escalation', 'Feedback', 'Boundaries', 'Workplace communication', 'Emotional regulation'],
-      upcomingUnits: 3,
-      units: [u01, u02],
+      upcomingUnits: 2,
+      units: [u01, u02, u03],
     },
   ],
 };
