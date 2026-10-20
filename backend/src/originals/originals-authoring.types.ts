@@ -206,8 +206,10 @@ export interface OriginalTrackDef {
   devOnly?: boolean;
   /**
    * 'short' = a deliberately short course (founder, 2026-10-15): 10 lessons per unit
-   * (Checkpoint at 5, Unit Challenge at 10) and 5 units per level. Default: full-length.
+   * (Checkpoint at 5, Unit Challenge at 10) and 5 units per level. 'focused' = full-length
+   * 20-lesson units, but 5 units per level (founder, 2026-10-20: "they should have 5
+   * chapters"). Default: full-length.
    */
-  format?: 'full' | 'short';
+  format?: 'full' | 'short' | 'focused';
   levels: OriginalLevel[];
 }

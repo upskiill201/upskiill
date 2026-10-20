@@ -4,6 +4,18 @@
 > Founder brief: build the 18 career topics as one course; agreed shape (2026-10-20): **two levels, Clinton as the lead, and Acing Job Interviews folded in.**
 > Rules: docs/ORIGINALS_PLAYBOOK.md (§8a storylines, §9 facts and global career advice). Cast: docs/originals/CAST.md.
 
+## Update (2026-10-20): three courses, 5 chapters each
+
+Founder, 2026-10-20: "they should have 5 chapters". The 15 planned chapters stay the same; they're now grouped into **three courses (levels), 5 chapters × 20 lessons each** (track `format: 'focused'`). This supersedes the two-level tables below where they differ.
+
+| Level | Course (slug) | Storyline | Chapters | Markers |
+|---|---|---|---|---|
+| 1 | **How to Get Noticed by Employers** (`how-to-get-noticed`) | Clinton Gets Noticed | What you've already got · Proof without experience · The CV that gets read · The cover letter · Be findable | 8 → 4 months to grad |
+| 2 | **How to Get Hired** (`how-to-get-hired`) | Clinton Gets Hired | The hidden job market · A foot in the door · The interview · When it's a no · The offer | 3 months → Graduation |
+| 3 | **How to Get Ahead at Work** (`how-to-get-ahead-at-work`) | Clinton's First Year | The first 90 days · Worth more · The promotion conversation · Your plan · Changing lanes | Week 1 → One year in |
+
+Each course has its own free stretch (Chapter 1, lessons 1–5), course details and cover. Level 1 ends with Brenda's interview invitation; Level 2 opens on the hidden job market while Clinton waits, and ends with "You're hired".
+
 ## Why this track
 
 Getting hired is the most urgent thing many of our learners want, and the second most urgent is getting ahead once they're in. Most career advice online is generic lists ("10 CV tips") written for one country. This track is different in three ways:
@@ -80,7 +92,7 @@ Clinton starts as a **junior developer at Njangi Pay**, Douala.
 | 2 | Proof without experience | 7 months to grad | How to Build a Portfolio Without Work Experience | Plan and make small projects that show what they can do |
 | 3 | The CV that gets read | 6 months to grad | How to Write a CV That Gets Attention | Write a clear one- or two-page CV with achievement bullets |
 | 4 | The cover letter | 5 months to grad | How to Write a Cover Letter | Write a short, specific cover letter for one real role |
-| 5 | Be findable | 4 months | How to Build a Professional LinkedIn Profile | Build a profile that recruiters find and trust |
+| 5 | Be findable | 4 months to grad | How to Build a Professional LinkedIn Profile | Build a profile that recruiters find and trust |
 | 6 | The hidden job market | 3 months | How to Find Hidden Job Opportunities; How to Network When You Know Nobody | Find unadvertised roles and start real conversations from zero |
 | 7 | A foot in the door | 2 months | How to Get Your First Internship; How to Stand Out as a Graduate | Win an internship and turn it into a reference or an offer |
 | 8 | The interview | 6 weeks | How to Answer "Tell Me About Yourself"; How to Answer Common Interview Questions (and the old Acing Job Interviews plan) | Prepare and answer with calm, true STAR stories |
