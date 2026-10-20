@@ -9,6 +9,7 @@ import h02 from './get-hired-get-ahead/how-to-get-hired/u02';
 import h03 from './get-hired-get-ahead/how-to-get-hired/u03';
 import h04 from './get-hired-get-ahead/how-to-get-hired/u04';
 import h05 from './get-hired-get-ahead/how-to-get-hired/u05';
+import a01 from './get-hired-get-ahead/how-to-get-ahead-at-work/u01';
 
 /**
  * Get Hired, Get Ahead (Career). Outline: docs/originals/get-hired-get-ahead-outline.md
@@ -83,6 +84,30 @@ const track: OriginalTrackDef = {
       thumbnailUrl: '/originals/how-to-get-hired.jpg',
       upcomingUnits: 0,
       units: [h01, h02, h03, h04, h05],
+    },
+    {
+      level: 3,
+      slug: 'how-to-get-ahead-at-work',
+      title: 'How to Get Ahead at Work',
+      subtitle: 'Clinton\'s First Year: from the new person to the one they can\'t do without',
+      shortDescription:
+        'Handle your first 90 days, become more valuable, ask for a promotion, build a career plan, and change direction without starting from zero.',
+      description:
+        "Day one at Njangi Pay. The senior developer next to Clinton says four words all morning: \"The docs are there.\" Follow Clinton through his first year in a real job: a 90-day plan, his first bug in production, learning what \"valuable\" actually means, asking for a promotion too early and hearing \"not yet\", building a career plan, and discovering he might want a different role altogether. His manager, Ngozi, is direct and fair, and his mentor, Miracle, now leads a team of her own. As you go, you build your own career-growth kit: a first-90-days kit, an impact record, a promotion case, a career plan and a change strategy. Ten-minute lessons, made for your phone.",
+      startingPoint: 'Anyone in their first years of a job, starting a new role, or ready for the next step. How to Get Hired helps, but isn\'t required.',
+      endOutcome:
+        'Start any role well, show your impact, make a clear case for promotion, plan your career, and change direction strategically.',
+      outcomes: [
+        'Make and use a 30-60-90 plan in a new role',
+        'Find the work that matters and record your impact',
+        'Build a promotion case and handle a "not yet"',
+        'Write a one-page career development plan',
+        'Test and make a career change safely',
+      ],
+      skills: ['Onboarding', 'Workplace skills', 'Career growth', 'Promotion', 'Career planning', 'Career change'],
+      thumbnailUrl: '/originals/how-to-get-ahead-at-work.jpg',
+      upcomingUnits: 4,
+      units: [a01],
     },
   ],
 };

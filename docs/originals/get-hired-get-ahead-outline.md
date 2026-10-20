@@ -422,6 +422,35 @@ All 18 founder topics are covered: 12 chapters have one topic each, and three ch
 | 19 | Your offer checklist | Write a one-page offer checklist | Step-by-step |
 | 20 | **Chapter Challenge: you're hired** | | Mixed (climax) |
 
+## Level 3 (How to Get Ahead at Work), Chapter 1 — The first 90 days (written 2026-10-20)
+
+**Story:** day one at Njangi Pay; Paul Tabi says "The docs are there." Clinton asks Ngozi what success looks like at 30/60/90 days, writes a plan, reads Paul's reviews as standards, keeps a glossary, ships a small early win (tap once to confirm). **Choice (l01):** learn and ask, ship big by Friday, or wait. **Choice (l11):** week five, his sync change duplicates confirmations in production: hide it or tell Ngozi (outline choice, moved from week 2). **Choice (l17):** feeling like a fraud in the architecture meeting. **Climax (l20):** day-90 check-in; next he owns "sync status" for support. Learner kit, piece 1: a first-90-days kit.
+
+**Facts used:** Watkins, The First 90 Days (2003); psychological safety (Edmondson 1999; Project Aristotle 2015), qualitative; impostor feelings (Clance & Imes 1978) with no prevalence numbers.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | Day one | Explain why the first weeks of a job matter so much | Story (choice) |
+| 2 | Why 90 days? | Explain the idea behind the first 90 days | Reading |
+| 3 | The Thursday chat | Open a first conversation with your manager well | Before / After |
+| 4 | A 30-60-90 plan | Write a one-page 30-60-90 plan | Step-by-step |
+| 5 | **Checkpoint: Friday, week one** | | Mixed review |
+| 6 | Paul's first review | Read review comments as standards, not attacks | Tap to explore |
+| 7 | Learning fast | Map a new workplace quickly | Chat with Tey |
+| 8 | Earning Paul | Make yourself easy to help | Step-by-step |
+| 9 | The right early win | Choose an early win that matters to others | Before / After |
+| 10 | **Checkpoint: the first demo** | | Mixed review |
+| 11 | The bug in production | Decide what to do when you break something | Story (choice) |
+| 12 | The unwritten rules | Notice unwritten rules early | Card deck |
+| 13 | Your 1:1 | Bring an agenda to your 1:1s | Chat with Tey |
+| 14 | Beyond your desk | Map the people your work depends on | Step-by-step |
+| 15 | **Checkpoint: the incident review** | | Mixed review |
+| 16 | First-job myths | Spot common first-job myths | Myth or Fact |
+| 17 | Feeling like a fraud | Recognise the "I don't belong" feeling | Story (choice) |
+| 18 | Ngozi's notes | Read a manager's review notes | Tap to explore |
+| 19 | Your first-90-days kit | Assemble a first-90-days kit | Step-by-step |
+| 20 | **Chapter Challenge: day 90** | | Mixed (climax) |
+
 ## Facts (checked 2026-10-20; sources go in each lesson's author notes)
 
 - **Employers look for problem-solving and teamwork first.** In NACE's *Job Outlook 2025*, about 90% of US employers look for problem-solving evidence on graduate résumés and roughly 80% look for teamwork. More than three-quarters want communication; initiative, work ethic and technical skills each matter to over 70%. Nearly two-thirds use skills-based hiring. (NACE, 2025. A US survey, so say so.)
