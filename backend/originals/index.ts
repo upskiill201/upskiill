@@ -14,6 +14,7 @@ import motivateTeam from './tracks/motivate-team';
 import dataScience from './tracks/data-science';
 import machineLearning from './tracks/machine-learning';
 import aiStack from './tracks/ai-stack';
+import getHiredGetAhead from './tracks/get-hired-get-ahead';
 import { launchLineup } from './tracks/launch-lineup';
 
 /**
@@ -21,4 +22,4 @@ import { launchLineup } from './tracks/launch-lineup';
  * Add a Track here once its file exists. Tracks with no units yet are
  * checked but never loaded.
  */
-export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, machineLearning, aiStack, ...launchLineup, formatTour];
+export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, machineLearning, aiStack, getHiredGetAhead, ...launchLineup, formatTour];
