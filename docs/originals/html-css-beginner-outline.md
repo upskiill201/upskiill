@@ -318,6 +318,35 @@ Small text never goes on pink (night on pink ≈ 4.47:1): tags are night on gold
 | 19 | A stylesheet you can change | Read a class-based stylesheet | Tap to explore |
 | 20 | **Chapter Challenge: Mensah Beats v1.2** | | Mixed (climax) |
 
+## Course 2, Chapter 3 — Lining things up (written 2026-10-20)
+
+**Story:** five weeks to uni. Laptop visitors see a tall stack at the top of the page; Efua wants name left, links right. Flexbox from scratch: `display: flex` on the parent, nav links as a `ul` with `gap` and no bullets, direct children only (nesting containers), `justify-content`, `align-items` and centring both ways, the history (layout tables, floats, Flexbox drafted 2009 and broadly supported by the mid-2010s, Grid in browsers 2017), `flex-direction: column` and the axes swapping, `flex-wrap`, `flex-grow`, the `flex: 1 1 220px` self-arranging card row, `margin-left: auto`, `align-self`, and why `order` is risky for keyboard and screen reader users. **Choice (l01):** Flexbox, a layout table, or `&nbsp;`. **Choice (l11):** three uneven boxes. **Choice (l17):** the header that ran off Ama's phone. **Climax (l20):** Mensah Beats v1.3, read out on Accra radio, with a professional header on every screen.
+
+`div` is still untaught, so wrappers are `section`, `p` or `header`. `text-decoration` isn't taught either, so the logo keeps its underline.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | A header like a real site | Explain why boxes stack by default | Story (choice) |
+| 2 | A list that lies down | Turn a list of links into a row with display: flex | Before / After |
+| 3 | Parents and children | Find the direct children of a flex container | Step-by-step |
+| 4 | Spreading along the row | Use justify-content to place items along a row | Tap to explore |
+| 5 | **Checkpoint: one neat row** | | Mixed review |
+| 6 | Centring, finally | Line items up across the row with align-items | Chat with Tey |
+| 7 | Before Flexbox | Describe how layouts were built before Flexbox | Reading |
+| 8 | Rows and columns | Stack items with flex-direction: column | Card deck |
+| 9 | Squashed vs wrapped | Explain why flex items squash by default | Before / After |
+| 10 | **Checkpoint: no more spaghetti** | | Mixed review |
+| 11 | Three uneven boxes | Explain how flex items size themselves by default | Story (choice) |
+| 12 | Cards that pick their own row | Set an item's starting size with flex-basis | Tap to explore |
+| 13 | Moving just one item | Push one item away with margin-left: auto | Chat with Tey |
+| 14 | Build the nav bar | Build a header with a name and a navigation list | Step-by-step |
+| 15 | **Checkpoint: the bar is up** | | Mixed review |
+| 16 | Flexbox: myth or fact? | Separate Flexbox myths from facts | Myth or Fact |
+| 17 | The header that ran off the screen | Spot a flex row that's too wide for a phone | Story (choice) |
+| 18 | Your page lines up | Build a header bar for your own page | Step-by-step |
+| 19 | The whole layout in Flexbox | Read a complete Flexbox layout | Tap to explore |
+| 20 | **Chapter Challenge: Mensah Beats v1.3** | | Mixed (climax) |
+
 ## Chapters 4–13 (stories; lesson lists are written chapter by chapter)
 
 **2 · Words on the page (11 weeks).** Kofi writes his story, track list and gig list. Headings, paragraphs, `<strong>` and `<em>`, ordered and unordered lists, line breaks. *Climax:* a page people actually read to the end. *Efua:* "It's a wall of text."
