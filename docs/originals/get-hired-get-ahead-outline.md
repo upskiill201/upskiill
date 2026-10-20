@@ -335,6 +335,37 @@ All 18 founder topics are covered: 12 chapters have one topic each, and three ch
 | 19 | Your internship plan | Write a one-page internship plan | Step-by-step |
 | 20 | **Chapter Challenge: the six-week review** | | Mixed (climax) |
 
+## Level 2 (How to Get Hired), Chapter 3 — The interview (written 2026-10-20)
+
+**Story:** four weeks to graduation. David plays the interviewer and Clinton freezes on "Tell me about yourself". He learns present–past–future, STAR, the mistake and weakness questions, a six-story bank and a specific "why us". Kofi runs a technical practice round. **Choice (l01):** script, wing it, or plan the shape. **Choice (l11):** bluff, stop, or reason out loud. **Choice (l17):** the bus breaks down on interview morning. **Climax (l20):** the Njangi Pay interview with Brenda, who quotes his cover-letter opening back to him. Learner kit, piece 3: a story bank.
+
+**Facts used:** structured interviews are among the better predictors of job performance (Schmidt & Hunter 1998; Sackett et al. 2022), kept qualitative; reappraising anxiety as excitement (Brooks 2014), kept modest.
+
+**Plan for Ch4–5 (decided while writing):** Njangi Pay says no (on his birthday); Clinton asks for feedback gracefully. Mr Tamba offers him the one full-time Kmer place. Then Brenda calls: a second graduate role has opened on the offline team, and his response to the no is part of why. Ch5 is choosing and negotiating between two real offers, which makes the "invent a competing offer" temptation sharper.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | "So, tell me about yourself" | Explain why the first question matters | Story (choice) |
+| 2 | What interviewers are checking | Describe common interview stages | Reading |
+| 3 | Present, past, future | Answer "Tell me about yourself" in three parts | Before / After |
+| 4 | STAR stories | Use STAR to tell a clear story | Step-by-step |
+| 5 | **Checkpoint: practice run two** | | Mixed review |
+| 6 | A STAR answer, up close | Recognise each part of a strong STAR answer | Tap to explore |
+| 7 | "What's your greatest weakness?" | Explain what the weakness question tests | Chat with Tey |
+| 8 | Six stories, most questions | Choose six stories that cover common questions | Step-by-step |
+| 9 | "Why do you want to work here?" | Answer "Why us?" with specifics | Before / After |
+| 10 | **Checkpoint: Mrs Ewane's mock interview** | | Mixed review |
+| 11 | When you don't know the answer | Handle a question you can't answer | Story (choice) |
+| 12 | The day before | Prepare the practical details the day before | Card deck |
+| 13 | "Any questions for us?" | Prepare good questions to ask at the end | Chat with Tey |
+| 14 | When your hands shake | Use simple steps to calm nerves before an interview | Step-by-step |
+| 15 | **Checkpoint: the night before** | | Mixed review |
+| 16 | Interview myths | Spot common interview myths | Myth or Fact |
+| 17 | The bus breaks down | Handle a problem on the day calmly | Story (choice) |
+| 18 | The thank-you email | Write a short thank-you after an interview | Tap to explore |
+| 19 | Your story bank | Write your own one-page story bank | Step-by-step |
+| 20 | **Chapter Challenge: the interview** | | Mixed (climax) |
+
 ## Facts (checked 2026-10-20; sources go in each lesson's author notes)
 
 - **Employers look for problem-solving and teamwork first.** In NACE's *Job Outlook 2025*, about 90% of US employers look for problem-solving evidence on graduate résumés and roughly 80% look for teamwork. More than three-quarters want communication; initiative, work ethic and technical skills each matter to over 70%. Nearly two-thirds use skills-based hiring. (NACE, 2025. A US survey, so say so.)
