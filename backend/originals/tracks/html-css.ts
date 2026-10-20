@@ -1,5 +1,6 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './html-css/beginner/u01';
+import u02 from './html-css/beginner/u02';
 
 /**
  * HTML & CSS for Beginners — storyline "Kofi Goes Live".
@@ -41,8 +42,9 @@ const track: OriginalTrackDef = {
         'Publish your own website on the internet for free',
       ],
       skills: ['HTML', 'CSS', 'Web design', 'Responsive design'],
-      upcomingUnits: 12,
-      units: [u01],
+      thumbnailUrl: '/originals/html-css-for-beginners.jpg',
+      upcomingUnits: 11,
+      units: [u01, u02],
     },
   ],
 };
