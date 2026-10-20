@@ -12,7 +12,7 @@ import { sanitizeExercises } from '@/lib/lesson/sanitize';
 import type { Exercise } from '@/lib/lesson/blocks';
 
 /** Mirrors PLACEMENT_TRACKS in backend/src/originals/originals.policy.ts. */
-export const PLACEMENT_TRACKS = ['python-for-beginners'] as const;
+export const PLACEMENT_TRACKS = ['python-for-beginners', 'machine-learning-for-beginners', 'the-ai-stack', 'html-css-for-beginners'] as const;
 
 export function hasPlacementTest(trackSlug: string | null | undefined): boolean {
   return !!trackSlug && (PLACEMENT_TRACKS as readonly string[]).includes(trackSlug);

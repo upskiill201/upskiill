@@ -112,7 +112,7 @@ export const JUMP_PASS_MARK = 0.8;
 export const PLACEMENT_PER_UNIT = 3;
 
 /** Tracks that offer "I already know some of this" placement on enrolment. */
-export const PLACEMENT_TRACKS = ['python-for-beginners'] as const;
+export const PLACEMENT_TRACKS = ['python-for-beginners', 'machine-learning-for-beginners', 'the-ai-stack', 'html-css-for-beginners'] as const;
 
 export function hasPlacementTest(trackSlug: string | null | undefined): boolean {
   return !!trackSlug && (PLACEMENT_TRACKS as readonly string[]).includes(trackSlug);
