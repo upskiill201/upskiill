@@ -1,6 +1,7 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './difficult-negotiations/beginner/u01';
 import u02 from './difficult-negotiations/beginner/u02';
+import u03 from './difficult-negotiations/beginner/u03';
 
 /**
  * How to Handle Difficult Negotiations — storyline "Arjun's Big Contract".
@@ -40,8 +41,8 @@ const track: OriginalTrackDef = {
         'Package and close a tough deal in writing',
       ],
       skills: ['Negotiation', 'Hardball tactics', 'Saying no', 'Scope control', 'BATNA', 'Composure'],
-      upcomingUnits: 3,
-      units: [u01, u02],
+      upcomingUnits: 2,
+      units: [u01, u02, u03],
     },
   ],
 };
