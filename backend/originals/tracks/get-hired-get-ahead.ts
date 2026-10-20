@@ -4,6 +4,7 @@ import n02 from './get-hired-get-ahead/how-to-get-noticed/u02';
 import n03 from './get-hired-get-ahead/how-to-get-noticed/u03';
 import n04 from './get-hired-get-ahead/how-to-get-noticed/u04';
 import n05 from './get-hired-get-ahead/how-to-get-noticed/u05';
+import h01 from './get-hired-get-ahead/how-to-get-hired/u01';
 
 /**
  * Get Hired, Get Ahead (Career). Outline: docs/originals/get-hired-get-ahead-outline.md
@@ -54,6 +55,30 @@ const track: OriginalTrackDef = {
       thumbnailUrl: '/originals/how-to-get-noticed.jpg',
       upcomingUnits: 0,
       units: [n01, n02, n03, n04, n05],
+    },
+    {
+      level: 2,
+      slug: 'how-to-get-hired',
+      title: 'How to Get Hired',
+      subtitle: 'Clinton Gets Hired: from the job nobody posted to "You\'re hired"',
+      shortDescription:
+        'Find jobs that are never advertised, network when you know nobody, win an internship, answer interview questions calmly, bounce back from a no and negotiate your offer.',
+      description:
+        "Same twelve adverts, every night. Then Clinton learns that his mentor's team hired three graduates last year, and none of those jobs were ever posted. Follow Clinton through the last three months before graduation: messaging people he barely knows, landing a part-time role at a Douala start-up that never advertised, preparing for the interview at Njangi Pay, handling the rejection that hurts most, and negotiating the offer honestly. Miracle hires people for a living, so you see every step from the other side of the table. As you go, you build your own job-search kit: a network map, an internship plan, a story bank, a resilience plan and an offer checklist. Ten-minute lessons, made for your phone.",
+      startingPoint: 'Anyone with a CV ready (or nearly), looking for a first job, an internship or their next role. How to Get Noticed by Employers helps, but isn\'t required.',
+      endOutcome:
+        'Find and win roles through people as well as adverts, give calm, true interview answers, recover from rejection, and negotiate an offer politely and well.',
+      outcomes: [
+        'Find jobs that are never advertised',
+        'Network from zero with advice requests and follow-ups',
+        'Win an internship and stand out in it',
+        'Answer interview questions with true STAR stories',
+        'Bounce back from rejection and negotiate an offer',
+      ],
+      skills: ['Networking', 'Job search', 'Internships', 'Interviews', 'Resilience', 'Negotiation'],
+      thumbnailUrl: '/originals/how-to-get-hired.jpg',
+      upcomingUnits: 4,
+      units: [h01],
     },
   ],
 };

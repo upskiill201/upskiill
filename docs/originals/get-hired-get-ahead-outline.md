@@ -250,6 +250,62 @@ All 18 founder topics are covered: 12 chapters have one topic each, and three ch
 | 19 | Your cover letter | The learner writes their own (career kit, piece 4) | Step-by-step |
 | 20 | **Chapter Challenge: the Njangi Pay letter** | Clinton's finished, tailored letter | Mixed (climax) |
 
+## Level 1, Chapter 5 — Be findable (written 2026-10-20)
+
+**Story:** Brenda says she will look Clinton up before the interview; his photo is from a party and his headline says "Student at UB". **Climax:** an honest, findable profile that matches his CV; Brenda connects: "See you at the interview in six weeks." (Career kit, piece 5.)
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | "I'll look you up" | Explain why recruiters look you up online | Story (choice) |
+| 2 | How recruiters use LinkedIn | Explain the two ways recruiters use profiles | Reading |
+| 3 | The headline | Write a headline that says what you do and what you offer | Before / After |
+| 4 | Photo and banner | Take a good profile photo with a phone | Step-by-step |
+| 5 | **Checkpoint: Mrs Ewane's profile clinic** | | Mixed review |
+| 6 | The About section | Write a short, first-person About section | Tap to explore |
+| 7 | Experience, projects and Featured | Add non-job experience honestly | Chat with Tey |
+| 8 | Skills and recommendations | Choose a short, honest skills list | Step-by-step |
+| 9 | A link you're proud of | Set a clean, custom profile link | Before / After |
+| 10 | **Checkpoint: David's profile** | | Mixed review |
+| 11 | "Founder & CEO"? | Choose honest, accurate titles | Story (choice) |
+| 12 | Staying safe | Recognise the signs of a job scam | Card deck |
+| 13 | Post your work | Write a short post about something you built or learned | Chat with Tey |
+| 14 | Connect with a note | Decide who to connect with | Step-by-step |
+| 15 | **Checkpoint: Miracle's online check** | | Mixed review |
+| 16 | Profile myths | Spot common myths about professional profiles | Myth or Fact |
+| 17 | The comment | Respond to public criticism calmly | Story (choice) |
+| 18 | Read a great graduate profile | Recognise every part of a strong graduate profile | Tap to explore |
+| 19 | Your profile | Build a complete, honest professional profile | Step-by-step |
+| 20 | **Chapter Challenge: findable** | | Mixed (climax) |
+
+## Level 2 (How to Get Hired), Chapter 1 — The hidden job market (written 2026-10-20)
+
+**Story:** Clinton refreshes the same twelve adverts every night. Miracle: her team hired three graduates last year and none of the roles were posted. He maps his network, asks Tchami (meet-up speaker) for advice instead of a job, writes to Arjun (never met), learns informational calls, follow-ups and events, and pitches Kmer Logistics, a Douala start-up that just won a supermarket contract. **Choice (l11):** David's 200-message tool, or ten real messages. **Climax (l20):** Mr Tamba offers a three-month part-time role that was never advertised. Learner kit, piece 1: network map, message templates, four questions, weekly tracker.
+
+**Cast note:** Arjun (CastId) is the never-met contact; Tchami, Sandrine, Etienne, Mr Tamba, Auntie Esi are named extras. Grace and Joel are not used here (their CAST.md lives are Manchester and Kochi).
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | The job that was never posted | Explain why many jobs are filled before they're posted | Story (choice) |
+| 2 | The people you barely know | Explain the "strength of weak ties" | Reading |
+| 3 | Asking for advice, not a job | Explain why "any jobs?" messages get ignored | Before / After |
+| 4 | Map your network | List the people you already know | Step-by-step |
+| 5 | **Checkpoint: Tchami replies** | | Mixed review |
+| 6 | A message worth answering | Write a short message to someone you've never met | Tap to explore |
+| 7 | The 15-minute call | Explain what an informational interview is | Chat with Tey |
+| 8 | After the call | Send a short thank-you within a day | Step-by-step |
+| 9 | Following up without pestering | Decide when to follow up | Before / After |
+| 10 | **Checkpoint: the careers office** | | Mixed review |
+| 11 | 200 messages or 10? | Compare mass messages with personal ones | Story (choice) |
+| 12 | Where hidden jobs live | Name five places hidden jobs show up | Card deck |
+| 13 | Applying when there's no advert | Explain what a speculative application is | Chat with Tey |
+| 14 | The room where you know nobody | Prepare for an event in five minutes | Step-by-step |
+| 15 | **Checkpoint: a reply from Kmer** | | Mixed review |
+| 16 | Networking myths | Spot common networking myths | Myth or Fact |
+| 17 | When they go quiet | Handle silence after a good conversation | Story (choice) |
+| 18 | Kofi's bakery email | Recognise every part of a strong speculative message | Tap to explore |
+| 19 | Your weekly rhythm | Plan a realistic weekly networking routine | Step-by-step |
+| 20 | **Chapter Challenge: the job nobody posted** | | Mixed (climax) |
+
 ## Facts (checked 2026-10-20; sources go in each lesson's author notes)
 
 - **Employers look for problem-solving and teamwork first.** In NACE's *Job Outlook 2025*, about 90% of US employers look for problem-solving evidence on graduate résumés and roughly 80% look for teamwork. More than three-quarters want communication; initiative, work ethic and technical skills each matter to over 70%. Nearly two-thirds use skills-based hiring. (NACE, 2025. A US survey, so say so.)
