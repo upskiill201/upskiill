@@ -27,6 +27,7 @@ const track: OriginalTrackDef = {
       level: 1,
       slug: 'how-to-manage-conflict-at-work',
       title: 'How to Manage Conflict at Work',
+      thumbnailUrl: '/originals/how-to-manage-conflict-at-work.jpg',
       subtitle: 'Grace Keeps the Peace: calm the room, clear it up, keep the relationship',
       shortDescription:
         'Conflict at work does not go away when you ignore it. Learn to cool down an argument, clear up misunderstandings, answer unfair criticism and set boundaries, without becoming the office villain or the office doormat.',
