@@ -256,7 +256,7 @@ def _read_brief(brief):
     b = ' '.join(str(brief).split())
     low = b.lower()
     return {
-        'task': 'at_risk' if _re.search(r'at[\s-]risk|is_at_risk|\blate\b', low) else 'unknown',
+        'task': _task(low),
         'example_date': bool(_re.search(r'\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}', b)),
         'time_rule': bool(_re.search(r'2\s*p\.?\s*m|14:00|after 2\b|from 2\b', low)),
         'saturday': 'saturday' in low,
@@ -269,7 +269,22 @@ def _read_brief(brief):
         'ask': bool(_re.search(r'ask me|questions first|any questions', low)),
         'holiday': 'holiday' in low,
         'blank_distance': bool(_re.search(r'(blank|missing|empty)[^.]*distance|distance[^.]*(blank|missing|empty)', low)),
+        'explore': bool(_re.search(r"(don'?t|do not) change anything|just read|look around|explore", low)),
+        'oldest_first': bool(_re.search(r'oldest first|earliest first|by placed_at|in time order', low)),
+        'empty_case': bool(_re.search(r'\bnone\b|no deliveries|empty list|nothing is at risk', low)),
     }
+
+
+def _task(low):
+    if _re.search(r'whole (delivery )?board|the full board|entire board|everything at once|build everything', low):
+        return 'whole_board'
+    if _re.search(r'morning[_ ]list', low):
+        return 'morning_list'
+    if _re.search(r'morning[_ ]message', low):
+        return 'morning_message'
+    if _re.search(r'at[\s-]risk|is_at_risk|\blate\b', low):
+        return 'at_risk'
+    return 'unknown'
 
 
 def read_brief(brief):
@@ -325,6 +340,47 @@ _DASHBOARD = (
     '        print(f"{day}: {weather}")\n'
     '    print(f"{len(rows)} deliveries")\n'
 )
+
+def _morning_code(f):
+    key = 'row["placed_at"]' if f['oldest_first'] else 'row["city"]'
+    note = 'oldest first' if f['oldest_first'] else 'by city'
+    return (
+        f'"""The morning list: deliveries at risk, {note}."""\n'
+        'from board.rules import is_at_risk\n'
+        '\n'
+        '\n'
+        'def morning_list(rows):\n'
+        f'    """Order ids of deliveries at risk, {note}."""\n'
+        '    flagged = [row for row in rows if is_at_risk(row)]\n'
+        f'    flagged.sort(key=lambda row: {key})\n'
+        '    return [row["order_id"] for row in flagged]\n'
+    )
+
+
+def _message_code(f):
+    lines = ['"""The morning message for Brian."""', '', '', 'def morning_message(order_ids):']
+    if f['empty_case']:
+        lines += ['    if not order_ids:', '        return "Good morning! No deliveries at risk today."']
+    lines += ['    return f"Good morning! {len(order_ids)} deliveries at risk today: {\', \'.join(order_ids)}."', '']
+    return '\n'.join(lines)
+
+
+_CONFIG = (
+    '"""Settings for the Delivery Board."""\n'
+    '\n'
+    'FRIDAY_CUTOFF_HOUR = 14\n'
+    'LONG_ROUTE_KM = 150\n'
+    'TIMEZONE = "Africa/Nairobi"\n'
+    'COLOURS = {"at_risk": "red", "fine": "green"}\n'
+    'REFRESH_MINUTES = 15\n'
+)
+
+_WHAT = {
+    'at_risk': 'I added is_at_risk to board/rules.py.',
+    'morning_list': 'I added morning_list to board/morning.py.',
+    'morning_message': 'I added morning_message to board/message.py.',
+    'whole_board': 'I built the whole Delivery Board: the rule, the morning list, the morning message, a dashboard and settings.',
+}
 
 _QUESTIONS = [
     ('task', 'What should I build, exactly?'),
@@ -395,8 +451,16 @@ class PracticeAgent:
         if mode not in self.MODES:
             raise ValueError(f'Unknown mode {mode!r}. Choose one of: {", ".join(self.MODES)}')
         self.mode = mode
+        self.runs = 0
+        self.session_tokens = 0      # grows with every run in the same session
 
     def run(self, brief, project):
+        c = self._run(brief, project)
+        self.runs += 1
+        self.session_tokens += c.tokens
+        return c
+
+    def _run(self, brief, project):
         f = _read_brief(brief)
         c = Change()
         c.log.append('read README.md')
@@ -407,6 +471,9 @@ class PracticeAgent:
                 c.message = f'Before I start, I have {len(c.questions)} question(s).'
                 return c
 
+        if f['explore']:
+            return self._explore(c, project)
+
         if f['task'] == 'unknown':
             c.plan = ['Create board/dashboard.py', 'Add the Nairobi weather', 'Show the number of deliveries']
             if f['plan_only']:
@@ -416,7 +483,17 @@ class PracticeAgent:
             c.message = 'Done! I built a delivery dashboard for Nairobi with the weather, so you can plan around the rain.'
             return c
 
-        c.plan = ['Read board/rules.py and tests/test_rules.py', 'Write is_at_risk in board/rules.py']
+        task = f['task']
+        if task == 'at_risk':
+            c.plan = ['Read board/rules.py and tests/test_rules.py', 'Write is_at_risk in board/rules.py']
+        elif task == 'morning_list':
+            c.plan = ['Read board/rules.py', 'Write morning_list in board/morning.py']
+        elif task == 'morning_message':
+            c.plan = ['Write morning_message in board/message.py']
+        else:
+            c.plan = ['Write is_at_risk in board/rules.py', 'Write morning_list in board/morning.py',
+                      'Write morning_message in board/message.py', 'Add a weather dashboard in board/dashboard.py',
+                      'Add settings in board/config.py']
         if not f['scope']:
             c.plan.append('Tidy up board/report.py')
         if f['done_when']:
@@ -425,19 +502,33 @@ class PracticeAgent:
             c.message = 'Here is my plan. Say go and I will start.'
             return c
 
-        c.log += ['read board/rules.py', 'read tests/test_rules.py']
-        self._edit(c, project, 'board/rules.py', _rules_code(f))
+        if task == 'at_risk':
+            c.log += ['read board/rules.py', 'read tests/test_rules.py']
+            self._edit(c, project, 'board/rules.py', _rules_code(f))
+        elif task == 'morning_list':
+            c.log.append('read board/rules.py')
+            self._edit(c, project, 'board/morning.py', _morning_code(f))
+        elif task == 'morning_message':
+            self._edit(c, project, 'board/message.py', _message_code(f))
+        else:
+            c.log += ['read board/rules.py', 'read tests/test_rules.py']
+            self._edit(c, project, 'board/rules.py', _rules_code(f))
+            self._edit(c, project, 'board/morning.py', _morning_code(f))
+            self._edit(c, project, 'board/message.py', _message_code(f))
+            self._edit(c, project, 'board/dashboard.py', _DASHBOARD)
+            self._edit(c, project, 'board/config.py', _CONFIG)
         if not f['scope']:
             c.log.append('read board/report.py')
             report = project.read('board/report.py').replace(
                 'def deliveries_by_city(rows):', 'def count_by_city(rows):\n    """Count deliveries per city."""')
             self._edit(c, project, 'board/report.py', report)
 
+        what = _WHAT[task]
         if not f['done_when']:
-            c.message = 'Done! I added is_at_risk to board/rules.py. All tests pass.'
+            c.message = f'Done! {what} All tests pass.'
             return c
         if self.mode != 'run':
-            c.message = ('I added is_at_risk to board/rules.py. I am not allowed to run commands in '
+            c.message = (f'{what} I am not allowed to run commands in '
                          f'{self.mode} mode, so I have not run the tests.')
             return c
 
@@ -452,6 +543,20 @@ class PracticeAgent:
         self._weaken(c, project, report_)
         report_ = self._test(c, project)
         c.message = f'Done. All {report_.total} tests pass.'
+        return c
+
+    def _explore(self, c, project):
+        # Read everything, change nothing, report what it found.
+        c.log = ['read ' + path for path in project.ls()]
+        notes = [f'I read {len(project.ls())} files and changed nothing.']
+        if self.mode == 'run':
+            notes.append(f'Tests: {self._test(c, project)}.')
+        if 'return False' in project.files.get('board/rules.py', '') and 'Not written yet' in project.files.get('board/rules.py', ''):
+            notes.append('board/rules.py: is_at_risk is not written yet; it always returns False.')
+        if 'Zanele' in project.files.get('README.md', ''):
+            notes.append('board/report.py belongs to Zanele; the README says to ask her before changing it.')
+        c.plan = ['Read every file', 'Run the tests', 'Report what I found']
+        c.message = ' '.join(notes)
         return c
 
     def _edit(self, c, project, path, text):

@@ -14,6 +14,8 @@ const GOOD =
 const SETUP =
   'from teyro_agent import *\n' +
   `GOOD = ${JSON.stringify(GOOD)}\n` +
+  'MORNING = "Write morning_list in board/morning.py: the order ids of deliveries at risk, oldest first. Only change board/morning.py. Done when all tests pass."\n' +
+  'MESSAGE = "Write morning_message in board/message.py: takes the list of order ids and returns one line for Brian. Only change board/message.py. Done when all tests pass."\n' +
   'def go(brief, mode="run"):\n    p = Project()\n    c = PracticeAgent(mode=mode).run(brief, p)\n    return p, c\n' +
   'def raises_any(f):\n    try:\n        f()\n    except Exception:\n        return True\n    return False\n';
 
@@ -32,6 +34,10 @@ export const AGENT_CHECKS: [string, string][] = [
   ['suggest mode changes nothing', '(lambda pc: (pc[1].files_touched, repr(run_tests(pc[0])).startswith("4 passed")))(go(GOOD, "suggest")) == (["board/rules.py"], True)'],
   ['checkpoint and restore', '(lambda p: (p.checkpoint(), p.write("board/rules.py", "x = 1\\n"), p.restore(), p.read("board/rules.py").startswith(\'"""Rules\'))[3])(Project())'],
   ['token estimate of a good run', 'go(GOOD)[1].tokens == 4500'],
+  ['the whole board at once: 6 files, a claim, and every test failing', '(lambda pc: (pc[1].files_touched, pc[1].ran_tests, len(run_tests(pc[0]).failed)))(go("Build the whole Delivery Board: the at-risk rule, the morning list and a morning message for Brian.")) == (["board/config.py", "board/dashboard.py", "board/message.py", "board/morning.py", "board/report.py", "board/rules.py"], False, 7)'],
+  ['explore reads everything and changes nothing', '(lambda pc: (pc[1].files_touched, pc[1].message.startswith("I read 9 files and changed nothing.")))(go("Read the project and tell me what you find. Don\'t change anything.")) == ([], True)'],
+  ['morning list before the rule is empty; after it, oldest first', '(lambda p: (PracticeAgent().run(MORNING, p), p.load("board.morning").morning_list(p.load("board.data").load_deliveries()), PracticeAgent().run(GOOD, p), p.load("board.morning").morning_list(p.load("board.data").load_deliveries()))[1::2])(Project()) == ([], ["D-1002", "D-1004", "D-1008", "D-1009", "D-1010", "D-1011"])'],
+  ['morning message handles none only when asked', '(lambda a, b: (a.morning_message([]), b.morning_message([])))(go(MESSAGE + " If none are at risk, say so.")[0].load("board.message"), go(MESSAGE)[0].load("board.message")) == ("Good morning! No deliveries at risk today.", "Good morning! 0 deliveries at risk today: .")'],
   ['read_brief finds every part of the good brief', '(lambda f: (f["task"], f["example_date"], f["time_rule"], f["saturday"], f["distance"], f["scope"], f["done_when"], f["blank_distance"]))(read_brief(GOOD)) == ("at_risk", True, True, True, True, True, True, False)'],
   ['a blank-distance rule flags blanks; without it, blanks crash', '(lambda a, b: (a.is_at_risk({"placed_at": "2026-03-04 10:00", "distance_km": ""}), b))(go(GOOD + " If the distance is blank, flag it.")[0].load("board.rules"), raises_any(lambda: go(GOOD)[0].load("board.rules").is_at_risk({"placed_at": "2026-03-04 10:00", "distance_km": ""}))) == (True, True)'],
 ];
