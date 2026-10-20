@@ -57,7 +57,7 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I need more time from Mr Tamba. What do I write?',
         options: [
-          { text: '"Thank you again for the offer. I\'m in a final conversation with another company on Monday. Could I give you my answer by Wednesday?"' },
+          { text: '"Thank you again for the offer. I\'m in a final conversation with another company on Monday. Could I give you my answer by the end of next week?"' },
           { text: 'Say nothing and miss his deadline.', why: 'Be honest and ask for a short extension.' },
           { text: '"Another company wants me more, so wait."', why: 'Honest, but polite and specific.' },
         ],

@@ -8,6 +8,7 @@ import h01 from './get-hired-get-ahead/how-to-get-hired/u01';
 import h02 from './get-hired-get-ahead/how-to-get-hired/u02';
 import h03 from './get-hired-get-ahead/how-to-get-hired/u03';
 import h04 from './get-hired-get-ahead/how-to-get-hired/u04';
+import h05 from './get-hired-get-ahead/how-to-get-hired/u05';
 
 /**
  * Get Hired, Get Ahead (Career). Outline: docs/originals/get-hired-get-ahead-outline.md
@@ -80,8 +81,8 @@ const track: OriginalTrackDef = {
       ],
       skills: ['Networking', 'Job search', 'Internships', 'Interviews', 'Resilience', 'Negotiation'],
       thumbnailUrl: '/originals/how-to-get-hired.jpg',
-      upcomingUnits: 1,
-      units: [h01, h02, h03, h04],
+      upcomingUnits: 0,
+      units: [h01, h02, h03, h04, h05],
     },
   ],
 };

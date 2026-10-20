@@ -395,6 +395,33 @@ All 18 founder topics are covered: 12 chapters have one topic each, and three ch
 | 19 | Your resilience plan | Write a one-page plan for handling rejection | Step-by-step |
 | 20 | **Chapter Challenge: the call** | | Mixed (climax) |
 
+## Level 2 (How to Get Hired), Chapter 5 — The offer (written 2026-10-20)
+
+**Story:** one week to graduation. After a final conversation with Ngozi Bate (offline team), Brenda offers 300,000 XAF; Clinton hoped for 350,000, and Kmer offers 280,000. He compares whole offers, researches a range (280–340k, a story number), targets 330k and asks politely; Brenda counters with 315k plus a review after probation, and he accepts. **Choice (l01):** accept on the call, say "too low", or ask for it in writing. **Choice (l11):** David's "say Kmer offered 380k" (outline: invent a competing offer). **Choice (l17):** how to decline Mr Tamba. **Climax (l20):** graduation day, "You're hired." Learner kit, piece 5: an offer checklist. All salaries are story numbers, not market data.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | The offer call | Respond to an offer call well | Story (choice) |
+| 2 | What's in an offer | List the main parts of a job offer | Reading |
+| 3 | Two offers, one table | Compare two offers on more than salary | Before / After |
+| 4 | What's fair? | Research a realistic salary range | Step-by-step |
+| 5 | **Checkpoint: the table on the wall** | | Mixed review |
+| 6 | Read the letter | Read each line of an offer letter | Tap to explore |
+| 7 | Can a graduate negotiate? | Decide whether to negotiate an offer | Chat with Tey |
+| 8 | The ask | Structure a polite negotiation | Step-by-step |
+| 9 | Ask together, not against | Frame a negotiation as solving a problem together | Before / After |
+| 10 | **Checkpoint: rehearsal** | | Mixed review |
+| 11 | The made-up number | Recognise why inventing an offer is risky and wrong | Story (choice) |
+| 12 | Beyond the salary | List things to ask for besides salary | Card deck |
+| 13 | When they say "not quite" | Respond to a counter-offer calmly | Chat with Tey |
+| 14 | Choosing between two | Use a simple method to choose between offers | Step-by-step |
+| 15 | **Checkpoint: the decision** | | Mixed review |
+| 16 | Negotiation myths | Spot common negotiation myths | Myth or Fact |
+| 17 | The harder call | Decline an offer gracefully | Story (choice) |
+| 18 | The acceptance email | Accept an offer in writing | Tap to explore |
+| 19 | Your offer checklist | Write a one-page offer checklist | Step-by-step |
+| 20 | **Chapter Challenge: you're hired** | | Mixed (climax) |
+
 ## Facts (checked 2026-10-20; sources go in each lesson's author notes)
 
 - **Employers look for problem-solving and teamwork first.** In NACE's *Job Outlook 2025*, about 90% of US employers look for problem-solving evidence on graduate résumés and roughly 80% look for teamwork. More than three-quarters want communication; initiative, work ethic and technical skills each matter to over 70%. Nearly two-thirds use skills-based hiring. (NACE, 2025. A US survey, so say so.)
