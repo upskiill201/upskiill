@@ -5,13 +5,18 @@
  * type (debounced a little), with a phone / desktop switch. Used by Try it
  * live, Build it (Write and run for pages) and the playground's HTML mode.
  *
- * The live page is fully sandboxed (no scripts, forms, popups or navigation),
- * and relative file names resolve to the course's own sounds and pictures
+ * The live page is sandboxed with scripts, forms and popups off, and relative
+ * file names resolve to the course's own sounds and pictures
  * (lib/code/htmlRunner.ts). "Check my page" grades a separate hidden render.
+ *
+ * Links: the frame adds allow-same-origin (still no scripts, so it stays
+ * inert) only so this component can catch link clicks. A #jump link scrolls
+ * inside the page; any other link stays put and says where it would go, so
+ * the preview never navigates away from the learner's page.
  */
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Check, Loader2, Monitor, Smartphone } from 'lucide-react';
+import { Check, Link2, Loader2, Monitor, Smartphone } from 'lucide-react';
 import { runAndCheck, type GradedRun } from '@/lib/code/checks';
 import { withAssetBase } from '@/lib/code/htmlRunner';
 import { playHaptic } from '@/lib/haptics';
@@ -38,7 +43,28 @@ const rendered = (code: string): GradedRun => ({
   allPassed: false,
 });
 
-function LivePage({ code, device }: { code: string; device: Device }) {
+/** Catch link clicks in the rendered page: scroll #jumps in place, report everything else. */
+function catchLinks(frame: HTMLIFrameElement, onLink: (href: string) => void) {
+  const doc = frame.contentDocument;
+  if (!doc) return;
+  doc.addEventListener('click', (e) => {
+    const a = (e.target as Element | null)?.closest?.('a[href], area[href]');
+    if (!a) return;
+    e.preventDefault();
+    const href = a.getAttribute('href') ?? '';
+    if (href.startsWith('#')) {
+      const id = decodeURIComponent(href.slice(1));
+      const target = id ? doc.getElementById(id) : null;
+      const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (target) target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+      else doc.defaultView?.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
+      return;
+    }
+    onLink(href);
+  });
+}
+
+function LivePage({ code, device, onLink }: { code: string; device: Device; onLink: (href: string) => void }) {
   const box = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
   useLayoutEffect(() => {
@@ -59,9 +85,11 @@ function LivePage({ code, device }: { code: string; device: Device }) {
       <iframe
         title="Your page"
         className={styles.frame}
-        // An empty sandbox: no scripts, no forms, no popups, no navigation away.
-        sandbox=""
+        // No scripts, forms or popups. allow-same-origin only lets catchLinks
+        // read clicks; without allow-scripts the page itself can't do anything.
+        sandbox="allow-same-origin"
         srcDoc={withAssetBase(code)}
+        onLoad={(e) => catchLinks(e.currentTarget, onLink)}
         style={{ width: frameWidth, height: PREVIEW_HEIGHT, transform: `scale(${scale})` }}
       />
     </div>
@@ -86,12 +114,16 @@ export function HtmlPad({
   const [device, setDevice] = useState<Device>('phone');
   const [checking, setChecking] = useState(false);
   const [run, setRun] = useState<GradedRun | null>(null);
+  const [link, setLink] = useState<string | null>(null);
   const reported = useRef(false);
   const graded = Boolean(checks?.length);
 
   // The page follows the code, a moment after typing stops.
   useEffect(() => {
-    const t = window.setTimeout(() => setShown(value), DEBOUNCE_MS);
+    const t = window.setTimeout(() => {
+      setShown(value);
+      setLink(null);
+    }, DEBOUNCE_MS);
     return () => window.clearTimeout(t);
   }, [value]);
 
@@ -160,7 +192,28 @@ export function HtmlPad({
             ))}
           </div>
         </div>
-        <LivePage code={shown} device={device} />
+        <LivePage
+          code={shown}
+          device={device}
+          onLink={(href) => {
+            playSound('navTap');
+            setLink(href);
+          }}
+        />
+        {link !== null && (
+          <p className={styles.linkNote} role="status">
+            <Link2 size={14} strokeWidth={2.5} aria-hidden="true" />
+            <span>
+              {link ? (
+                <>
+                  This link goes to <code className={styles.linkHref}>{link}</code>. Links stay put in the preview and work on your live site.
+                </>
+              ) : (
+                'This link has an empty href, so it goes nowhere yet.'
+              )}
+            </span>
+          </p>
+        )}
       </div>
 
       {graded && checks && <CheckList checks={checks} results={run?.checks ?? null} title="Your page should" />}

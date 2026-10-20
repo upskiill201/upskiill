@@ -67,3 +67,30 @@
   transform-origin: top center;
   background: white;
 }
+
+/* Shown when the learner taps a link in the preview: where it would go. */
+.linkNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 16px;
+  border-top: 2px solid var(--border);
+  background: var(--bg-section);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.linkNote svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-brand);
+}
+
+.linkHref {
+  font-family: var(--font-mono, monospace);
+  color: var(--text-primary);
+  word-break: break-all;
+}
