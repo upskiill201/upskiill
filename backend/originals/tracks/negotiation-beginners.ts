@@ -1,6 +1,7 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './negotiation-beginners/beginner/u01';
 import u02 from './negotiation-beginners/beginner/u02';
+import u03 from './negotiation-beginners/beginner/u03';
 
 /**
  * Negotiation Skills for Beginners — storyline "Ada Asks".
@@ -40,8 +41,8 @@ const track: OriginalTrackDef = {
         'Handle "no" and close with a clear agreement',
       ],
       skills: ['Negotiation', 'Asking', 'Preparation', 'BATNA', 'Win-win deals', 'Confidence'],
-      upcomingUnits: 3,
-      units: [u01, u02],
+      upcomingUnits: 2,
+      units: [u01, u02, u03],
     },
   ],
 };
