@@ -17,6 +17,7 @@ import aiStack from './tracks/ai-stack';
 import validateBusinessIdea from './tracks/validate-business-idea';
 import priceProduct from './tracks/price-product';
 import negotiationBeginners from './tracks/negotiation-beginners';
+import difficultNegotiations from './tracks/difficult-negotiations';
 import { launchLineup } from './tracks/launch-lineup';
 
 /**
@@ -24,4 +25,4 @@ import { launchLineup } from './tracks/launch-lineup';
  * Add a Track here once its file exists. Tracks with no units yet are
  * checked but never loaded.
  */
-export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, machineLearning, aiStack, validateBusinessIdea, priceProduct, negotiationBeginners, ...launchLineup, formatTour];
+export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, machineLearning, aiStack, validateBusinessIdea, priceProduct, negotiationBeginners, difficultNegotiations, ...launchLineup, formatTour];
