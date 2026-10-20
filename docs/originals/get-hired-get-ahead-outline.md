@@ -366,6 +366,35 @@ All 18 founder topics are covered: 12 chapters have one topic each, and three ch
 | 19 | Your story bank | Write your own one-page story bank | Step-by-step |
 | 20 | **Chapter Challenge: the interview** | | Mixed (climax) |
 
+## Level 2 (How to Get Hired), Chapter 4 — When it's a no (written 2026-10-20)
+
+**Story:** two weeks to graduation, Njangi Pay says no by email on Clinton's 22nd birthday. **Choice (l01):** angry reply, ghost, or wait and reply graciously (outline choice). Brenda's feedback: "very close", "light on testing", more graduate roles later. He turns it into a testing project. **Choice (l11):** Mr Tamba offers the one full-time Kmer job on a bad week; Clinton asks for details and time. **Choice (l17):** supporting David after the Yaoundé lab says no. **Climax (l20):** Brenda calls about a second graduate role on the offline team; his gracious reply and progress note are part of why. Learner kit, piece 4: a resilience plan.
+
+**Care notes:** l04 and l19 signpost help for persistent low mood; keep them. "Not yet" framing (l09) is a communication tool; no mindset-outcome claims.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | On his birthday | Recognise the urge to react instantly | Story (choice) |
+| 2 | Why companies say no | List common reasons for a rejection | Reading |
+| 3 | The reply that keeps the door open | Write a gracious reply to a rejection | Before / After |
+| 4 | The first 48 hours | Let yourself feel a rejection without spiralling | Step-by-step |
+| 5 | **Checkpoint: football, day two** | | Mixed review |
+| 6 | Brenda's feedback | Read feedback for what's useful | Tap to explore |
+| 7 | The voice in your head | Notice unhelpful self-talk | Chat with Tey |
+| 8 | From feedback to plan | Turn one piece of feedback into a small plan | Step-by-step |
+| 9 | "Not yet" | Describe a setback as a step, not an ending | Before / After |
+| 10 | **Checkpoint: Mrs Ewane hears the news** | | Mixed review |
+| 11 | An offer, on a bad week | Avoid deciding big things to escape a bad feeling | Story (choice) |
+| 12 | Keeping momentum | Keep several opportunities going at once | Card deck |
+| 13 | "So, have you got a job yet?" | Answer family questions calmly | Chat with Tey |
+| 14 | The company that said no | Stay in touch after a rejection | Step-by-step |
+| 15 | **Checkpoint: the offer letter** | | Mixed review |
+| 16 | Rejection myths | Spot common myths about rejection | Myth or Fact |
+| 17 | When it's your friend | Support a friend after a rejection | Story (choice) |
+| 18 | What the no taught me | Write a short review of a process, not just a result | Tap to explore |
+| 19 | Your resilience plan | Write a one-page plan for handling rejection | Step-by-step |
+| 20 | **Chapter Challenge: the call** | | Mixed (climax) |
+
 ## Facts (checked 2026-10-20; sources go in each lesson's author notes)
 
 - **Employers look for problem-solving and teamwork first.** In NACE's *Job Outlook 2025*, about 90% of US employers look for problem-solving evidence on graduate résumés and roughly 80% look for teamwork. More than three-quarters want communication; initiative, work ethic and technical skills each matter to over 70%. Nearly two-thirds use skills-based hiring. (NACE, 2025. A US survey, so say so.)
