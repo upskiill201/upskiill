@@ -1,6 +1,7 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './validate-business-idea/beginner/u01';
 import u02 from './validate-business-idea/beginner/u02';
+import u03 from './validate-business-idea/beginner/u03';
 
 /**
  * How to Validate a Business Idea — storyline "Clinton's Big Idea".
@@ -41,8 +42,8 @@ const track: OriginalTrackDef = {
         'Decide to go ahead, change or stop, with evidence',
       ],
       skills: ['Idea validation', 'Customer interviews', 'Market research', 'Competitor analysis', 'MVP testing', 'Entrepreneurship'],
-      upcomingUnits: 3,
-      units: [u01, u02],
+      upcomingUnits: 2,
+      units: [u01, u02, u03],
     },
   ],
 };
