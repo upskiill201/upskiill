@@ -3,6 +3,7 @@ import n01 from './get-hired-get-ahead/how-to-get-noticed/u01';
 import n02 from './get-hired-get-ahead/how-to-get-noticed/u02';
 import n03 from './get-hired-get-ahead/how-to-get-noticed/u03';
 import n04 from './get-hired-get-ahead/how-to-get-noticed/u04';
+import n05 from './get-hired-get-ahead/how-to-get-noticed/u05';
 
 /**
  * Get Hired, Get Ahead (Career). Outline: docs/originals/get-hired-get-ahead-outline.md
@@ -51,8 +52,8 @@ const track: OriginalTrackDef = {
       ],
       skills: ['Job search', 'CV writing', 'Cover letters', 'LinkedIn', 'Portfolio', 'Transferable skills'],
       thumbnailUrl: '/originals/how-to-get-noticed.jpg',
-      upcomingUnits: 1,
-      units: [n01, n02, n03, n04],
+      upcomingUnits: 0,
+      units: [n01, n02, n03, n04, n05],
     },
   ],
 };
