@@ -26,6 +26,7 @@ const track: OriginalTrackDef = {
       level: 1,
       slug: 'how-to-handle-difficult-negotiations',
       title: 'How to Handle Difficult Negotiations',
+      thumbnailUrl: '/originals/how-to-handle-difficult-negotiations.jpg',
       subtitle: "Arjun's Big Contract: stay calm, name the tactic, get a deal you can live with",
       shortDescription:
         'Some negotiations are hard on purpose. Learn to keep your head, spot the classic pressure tactics, say no to unreasonable requests, and use your alternatives so you never sign something you regret.',
