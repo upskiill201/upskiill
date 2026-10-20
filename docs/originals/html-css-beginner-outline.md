@@ -258,6 +258,37 @@ Publishing itself happens outside the app (Deepen in l18 and l20); in-app exerci
 | 19 | The page that went live | Read a complete, published page | Tap to explore |
 | 20 | **Chapter Challenge: Mensah Beats v1.0** | | Mixed (climax) |
 
+## Course 2, Chapter 1 — Boxes everywhere (written 2026-10-20)
+
+**Course:** Responsive Web Design with CSS ("Kofi's Site Grows Up"), level 2, slug `responsive-web-design-css`; lessons live in `backend/originals/tracks/html-css/responsive/`. Course details and cover wired in `html-css.ts` (upcomingUnits 4).
+
+**Story:** seven weeks to uni. The poster worked and the organiser wants Kofi monthly; Efua sketches a card per beat, and Miracle teaches the box model on video calls. Padding, the four layers, shorthand (clockwise), default margins and stacking, width vs max-width, the 1990s box model fight and box-sizing, `* { box-sizing: border-box; }`, calm borders and border-radius, block/inline/inline-block, finding gaps with outline and Inspect, myths, tap targets (about 44px; WCAG 2.5.8 24px minimum), and a centred column (`max-width` + `margin: 0 auto`). **Choice (l01):** learn boxes, type spaces, or tiny text. **Choice (l11):** the neon border phase. **Choice (l17):** Ama's thumb keeps missing. **Climax (l20):** Mensah Beats v1.1, beat cards with room to breathe.
+
+Cards are `article` elements with element and descendant selectors only: classes arrive in Chapter 2. Images use the course's own cover-1/2/3.png.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | Everything is a box | Explain that every element on a page is a box | Story (choice) |
+| 2 | Room inside the box | Add padding to a box | Before / After |
+| 3 | Four layers of every box | Name the four layers of the box model | Step-by-step |
+| 4 | One number, two or four | Read padding and margin with one, two or four values | Tap to explore |
+| 5 | **Checkpoint: the first real card** | | Mixed review |
+| 6 | Space you didn't ask for | Explain that browsers add default margins | Chat with Tey |
+| 7 | When browsers disagreed about boxes | Set a box's width | Reading |
+| 8 | Too wide for Ama's phone | Explain why fixed widths break on small screens | Card deck |
+| 9 | The card that won't fit | Spot a box made wider by its padding and border | Before / After |
+| 10 | **Checkpoint: Ama stops scrolling** | | Mixed review |
+| 11 | The neon border phase | Set border width, style and colour | Story (choice) |
+| 12 | Anatomy of a beat card | Read a complete card stylesheet | Tap to explore |
+| 13 | Why won't my link get bigger? | Tell block and inline boxes apart | Chat with Tey |
+| 14 | Find the invisible box | Show every box's edge with a temporary outline | Step-by-step |
+| 15 | **Checkpoint: Efua's one word** | | Mixed review |
+| 16 | Boxes: myth or fact? | Separate box model myths from facts | Myth or Fact |
+| 17 | Ama's thumb keeps missing | Explain why small, crowded links are hard to tap | Story (choice) |
+| 18 | A column down the middle | Wrap a page's content in main | Step-by-step |
+| 19 | The whole layout, box by box | Read a complete box-model stylesheet | Tap to explore |
+| 20 | **Chapter Challenge: Mensah Beats v1.1** | | Mixed (climax) |
+
 ## Chapters 4–13 (stories; lesson lists are written chapter by chapter)
 
 **2 · Words on the page (11 weeks).** Kofi writes his story, track list and gig list. Headings, paragraphs, `<strong>` and `<em>`, ordered and unordered lists, line breaks. *Climax:* a page people actually read to the end. *Efua:* "It's a wall of text."

@@ -4,6 +4,7 @@ import u02 from './html-css/beginner/u02';
 import u03 from './html-css/beginner/u03';
 import u04 from './html-css/beginner/u04';
 import u05 from './html-css/beginner/u05';
+import r01 from './html-css/responsive/u01';
 
 /**
  * HTML & CSS for Beginners — storyline "Kofi Goes Live".
@@ -59,6 +60,29 @@ const track: OriginalTrackDef = {
       thumbnailUrl: '/originals/html-css-for-beginners.jpg',
       upcomingUnits: 0,
       units: [u01, u02, u03, u04, u05],
+    },
+    {
+      level: 2,
+      slug: 'responsive-web-design-css',
+      title: 'Responsive Web Design with CSS',
+      subtitle: 'Kofi\'s Site Grows Up: layouts that fit every screen, from Grandma\'s phone to a laptop',
+      shortDescription:
+        'Turn a simple page into a real site: tidy cards, a proper header, galleries that line up, and layouts that rearrange themselves for phones. Ten-minute lessons on a live page.',
+      description:
+        "Your page is online. Now make it look like a real site. Follow Kofi through the next five weeks before university as Mensah Beats grows from one plain list into a site with beat cards, a navigation bar, a gallery of covers and a gig calendar, all of it working on every phone and laptop in the house. Miracle, a developer in Lagos, mentors him on video calls; Efua sketches the designs; his ten-year-old sister Ama tests everything on her old phone. You learn the box model, classes and the cascade, Flexbox, CSS Grid and phones-first layouts with media queries, and every lesson changes a live page on your screen. Alongside Kofi's site, you rebuild your own page into a responsive one.",
+      startingPoint: 'You can write a simple page with HTML and style it with CSS colours and fonts, as in HTML & CSS for Beginners.',
+      endOutcome: 'Lay out a multi-section website with the box model, classes, Flexbox and Grid that adapts to phones, tablets and laptops.',
+      outcomes: [
+        'Space and size elements with the box model',
+        'Reuse styles with classes and understand which rule wins',
+        'Line things up in rows and columns with Flexbox',
+        'Build galleries and grids with CSS Grid',
+        'Make layouts that work on phones first, with media queries',
+      ],
+      skills: ['CSS', 'Responsive design', 'Flexbox', 'CSS Grid'],
+      thumbnailUrl: '/originals/responsive-web-design-css.jpg',
+      upcomingUnits: 4,
+      units: [r01],
     },
   ],
 };
