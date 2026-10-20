@@ -79,7 +79,7 @@ Clinton starts as a **junior developer at Njangi Pay**, Douala.
 | 1 | What you've already got | 8 months to grad | How to Identify Your Transferable Skills | Find the skills they already have, and prove them with evidence |
 | 2 | Proof without experience | 7 months to grad | How to Build a Portfolio Without Work Experience | Plan and make small projects that show what they can do |
 | 3 | The CV that gets read | 6 months to grad | How to Write a CV That Gets Attention | Write a clear one- or two-page CV with achievement bullets |
-| 4 | The cover letter | 5 months | How to Write a Cover Letter | Write a short, specific cover letter for one real role |
+| 4 | The cover letter | 5 months to grad | How to Write a Cover Letter | Write a short, specific cover letter for one real role |
 | 5 | Be findable | 4 months | How to Build a Professional LinkedIn Profile | Build a profile that recruiters find and trust |
 | 6 | The hidden job market | 3 months | How to Find Hidden Job Opportunities; How to Network When You Know Nobody | Find unadvertised roles and start real conversations from zero |
 | 7 | A foot in the door | 2 months | How to Get Your First Internship; How to Stand Out as a Graduate | Win an internship and turn it into a reference or an offer |
@@ -208,6 +208,35 @@ All 18 founder topics are covered: 12 chapters have one topic each, and three ch
 | 18 | Read a great graduate CV | A strong one-page CV, part by part | Tap to explore |
 | 19 | Your CV | The learner writes their own (career kit, piece 3) | Step-by-step |
 | 20 | **Chapter Challenge: one page, no red ink** | Clinton's tailored one-page CV | Mixed (climax) |
+
+## Level 1, Chapter 4 — The cover letter (written 2026-10-20)
+
+**Story:** Njangi Pay's application form has a box: "Cover letter (optional, but we read them)". Clinton's first draft opens "I am writing to apply for the position of Graduate Developer as advertised on your website" and goes on like that for a page. Miracle: "I've read this letter a thousand times. Never by you."
+
+**Chapter climax (lesson 20):** a one-page letter for Njangi Pay that opens with his mum's njangi book, shows why Njangi Pay specifically, proves two must-haves with short stories, and closes with a clear, polite next step. Brenda later quotes his first line back to him in the interview. The learner writes their own (career kit, piece 4).
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | "I am writing to apply" | Why the default opening wastes the most-read line | Story (choice) |
+| 2 | What a cover letter is for | The bridge between your CV and their role: why them, why you | Reading |
+| 3 | Generic vs. specific | A letter that could go anywhere vs. one only you could write | Before / After |
+| 4 | Four paragraphs | Hook, why them, why you, the close | Step-by-step |
+| 5 | **Checkpoint 1: Mrs Ewane's quiz** | | Mixed review |
+| 6 | The opening paragraph | Tap each line of a strong first paragraph | Tap to explore |
+| 7 | Why them | Researching a company honestly: product, news, values, people | Chat with Tey |
+| 8 | Why you | Two short proofs matched to the advert's must-haves | Step-by-step |
+| 9 | The close | Weak vs. strong final paragraph | Before / After |
+| 10 | **Checkpoint 2: Ngum's letter** | | Mixed review |
+| 11 | Can AI just write it? | Clinton is tempted to send an AI-written letter as his own; AI to sharpen, not replace | Story (choice) |
+| 12 | Letters that look right | Email vs. attachment, greetings, length, subject lines | Card deck |
+| 13 | Confident, not cocky | Tone: no apologising, no bragging | Chat with Tey |
+| 14 | A master letter | Reusable paragraphs and 15-minute tailoring | Step-by-step |
+| 15 | **Checkpoint 3: Brenda's inbox** | | Mixed review |
+| 16 | Cover letter myths | "Nobody reads them", "repeat your CV", "To whom it may concern" | Myth or Fact |
+| 17 | "Dear Afiya team" | Clinton sends a letter with the wrong company name; how to recover | Story (choice) |
+| 18 | Read a great cover letter | Remi's letter that won him the Synergix internship, part by part | Tap to explore |
+| 19 | Your cover letter | The learner writes their own (career kit, piece 4) | Step-by-step |
+| 20 | **Chapter Challenge: the Njangi Pay letter** | Clinton's finished, tailored letter | Mixed (climax) |
 
 ## Facts (checked 2026-10-20; sources go in each lesson's author notes)
 
