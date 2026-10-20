@@ -200,7 +200,7 @@ export interface OriginalTrackDef {
   /** Stable, e.g. "ai-at-work". */
   slug: string;
   title: string;
-  category: 'AI' | 'Coding' | 'Career' | 'Communication' | 'Leadership & Management' | 'Business';
+  category: 'AI' | 'Coding' | 'Career' | 'Communication' | 'Leadership & Management' | 'Business' | 'Negotiation & Conflict';
   description: string;
   /** A sample for /dev/originals only: checked and exported, never written to a database. */
   devOnly?: boolean;
