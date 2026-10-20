@@ -306,6 +306,35 @@ All 18 founder topics are covered: 12 chapters have one topic each, and three ch
 | 19 | Your weekly rhythm | Plan a realistic weekly networking routine | Step-by-step |
 | 20 | **Chapter Challenge: the job nobody posted** | | Mixed (climax) |
 
+## Level 2 (How to Get Hired), Chapter 2 — A foot in the door (written 2026-10-20)
+
+**Story:** ten weeks to graduation, Clinton starts a 12-week part-time internship at Kmer Logistics (Douala) as one of five interns; Mr Tamba can keep one. Project: offline delivery confirmations for 14 drivers on basic phones. **Choice (l11):** ask Miracle to "just get him in" at Afiya, or earn a referral. **Choice (l17):** Nadia presents his idea as hers. **Climax (l20):** the six-week review (11 drivers, 0 lost confirmations, Mr Tamba will be his reference) and Brenda's email: the Njangi Pay hiring round moved, interview on the 14th. Learner kit, piece 2: an internship plan.
+
+**Timeline note:** L1 Ch5 said the interview was six weeks away; Brenda's l20 email moves it ("our hiring round moved"). Markers from here: Ch3 "4 weeks to grad", Ch4 "2 weeks to grad", Ch5 "Graduation". Named extras: Mr Tamba, Samuel, Nadia, Driver Ekane.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | Five interns, one desk | Explain what an internship is really for | Story (choice) |
+| 2 | What counts as an internship | Describe the main kinds of internship | Reading |
+| 3 | Get it in writing | List what an internship offer should say | Before / After |
+| 4 | Finding your first internship | Plan an internship search with a calendar | Step-by-step |
+| 5 | **Checkpoint: the first Friday** | | Mixed review |
+| 6 | Read the brief | Find the goal, the user and the limits in a brief | Tap to explore |
+| 7 | Asking good questions | Decide when to ask for help | Chat with Tey |
+| 8 | The Friday update | Give a short, clear weekly update | Step-by-step |
+| 9 | Busy isn't useful | Tell busy apart from useful | Before / After |
+| 10 | **Checkpoint: Mrs Ewane checks in** | | Mixed review |
+| 11 | "Can't you just get me in?" | Tell a fair referral from a favour that costs someone | Story (choice) |
+| 12 | How graduates stand out | Name five habits that make new graduates stand out | Card deck |
+| 13 | Asking for feedback | Ask a feedback question people can actually answer | Chat with Tey |
+| 14 | Leave with proof | Keep a weekly wins log | Step-by-step |
+| 15 | **Checkpoint: Miracle's review** | | Mixed review |
+| 16 | Internship myths | Spot common myths about internships | Myth or Fact |
+| 17 | Whose idea was it? | Handle someone taking credit calmly | Story (choice) |
+| 18 | The one-month summary | Write a short progress summary | Tap to explore |
+| 19 | Your internship plan | Write a one-page internship plan | Step-by-step |
+| 20 | **Chapter Challenge: the six-week review** | | Mixed (climax) |
+
 ## Facts (checked 2026-10-20; sources go in each lesson's author notes)
 
 - **Employers look for problem-solving and teamwork first.** In NACE's *Job Outlook 2025*, about 90% of US employers look for problem-solving evidence on graduate résumés and roughly 80% look for teamwork. More than three-quarters want communication; initiative, work ethic and technical skills each matter to over 70%. Nearly two-thirds use skills-based hiring. (NACE, 2025. A US survey, so say so.)
