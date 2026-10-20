@@ -14,7 +14,8 @@ const GOOD =
 const SETUP =
   'from teyro_agent import *\n' +
   `GOOD = ${JSON.stringify(GOOD)}\n` +
-  'def go(brief, mode="run"):\n    p = Project()\n    c = PracticeAgent(mode=mode).run(brief, p)\n    return p, c\n';
+  'def go(brief, mode="run"):\n    p = Project()\n    c = PracticeAgent(mode=mode).run(brief, p)\n    return p, c\n' +
+  'def raises_any(f):\n    try:\n        f()\n    except Exception:\n        return True\n    return False\n';
 
 export const AGENT_CHECKS: [string, string][] = [
   ['the start project has 9 files and 4 of 7 tests pass', '(lambda p: (len(p.ls()), repr(run_tests(p)).startswith("4 passed, 3 failed")))(Project()) == (9, True)'],
@@ -31,6 +32,8 @@ export const AGENT_CHECKS: [string, string][] = [
   ['suggest mode changes nothing', '(lambda pc: (pc[1].files_touched, repr(run_tests(pc[0])).startswith("4 passed")))(go(GOOD, "suggest")) == (["board/rules.py"], True)'],
   ['checkpoint and restore', '(lambda p: (p.checkpoint(), p.write("board/rules.py", "x = 1\\n"), p.restore(), p.read("board/rules.py").startswith(\'"""Rules\'))[3])(Project())'],
   ['token estimate of a good run', 'go(GOOD)[1].tokens == 4500'],
+  ['read_brief finds every part of the good brief', '(lambda f: (f["task"], f["example_date"], f["time_rule"], f["saturday"], f["distance"], f["scope"], f["done_when"], f["blank_distance"]))(read_brief(GOOD)) == ("at_risk", True, True, True, True, True, True, False)'],
+  ['a blank-distance rule flags blanks; without it, blanks crash', '(lambda a, b: (a.is_at_risk({"placed_at": "2026-03-04 10:00", "distance_km": ""}), b))(go(GOOD + " If the distance is blank, flag it.")[0].load("board.rules"), raises_any(lambda: go(GOOD)[0].load("board.rules").is_at_risk({"placed_at": "2026-03-04 10:00", "distance_km": ""}))) == (True, True)'],
 ];
 
 /** A one-lesson pretend Track whose checks are the practice agent's expected behaviour. */

@@ -1,5 +1,6 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './coding-agents/beginner/u01';
+import u02 from './coding-agents/beginner/u02';
 
 /**
  * Working with AI Coding Agents — storyline "The Delivery Board".
@@ -40,8 +41,8 @@ const track: OriginalTrackDef = {
         'Keep secrets, data and your project safe, and ship through review',
       ],
       skills: ['AI coding agents', 'Code review', 'Testing', 'Prompting', 'Python', 'Software safety'],
-      upcomingUnits: 8,
-      units: [u01],
+      upcomingUnits: 7,
+      units: [u01, u02],
     },
   ],
 };

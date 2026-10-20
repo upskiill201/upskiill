@@ -30,7 +30,7 @@ import sys as _sys
 
 _sys.dont_write_bytecode = True
 
-__all__ = ['Project', 'PracticeAgent', 'Change', 'TestReport', 'run_tests']
+__all__ = ['Project', 'PracticeAgent', 'Change', 'TestReport', 'run_tests', 'read_brief']
 
 # ── The Delivery Board project ───────────────────────────────────────────────
 
@@ -268,7 +268,13 @@ def _read_brief(brief):
         'plan_only': bool(_re.search(r"plan (first|only)|just a plan|(don'?t|do not) write (any )?code", low)),
         'ask': bool(_re.search(r'ask me|questions first|any questions', low)),
         'holiday': 'holiday' in low,
+        'blank_distance': bool(_re.search(r'(blank|missing|empty)[^.]*distance|distance[^.]*(blank|missing|empty)', low)),
     }
+
+
+def read_brief(brief):
+    """What the practice agent picked up from a brief: True for each thing it found."""
+    return _read_brief(brief)
 
 
 def _rules_code(f):
@@ -293,9 +299,17 @@ def _rules_code(f):
         '        return True',
         f'    if {weekend}:',
         '        return True',
-        f'    return float(delivery["distance_km"]) > {km}',
-        '',
     ]
+    if f['blank_distance']:
+        lines += [
+            '    distance = str(delivery.get("distance_km", "")).strip()',
+            '    if not distance:',
+            '        return True',
+            f'    return float(distance) > {km}',
+        ]
+    else:
+        lines.append(f'    return float(delivery["distance_km"]) > {km}')
+    lines.append('')
     return '\n'.join(lines)
 
 
