@@ -118,7 +118,38 @@ Every lesson has at least one **live page** to edit (Try it live) or a **Build i
 
 ---
 
-## Chapters 2–13 (stories; lesson lists are written chapter by chapter)
+## Chapter 2 — Words on the page (written 2026-10-20)
+
+**Story:** Efua reads Mensah Beats v0.1 and says one sentence: "It's a wall of text." Nobody reads to the end. Kofi learns that people scan web pages, and that lists, emphasis and structure are how you get read.
+
+**Chapter climax (lesson 20):** Mensah Beats v0.2: his story, a numbered track list, a gig list, real quotes from fans and a "more about me" that opens on tap. Ama reads it to the end, out loud, without being asked.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | "It's a wall of text" | People scan pages; short paragraphs and headings get read | Story (choice) |
+| 2 | Strong and em | Importance (`strong`) vs stress (`em`) | Before / After |
+| 3 | Bullet lists | `ul` and `li` | Step-by-step |
+| 4 | Numbered lists | `ol`, when order matters, `start` | Tap to explore |
+| 5 | **Checkpoint 1: Clinton's track list** | | Mixed review |
+| 6 | Line breaks | `br` for lines that belong together (addresses, lyrics); empty elements | Chat with Tey |
+| 7 | Writing for the web | Front-loading, short sentences, how people read online (Nielsen) | Reading |
+| 8 | Special characters | `&amp;`, `&lt;`, `&copy;`: showing symbols the browser would read as code | Card deck |
+| 9 | Lists inside lists | Nesting a list inside an `li` | Before / After |
+| 10 | **Checkpoint 2: Miracle's call** | | Mixed review |
+| 11 | Real quotes only | `blockquote` and `cite`; Kofi is tempted to invent a famous DJ's quote | Story (choice) |
+| 12 | Breaks between topics | `hr` as a change of topic, not decoration | Tap to explore |
+| 13 | Small print and highlights | `small` and `mark` | Chat with Tey |
+| 14 | Gig details | Description lists: `dl`, `dt`, `dd` | Step-by-step |
+| 15 | **Checkpoint 3: Ama reads it aloud** | | Mixed review |
+| 16 | Bold isn't a heading | Meaning vs looks: `b`/`i` vs `strong`/`em`, headings aren't for size | Myth or Fact |
+| 17 | Less is more | Editing down; `details` and `summary` for "read more" | Story (choice) |
+| 18 | Your page gets words | The learner's page: a list of things they love, with emphasis | Step-by-step |
+| 19 | Read a finished page | Reading a full text page and naming every element | Tap to explore |
+| 20 | **Chapter Challenge: Mensah Beats v0.2** | Story, track list, gigs, quotes, read more | Mixed (climax) |
+
+---
+
+## Chapters 3–13 (stories; lesson lists are written chapter by chapter)
 
 **2 · Words on the page (11 weeks).** Kofi writes his story, track list and gig list. Headings, paragraphs, `<strong>` and `<em>`, ordered and unordered lists, line breaks. *Climax:* a page people actually read to the end. *Efua:* "It's a wall of text."
 
