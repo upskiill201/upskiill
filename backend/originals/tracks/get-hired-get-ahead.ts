@@ -1,5 +1,6 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './get-hired-get-ahead/how-to-get-hired/u01';
+import u02 from './get-hired-get-ahead/how-to-get-hired/u02';
 
 /**
  * Get Hired, Get Ahead (Career). Outline: docs/originals/get-hired-get-ahead-outline.md
@@ -42,8 +43,8 @@ const track: OriginalTrackDef = {
         'Bounce back from rejection and negotiate a job offer',
       ],
       skills: ['Job search', 'CV writing', 'Cover letters', 'LinkedIn', 'Networking', 'Interviewing', 'Negotiation'],
-      upcomingUnits: 9,
-      units: [u01],
+      upcomingUnits: 8,
+      units: [u01, u02],
     },
   ],
 };

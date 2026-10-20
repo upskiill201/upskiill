@@ -77,7 +77,7 @@ Clinton starts as a **junior developer at Njangi Pay**, Douala.
 | # | Chapter (map banner) | Marker | Founder topic(s) | The learner can... |
 |---|---|---|---|---|
 | 1 | What you've already got | 8 months to grad | How to Identify Your Transferable Skills | Find the skills they already have, and prove them with evidence |
-| 2 | Proof without experience | 7 months | How to Build a Portfolio Without Work Experience | Plan and make small projects that show what they can do |
+| 2 | Proof without experience | 7 months to grad | How to Build a Portfolio Without Work Experience | Plan and make small projects that show what they can do |
 | 3 | The CV that gets read | 6 months | How to Write a CV That Gets Attention | Write a clear one- or two-page CV with achievement bullets |
 | 4 | The cover letter | 5 months | How to Write a Cover Letter | Write a short, specific cover letter for one real role |
 | 5 | Be findable | 4 months | How to Build a Professional LinkedIn Profile | Build a profile that recruiters find and trust |
@@ -150,6 +150,35 @@ All 18 founder topics are covered: 12 chapters have one topic each, and three ch
 | 18 | Read a job advert | Matching your skills to what an advert really asks for | Tap to explore |
 | 19 | Your inventory begins | The learner starts their own skills inventory | Before / After |
 | 20 | **Chapter Challenge: Clinton's inventory** | Build the full inventory and the answer for Brenda | Mixed (climax) |
+
+## Level 1, Chapter 2 — Proof without experience (written 2026-10-20)
+
+**Story:** at her campus talk, Brenda says the line Clinton can't forget: "Don't tell me you can build things. Show me something you built." His GitHub has three tutorial projects, the same three every student has. His mum's njangi (twelve women, 25,000 francs a month each) still runs on a school exercise book, and every month someone swears they paid. Clinton decides to build a tiny tracker for it, and to write it up like a professional.
+
+**Chapter climax (lesson 20):** the Njangi Tracker case study: the problem, what he built, what changed ("zero disputes at the first meeting"), and what he learned, with permission from the members and no real names on screen. His mum's verdict: "Now even Mama Bih pays on time." The learner plans their own first portfolio piece.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | "Show me something you built" | Why proof beats claims; picking a first project | Story (choice) |
+| 2 | What a portfolio is | A small collection of proof, for any career, not just tech | Reading |
+| 3 | Tutorials vs. real problems | Why copied tutorial projects don't stand out | Before / After |
+| 4 | Find a problem worth solving | Look at the people around you: family, church, shops, clubs | Step-by-step |
+| 5 | **Checkpoint 1: Kofi's call** | | Mixed review |
+| 6 | A portfolio for every career | Tap a field to see a project anyone could do (marketing, writing, finance, teaching, health, design) | Tap to explore |
+| 7 | Start small, finish | Scope: the smallest version that solves the problem | Chat with Tey |
+| 8 | The case study | Problem, what you did, result, what you learned | Step-by-step |
+| 9 | Write-ups that work | A weak write-up vs. one a recruiter remembers | Before / After |
+| 10 | **Checkpoint 2: the njangi meeting** | | Mixed review |
+| 11 | Whose project is it? | Clinton is tempted to present a tutorial clone as his own; credit and changes | Story (choice) |
+| 12 | Where to put it | Free places to show work, and keeping other people's data private | Card deck |
+| 13 | Feedback makes it real | Asking users, improving, showing before and after | Chat with Tey |
+| 14 | Other ways to get proof | Volunteering, small freelance jobs, competitions, open source | Step-by-step |
+| 15 | **Checkpoint 3: Mrs Ewane's portfolio review** | | Mixed review |
+| 16 | Portfolio myths | "It must be big", "only designers need one", "you need a website" | Myth or Fact |
+| 17 | "Can you build ours too?" | The church asks for a free app; agreeing a small scope | Story (choice) |
+| 18 | Read a great case study | A strong portfolio piece, part by part | Tap to explore |
+| 19 | Your portfolio piece | The learner plans their own first piece (career kit, piece 2) | Step-by-step |
+| 20 | **Chapter Challenge: the Njangi Tracker** | Clinton's finished case study | Mixed (climax) |
 
 ## Facts (checked 2026-10-20; sources go in each lesson's author notes)
 
