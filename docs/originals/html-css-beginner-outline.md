@@ -229,6 +229,35 @@ All lessons use the style tag in the live pad (one document); style.css arrives 
 
 ---
 
+## Chapter 5 — Colour, type and go live (written 2026-10-20)
+
+**Story:** eight weeks to uni. The Sound Up Saturdays poster prints Friday with every act's web address, and Kofi's page is still a file on his phone. Exact hex colours from his own covers, a palette with jobs, contrast (WCAG 1.4.3: 4.5:1, 3:1 large; ratios computed for his palette), rem sizes and a four-step type scale, one plain font plus one special font, then publishing: one folder, index.html, style.css via link, a privacy pass (booking email via mailto, no phone number or street), a free static host ("check current terms"), and the phone test. **Choice (l01):** colours from his art, cool names, or a famous DJ's. **Choice (l11):** fancy font only for the name. **Choice (l17):** what the contact section says. **Climax (l20):** Mensah Beats v1.0 is live; his link is on the poster. Course 1 complete.
+
+Publishing itself happens outside the app (Deepen in l18 and l20); in-app exercises check the files and head that go live.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | The poster goes to print Friday | Explain why a page needs to be published to be shared | Story (choice) |
+| 2 | Names vs codes | Write colours as hex codes | Before / After |
+| 3 | A palette with jobs | Build a four-colour palette from your own art | Step-by-step |
+| 4 | Inside a colour code | Read a hex code as red, green and blue | Tap to explore |
+| 5 | **Checkpoint: side by side** | | Mixed review |
+| 6 | Can everyone read it? | Explain what colour contrast is | Chat with Tey |
+| 7 | Designing for every pair of eyes | Explain what WCAG is | Reading |
+| 8 | Sizes that respect readers | Explain the difference between px and rem | Card deck |
+| 9 | Seven sizes vs four | Spot a messy set of text sizes | Before / After |
+| 10 | **Checkpoint: Grandma approves** | | Mixed review |
+| 11 | The curly font problem | Set a font with font-family | Story (choice) |
+| 12 | The whole look in one place | Read a complete style block | Tap to explore |
+| 13 | What does "going live" mean? | Explain what a web host does | Chat with Tey |
+| 14 | Pack the folder | Put a site's files in one folder | Step-by-step |
+| 15 | **Checkpoint: the folder is packed** | | Mixed review |
+| 16 | Publishing: myth or fact? | Separate publishing myths from facts | Myth or Fact |
+| 17 | Before the whole world sees it | Spot personal details that shouldn't be published | Story (choice) |
+| 18 | Upload, open, share | Publish a folder on a free static host | Step-by-step |
+| 19 | The page that went live | Read a complete, published page | Tap to explore |
+| 20 | **Chapter Challenge: Mensah Beats v1.0** | | Mixed (climax) |
+
 ## Chapters 4–13 (stories; lesson lists are written chapter by chapter)
 
 **2 · Words on the page (11 weeks).** Kofi writes his story, track list and gig list. Headings, paragraphs, `<strong>` and `<em>`, ordered and unordered lists, line breaks. *Climax:* a page people actually read to the end. *Efua:* "It's a wall of text."

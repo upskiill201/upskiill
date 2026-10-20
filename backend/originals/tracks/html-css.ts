@@ -3,6 +3,7 @@ import u01 from './html-css/beginner/u01';
 import u02 from './html-css/beginner/u02';
 import u03 from './html-css/beginner/u03';
 import u04 from './html-css/beginner/u04';
+import u05 from './html-css/beginner/u05';
 
 /**
  * HTML & CSS for Beginners — storyline "Kofi Goes Live".
@@ -56,8 +57,8 @@ const track: OriginalTrackDef = {
       ],
       skills: ['HTML', 'CSS', 'Web design'],
       thumbnailUrl: '/originals/html-css-for-beginners.jpg',
-      upcomingUnits: 1,
-      units: [u01, u02, u03, u04],
+      upcomingUnits: 0,
+      units: [u01, u02, u03, u04, u05],
     },
   ],
 };
