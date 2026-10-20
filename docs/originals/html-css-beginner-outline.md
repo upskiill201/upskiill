@@ -347,6 +347,35 @@ Small text never goes on pink (night on pink ≈ 4.47:1): tags are night on gold
 | 19 | The whole layout in Flexbox | Read a complete Flexbox layout | Tap to explore |
 | 20 | **Chapter Challenge: Mensah Beats v1.3** | | Mixed (climax) |
 
+## Course 2, Chapter 4 — The beat grid (written 2026-10-20)
+
+**Story:** four weeks to uni. Twelve covers; a wrapping flex row stretches its last row, and Efua wants a record shop wall. CSS Grid: `display: grid`, `grid-template-columns`, `fr` and `repeat()`, gaps, automatic rows with `grid-auto-rows` and `minmax()`, the history (Microsoft's 2011 proposal, IE10 in 2012, every major browser in 2017), `span` for a feature cover, `repeat(auto-fill, minmax(150px, 1fr))`, auto-fill vs auto-fit, a real `table` for the gig list (`tr`, `th`, `td`, `caption`), `grid-template-areas`, and line numbers vs reading order. **Choice (l01):** Grid, fixed-width flex, or a table. **Choice (l11):** the gig list is data. **Choice (l17):** newest beat last in the HTML. **Climax (l20):** Mensah Beats v1.4 on a record shop screen in Osu.
+
+Checks on grid templates (`grid-template-columns`, `-areas`, `-rows`, `grid-column`, `grid-row`) only confirm the property is set, because engines keep the typed text (`1fr 1fr` vs `repeat(2, 1fr)`, `1/3` vs `1 / 3`). The v1.4 page grid squeezes on phones by design, setting up Chapter 5.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | Twelve covers in neat rows | Explain when Grid fits better than Flexbox | Story (choice) |
+| 2 | Wrapped row vs real grid | Spot the "stretched last row" problem with wrapping Flexbox | Before / After |
+| 3 | The fr unit | Size columns with fr | Step-by-step |
+| 4 | Inside a grid rule | Read a grid rule | Tap to explore |
+| 5 | **Checkpoint: the wall is up** | | Mixed review |
+| 6 | What about rows? | Explain how Grid makes rows automatically | Chat with Tey |
+| 7 | The year the grid arrived | Explain where the idea of a layout grid comes from | Reading |
+| 8 | One big cover | Make an item span columns with grid-column: span | Card deck |
+| 9 | Four columns on a tiny phone | Spot a grid with too many columns for a phone | Before / After |
+| 10 | **Checkpoint: Grandma's gallery** | | Mixed review |
+| 11 | The gig list is data | Tell layout from data | Story (choice) |
+| 12 | auto-fill or auto-fit? | Read repeat(auto-fill, minmax()) piece by piece | Tap to explore |
+| 13 | Draw the page with words | Name areas with grid-area | Chat with Tey |
+| 14 | Build the beat gallery | Build a gallery of figures with captions | Step-by-step |
+| 15 | **Checkpoint: wall, table, map** | | Mixed review |
+| 16 | Grid: myth or fact? | Separate Grid myths from facts | Myth or Fact |
+| 17 | Top left, but last in the code | Place an item with grid line numbers | Story (choice) |
+| 18 | Your page gets a grid | Sketch your page as a grid | Step-by-step |
+| 19 | Grid, Flexbox and a table | Read a layout that uses Grid, Flexbox and a table together | Tap to explore |
+| 20 | **Chapter Challenge: Mensah Beats v1.4** | | Mixed (climax) |
+
 ## Chapters 4–13 (stories; lesson lists are written chapter by chapter)
 
 **2 · Words on the page (11 weeks).** Kofi writes his story, track list and gig list. Headings, paragraphs, `<strong>` and `<em>`, ordered and unordered lists, line breaks. *Climax:* a page people actually read to the end. *Efua:* "It's a wall of text."

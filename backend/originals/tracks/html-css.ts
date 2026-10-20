@@ -7,6 +7,7 @@ import u05 from './html-css/beginner/u05';
 import r01 from './html-css/responsive/u01';
 import r02 from './html-css/responsive/u02';
 import r03 from './html-css/responsive/u03';
+import r04 from './html-css/responsive/u04';
 
 /**
  * HTML & CSS for Beginners — storyline "Kofi Goes Live".
@@ -83,8 +84,8 @@ const track: OriginalTrackDef = {
       ],
       skills: ['CSS', 'Responsive design', 'Flexbox', 'CSS Grid'],
       thumbnailUrl: '/originals/responsive-web-design-css.jpg',
-      upcomingUnits: 2,
-      units: [r01, r02, r03],
+      upcomingUnits: 1,
+      units: [r01, r02, r03, r04],
     },
   ],
 };
