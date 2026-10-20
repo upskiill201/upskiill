@@ -149,7 +149,40 @@ Every lesson has at least one **live page** to edit (Try it live) or a **Build i
 
 ---
 
-## Chapters 3–13 (stories; lesson lists are written chapter by chapter)
+## Chapter 3 — Links, pictures and sound (written 2026-10-20)
+
+**Story:** the organiser opens Mensah Beats on her phone and asks two questions: "Where's your Instagram?" and "Can I hear anything?" The page has words, but nothing to click, see or play. Kofi adds links, his album art (with alt text Ama approves) and, finally, beats you can press play on.
+
+**Chapter climax (lesson 20):** Mensah Beats v0.3. The organiser presses play on Jollof Bounce, and replies with one word: "Booked."
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | "Where do I click?" | Links: `a` and `href`; Kofi's Instagram | Story (choice) |
+| 2 | Links people can read | Link text that says where it goes, never "click here" | Before / After |
+| 3 | Other pages, other sites | Full web addresses vs links to your own pages (`gigs.html`) | Step-by-step |
+| 4 | Email, call, new tab | `mailto:`, `tel:`, and `target="_blank"` used sparingly | Tap to explore |
+| 5 | **Checkpoint 1: Clinton's link test** | | Mixed review |
+| 6 | Pictures | `img`, `src` and `alt`; another empty element | Chat with Tey |
+| 7 | What would Ama hear? | Good alt text; `alt=""` for decoration (WebAIM) | Reading |
+| 8 | Why is the picture broken? | File paths and folders: `images/cover-1.png`, spelling, capitals | Card deck |
+| 9 | Pictures that don't jump | `width` and `height` so the page doesn't shift as it loads | Before / After |
+| 10 | **Checkpoint 2: Ama's picture test** | | Mixed review |
+| 11 | Whose photo is it? | Copyright: using your own or free-to-use pictures, and crediting | Story (choice) |
+| 12 | Press play | `audio`, `controls`, `src`: the first playable beat | Tap to explore |
+| 13 | Sound, kindly | No autoplay, `loop`, fallback text | Chat with Tey |
+| 14 | Covers with captions | `figure` and `figcaption`; a cover that links | Step-by-step |
+| 15 | **Checkpoint 3: the organiser presses play** | | Mixed review |
+| 16 | Links and media myths | Common wrong beliefs about links, pictures and sound | Myth or Fact |
+| 17 | Jump to the gigs | `id` and `#` links inside a long page | Story (choice) |
+| 18 | Your page gets links | The learner's page: links to things they love, jump links, a picture | Step-by-step |
+| 19 | Read a finished page | A full page with links, pictures and sound, element by element | Tap to explore |
+| 20 | **Chapter Challenge: Mensah Beats v0.3** | Links, album art, playable beats, jump links | Mixed (climax) |
+
+Assets (Teyro-made): `beat-1..3.mp3` and `cover-1..3.png` at the asset root, the same files in `images/` and `music/` for the file-path lessons, and `images/kofi.png` (an illustration, not a photo of a real person).
+
+---
+
+## Chapters 4–13 (stories; lesson lists are written chapter by chapter)
 
 **2 · Words on the page (11 weeks).** Kofi writes his story, track list and gig list. Headings, paragraphs, `<strong>` and `<em>`, ordered and unordered lists, line breaks. *Climax:* a page people actually read to the end. *Efua:* "It's a wall of text."
 

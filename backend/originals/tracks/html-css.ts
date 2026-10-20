@@ -1,6 +1,7 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './html-css/beginner/u01';
 import u02 from './html-css/beginner/u02';
+import u03 from './html-css/beginner/u03';
 
 /**
  * HTML & CSS for Beginners — storyline "Kofi Goes Live".
@@ -43,8 +44,8 @@ const track: OriginalTrackDef = {
       ],
       skills: ['HTML', 'CSS', 'Web design', 'Responsive design'],
       thumbnailUrl: '/originals/html-css-for-beginners.jpg',
-      upcomingUnits: 11,
-      units: [u01, u02],
+      upcomingUnits: 10,
+      units: [u01, u02, u03],
     },
   ],
 };
