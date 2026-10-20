@@ -55,7 +55,7 @@ She earns **₦350,000 a month**. Her six-month review with her manager, Tobi, i
 1. Four yeses in one week (Story) · 2. What a negotiation is (Steps) · 3. The cost of not asking (Cards) · 4. Why it feels awkward (Chat) · **5 Checkpoint** · 6. Accept vs ask: the rent text (Compare) · 7. Asking myths (Myth) · 8. Who asks, and what it's worth (Reading) · 9. Ask card v1 (Explore) · **10 Challenge: three small asks**
 
 ### Ch2 · Do your homework · *"Prepare before you speak"*
-1. "What's your walk-away?" (Story) · 2. Five-part preparation (Steps) · 3. Positions vs interests (Compare) · 4. Your alternative: BATNA (Reading) · **5 Checkpoint** · 6. Finding a fair number (Cards) · 7. Their side of the table (Chat) · 8. Preparation myths (Myth) · 9. Ask card v2 (Explore) · **10 Challenge: prepare the rent talk**
+1. "What's your walk-away?" (Story) · 2. Five-part preparation (Steps) · 3. Positions vs interests (Compare) · 4. Your alternative: BATNA (Reading) · **5 Checkpoint** · 6. Finding a fair number (Cards) · 7. Their side of the table (Chat) · 8. Preparation myths (Myth) · 9. Ask card v2 (Explore) · **10 Challenge: prepare the review**
 
 ### Ch3 · Say the number · *"Asking for what you want"* (covers *How to Ask for What You Want*)
 1. "So what do you charge?" (Story) · 2. First offers as anchors (Reading) · 3. How to make an ask (Steps) · 4. "Never go first"? (Myth) · **5 Checkpoint** · 6. One number vs a range (Compare) · 7. Because, and then silence (Chat) · 8. Scripts that don't sound awkward (Cards) · 9. Ask card v3 (Explore) · **10 Challenge: the bakery quote**
