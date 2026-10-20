@@ -26,6 +26,7 @@ const track: OriginalTrackDef = {
       level: 1,
       slug: 'how-to-price-a-product-or-service',
       title: 'How to Price a Product or Service',
+      thumbnailUrl: '/originals/how-to-price-a-product-or-service.jpg',
       subtitle: "Clinton's Price Card: charge what it's worth and keep your customers",
       shortDescription:
         'Most small businesses guess their price, then wonder why they are busy and broke. Learn what a sale really costs, what it is worth to customers, and how to set, test and raise prices without losing the people who matter.',

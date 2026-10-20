@@ -27,6 +27,7 @@ const track: OriginalTrackDef = {
       level: 1,
       slug: 'how-to-validate-a-business-idea',
       title: 'How to Validate a Business Idea',
+      thumbnailUrl: '/originals/how-to-validate-a-business-idea.jpg',
       subtitle: "Clinton's Big Idea: find out if people will pay before you build",
       shortDescription:
         'Most new businesses fail because nobody needed what they built. Learn to test an idea in days, for almost nothing: real customer conversations, simple market sums, cheap tests and an honest decision.',
