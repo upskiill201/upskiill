@@ -21,8 +21,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'tryIt',
       title: 'Margin vs padding, side by side',
-      caption: 'Same numbers. The pink fills the padding but never the margin.',
-      code: '<style>\n  body { background-color: #14213D; color: #14213D; font-family: Verdana, sans-serif; }\n  article { background-color: #F0438A; border: 2px solid #FF9600; }\n  article + article { padding: 24px; }\n  article + article + article { padding: 0; margin: 24px; }\n</style>\n<article>Neither</article>\n<article>padding: 24px</article>\n<article>margin: 24px</article>\n',
+      caption: 'Same numbers. The gold fills the padding but never the margin.',
+      code: '<style>\n  body { background-color: #14213D; color: #14213D; font-family: Verdana, sans-serif; }\n  article { background-color: #FFC83D; border: 2px solid #FF9600; }\n  article + article { padding: 24px; }\n  article + article + article { padding: 0; margin: 24px; }\n</style>\n<article>Neither</article>\n<article>padding: 24px</article>\n<article>margin: 24px</article>\n',
       challenge: 'Try margin-top: -10px; on the last card. It slides up towards the one above.',
     },
   ],

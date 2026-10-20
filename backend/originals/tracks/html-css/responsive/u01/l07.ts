@@ -21,7 +21,7 @@ const lesson: OriginalLesson = {
       kind: 'tryIt',
       title: 'Wider than you asked for',
       caption: 'Both cards say width: 300px. The second also has padding and a border, so it comes out wider.',
-      code: '<style>\n  body { background-color: #14213D; color: #FFF6E5; font-family: Verdana, sans-serif; }\n  article { width: 300px; background-color: #F0438A; color: #14213D; margin-bottom: 16px; }\n  article + article { padding: 20px; border: 2px solid #FF9600; }\n</style>\n<article>width: 300px</article>\n<article>width: 300px, plus padding and border</article>\n',
+      code: '<style>\n  body { background-color: #14213D; color: #FFF6E5; font-family: Verdana, sans-serif; }\n  article { width: 300px; background-color: #FFC83D; color: #14213D; margin-bottom: 16px; }\n  article + article { padding: 20px; border: 2px solid #FF9600; }\n</style>\n<article>width: 300px</article>\n<article>width: 300px, plus padding and border</article>\n',
       challenge: 'Add box-sizing: border-box; to the article rule. Now both are exactly 300px.',
     },
   ],

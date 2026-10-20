@@ -289,6 +289,35 @@ Cards are `article` elements with element and descendant selectors only: classes
 | 19 | The whole layout, box by box | Read a complete box-model stylesheet | Tap to explore |
 | 20 | **Chapter Challenge: Mensah Beats v1.1** | | Mixed (climax) |
 
+## Course 2, Chapter 2 — Classes and the cascade (written 2026-10-20)
+
+**Story:** six weeks to uni. Three beats go on the poster and only their cards should turn pink; `article` changes all six. Classes and the `.` selector, one class instead of pasted `style=""`, naming rules, two classes on one element (`.a.b`), class vs id (`#`), the full cascade (importance, origin, specificity, order; inheritance outside the contest), counting specificity as ids-classes-elements, the specificity war and `!important`, honest role-based names, a `.card` base with `.gig-card`/`.featured` extras and a `span.tag`, what inherits (`color: inherit`), safe refactoring, myths (classes are case-sensitive in standards mode). **Choice (l01):** a class, pasted styles, or swapping elements. **Choice (l11):** names that lie. **Choice (l17):** a pasted snippet full of `!important`. **Climax (l20):** Mensah Beats v1.2; the organiser asks for gold and every card changes with one line.
+
+Small text never goes on pink (night on pink ≈ 4.47:1): tags are night on gold `#FFC83D` (about 10:1). Lessons that depend on case-sensitivity start with `<!DOCTYPE html>`, because learner code renders without one (quirks mode matches class names case-insensitively).
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | Only three of them | Add a class to an element | Story (choice) |
+| 2 | Copy-paste vs one class | Spot styles repeated in style attributes | Before / After |
+| 3 | Your first real class | Write a class name that follows the rules | Step-by-step |
+| 4 | Two labels on one card | Give an element more than one class | Tap to explore |
+| 5 | **Checkpoint: the poster three** | | Mixed review |
+| 6 | Class or id? | Explain how an id differs from a class | Chat with Tey |
+| 7 | How the browser picks a winner | Describe the questions the cascade asks, in order | Reading |
+| 8 | Counting specificity | Count a selector's ids, classes and elements | Card deck |
+| 9 | The specificity war | Recognise a stylesheet stuck in a specificity war | Before / After |
+| 10 | **Checkpoint: no more guessing** | | Mixed review |
+| 11 | When the names lie | Name classes for their role, not their looks | Story (choice) |
+| 12 | One base, many cards | Put shared styles in a base class | Tap to explore |
+| 13 | What gets passed down | Name properties that inherit and ones that don't | Chat with Tey |
+| 14 | Switch the site to classes | Move styles from element selectors to classes, one at a time | Step-by-step |
+| 15 | **Checkpoint: beats and gigs** | | Mixed review |
+| 16 | Classes: myth or fact? | Separate class and cascade myths from facts | Myth or Fact |
+| 17 | The snippet that took over | Recognise CSS that overrides everything with !important and broad selectors | Story (choice) |
+| 18 | Your page gets classes | Plan base and extra classes for your own page | Step-by-step |
+| 19 | A stylesheet you can change | Read a class-based stylesheet | Tap to explore |
+| 20 | **Chapter Challenge: Mensah Beats v1.2** | | Mixed (climax) |
+
 ## Chapters 4–13 (stories; lesson lists are written chapter by chapter)
 
 **2 · Words on the page (11 weeks).** Kofi writes his story, track list and gig list. Headings, paragraphs, `<strong>` and `<em>`, ordered and unordered lists, line breaks. *Climax:* a page people actually read to the end. *Efua:* "It's a wall of text."
