@@ -3,6 +3,7 @@ import u01 from './negotiation-beginners/beginner/u01';
 import u02 from './negotiation-beginners/beginner/u02';
 import u03 from './negotiation-beginners/beginner/u03';
 import u04 from './negotiation-beginners/beginner/u04';
+import u05 from './negotiation-beginners/beginner/u05';
 
 /**
  * Negotiation Skills for Beginners — storyline "Ada Asks".
@@ -42,8 +43,8 @@ const track: OriginalTrackDef = {
         'Handle "no" and close with a clear agreement',
       ],
       skills: ['Negotiation', 'Asking', 'Preparation', 'BATNA', 'Win-win deals', 'Confidence'],
-      upcomingUnits: 1,
-      units: [u01, u02, u03, u04],
+      upcomingUnits: 0,
+      units: [u01, u02, u03, u04, u05],
     },
   ],
 };
