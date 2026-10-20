@@ -538,6 +538,35 @@ All 18 founder topics are covered: 12 chapters have one topic each, and three ch
 | 19 | Your career plan | Write your own one-page career plan | Step-by-step |
 | 20 | **Chapter Challenge: the answer** | | Mixed (climax) |
 
+## Level 3 (How to Get Ahead at Work), Chapter 5 — Changing lanes (written 2026-10-20)
+
+**Story:** one year in. Aïcha's associate PM role opens. Clinton tests the bridge instead of David's "quit for a bootcamp" leap, maps his skills to the role, tells a "towards" change story, applies internally the right way (Ngozi first), updates his headline honestly, negotiates the APM pay dip (current pay kept, six-month review), hands the sync service to Kemi and starts a new 90-day plan. **Choice (l01):** quit with no plan, test inside first, or ignore product (outline choice). **Choice (l11):** the pay dip. **Choice (l17):** saying no to the support lead's live-chat idea. **Climax (l20):** Clinton interviews his first intern, a Buea Economics student who opens with "I don't have much experience yet..." (track finale, full circle). Learner kit, piece 5: a change strategy.
+
+**Sources mentioned:** Ibarra, Working Identity (2003), test-and-learn. Qualitative.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | The leap or the bridge | Compare a big leap with a tested move | Story (choice) |
+| 2 | How changes really happen | Describe the "test and learn" approach to career change | Reading |
+| 3 | Not starting from zero | Describe a change as a bridge, not a restart | Before / After |
+| 4 | Map the bridge | Map current skills to a target role | Step-by-step |
+| 5 | **Checkpoint: the priority list** | | Mixed review |
+| 6 | The APM advert | Read a role description for must-haves | Tap to explore |
+| 7 | "Why the change?" | Tell a clear story about a career change | Chat with Tey |
+| 8 | Applying from inside | Follow internal application etiquette | Step-by-step |
+| 9 | A headline for the new lane | Update your profile for a new direction honestly | Before / After |
+| 10 | **Checkpoint: the panel** | | Mixed review |
+| 11 | The pay dip | Weigh a short-term pay trade-off against long-term direction | Story (choice) |
+| 12 | Making the move well | Hand over work responsibly | Card deck |
+| 13 | What if it doesn't work? | Plan for a change not working out | Chat with Tey |
+| 14 | Changing from outside | Plan a career change without an internal route | Step-by-step |
+| 15 | **Checkpoint: APM day one** | | Mixed review |
+| 16 | Career change myths | Spot common career-change myths | Myth or Fact |
+| 17 | Saying no to a friend | Say no to a good idea from someone you like | Story (choice) |
+| 18 | The other side of the desk | Read a CV from the hiring side | Tap to explore |
+| 19 | Your change strategy | Write a one-page change strategy | Step-by-step |
+| 20 | **Chapter Challenge: the other chair** | | Mixed (climax) |
+
 ## Facts (checked 2026-10-20; sources go in each lesson's author notes)
 
 - **Employers look for problem-solving and teamwork first.** In NACE's *Job Outlook 2025*, about 90% of US employers look for problem-solving evidence on graduate résumés and roughly 80% look for teamwork. More than three-quarters want communication; initiative, work ethic and technical skills each matter to over 70%. Nearly two-thirds use skills-based hiring. (NACE, 2025. A US survey, so say so.)
