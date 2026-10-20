@@ -73,6 +73,9 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 - **Clinton's Big Idea (Business set: How to Validate a Business Idea, then pricing, then profit and cash flow):** in his first year at the University of Buea, Clinton tries to start CampusEats (food delivery). Customer conversations reveal the real problem, laundry in the rainy season, and he tests WashDay, a laundry pickup service, by hand. David (Medicine, Buea) is his sceptical numbers friend; Miracle mentors by voice note from Lagos, having just joined Afiya. Mama Rose, who runs the wash-and-iron stand at the campus gate, is narrated only. In the pricing course her sister, Auntie Bih (narrated), becomes the second washer at 1,100 FCFA a bag.
 - **Miracle in Lagos (How to Motivate a Team):** Miracle chose the Lagos health-tech startup, Afiya. Eighteen months later she is asked to lead Afiya's Clinic Success team (Bisi, Chidi, Halima, Emmanuel) before 300 clinics go live; her boss is Folake, the COO.
 - **Halima's Empty Chairs (Machine Learning for Beginners):** after the 300-clinic rollout, and with Chidi staying, Folake wants "AI to fix no-shows" (about 1 in 5 bookings). Halima builds the predictor on 12 weeks of bookings from 8 pilot clinics, including Gumel, a small rural clinic. Miracle mentors her; Chidi is the sceptic; Emmanuel owns the booking export; Bisi makes the reminder calls.
+- **Ada Asks (Negotiation Skills for Beginners):** Ada says yes to everything; over five weeks she negotiates a bakery logo (₦120,000), her rent (₦1,350,000 for two years) and her salary review (₦420,000 now, ₦480,000 in writing). Lucía mentors her; Remi is her WhatsApp friend.
+- **Arjun's Big Contract (How to Handle Difficult Negotiations):** Arjun, Kavya and Joel quote £48,000 for Harlow & Finch's loyalty app; procurement counters £28,000. Arjun's BATNA is a Kinwell extension (Priya). Signed at £42,000 with launch support. Grace is his sounding board.
+- **Grace Keeps the Peace (How to Manage Conflict at Work):** Kinwell's GP booking app launches 21 November. Femi snaps at Grace over step 3 research; "Fine." starts a cold war; Callum (new PM) calls her report "just opinions"; Priya overloads her; Jayden takes the car. Grace's "ward rules for the office" grow to v5.
 
 ## Cameroon (added 2026-10-14, founder)
 
@@ -113,6 +116,13 @@ These appear in one Original only and don't join the shared cast.
 | Marta | Leadership for Beginners (and the Leadership track) | Lucía's desk-mate and best work friend for six years at Nopal (Mexico City snack brand). Applied for the same promotion. Dependable, says yes to everything, quietly overloaded. |
 | Sofía | Leadership track | Newest hire on Lucía's team at Nopal. Brilliant, quiet, rarely speaks first (also in How to Make People Listen to You, ch4). |
 | Tomás | Leadership track | Junior marketer on Lucía's team. Eager, fast, makes mistakes fast and sometimes hides them. |
+| Tobi | Negotiation Skills for Beginners | Ada's manager at the Lagos fintech startup. Fair, budget-bound, sets pay by quarter. Narrated. |
+| Mr Adeyemi | Negotiation Skills for Beginners | Ada's landlord. Wants a reliable tenant; hates empty months. Narrated. |
+| Mrs Okon | Negotiation Skills for Beginners | Runs a bakery; hires Ada for a logo. Narrated. |
+| Ngozi | Negotiation Skills for Beginners | Ada's flatmate; sells ankara fabric online. Narrated. |
+| Mr Pryce | How to Handle Difficult Negotiations | Procurement manager at Harlow & Finch (fictional London homeware chain, 60 shops). Measured on savings; uses every tactic. Narrated. |
+| Ms Okafor-Lane | How to Handle Difficult Negotiations | Harlow & Finch digital director who wants the loyalty app before the spring sale. Narrated. |
+| Callum | How to Manage Conflict at Work | New product manager at Kinwell; calls Grace's report "just opinions", later apologises. Narrated. |
 | Carmen | Leadership track | Nopal's marketing director, Lucía's boss. Direct, busy, fair; wants no surprises. |
 | Njeri | How to Lead Without Being the Boss | Synergix warehouse supervisor in Nairobi. 20 years on the floor; has seen five head-office projects come and go. Blunt, funny, knows exactly why things really break. Becomes Remi's strongest ally once he listens. |
 | Kavya | How to Set Clear Expectations (and The AI Stack) | Junior developer in Pune, 23, one of Arjun's first two subcontractors. Fast, ambitious, funny; says "done" when things are 80% done. Co-leads The AI Stack: builds Ask Rao fast, breaks it, and learns why each layer exists. |
