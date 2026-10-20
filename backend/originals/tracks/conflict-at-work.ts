@@ -3,6 +3,7 @@ import u01 from './conflict-at-work/beginner/u01';
 import u02 from './conflict-at-work/beginner/u02';
 import u03 from './conflict-at-work/beginner/u03';
 import u04 from './conflict-at-work/beginner/u04';
+import u05 from './conflict-at-work/beginner/u05';
 
 /**
  * How to Manage Conflict at Work — storyline "Grace Keeps the Peace".
@@ -43,8 +44,8 @@ const track: OriginalTrackDef = {
         'Set and hold boundaries without damaging relationships',
       ],
       skills: ['Conflict resolution', 'De-escalation', 'Feedback', 'Boundaries', 'Workplace communication', 'Emotional regulation'],
-      upcomingUnits: 1,
-      units: [u01, u02, u03, u04],
+      upcomingUnits: 0,
+      units: [u01, u02, u03, u04, u05],
     },
   ],
 };
