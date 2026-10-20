@@ -451,6 +451,35 @@ All 18 founder topics are covered: 12 chapters have one topic each, and three ch
 | 19 | Your first-90-days kit | Assemble a first-90-days kit | Step-by-step |
 | 20 | **Chapter Challenge: day 90** | | Mixed (climax) |
 
+## Level 3 (How to Get Ahead at Work), Chapter 2 — Worth more (written 2026-10-20)
+
+**Story:** month three. Clinton lists eleven tasks; Ngozi asks which changed anything for drivers. He finds the Q3 goals (failed confirmations 8% to 4%, a third fewer support calls, phones under 2 GB), protects focus time, says "not now" kindly, shares results usefully, onboards Kemi (a new graduate, named extra), and fixes the Monday payout report that nobody owned. **Choice (l01):** more tasks, only big ideas, or goal-tied work. **Choice (l11):** the problem nobody owns. **Choice (l17):** overload in month five. **Climax (l20):** a one-page impact summary; Ngozi says it's promotion material. Learner kit, piece 2: an impact record.
+
+**Sources mentioned:** Newport, So Good They Can't Ignore You (2012), "career capital"; urgent/important matrix popularised by Covey (1989); "multipliers" from Wiseman (2010). All qualitative.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | "What did that change?" | Tell being busy apart from being valuable | Story (choice) |
+| 2 | What "valuable" means | Describe four kinds of value at work | Reading |
+| 3 | From activity to impact | Write an impact entry instead of an activity entry | Before / After |
+| 4 | What are we measured on? | Find your team's goals | Step-by-step |
+| 5 | **Checkpoint: one result** | | Mixed review |
+| 6 | The goals doc | Read a team goals document | Tap to explore |
+| 7 | Urgent or important? | Tell urgent from important | Chat with Tey |
+| 8 | Saying "not now" | Decline or delay a request politely | Step-by-step |
+| 9 | Making your work visible | Share your work without bragging | Before / After |
+| 10 | **Checkpoint: the goals review** | | Mixed review |
+| 11 | The problem nobody owns | Spot problems that fall between teams | Story (choice) |
+| 12 | Skills that compound | Name skills that stay useful across jobs | Card deck |
+| 13 | Making others better | Explain why helping others is real value | Chat with Tey |
+| 14 | The impact record | Organise an impact record by goal | Step-by-step |
+| 15 | **Checkpoint: a quiet Monday** | | Mixed review |
+| 16 | Value myths | Spot myths about value at work | Myth or Fact |
+| 17 | Too much on the plate | Recognise overload before it causes mistakes | Story (choice) |
+| 18 | The month-five summary | Summarise months of impact on one page | Tap to explore |
+| 19 | Your impact record | Set up your own impact record | Step-by-step |
+| 20 | **Chapter Challenge: worth more** | | Mixed (climax) |
+
 ## Facts (checked 2026-10-20; sources go in each lesson's author notes)
 
 - **Employers look for problem-solving and teamwork first.** In NACE's *Job Outlook 2025*, about 90% of US employers look for problem-solving evidence on graduate résumés and roughly 80% look for teamwork. More than three-quarters want communication; initiative, work ethic and technical skills each matter to over 70%. Nearly two-thirds use skills-based hiring. (NACE, 2025. A US survey, so say so.)
