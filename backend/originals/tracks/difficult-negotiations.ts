@@ -3,6 +3,7 @@ import u01 from './difficult-negotiations/beginner/u01';
 import u02 from './difficult-negotiations/beginner/u02';
 import u03 from './difficult-negotiations/beginner/u03';
 import u04 from './difficult-negotiations/beginner/u04';
+import u05 from './difficult-negotiations/beginner/u05';
 
 /**
  * How to Handle Difficult Negotiations — storyline "Arjun's Big Contract".
@@ -42,8 +43,8 @@ const track: OriginalTrackDef = {
         'Package and close a tough deal in writing',
       ],
       skills: ['Negotiation', 'Hardball tactics', 'Saying no', 'Scope control', 'BATNA', 'Composure'],
-      upcomingUnits: 1,
-      units: [u01, u02, u03, u04],
+      upcomingUnits: 0,
+      units: [u01, u02, u03, u04, u05],
     },
   ],
 };

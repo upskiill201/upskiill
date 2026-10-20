@@ -55,4 +55,4 @@ Arjun quotes **£48,000** for 16 weeks. Mr Pryce, the procurement manager, repli
 ### Ch5 · Hard deal, fair deal · *"Closing a tough one"*
 1. The final meeting (Story) · 2. Package the deal (Steps) · 3. Put it in writing (Compare) · 4. Saving face for both sides (Chat) · **5 Checkpoint** · 6. Repairing after a hard round (Reading) · 7. Closing myths (Myth) · 8. The first month after signing (Cards) · 9. Deal sheet v5 (Explore) · **10 Final challenge: the contract**
 
-**Outcome (fictional):** £42,000 for a phased scope (phase 1 in 12 weeks), payment 40/30/30, a change-request rate of £450 a day, and a review after phase 1. Pryce's "three other quotes" turn out to be one.
+**Outcome (fictional):** £42,000 for phase one (12 weeks) plus three months of launch support, payment 40/30/30, a change-request rate of £450 a day, and a phase-two review after launch. Arjun keeps £15,000 against a £12,000 BATNA (a Kinwell extension). Pryce's "three other quotes" turn out to be one, needing 20 weeks.
