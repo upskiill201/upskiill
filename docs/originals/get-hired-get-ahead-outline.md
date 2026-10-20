@@ -509,6 +509,35 @@ All 18 founder topics are covered: 12 chapters have one topic each, and three ch
 | 19 | Your promotion case | Write your own promotion case | Step-by-step |
 | 20 | **Chapter Challenge: 1 March** | | Mixed (climax) |
 
+## Level 3 (How to Get Ahead at Work), Chapter 4 — Your plan (written 2026-10-20)
+
+**Story:** month nine. Paul asks where Clinton wants to be in three years; he has no idea. He runs a two-week energy audit (users and deciding what to build: energy up; deep debugging: down), ranks his values honestly, explores product with Aïcha (product manager, named extra), writes a two-skill plan and tells Ngozi, who offers user research and monthly product planning. **Choice (l01):** admit and explore, "CTO by 25", or drift. **Choice (l11):** his mum wants a stable state-bank job; he addresses her real worry (security). **Choice (l17):** the Bafoussam discovery workshop vs a milestone. **Climax (l20):** he shows Paul his one-page plan; Paul will recommend him for Aïcha's associate PM role. Learner kit, piece 4: a career plan.
+
+**Sources mentioned:** Gollwitzer, implementation intentions (1999; meta-analysis 2006); 70-20-10 labelled as a rule of thumb without strong evidence; energy audit similar to Designing Your Life (2016). All qualitative.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | "Three years from now?" | Notice when you're drifting instead of choosing | Story (choice) |
+| 2 | What a career plan is | Describe a one-page career plan | Reading |
+| 3 | Vague goal, real direction | Turn a vague career goal into a direction | Before / After |
+| 4 | The energy audit | Run a two-week energy audit | Step-by-step |
+| 5 | **Checkpoint: the audit results** | | Mixed review |
+| 6 | What matters to Clinton | Rank your work values honestly | Tap to explore |
+| 7 | When values clash | Recognise when values conflict | Chat with Tey |
+| 8 | Explore before you decide | Learn about a role through conversations | Step-by-step |
+| 9 | Two skills, not twenty | Choose two skills to build | Before / After |
+| 10 | **Checkpoint: Aïcha's review** | | Mixed review |
+| 11 | Mum's plan | Handle family expectations about your career | Story (choice) |
+| 12 | Where skills come from | Name three sources of skill growth | Card deck |
+| 13 | Telling your manager | Decide whether to share your plan with your manager | Chat with Tey |
+| 14 | Keep the plan alive | Review a career plan every quarter | Step-by-step |
+| 15 | **Checkpoint: "Let's try it"** | | Mixed review |
+| 16 | Career plan myths | Spot career-planning myths | Myth or Fact |
+| 17 | The workshop invitation | Weigh an opportunity against current commitments | Story (choice) |
+| 18 | Clinton's one page | Recognise a strong one-page career plan | Tap to explore |
+| 19 | Your career plan | Write your own one-page career plan | Step-by-step |
+| 20 | **Chapter Challenge: the answer** | | Mixed (climax) |
+
 ## Facts (checked 2026-10-20; sources go in each lesson's author notes)
 
 - **Employers look for problem-solving and teamwork first.** In NACE's *Job Outlook 2025*, about 90% of US employers look for problem-solving evidence on graduate résumés and roughly 80% look for teamwork. More than three-quarters want communication; initiative, work ethic and technical skills each matter to over 70%. Nearly two-thirds use skills-based hiring. (NACE, 2025. A US survey, so say so.)
