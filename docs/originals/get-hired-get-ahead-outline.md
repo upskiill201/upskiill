@@ -78,7 +78,7 @@ Clinton starts as a **junior developer at Njangi Pay**, Douala.
 |---|---|---|---|---|
 | 1 | What you've already got | 8 months to grad | How to Identify Your Transferable Skills | Find the skills they already have, and prove them with evidence |
 | 2 | Proof without experience | 7 months to grad | How to Build a Portfolio Without Work Experience | Plan and make small projects that show what they can do |
-| 3 | The CV that gets read | 6 months | How to Write a CV That Gets Attention | Write a clear one- or two-page CV with achievement bullets |
+| 3 | The CV that gets read | 6 months to grad | How to Write a CV That Gets Attention | Write a clear one- or two-page CV with achievement bullets |
 | 4 | The cover letter | 5 months | How to Write a Cover Letter | Write a short, specific cover letter for one real role |
 | 5 | Be findable | 4 months | How to Build a Professional LinkedIn Profile | Build a profile that recruiters find and trust |
 | 6 | The hidden job market | 3 months | How to Find Hidden Job Opportunities; How to Network When You Know Nobody | Find unadvertised roles and start real conversations from zero |
@@ -104,7 +104,7 @@ All 18 founder topics are covered: 12 chapters have one topic each, and three ch
 **Level 1**
 1. **What you've already got.** The careers fair: "I don't have any experience." Miracle: "You run a 40-person meet-up. That's experience." *Climax:* Clinton's skills inventory, each skill with proof.
 2. **Proof without experience.** Clinton builds a small savings-group tracker for his mum's njangi and writes it up. *Choice:* copy a tutorial project and call it his own, or build something real and smaller.
-3. **The CV that gets read.** Miracle's desk: she gives his CV 7 seconds. *Climax:* a one-page CV with bullets that say what changed. *Choice:* "fluent in French" (he isn't).
+3. **The CV that gets read.** Miracle's desk: she gives his CV 7 seconds. *Climax:* a one-page CV with bullets that say what changed. *Choice:* round his 2.94 GPA up to "3.0" ("fluent in French" was already settled in Chapter 1).
 4. **The cover letter.** His first letter starts "I am writing to apply..." and says nothing. *Choice:* let AI write the whole thing, or use it to sharpen his own draft.
 5. **Be findable.** His LinkedIn photo is from a party. *Climax:* Brenda Fon views his profile.
 6. **The hidden job market.** The best roles never get posted. Clinton messages people he's never met, and most ignore him. One doesn't. *Choice:* spam 200 people with the same message, or write 10 real ones.
@@ -180,11 +180,41 @@ All 18 founder topics are covered: 12 chapters have one topic each, and three ch
 | 19 | Your portfolio piece | The learner plans their own first piece (career kit, piece 2) | Step-by-step |
 | 20 | **Chapter Challenge: the Njangi Tracker** | Clinton's finished case study | Mixed (climax) |
 
+## Level 1, Chapter 3 — The CV that gets read (written 2026-10-20)
+
+**Story:** Clinton proudly sends Miracle his CV: three pages, a photo in a suit borrowed from his uncle, a skills bar chart ("Python: 85%"), and a paragraph called "Career Objective". She sets a timer for seven seconds, scrolls, and stops. "I know your name and that you like the colour purple. That's all I got."
+
+**Chapter climax (lesson 20):** a one-page CV: clear headings, his Njangi Tracker and meet-up as achievement bullets, honest skill levels, tailored to Njangi Pay's advert. Mrs Ewane hands it back without a single red mark, for the first time in her office's history. The learner writes their own CV (career kit, piece 3).
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | Seven seconds | Why the first look is so short; one page with the best first | Story (choice) |
+| 2 | What a recruiter's eyes do | The Ladders eye-tracking study: simple layouts and clear headings win | Reading |
+| 3 | Duties vs. achievements | "Responsible for..." vs. what changed | Before / After |
+| 4 | The sections of a graduate CV | Contact, profile, education, projects, experience, skills, extras | Step-by-step |
+| 5 | **Checkpoint 1: Mrs Ewane's red pen** | | Mixed review |
+| 6 | The top third | Tap each part of the top of a CV: name, contact, profile line | Tap to explore |
+| 7 | The bullet formula | Strong verb + what you did + result | Chat with Tey |
+| 8 | One CV, many jobs | Tailoring to an advert honestly, using its words | Step-by-step |
+| 9 | Simple beats fancy | Graphics, columns and skill bars vs. a clean one-column layout | Before / After |
+| 10 | **Checkpoint 2: David's medical CV** | | Mixed review |
+| 11 | 2.94 or 3.0? | Clinton is tempted to round up his GPA; exact, honest numbers | Story (choice) |
+| 12 | CVs around the world | CV vs. résumé, photos, length, personal details | Card deck |
+| 13 | The software that reads CVs | Applicant tracking systems: what they do, and the "75%" myth | Chat with Tey |
+| 14 | Proofread like a pro | Read aloud, a second reader, file names, PDF | Step-by-step |
+| 15 | **Checkpoint 3: Brenda's tips** | | Mixed review |
+| 16 | CV myths | "Always one page", "references available on request", "objectives" | Myth or Fact |
+| 17 | Forty applications in one night | Sending one generic CV everywhere vs. tailoring fewer | Story (choice) |
+| 18 | Read a great graduate CV | A strong one-page CV, part by part | Tap to explore |
+| 19 | Your CV | The learner writes their own (career kit, piece 3) | Step-by-step |
+| 20 | **Chapter Challenge: one page, no red ink** | Clinton's tailored one-page CV | Mixed (climax) |
+
 ## Facts (checked 2026-10-20; sources go in each lesson's author notes)
 
 - **Employers look for problem-solving and teamwork first.** In NACE's *Job Outlook 2025*, about 90% of US employers look for problem-solving evidence on graduate résumés and roughly 80% look for teamwork. More than three-quarters want communication; initiative, work ethic and technical skills each matter to over 70%. Nearly two-thirds use skills-based hiring. (NACE, 2025. A US survey, so say so.)
 - **Analytical thinking is the top core skill worldwide.** In the WEF *Future of Jobs Report 2025* (over 1,000 employers, 55 economies), about 7 in 10 employers rate analytical thinking essential. Next come resilience, flexibility and agility, then leadership and social influence, creative thinking, and motivation and self-awareness. (WEF, January 2025.)
 - **Recruiters' first look at a CV takes seconds.** In Ladders' 2018 eye-tracking study, the initial CV screen averaged **7.4 seconds** (about 6 seconds in 2012). Simple layouts with clear headings held attention; cluttered, multi-column layouts did worse. (Ladders, 2018. It's a small, industry study: say "one study found", and frame it as the first skim, not the whole decision.)
+- **The "75% of CVs are rejected by software" claim is a myth.** It traces back to a 2012 sales pitch by Preptel, a CV-optimisation company that closed soon after; no study supports it. Applicant tracking systems do store, search and sometimes rank CVs, so clear formatting and the advert's real keywords still help.
 - **Weak ties lead to new jobs.** In *A Causal Test of the Strength of Weak Ties* (Rajkumar et al., *Science*, 2022), LinkedIn experiments covering over 20 million people over five years found that moderately weak ties (people you know a little) led to more job moves than close friends. The effect was strongest in digital industries. The idea goes back to sociologist Mark Granovetter, *The Strength of Weak Ties* (1973).
 - **The first 90 days.** The idea is from Michael D. Watkins, *The First 90 Days* (Harvard Business School Press, 2003).
 - **No invented statistics.** Common internet claims such as "70–80% of jobs are never advertised" have weak or untraceable sources, so we will not use them. Say "many roles are filled through referrals and networks before they're posted" unless a checked source is found.
