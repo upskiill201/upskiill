@@ -198,6 +198,37 @@ Assets (Teyro-made): `beat-1..3.mp3` and `cover-1..3.png` at the asset root, the
 
 ---
 
+## Chapter 4 — Hello, CSS (written 2026-10-20)
+
+**Story:** nine weeks to uni. Efua: "It works. It also looks like 1996." Kofi meets CSS: rules, where styles live, the CERN origin (Lie, 1994; CSS1, 1996), colours, selectors, text, the cascade, fonts with fallbacks, and debugging a missing brace. **Choice (l01):** learn CSS, h1 everywhere, or a screenshot. **Choice (l11):** every colour at once (outline choice). **Choice (l17):** half the styles vanished. **Climax (l20):** Mensah Beats v0.4; Efua: "I'd share this."
+
+All lessons use the style tag in the live pad (one document); style.css arrives with publishing in Chapter 5. Style checks target the element the style is set on (jsdom).
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | "It looks like 1996" | Explain what CSS does that HTML doesn't | Story (choice) |
+| 2 | Two jobs, two languages | Explain why looks belong in CSS, not HTML | Before / After |
+| 3 | How a rule works | Write a CSS rule from its five parts | Step-by-step |
+| 4 | Style the whole page | Style the whole page with body | Tap to explore |
+| 5 | **Checkpoint: Efua's second look** | | Mixed review |
+| 6 | Where CSS lives | Name the three places CSS can live | Chat with Tey |
+| 7 | CSS was born at CERN too | Explain where CSS came from and why | Reading |
+| 8 | Colour words | Use named colours in CSS | Card deck |
+| 9 | Picking what to style | Group selectors with a comma | Before / After |
+| 10 | **Checkpoint: Clinton's colour test** | | Mixed review |
+| 11 | Every colour at once | Recognise when colour is helping and when it's hurting | Story (choice) |
+| 12 | Shaping the words | Change text size, weight and alignment | Tap to explore |
+| 13 | Which rule wins? | Predict which of two rules wins | Chat with Tey |
+| 14 | Choosing a font | Set a font with font-family | Step-by-step |
+| 15 | **Checkpoint: Ama's reading test** | | Mixed review |
+| 16 | CSS myths | Spot common beginner myths about CSS | Myth or Fact |
+| 17 | Half the styles vanished | Find a missing brace that breaks later rules | Story (choice) |
+| 18 | Your page gets style | Style your own page with a body rule, headings and links | Step-by-step |
+| 19 | Read a finished stylesheet | Read a whole stylesheet and say what each rule does | Tap to explore |
+| 20 | **Chapter Challenge: Mensah Beats v0.4** | | Mixed (climax) |
+
+---
+
 ## Chapters 4–13 (stories; lesson lists are written chapter by chapter)
 
 **2 · Words on the page (11 weeks).** Kofi writes his story, track list and gig list. Headings, paragraphs, `<strong>` and `<em>`, ordered and unordered lists, line breaks. *Climax:* a page people actually read to the end. *Efua:* "It's a wall of text."
