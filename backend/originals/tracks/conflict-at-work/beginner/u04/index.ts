@@ -19,7 +19,7 @@ const unit: OriginalUnit = {
   key: 'u04',
   title: 'That\'s not fair',
   marker: 'Ward rules v4',
-  story: 'The new product manager, Callum, calls Grace\'s report "just opinions" in front of eight people. Part of her wants to fight; part wants to hide.',
+  story: 'The new product manager calls Grace\'s report "just opinions" in front of eight people. She wants to fight, and to hide.',
   goal: 'Respond to unfair criticism: name your trigger, find what\'s right in it, respond instead of reacting, disagree calmly and handle public criticism.',
   lessons: [l01, l02, l03, l04, l05, l06, l07, l08, l09, l10],
 };
