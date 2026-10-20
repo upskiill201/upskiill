@@ -26,6 +26,7 @@ const track: OriginalTrackDef = {
       level: 1,
       slug: 'negotiation-skills-for-beginners',
       title: 'Negotiation Skills for Beginners',
+      thumbnailUrl: '/originals/negotiation-skills-for-beginners.jpg',
       subtitle: 'Ada Asks: ask for what you want, and leave both sides better off',
       shortDescription:
         'Most people never ask, and pay for it for years. Learn to prepare, name a number, find deals where both sides win, and close calmly: at work, with a landlord, or with your first client.',
