@@ -376,6 +376,35 @@ Checks on grid templates (`grid-template-columns`, `-areas`, `-rows`, `grid-colu
 | 19 | Grid, Flexbox and a table | Read a layout that uses Grid, Flexbox and a table together | Tap to explore |
 | 20 | **Chapter Challenge: Mensah Beats v1.4** | | Mixed (climax) |
 
+## Course 2, Chapter 5 — Phones first (written 2026-10-20; Course 2 complete)
+
+**Story:** three weeks to uni. The host's stats show most visitors are on phones, where v1.4 is two squeezed columns. `@media (min-width: ...)` on a stacked base, desktop-first vs mobile-first, the viewport meta tag (never block zoom), stacking breakpoints small to large, breakpoints chosen by the content, the history (m-dot sites, the 2007 iPhone, Ethan Marcotte's "Responsive Web Design" in May 2010, mobile overtaking desktop in StatCounter's late-2016 figures), `img { max-width: 100%; height: auto; }` with real width/height attributes, `object-fit`, phones-first headings in rem, never hiding content with `display: none` (use jump links instead), a layered stylesheet, the ten-minute test (320px, 200% zoom, big text, real phones), and a gig table that scrolls in an `overflow-x: auto` wrapper. **Choice (l01):** media queries, a separate phone site, or pinch-to-zoom. **Choice (l11):** hide it on phones? **Choice (l17):** the table that wouldn't fit. **Climax (l20):** Mensah Beats v1.5 on every screen in the house at Sunday lunch. Course 2 complete.
+
+The loader (jsdom) ignores `@media` rules, so media-query exercises use `codeIncludes` (`min-width`, the breakpoint, the value), and page checks only test properties no media query in that exercise changes, so browser and loader grading agree.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | Most of them are on phones | Explain why sites are designed for phones first | Story (choice) |
+| 2 | Undoing vs adding | Tell desktop-first from mobile-first CSS | Before / After |
+| 3 | The line every phone needs | Explain what the viewport meta tag does | Step-by-step |
+| 4 | Inside a media query | Read every part of a media query | Tap to explore |
+| 5 | **Checkpoint: the stack** | | Mixed review |
+| 6 | Where should it break? | Choose breakpoints where the content starts to look wrong | Chat with Tey |
+| 7 | How the web learned to bend | Describe how sites handled phones before responsive design | Reading |
+| 8 | Pictures that fit and don't squash | Keep images in proportion with height: auto | Card deck |
+| 9 | The name that didn't fit | Spot text that's too big for a phone | Before / After |
+| 10 | **Checkpoint: nothing squashed** | | Mixed review |
+| 11 | Hide it on phones? | Explain what display: none does | Story (choice) |
+| 12 | One stylesheet, three screens | Read a phones-first stylesheet with two breakpoints | Tap to explore |
+| 13 | How do I know it works? | Test a page in the browser's device mode | Chat with Tey |
+| 14 | Turn v1.4 phones-first | Move a laptop layout into a min-width query | Step-by-step |
+| 15 | **Checkpoint: the ten-minute test** | | Mixed review |
+| 16 | Responsive: myth or fact? | Separate responsive design myths from facts | Myth or Fact |
+| 17 | The table that wouldn't fit | Spot a table that's wider than a phone | Story (choice) |
+| 18 | Your page, phones first | Make your own page phones-first | Step-by-step |
+| 19 | Everything from this course | Read a complete phones-first stylesheet | Tap to explore |
+| 20 | **Chapter Challenge: Mensah Beats v1.5** | | Mixed (climax) |
+
 ## Chapters 4–13 (stories; lesson lists are written chapter by chapter)
 
 **2 · Words on the page (11 weeks).** Kofi writes his story, track list and gig list. Headings, paragraphs, `<strong>` and `<em>`, ordered and unordered lists, line breaks. *Climax:* a page people actually read to the end. *Efua:* "It's a wall of text."
