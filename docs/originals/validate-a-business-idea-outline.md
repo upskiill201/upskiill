@@ -1,7 +1,7 @@
 # How to Validate a Business Idea — Course Outline
 
 > A short Teyro Original in a new **Business** category (track `format: 'short'`): one level, **5 chapters × 10 lessons = 50 lessons**. Each chapter has a Checkpoint at lesson 5 and a Unit Challenge at lesson 10.
-> **Status: APPROVED (2026-10-20)** as drafted. Chapter 1 written on `feat/validate-business-idea`. Course 1 of 3 in the Business set (then How to Price a Product or Service, and Profit, Revenue and Cash Flow), all following Clinton's campus business.
+> **Status: APPROVED (2026-10-20)** as drafted. All 5 chapters (50 lessons) written on `feat/validate-business-idea`; no cover yet. Course 1 of 3 in the Business set (then How to Price a Product or Service, and Profit, Revenue and Cash Flow), all following Clinton's campus business.
 > Rules: docs/ORIGINALS_PLAYBOOK.md. Cast: docs/originals/CAST.md.
 
 ## The name
