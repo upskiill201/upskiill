@@ -1,6 +1,8 @@
 import { createElement, type ReactNode } from 'react';
 import { __iconNode as bookOpen } from 'lucide-react/dist/esm/icons/book-open.js';
+import { __iconNode as bookOpenCheck } from 'lucide-react/dist/esm/icons/book-open-check.js';
 import { __iconNode as check } from 'lucide-react/dist/esm/icons/check.js';
+import { __iconNode as clock } from 'lucide-react/dist/esm/icons/clock.js';
 import { __iconNode as layers } from 'lucide-react/dist/esm/icons/layers.js';
 import { __iconNode as lightbulb } from 'lucide-react/dist/esm/icons/lightbulb.js';
 import { __iconNode as sparkle } from 'lucide-react/dist/esm/icons/sparkle.js';
@@ -12,7 +14,7 @@ import { __iconNode as target } from 'lucide-react/dist/esm/icons/target.js';
  * from each one's published `__iconNode` shape data instead.
  */
 
-export const ICONS = { bookOpen, check, layers, lightbulb, sparkle, target } as const;
+export const ICONS = { bookOpen, bookOpenCheck, check, clock, layers, lightbulb, sparkle, target } as const;
 export type IconName = keyof typeof ICONS;
 
 export function LucideIcon({
