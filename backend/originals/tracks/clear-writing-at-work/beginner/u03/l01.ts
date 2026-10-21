@@ -48,6 +48,7 @@ const lesson: OriginalLesson = {
         pairs: [
           ['Mr Kamau', 'Approve June and two contracts'],
           ['Emeka', 'Send Lagos weekend counts'],
+          ['Mrs Achieng', 'Check the drafts before they go'],
         ],
       },
       {
