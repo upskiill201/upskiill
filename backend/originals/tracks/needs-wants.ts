@@ -3,6 +3,7 @@ import u01 from './needs-wants/beginner/u01';
 import u02 from './needs-wants/beginner/u02';
 import u03 from './needs-wants/beginner/u03';
 import u04 from './needs-wants/beginner/u04';
+import u05 from './needs-wants/beginner/u05';
 
 /**
  * Needs vs. Wants: Making Better Spending Decisions — storyline "Ada's Raise".
@@ -19,9 +20,11 @@ import u04 from './needs-wants/beginner/u04';
  *   phone instalment 20,000 (new); gym 12,000 (rarely used); subscriptions
  *   +8,000.
  * - Goal: ₦900,000 in 6 months = 150,000/month.
- * - Final (Ch5): saving rises to 135,000/month (transport 45,000, food 70,000,
- *   gym cancelled, subscriptions trimmed, delivery cut, art class kept) =
- *   810,000 + old phone and laptop sold 90,000 = 900,000.
+ * - Ch2 cuts 65,000 → saving 85,000; Ch3 values (online shopping, clothes)
+ *   +40,000 → 125,000; Ch4 data plan and last streaming app +10,000 → 135,000.
+ * - One-offs: aso-ebi −55,000 (Ch3); old phone and tablet sold +90,000 (Ch4);
+ *   Mum's freezer share −70,000 and café logo +125,000 (Ch5).
+ * - Fund by month 6: 135,000 × 6 + 90,000 − 55,000 + 125,000 − 70,000 = 900,000.
  * Outline: docs/originals/money-track-outline.md (Part 2).
  */
 const track: OriginalTrackDef = {
@@ -53,8 +56,8 @@ const track: OriginalTrackDef = {
         'Build a spending plan from your values and stick to it',
       ],
       skills: ['Spending decisions', 'Needs vs wants', 'Lifestyle creep', 'Values-based spending', 'Personal finance'],
-      upcomingUnits: 1,
-      units: [u01, u02, u03, u04],
+      upcomingUnits: 0,
+      units: [u01, u02, u03, u04, u05],
     },
   ],
 };
