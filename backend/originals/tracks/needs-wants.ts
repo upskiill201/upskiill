@@ -1,5 +1,6 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './needs-wants/beginner/u01';
+import u02 from './needs-wants/beginner/u02';
 
 /**
  * Needs vs. Wants: Making Better Spending Decisions — storyline "Ada's Raise".
@@ -50,8 +51,8 @@ const track: OriginalTrackDef = {
         'Build a spending plan from your values and stick to it',
       ],
       skills: ['Spending decisions', 'Needs vs wants', 'Lifestyle creep', 'Values-based spending', 'Personal finance'],
-      upcomingUnits: 4,
-      units: [u01],
+      upcomingUnits: 3,
+      units: [u01, u02],
     },
   ],
 };
