@@ -1,6 +1,7 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './save-money/beginner/u01';
 import u02 from './save-money/beginner/u02';
+import u03 from './save-money/beginner/u03';
 
 /**
  * How to Save Money on a Low Income — storyline "Kofi's Laptop Fund".
@@ -13,12 +14,13 @@ import u02 from './save-money/beginner/u02';
  *   emergency fund 300 (separate), laptop jar 490. Rate before leaks GH₵55/week
  *   → projected 490 + 16 × 55 = 1,370; gap 2,130.
  * - Ch2 leaks found: GH₵70/week → rate 125/week. Jar week 4: 850.
- * - Ch3 automated. Jar week 8: 1,350.
+ * - Weeks 5–6 transfers missed; GH₵90 of the GH₵250 got spent, GH₵160 moved in
+ *   week 7. Ch3 automated from week 7. Jar week 8: 850 + 160 + 2 × 125 = 1,260.
  * - Ch4 week 9 malaria: GH₵280 from the emergency fund (300 → 20), refilled
- *   over weeks 9–12 at 70/week from the leak money (jar gets 55/week). Jar week 12: 1,570.
- * - Ch5 weeks 13–16: 4 × 125 = 500 → 2,070; beats extra 450; Christmas money
- *   200 (of 300); old laptop sold for parts 250 → 2,970. Laptop found at
- *   GH₵3,200 (same spec), Yaw haggles it to GH₵2,950. Paid in cash, GH₵20 left,
+ *   over weeks 9–12 at 70/week from the leak money (jar gets 55/week). Jar week 12: 1,480.
+ * - Ch5 weeks 13–16: 4 × 125 = 500 → 1,980; beats extra 450; Christmas money
+ *   200 (of 300); old laptop sold for parts 250 → 2,880. Laptop found at
+ *   GH₵3,200 (same spec), Yaw haggles it to GH₵2,850. Paid in cash, GH₵30 left,
  *   emergency fund full.
  * Outline: docs/originals/money-track-outline.md.
  */
@@ -51,8 +53,8 @@ const track: OriginalTrackDef = {
         'Handle emergencies, lending and windfalls without losing your progress',
       ],
       skills: ['Saving money', 'Emergency fund', 'Goal setting', 'Frugal living', 'Personal finance'],
-      upcomingUnits: 3,
-      units: [u01, u02],
+      upcomingUnits: 2,
+      units: [u01, u02, u03],
     },
   ],
 };
