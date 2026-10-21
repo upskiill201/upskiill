@@ -3,6 +3,7 @@ import u01 from './acing-job-interviews/beginner/u01';
 import u02 from './acing-job-interviews/beginner/u02';
 import u03 from './acing-job-interviews/beginner/u03';
 import u04 from './acing-job-interviews/beginner/u04';
+import u05 from './acing-job-interviews/beginner/u05';
 
 /**
  * Acing Job Interviews — storyline "Remi's Interview Season".
@@ -38,8 +39,8 @@ const track: OriginalTrackDef = {
         'Do well in final rounds and follow up the right way',
       ],
       skills: ['Interviewing', 'STAR answers', 'Self-presentation', 'Research', 'Follow-up'],
-      upcomingUnits: 1,
-      units: [u01, u02, u03, u04],
+      upcomingUnits: 0,
+      units: [u01, u02, u03, u04, u05],
     },
   ],
 };
