@@ -523,6 +523,33 @@ Placeholder addresses use mensahbeats.example.app. The compare card now wraps lo
 | 19 | A head ready to be found | Read a complete, search-ready head | Tap to explore |
 | 20 | **Chapter Challenge: Mensah Beats v1.9** | | Mixed (climax) |
 
+## Course 3, Chapter 5 — Launch night (written 2026-10-21; Course 3 and the whole track complete)
+
+**Story:** the end-of-year show, and tomorrow Kofi leaves for university. He relaunches the site as Mensah Beats v2.0 at midnight. A launch checklist (ready, not perfect), the version history from v0.1, a pre-launch check (W3C HTML validator, every link, the form, phone and laptop, keyboard and zoom, Lighthouse and the preview card), the finished home page, domains (rented yearly from a registrar, check renewal prices locally, DNS records point it at the host, the free address is fine), history (the first website at CERN in 1991, restored in 2013; Eric S. Raymond's "release early, release often", 1997; what shipping means), a friendly 404.html, a tidy folder with a dated backup, the honest launch post (no hype), stylesheet layers, keeping it alive with a changelog, the upload and smoke test (reload fully or use a private window), launch myths, a calm live fix (a capital letter in Thanks.html breaks the form on the server), and a "how I built it" page. **Choice (l01):** checklist, upload at 11:59, or wait for perfect. **Choice (l11):** honest post, hype, or "link in bio somewhere". **Choice (l17):** rename and test, panic re-upload, or take the site down. **Climax (l20):** Mensah Beats v2.0; Kofi on the bus to uni with three new bookings, and the whole HTML & CSS track complete.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | Launch night | Explain why a launch needs a checklist | Story (choice) |
+| 2 | From one line to v2.0 | Describe how a site grows from a first page to a full site | Before / After |
+| 3 | The pre-launch check | Run a pre-launch check in a sensible order | Step-by-step |
+| 4 | The v2.0 home page | Read a complete, finished home page | Tap to explore |
+| 5 | **Checkpoint: the list is clean** | | Mixed review |
+| 6 | Your own web address | Explain what a domain name is | Chat with Tey |
+| 7 | The first website was one page | Describe the first website and how simple it was | Reading |
+| 8 | A friendly "page not found" | Write a helpful 404 page | Card deck |
+| 9 | A folder you can find things in | Organise a site folder and keep a backup | Before / After |
+| 10 | **Checkpoint: packed and backed up** | | Mixed review |
+| 11 | The launch post | Write an honest, specific launch message | Story (choice) |
+| 12 | The v2.0 stylesheet | Read a complete stylesheet in sensible layers | Tap to explore |
+| 13 | Keeping it alive | Plan small updates with a changelog | Chat with Tey |
+| 14 | The upload | Upload a new version safely and smoke test it | Step-by-step |
+| 15 | **Checkpoint: it's up** | | Mixed review |
+| 16 | Launch myths | Spot common myths about launching a site | Myth or Fact |
+| 17 | A bug at 12:05 | Stay calm and fix a live bug with the smallest safe change | Story (choice) |
+| 18 | How I built it | Write a short "how I built it" page | Step-by-step |
+| 19 | The whole changelog | Read the full story of a site as a changelog | Tap to explore |
+| 20 | **Chapter Challenge: Mensah Beats v2.0** | | Mixed (climax) |
+
 ## Chapters 4–13 (stories; lesson lists are written chapter by chapter)
 
 **2 · Words on the page (11 weeks).** Kofi writes his story, track list and gig list. Headings, paragraphs, `<strong>` and `<em>`, ordered and unordered lists, line breaks. *Climax:* a page people actually read to the end. *Efua:* "It's a wall of text."
