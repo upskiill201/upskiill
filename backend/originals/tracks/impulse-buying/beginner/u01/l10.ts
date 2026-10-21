@@ -53,6 +53,7 @@ const lesson: OriginalLesson = {
         pairs: [
           ['Midnight earrings', 'A bad exam'],
           ['"Last one!" bag', 'Scarcity'],
+          ['Kofi\'s 2:14 a.m. boots', 'A missed penalty'],
         ],
       },
       {
