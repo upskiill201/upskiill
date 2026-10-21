@@ -1,5 +1,6 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './acing-job-interviews/beginner/u01';
+import u02 from './acing-job-interviews/beginner/u02';
 
 /**
  * Acing Job Interviews — storyline "Remi's Interview Season".
@@ -35,8 +36,8 @@ const track: OriginalTrackDef = {
         'Do well in final rounds and follow up the right way',
       ],
       skills: ['Interviewing', 'STAR answers', 'Self-presentation', 'Research', 'Follow-up'],
-      upcomingUnits: 4,
-      units: [u01],
+      upcomingUnits: 3,
+      units: [u01, u02],
     },
   ],
 };
