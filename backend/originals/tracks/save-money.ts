@@ -2,6 +2,7 @@ import type { OriginalTrackDef } from '../../src/originals/originals-authoring.t
 import u01 from './save-money/beginner/u01';
 import u02 from './save-money/beginner/u02';
 import u03 from './save-money/beginner/u03';
+import u04 from './save-money/beginner/u04';
 
 /**
  * How to Save Money on a Low Income — storyline "Kofi's Laptop Fund".
@@ -53,8 +54,8 @@ const track: OriginalTrackDef = {
         'Handle emergencies, lending and windfalls without losing your progress',
       ],
       skills: ['Saving money', 'Emergency fund', 'Goal setting', 'Frugal living', 'Personal finance'],
-      upcomingUnits: 2,
-      units: [u01, u02, u03],
+      upcomingUnits: 1,
+      units: [u01, u02, u03, u04],
     },
   ],
 };
