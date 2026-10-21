@@ -209,3 +209,57 @@ Format rule, as in the Business set: each chapter uses all eight Learn formats o
 2. 5 chapters × 10 lessons per course, a new **Personal Finance** category, no code.
 3. The chapter and lesson plans above, including the cliffhanger at the end of every chapter.
 4. Build order: add the category, write course 1 chapter by chapter, committing each one, then courses 2 and 3, then the covers. Nothing is pushed until you say so.
+
+---
+
+# Part 2: four more courses (founder, 2026-10-21, "build them one after the other")
+
+> Requested the same night as approval, while the founder slept: "Needs vs. Wants", "Money Habits That Build Long-Term Wealth" (listed twice; built once), "How to Understand Investment Risk", "How Scams and Financial Fraud Work". Built autonomously in the same short format (5 × 10). Each uses a different lead from the shared cast so the track has variety; same rules (lesson 9 = running device, eight formats per chapter, a cliffhanger every chapter, playbook §9 safety).
+
+## Course 4 · Needs vs. Wants: Making Better Spending Decisions · *Ada's Raise*
+
+**Lead:** Ada (Lagos, ₦). After Negotiation Skills for Beginners her salary is ₦480,000. Three months after the raise she is saving *less* than before it. Lucía (mentor) has invited her to a design conference in Mexico City in six months, if Ada can fund half (₦900,000). Ngozi (flatmate, narrated) sells ankara online and spends like a trader. Device: **Ada's line** (where she draws need vs want), v1 → v5.
+
+| Ch | Marker | Title | Covers |
+|---|---|---|---|
+| 1 | Month 3 after the raise | Where did the raise go? | lifestyle creep, need inflation, the need–want spectrum, tracking the raise |
+| 2 | ₦480,000 | Needs, wants and the space between | the needs ladder, "basic version", must-have vs nice-to-have, housing/transport/food decisions |
+| 3 | What matters | Spend on what matters | values-based spending, cutting what you don't care about, joy per naira |
+| 4 | Hard choices | Trade-offs | opportunity cost, the 10/10/10 test, "would I buy it again?", big choices (phone, car vs rides) |
+| 5 | Mexico City | Choosing on purpose | family requests, a spending plan from values, the final decision and the trip |
+
+## Course 5 · Money Habits That Build Long-Term Wealth · *Miracle's Long Game*
+
+**Lead:** Miracle (24, Afiya, Lagos, ₦). Her dad, a schoolteacher in Buea, calls: he retires next year, and he has almost nothing saved. Miracle realises the habits she builds in her twenties decide her sixties. Folake (her boss) is the long-term saver she didn't know she worked with. Device: **the 40-year map** (net worth and habit tracker), v1 → v5.
+
+| Ch | Marker | Title | Covers |
+|---|---|---|---|
+| 1 | The phone call | Time is the secret | what wealth is (assets − debts), net worth, why starting early matters, compounding in plain words |
+| 2 | Pay future me | Pay future you first | automatic long-term saving, workplace pensions (general), saving a share of every raise |
+| 3 | Interest on interest | Make time work for you | compounding, inflation and real returns, the cost of high-interest debt working against you |
+| 4 | Grow the gap | Earn more, spend steady | lifestyle inflation, growing income through skills, side income, avoiding expensive debt |
+| 5 | The long game | Stay the course | staying steady, protecting what you build (insurance basics), supporting family without sinking, a plan for Dad |
+
+## Course 6 · How to Understand Investment Risk · *Arjun's Windfall*
+
+**Lead:** Arjun (Bengaluru, ₹). The Harlow & Finch contract leaves him ₹12 lakh after paying Kavya and Joel and setting tax aside. His cousin swears by options trading, his uncle wants land, a WhatsApp group promises "3% a month guaranteed", and Kavya says "just put it all in crypto". Device: **Arjun's risk map**, v1 → v5. General principles only: no products, no personal advice.
+
+| Ch | Marker | Title | Covers |
+|---|---|---|---|
+| 1 | ₹12 lakh | What risk really means | risk and return, volatility, "can I lose it?", why there's no reward without risk |
+| 2 | Five kinds of risk | Kinds of risk | market, inflation, liquidity, concentration and fraud risk; the risk of doing nothing |
+| 3 | When will I need it? | Time and goals | time horizons, matching money to goals, emergency fund first, risk capacity vs risk tolerance |
+| 4 | Eggs and baskets | Spreading risk | diversification, correlation, fees, why "one hot stock" is a bet |
+| 5 | 3% a month | Too good to be true | guaranteed-return red flags, trading losses (SEBI data), FOMO and loss aversion, Arjun's final plan |
+
+## Course 7 · How Scams and Financial Fraud Work · *Grace and the Scam Files*
+
+**Lead:** Grace (Manchester, £) with her son Jayden (17). It starts with a text: "Hi Mum, I've dropped my phone, this is my new number." Jayden is in the next room. Then Jayden is offered "£500 for letting money pass through your account", Femi's aunt in Lagos loses money to a "wrong transfer, please reverse" scam, and Kinwell gets a fake invoice. Grace builds a scam file and ends up running a session at work. Device: **the scam file**, v1 → v5.
+
+| Ch | Marker | Title | Covers |
+|---|---|---|---|
+| 1 | "Hi Mum" | How scams work | the scam recipe (urgency, authority, emotion, secrecy), impersonation texts, the pause |
+| 2 | Too good to be true | Investment and money-making scams | Ponzi and pyramid schemes, fake trading, crypto "mentors", romance-investment scams |
+| 3 | Who's really calling? | Phishing and impersonation | phishing, smishing, vishing, bank and "safe account" scams, codes and PINs |
+| 4 | Jayden's job offer | Scams aimed at young people | money mules, fake jobs, online shopping and ticket scams, mobile money reversal scams |
+| 5 | Locked down | Protect, report, recover | passwords and two-step checks, what to do in the first hour, reporting, helping others; Grace's session |
