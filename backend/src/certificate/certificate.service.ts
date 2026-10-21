@@ -1,7 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { randomBytes } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
+import {
+  CORRECTION_WINDOW_MS,
+  certificateNameProblem,
+  normaliseCertificateName,
+} from './certificate-name';
 
 /**
  * Course completion certificates.
@@ -17,6 +27,12 @@ import { PrismaService } from '../prisma/prisma.service';
  * The numbers printed on the certificate are a snapshot taken at issue, so a
  * course that later gains lessons doesn't change a certificate already
  * earned. `code` is the public credential ID behind teyro.app/c/<code>.
+ *
+ * Nothing is issued until the learner confirms the real name to print
+ * (User.certificateName) — profile names are often nicknames. Until then an
+ * eligible course answers NAME_REQUIRED. Confirming (or the one correction,
+ * or a support change) rewrites the name on every certificate they hold,
+ * under the same codes, so links already shared keep working.
  */
 
 // No 0/O/1/I — credential IDs get read aloud and typed into the verify page.
@@ -56,6 +72,20 @@ export interface CertificateData {
   bestStreak: number;
   skills: string[];
   signer: { name: string; title: string };
+  /** The learner confirmed learnerName as their real name (absent on certificates from before that step). */
+  nameConfirmed?: boolean;
+}
+
+/** GET /certificates/name */
+export interface CertificateNameState {
+  name: string | null;
+  /** What to prefill: the confirmed name, else the name on their certificates, else the profile name. */
+  suggested: string;
+  confirmedAt: string | null;
+  editableUntil: string | null;
+  canEdit: boolean;
+  held: number;
+  earnedUnclaimed: number;
 }
 
 export interface CertificateView {
@@ -69,7 +99,25 @@ export interface CertificateView {
 
 export type CourseCertificateStatus =
   | { status: 'ISSUED'; certificate: CertificateView }
+  | { status: 'NAME_REQUIRED' }
   | { status: 'IN_PROGRESS'; lessonsDone: number; lessonsTotal: number };
+
+type NameUser = {
+  fullName: string;
+  certificateName: string | null;
+  certificateNameConfirmedAt: Date | null;
+  certificateNameCorrectedAt: Date | null;
+};
+
+/** The one free correction is open until this moment, or null when it isn't. */
+function correctionUntil(user: NameUser, now = Date.now()): Date | null {
+  if (!user.certificateNameConfirmedAt || user.certificateNameCorrectedAt)
+    return null;
+  const until = new Date(
+    user.certificateNameConfirmedAt.getTime() + CORRECTION_WINDOW_MS,
+  );
+  return until.getTime() > now ? until : null;
+}
 
 type Row = {
   code: string;
@@ -118,6 +166,8 @@ export class CertificateService {
         lessonsTotal: progress.total,
       };
     }
+    if (!(await this.hasConfirmedName(userId)))
+      return { status: 'NAME_REQUIRED' };
     return {
       status: 'ISSUED',
       certificate: await this.issue(userId, courseId),
@@ -126,24 +176,12 @@ export class CertificateService {
 
   /**
    * Every certificate the learner holds — issuing any they've earned but never
-   * opened (a course finished before certificates existed, or on another device).
+   * opened (a course finished before certificates existed, or on another
+   * device), once their certificate name is confirmed.
    */
   async mine(userId: string): Promise<CertificateView[]> {
-    const [held, enrollments] = await Promise.all([
-      this.prisma.certificate.findMany({
-        where: { userId },
-        select: { courseId: true },
-      }),
-      this.prisma.enrollment.findMany({
-        where: { userId },
-        select: { courseId: true },
-      }),
-    ]);
-    const have = new Set(held.map((c) => c.courseId));
-    for (const { courseId } of enrollments) {
-      if (have.has(courseId)) continue;
-      const p = await this.progress(userId, courseId);
-      if (p && p.total > 0 && p.done >= p.total)
+    if (await this.hasConfirmedName(userId)) {
+      for (const courseId of await this.earnedUnissued(userId))
         await this.issue(userId, courseId);
     }
     const rows = await this.prisma.certificate.findMany({
@@ -151,6 +189,79 @@ export class CertificateService {
       orderBy: { completedAt: 'desc' },
     });
     return rows.map(view);
+  }
+
+  /** The learner's certificate name and whether they can still change it themselves. */
+  async nameState(userId: string): Promise<CertificateNameState> {
+    const [user, held, waiting] = await Promise.all([
+      this.nameUser(userId),
+      this.prisma.certificate.findFirst({
+        where: { userId },
+        orderBy: { issuedAt: 'desc' },
+        select: { data: true },
+      }),
+      this.earnedUnissued(userId),
+    ]);
+    const count = held
+      ? await this.prisma.certificate.count({ where: { userId } })
+      : 0;
+    const printed = (held?.data as unknown as CertificateData | undefined)
+      ?.learnerName;
+    const until = correctionUntil(user);
+    return {
+      name: user.certificateNameConfirmedAt ? user.certificateName : null,
+      suggested: user.certificateName ?? printed ?? user.fullName.trim(),
+      confirmedAt: user.certificateNameConfirmedAt?.toISOString() ?? null,
+      editableUntil: until?.toISOString() ?? null,
+      canEdit: !user.certificateNameConfirmedAt || until !== null,
+      held: count,
+      earnedUnclaimed: waiting.length,
+    };
+  }
+
+  /**
+   * The learner confirms (or, once, corrects) the name on their certificates.
+   * Rewrites it on every certificate they hold and issues any that waited on it.
+   */
+  async setName(userId: string, raw: string): Promise<CertificateNameState> {
+    const name = normaliseCertificateName(raw);
+    const problem = certificateNameProblem(name);
+    if (problem) throw new BadRequestException(problem);
+
+    const user = await this.nameUser(userId);
+    const confirmed = Boolean(user.certificateNameConfirmedAt);
+    if (confirmed && user.certificateName === name)
+      return this.nameState(userId);
+    if (confirmed && !correctionUntil(user))
+      throw new ForbiddenException(
+        'Your certificate name is locked. Contact support to change it.',
+      );
+
+    await this.applyName(userId, user, name, 'LEARNER', {
+      certificateNameConfirmedAt: user.certificateNameConfirmedAt ?? new Date(),
+      ...(confirmed ? { certificateNameCorrectedAt: new Date() } : {}),
+    });
+    for (const courseId of await this.earnedUnissued(userId))
+      await this.issue(userId, courseId);
+    return this.nameState(userId);
+  }
+
+  /** Teyro HQ changes a learner's certificate name on a support request — no lock applies. */
+  async setNameBySupport(
+    userId: string,
+    raw: string,
+  ): Promise<CertificateNameState> {
+    const name = normaliseCertificateName(raw);
+    const problem = certificateNameProblem(name);
+    if (problem) throw new BadRequestException(problem);
+    const user = await this.nameUser(userId);
+    if (user.certificateName !== name || !user.certificateNameConfirmedAt) {
+      await this.applyName(userId, user, name, 'SUPPORT', {
+        certificateNameConfirmedAt:
+          user.certificateNameConfirmedAt ?? new Date(),
+      });
+    }
+    return this.nameState(userId);
   }
 
   /** Public verification behind teyro.app/c/<code>. */
@@ -167,6 +278,92 @@ export class CertificateService {
   }
 
   // ─── internals ─────────────────────────────────────────────────────────────
+
+  private async nameUser(userId: string): Promise<NameUser> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        fullName: true,
+        certificateName: true,
+        certificateNameConfirmedAt: true,
+        certificateNameCorrectedAt: true,
+      },
+    });
+    if (!user) throw new NotFoundException('User not found.');
+    return user;
+  }
+
+  private async hasConfirmedName(userId: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { certificateName: true, certificateNameConfirmedAt: true },
+    });
+    return Boolean(user?.certificateName && user.certificateNameConfirmedAt);
+  }
+
+  /** Courses the learner has finished but holds no certificate for. */
+  private async earnedUnissued(userId: string): Promise<string[]> {
+    const [held, enrollments] = await Promise.all([
+      this.prisma.certificate.findMany({
+        where: { userId },
+        select: { courseId: true },
+      }),
+      this.prisma.enrollment.findMany({
+        where: { userId },
+        select: { courseId: true },
+      }),
+    ]);
+    const have = new Set(held.map((c) => c.courseId));
+    const out: string[] = [];
+    for (const { courseId } of enrollments) {
+      if (have.has(courseId)) continue;
+      const p = await this.progress(userId, courseId);
+      if (p && p.total > 0 && p.done >= p.total) out.push(courseId);
+    }
+    return out;
+  }
+
+  /** Saves the name, logs the change, and reprints it on every certificate held. */
+  private async applyName(
+    userId: string,
+    user: NameUser,
+    name: string,
+    source: 'LEARNER' | 'SUPPORT',
+    stamps: Prisma.UserUpdateInput,
+  ): Promise<void> {
+    const held = await this.prisma.certificate.findMany({
+      where: { userId },
+      select: { id: true, data: true },
+    });
+    const printed = (held[0]?.data as unknown as CertificateData | undefined)
+      ?.learnerName;
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: userId },
+        data: { certificateName: name, ...stamps },
+      }),
+      this.prisma.certificateNameChange.create({
+        data: {
+          userId,
+          oldName: user.certificateName ?? printed ?? null,
+          newName: name,
+          source,
+        },
+      }),
+      ...held.map((c) =>
+        this.prisma.certificate.update({
+          where: { id: c.id },
+          data: {
+            data: {
+              ...(c.data as Prisma.JsonObject),
+              learnerName: name,
+              nameConfirmed: true,
+            },
+          },
+        }),
+      ),
+    ]);
+  }
 
   /** Published lessons done vs total, or null when not enrolled. */
   private async progress(userId: string, courseId: string) {
@@ -243,7 +440,11 @@ export class CertificateService {
       await Promise.all([
         this.prisma.user.findUnique({
           where: { id: userId },
-          select: { fullName: true },
+          select: {
+            fullName: true,
+            certificateName: true,
+            certificateNameConfirmedAt: true,
+          },
         }),
         this.prisma.course.findUnique({
           where: { id: courseId },
@@ -296,7 +497,11 @@ export class CertificateService {
       .slice(0, MAX_SKILLS);
 
     return {
-      learnerName: user.fullName.trim() || 'Teyro learner',
+      learnerName:
+        user.certificateName?.trim() || user.fullName.trim() || 'Teyro learner',
+      nameConfirmed: Boolean(
+        user.certificateName && user.certificateNameConfirmedAt,
+      ),
       courseTitle: course.title,
       courseSlug: course.slug,
       isOriginal: course.isOriginal,

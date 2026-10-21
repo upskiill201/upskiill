@@ -81,7 +81,10 @@ export default async function CertificatePage({ params }: Props) {
                 <ShieldCheck className="mt-0.5 shrink-0 text-[var(--success-green)]" size={24} />
                 <div>
                   <p className="text-[16px] font-extrabold">Verified certificate</p>
-                  <p className="mt-1 text-[14px] text-[var(--text-secondary)]">Issued by Teyro after every lesson of the course was completed.</p>
+                  <p className="mt-1 text-[14px] text-[var(--text-secondary)]">
+                    Issued by Teyro after every lesson of the course was completed.
+                    {d.nameConfirmed ? ' The learner confirmed the name on it is their real name.' : ''}
+                  </p>
                 </div>
               </div>
             )}
