@@ -21,7 +21,7 @@ const lesson: OriginalLesson = {
       },
       after: {
         label: 'New page one',
-        text: 'Saturday dispatch cut late deliveries from 34% to 21%. Roll it out to all three depots.\n[Box] Decision needed at this meeting: approve rollout to Mombasa and Kisumu from July.\nResults: late deliveries 34% to 21%; refunds down by a third.\nCost: KES 120,000 a month per depot.\nMain risk: finding Saturday drivers (31 of 40 signed up in Nairobi).\nDetail: Appendix A (method), B (weekly data), C (driver survey).',
+        text: 'Saturday dispatch cut late deliveries from 34% to 21%. Roll it out to all three depots.\n[Box] Decision needed at this meeting: approve rollout to Mombasa and Kisumu from August.\nResults: late deliveries 34% to 21%; refunds down by a third.\nCost: KES 120,000 a month per depot.\nMain risk: finding Saturday drivers (31 of 40 signed up in Nairobi).\nDetail: Appendix A (method), B (weekly data), C (driver survey).',
       },
       notes: [
         'The title is the message, not "Pilot Report".',
@@ -110,9 +110,9 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'From when does the new page one propose the rollout?',
         options: [
-          { text: 'July' },
-          { text: 'Next year', why: 'From July.' },
-          { text: 'It doesn\'t say', why: 'It says July.' },
+          { text: 'August' },
+          { text: 'Next year', why: 'From August.' },
+          { text: 'It doesn\'t say', why: 'It says August.' },
         ],
         answer: 0,
       },

@@ -12,7 +12,7 @@ const lesson: OriginalLesson = {
     {
       kind: 'reading',
       title: 'Tuesday\'s board meeting',
-      html: '<p><strong>Title:</strong> <em>Saturday dispatch cut late deliveries from 34% to 21%. Roll it out to all three depots.</em></p><p><strong>Box:</strong> Decision needed today: approve rollout to Mombasa and Kisumu from July.</p><p><strong>Headings:</strong> "Late deliveries fell to 21%" · "Refunds fell by a third" · "KES 120,000 a month per depot" · "Main risk: Saturday drivers, and our plan".</p><p><strong>Appendices:</strong> A (method), B (weekly data), C (driver survey).</p><p>Mrs Achieng sits in. One board member reads the title out loud and asks a single question: "How sure are you about the drivers in Mombasa?" The answer is in Appendix C. The board approves the rollout in eleven minutes.</p>',
+      html: '<p><strong>Title:</strong> <em>Saturday dispatch cut late deliveries from 34% to 21%. Roll it out to all three depots.</em></p><p><strong>Box:</strong> Decision needed today: approve rollout to Mombasa and Kisumu from August.</p><p><strong>Headings:</strong> "Late deliveries fell to 21%" · "Refunds fell by a third" · "KES 120,000 a month per depot" · "Main risk: Saturday drivers, and our plan".</p><p><strong>Appendices:</strong> A (method), B (weekly data), C (driver survey).</p><p>Mrs Achieng sits in. One board member reads the title out loud and asks a single question: "How sure are you about the drivers in Mombasa?" The answer is in Appendix C. The board approves the rollout in eleven minutes.</p>',
     },
     {
       kind: 'story',
@@ -59,7 +59,7 @@ const lesson: OriginalLesson = {
         prompt: 'Match the Chapter 4 skill to where Zanele used it.',
         pairs: [
           ['Message title', '"Roll it out to all three depots"'],
-          ['Decision in a box', '"Approve rollout from July"'],
+          ['Decision in a box', '"Approve rollout from August"'],
           ['Appendix', 'Answered the Mombasa drivers question'],
         ],
       },
@@ -126,7 +126,7 @@ const lesson: OriginalLesson = {
     title: 'Short documents, fast decisions',
     summary: 'A page that lets readers decide quickly saves time for everyone in the room. The detail still matters: it\'s what lets you answer the hard question in seconds.',
   },
-  notes: 'Chapter 4 challenge (fictional): board approves rollout to Mombasa and Kisumu from July in 11 minutes. Hook: week 9 Nairobi late rate 28%, two Saturday drivers quit (Ch5 bad-news email).',
+  notes: 'Chapter 4 challenge (fictional): board approves rollout to Mombasa and Kisumu from August in 11 minutes. Hook: week 9 Nairobi late rate 28%, two Saturday drivers quit (Ch5 bad-news email).',
 };
 
 export default lesson;
