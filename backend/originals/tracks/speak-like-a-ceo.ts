@@ -27,6 +27,7 @@ const track: OriginalTrackDef = {
       level: 1,
       slug: 'speak-like-a-ceo-beginner',
       title: 'Speak Like a CEO',
+      thumbnailUrl: '/originals/speak-like-a-ceo-beginner.jpg',
       subtitle: 'Lucía Takes the Room: clear, calm and confident when it counts',
       shortDescription:
         'Learn how confident speakers structure what they say, from a two-minute update in a meeting to a talk in front of 300 people.',
