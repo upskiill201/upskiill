@@ -7,35 +7,6 @@ import type { OriginalTrackDef } from '../../src/originals/originals-authoring.t
  * When a Track gets its first unit, move it to its own file like ai-at-work.ts.
  */
 
-const clearWritingAtWork: OriginalTrackDef = {
-  slug: 'clear-writing-at-work',
-  title: 'Clear Writing at Work',
-  category: 'Communication',
-  description: 'Write emails, messages and documents that people read, understand and act on.',
-  levels: [
-    {
-      level: 1,
-      slug: 'clear-writing-at-work-beginner',
-      title: 'Clear Writing at Work: Beginner',
-      subtitle: 'Get read, get understood, get replies',
-      shortDescription: 'Learn the habits behind clear work writing: plain words, the point first, and asks people actually answer.',
-      description:
-        'Clear writing is one of the most valuable skills at work and one of the least taught. With Tey and Ada, you learn plain language, how to structure any message, how to write for busy and senior readers, and how to give and ask for things clearly, with and without AI.',
-      startingPoint: 'You write emails and messages at work and want them to be clearer and get better results.',
-      endOutcome: 'Write work messages and short documents that are clear, kind, and get the response you need.',
-      outcomes: [
-        'Write in plain language that busy people read',
-        'Put the point and the ask first',
-        'Structure documents people can skim',
-        'Give feedback and say no clearly and kindly',
-      ],
-      skills: ['Plain language', 'Email writing', 'Business writing', 'Editing'],
-      upcomingUnits: 12,
-      units: [],
-    },
-  ],
-};
-
 const speakLikeACeo: OriginalTrackDef = {
   slug: 'speak-like-a-ceo',
   title: 'Speak Like a CEO',
@@ -65,4 +36,4 @@ const speakLikeACeo: OriginalTrackDef = {
   ],
 };
 
-export const launchLineup: OriginalTrackDef[] = [clearWritingAtWork, speakLikeACeo];
+export const launchLineup: OriginalTrackDef[] = [speakLikeACeo];
