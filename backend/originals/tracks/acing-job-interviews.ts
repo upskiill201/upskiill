@@ -24,6 +24,7 @@ const track: OriginalTrackDef = {
       level: 1,
       slug: 'acing-job-interviews-beginner',
       title: 'Acing Job Interviews',
+      thumbnailUrl: '/originals/acing-job-interviews-beginner.jpg',
       subtitle: "Remi's Interview Season: walk in prepared, walk out proud",
       shortDescription:
         'Learn how interviews really work and practise answering with clear, true stories about what you have done, from the first phone screen to the final round.',
