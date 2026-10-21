@@ -7,35 +7,6 @@ import type { OriginalTrackDef } from '../../src/originals/originals-authoring.t
  * When a Track gets its first unit, move it to its own file like ai-at-work.ts.
  */
 
-const acingJobInterviews: OriginalTrackDef = {
-  slug: 'acing-job-interviews',
-  title: 'Acing Job Interviews',
-  category: 'Career',
-  description: 'Prepare for job interviews with confidence: tell your story, answer the hard questions, and follow up well.',
-  levels: [
-    {
-      level: 1,
-      slug: 'acing-job-interviews-beginner',
-      title: 'Acing Job Interviews: Beginner',
-      subtitle: 'Walk in prepared, walk out proud',
-      shortDescription: 'Learn how interviews really work and practise answering with clear, true stories about what you have done.',
-      description:
-        'Most people go into interviews hoping it goes well. This course gives you a method instead: research the role, prepare true stories with the STAR method, practise with AI as your mock interviewer, handle tricky questions, and follow up the right way.',
-      startingPoint: 'You are applying for jobs or internships, or will be soon. Any level of experience.',
-      endOutcome: 'Answer common and tricky interview questions with clear, structured, honest stories, and follow up confidently.',
-      outcomes: [
-        'Research a role and company in under an hour',
-        'Answer with clear STAR stories',
-        'Practise with AI as a mock interviewer',
-        'Handle salary, weakness and "any questions?" moments',
-      ],
-      skills: ['Interviewing', 'STAR answers', 'Self-presentation', 'Follow-up'],
-      upcomingUnits: 12,
-      units: [],
-    },
-  ],
-};
-
 const clearWritingAtWork: OriginalTrackDef = {
   slug: 'clear-writing-at-work',
   title: 'Clear Writing at Work',
@@ -94,4 +65,4 @@ const speakLikeACeo: OriginalTrackDef = {
   ],
 };
 
-export const launchLineup: OriginalTrackDef[] = [acingJobInterviews, clearWritingAtWork, speakLikeACeo];
+export const launchLineup: OriginalTrackDef[] = [clearWritingAtWork, speakLikeACeo];
