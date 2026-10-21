@@ -436,6 +436,35 @@ The live preview's sandbox blocks form submission, so lessons never send. Font s
 | 19 | The finished booking form | Read a complete, well-built form | Tap to explore |
 | 20 | **Chapter Challenge: Mensah Beats v1.6** | | Mixed (climax) |
 
+## Course 3, Chapter 2 — Make it move (written 2026-10-21)
+
+**Story:** one week to uni. Efua: the site is "still, like a poster on a wall"; Kofi wants spinning covers; Miracle wants motion with a purpose. `:hover`, `transition` (property, duration, easing; on the normal state), `transform` (translate, scale, rotate), hover isn't available on phones or keyboards so `:focus-visible` and `:active` too, history (blink and marquee, GIFs and Flash ending in 2020, WebKit's 2007 CSS transitions/animations proposal), `@keyframes` and `animation` with a count, animating transform/opacity rather than layout properties, never flashing (WCAG three-flashes rule), staggered entrances with `animation-delay` and `both`, `prefers-reduced-motion`, the five-second pause rule with `animation-play-state`, and a reduced-motion safety net. **Choice (l01):** purposeful motion, everything spinning, or none. **Choice (l11):** "3 DAYS LEFT!!!" flashing. **Choice (l17):** the slideshow that never stops. **Climax (l20):** Mensah Beats v1.7, alive for fans and calm for Grandma.
+
+Motion is checked mostly with `codeIncludes`: the loader can't apply `:hover`/`:focus` states or `@media`, and shorthands like `transition`/`animation` are kept as typed. Page checks only confirm `transition`/`animation` are set, or test properties that don't animate.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | Make it feel alive | Explain what motion on a website is for | Story (choice) |
+| 2 | Snap vs glide | Add a transition so a change happens smoothly | Before / After |
+| 3 | The three parts of a transition | Write a transition with property, duration and easing | Step-by-step |
+| 4 | Lift, grow, tilt | Move, scale and rotate an element with transform | Tap to explore |
+| 5 | **Checkpoint: the record shelf** | | Mixed review |
+| 6 | No mouse, no hover | Explain why hover alone isn't enough | Chat with Tey |
+| 7 | Blinking text and Flash | Describe how early websites added motion | Reading |
+| 8 | Motion that plays by itself | Describe the steps of an animation with @keyframes | Card deck |
+| 9 | Smooth vs juddery | Explain why animating layout properties can judder | Before / After |
+| 10 | **Checkpoint: smooth on every phone** | | Mixed review |
+| 11 | "3 DAYS LEFT!!!" | Explain why fast flashing is dangerous | Story (choice) |
+| 12 | One after another | Write keyframes with several steps | Tap to explore |
+| 13 | When motion makes people ill | Explain why some people turn motion off | Chat with Tey |
+| 14 | Motion, done properly | Give cards a hover and focus lift with a transition | Step-by-step |
+| 15 | **Checkpoint: Grandma isn't dizzy** | | Mixed review |
+| 16 | Motion: myth or fact? | Separate motion myths from facts | Myth or Fact |
+| 17 | The slideshow that never stops | Explain the five-second rule for moving content | Story (choice) |
+| 18 | Your page comes alive | Add hover, focus and press feedback to your own page | Step-by-step |
+| 19 | Every moving part, explained | Read a complete motion stylesheet | Tap to explore |
+| 20 | **Chapter Challenge: Mensah Beats v1.7** | | Mixed (climax) |
+
 ## Chapters 4–13 (stories; lesson lists are written chapter by chapter)
 
 **2 · Words on the page (11 weeks).** Kofi writes his story, track list and gig list. Headings, paragraphs, `<strong>` and `<em>`, ordered and unordered lists, line breaks. *Climax:* a page people actually read to the end. *Efua:* "It's a wall of text."
