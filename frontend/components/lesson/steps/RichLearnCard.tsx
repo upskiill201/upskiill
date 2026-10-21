@@ -341,12 +341,12 @@ function Compare({ card }: { card: Extract<RichLearnCard, { kind: 'compare' }> }
       <CardTitle>{card.title}</CardTitle>
       <div className="grid gap-3 md:grid-cols-2">
         {sides.map(({ side, label, tone, bg, Icon }) => (
-          <div key={label} className="rounded-[20px] border-2 p-4" style={{ borderColor: tone, backgroundColor: bg }}>
+          <div key={label} className="min-w-0 rounded-[20px] border-2 p-4" style={{ borderColor: tone, backgroundColor: bg }}>
             <p className="flex items-center gap-1.5 text-[13px] font-extrabold uppercase tracking-[0.08em]" style={{ color: tone }}>
               <Icon className="w-4 h-4 stroke-[3]" aria-hidden="true" />
               {label}
             </p>
-            <p className="mt-2 text-[16px] font-semibold leading-[1.55] text-ink whitespace-pre-line">{side.text}</p>
+            <p className="mt-2 text-[16px] font-semibold leading-[1.55] text-ink whitespace-pre-line [overflow-wrap:anywhere]">{side.text}</p>
           </div>
         ))}
       </div>
