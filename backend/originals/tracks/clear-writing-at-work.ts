@@ -1,5 +1,6 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './clear-writing-at-work/beginner/u01';
+import u02 from './clear-writing-at-work/beginner/u02';
 
 /**
  * Clear Writing at Work — storyline "Zanele Writes It Plain".
@@ -36,8 +37,8 @@ const track: OriginalTrackDef = {
         'Write bad news, a no and feedback clearly and kindly',
       ],
       skills: ['Plain language', 'Email writing', 'Business writing', 'Editing', 'Report writing'],
-      upcomingUnits: 4,
-      units: [u01],
+      upcomingUnits: 3,
+      units: [u01, u02],
     },
   ],
 };
