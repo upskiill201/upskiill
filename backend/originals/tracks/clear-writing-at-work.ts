@@ -25,6 +25,7 @@ const track: OriginalTrackDef = {
       level: 1,
       slug: 'clear-writing-at-work-beginner',
       title: 'Clear Writing at Work',
+      thumbnailUrl: '/originals/clear-writing-at-work-beginner.jpg',
       subtitle: 'Zanele Writes It Plain: get read, get understood, get replies',
       shortDescription:
         'Learn the habits behind clear work writing: fewer words, plain language, the point and the ask first, documents people can skim, and hard messages said kindly.',
