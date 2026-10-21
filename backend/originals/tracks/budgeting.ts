@@ -1,6 +1,7 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './budgeting/beginner/u01';
 import u02 from './budgeting/beginner/u02';
+import u03 from './budgeting/beginner/u03';
 
 /**
  * Budgeting for Beginners — storyline "The Case of the Missing Cedis".
@@ -41,8 +42,8 @@ const track: OriginalTrackDef = {
         'Keep your budget going with a ten-minute weekly money check',
       ],
       skills: ['Budgeting', 'Expense tracking', 'Money management', 'Financial planning', 'Personal finance'],
-      upcomingUnits: 3,
-      units: [u01, u02],
+      upcomingUnits: 2,
+      units: [u01, u02, u03],
     },
   ],
 };
