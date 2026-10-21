@@ -465,6 +465,35 @@ Motion is checked mostly with `codeIncludes`: the loader can't apply `:hover`/`:
 | 19 | Every moving part, explained | Read a complete motion stylesheet | Tap to explore |
 | 20 | **Chapter Challenge: Mensah Beats v1.7** | | Mixed (climax) |
 
+## Course 3, Chapter 3 — Everyone can use it (written 2026-10-21)
+
+**Story:** five days to uni. Kwesi, a blind fan who uses a screen reader (narrator only), says the site reads as "link, link, image". Accessibility for everyone (WHO: about 1 in 6 people have a significant disability), `main` and landmarks (`div` named for the first time, as the generic last resort), a heading outline, what screen readers announce, keyboard use (real links and buttons, HTML order, no positive tabindex), the history (WAI 1997, WCAG 1.0 1999 to 2.2 2023, levels A/AA/AAA, laws such as the European Accessibility Act from June 2025, "check locally"), accessible names and `aria-label` (first rule of ARIA), `min-height` so zoomed text isn't cut off, skip links (position: absolute until `:focus`), `lang` (including `lang="tw"` for Akwaaba) and specific titles, trying a screen reader (VoiceOver, TalkBack, Narrator, NVDA), the fifteen-minute check (automated tool, keyboard, 200% zoom, screen reader minute), myths, and why overlay widgets aren't a fix. **Choice (l01):** fix the real site, an "accessible version", or nothing. **Choice (l11):** nine Tabs (skip link). **Choice (l17):** the one-line overlay. **Climax (l20):** Mensah Beats v1.8; Kwesi books his ticket on his own.
+
+The skip-link order check uses `a.skip-link ~ header` rather than `:first-child`, because the live runner may inject a `<base>` element.
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | "It reads as link, link, image" | Explain who web accessibility is for | Story (choice) |
+| 2 | Boxes vs landmarks | Explain what div is, and why it means nothing | Before / After |
+| 3 | A page you can skim by ear | Give a page one h1 | Step-by-step |
+| 4 | What Kwesi hears | Predict roughly what a screen reader announces | Tap to explore |
+| 5 | **Checkpoint: Kwesi finds the gigs** | | Mixed review |
+| 6 | Only a keyboard | Explain how keyboard users move through a page | Chat with Tey |
+| 7 | The web was meant for everyone | Explain why access for everyone was part of the web's idea | Reading |
+| 8 | Everything needs a name | Explain that every link, button and image needs an accessible name | Card deck |
+| 9 | When the words don't fit the box | Explain why fixed heights break when text grows | Before / After |
+| 10 | **Checkpoint: David, Kwesi, Grandma** | | Mixed review |
+| 11 | Tab, tab, tab, tab, tab | Explain what a skip link is for | Story (choice) |
+| 12 | Akwaaba, in the right voice | Set the page language with lang | Tap to explore |
+| 13 | Try a screen reader yourself | Describe how people move through a page with a screen reader | Chat with Tey |
+| 14 | The fifteen-minute check | Run an automated accessibility check | Step-by-step |
+| 15 | **Checkpoint: one Tab and in** | | Mixed review |
+| 16 | Accessibility: myth or fact? | Separate accessibility myths from facts | Myth or Fact |
+| 17 | The one-line fix that isn't | Recognise claims that a widget can make a site accessible | Story (choice) |
+| 18 | Your site, for everyone | Add landmarks, a heading outline and a skip link to your site | Step-by-step |
+| 19 | A page everyone can use | Read an accessible page and name who each piece helps | Tap to explore |
+| 20 | **Chapter Challenge: Mensah Beats v1.8** | | Mixed (climax) |
+
 ## Chapters 4–13 (stories; lesson lists are written chapter by chapter)
 
 **2 · Words on the page (11 weeks).** Kofi writes his story, track list and gig list. Headings, paragraphs, `<strong>` and `<em>`, ordered and unordered lists, line breaks. *Climax:* a page people actually read to the end. *Efua:* "It's a wall of text."

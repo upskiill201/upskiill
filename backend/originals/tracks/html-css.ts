@@ -11,6 +11,7 @@ import r04 from './html-css/responsive/u04';
 import r05 from './html-css/responsive/u05';
 import b01 from './html-css/launch/u01';
 import b02 from './html-css/launch/u02';
+import b03 from './html-css/launch/u03';
 
 /**
  * HTML & CSS for Beginners — storyline "Kofi Goes Live".
@@ -110,8 +111,8 @@ const track: OriginalTrackDef = {
       ],
       skills: ['HTML forms', 'CSS animation', 'Web accessibility', 'SEO basics'],
       thumbnailUrl: '/originals/build-and-launch-a-website.jpg',
-      upcomingUnits: 3,
-      units: [b01, b02],
+      upcomingUnits: 2,
+      units: [b01, b02, b03],
     },
   ],
 };
