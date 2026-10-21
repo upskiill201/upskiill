@@ -405,6 +405,37 @@ The loader (jsdom) ignores `@media` rules, so media-query exercises use `codeInc
 | 19 | Everything from this course | Read a complete phones-first stylesheet | Tap to explore |
 | 20 | **Chapter Challenge: Mensah Beats v1.5** | | Mixed (climax) |
 
+## Course 3, Chapter 1 — Book me (written 2026-10-21)
+
+**Course:** Build and Launch a Website ("Kofi Goes Pro"), level 3, slug `build-and-launch-a-website`; lessons in `backend/originals/tracks/html-css/launch/`. Course details and cover wired in `html-css.ts` (upcomingUnits 4).
+
+**Story:** two weeks to uni. Booking emails like "u free sat?" arrive with no details. A booking form: `form`, `label for` + `input id`, `name`, placeholders only as examples, input types (email, tel, date, number), `required` with "(required)" in words, form history (HTML 2.0 in 1995, HTML5 in 2014), `textarea` and `select`, `font: inherit` styling, radios in `fieldset`/`legend`, checkboxes, `button type="submit"` with `action`/`method` (and why something must receive the answers: a server or a form service, e.g. Netlify Forms, "check current terms"), honest privacy (a plain privacy line, unticked opt-ins, collect only what's needed), and `autocomplete`. **Choice (l01):** a form, "include all details", or one big box. **Choice (l11):** speakers, or not? (radios). **Choice (l17):** what happens to my details. **Climax (l20):** Mensah Beats v1.6; the organiser books the end-of-year show through the form.
+
+The live preview's sandbox blocks form submission, so lessons never send. Font shorthand isn't page-checked (engines don't report it).
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | Book me, properly | Explain what a form is for | Story (choice) |
+| 2 | The vanishing label | Explain why placeholder text can't replace a label | Before / After |
+| 3 | One field at a time | Build a form field with label, input, id and name | Step-by-step |
+| 4 | The right box for each answer | Choose the right input type for each question | Tap to explore |
+| 5 | **Checkpoint: Grandma fills it in** | | Mixed review |
+| 6 | Don't let it send half empty | Make a field required with the required attribute | Chat with Tey |
+| 7 | When the web learned to listen | Explain why forms made the web two-way | Reading |
+| 8 | Long answers and short lists | Use textarea for longer answers | Card deck |
+| 9 | A form that looks like Mensah Beats | Make form fields use the page's font | Before / After |
+| 10 | **Checkpoint: no more half-empty bookings** | | Mixed review |
+| 11 | Speakers, or not? | Use radio buttons for one choice out of a few | Story (choice) |
+| 12 | Pick one, or pick any? | Use checkboxes when several answers can be true | Tap to explore |
+| 13 | Where do the answers go? | Add a send button with button type="submit" | Chat with Tey |
+| 14 | Build the booking form | Plan a form's questions in a sensible order | Step-by-step |
+| 15 | **Checkpoint: under a minute** | | Mixed review |
+| 16 | Forms: myth or fact? | Separate form myths from facts | Myth or Fact |
+| 17 | What happens to my details? | Explain what happens to the details people type into a form | Story (choice) |
+| 18 | Your own contact form | Build a contact form for your own site | Step-by-step |
+| 19 | The finished booking form | Read a complete, well-built form | Tap to explore |
+| 20 | **Chapter Challenge: Mensah Beats v1.6** | | Mixed (climax) |
+
 ## Chapters 4–13 (stories; lesson lists are written chapter by chapter)
 
 **2 · Words on the page (11 weeks).** Kofi writes his story, track list and gig list. Headings, paragraphs, `<strong>` and `<em>`, ordered and unordered lists, line breaks. *Climax:* a page people actually read to the end. *Efua:* "It's a wall of text."

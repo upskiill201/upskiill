@@ -9,6 +9,7 @@ import r02 from './html-css/responsive/u02';
 import r03 from './html-css/responsive/u03';
 import r04 from './html-css/responsive/u04';
 import r05 from './html-css/responsive/u05';
+import b01 from './html-css/launch/u01';
 
 /**
  * HTML & CSS for Beginners — storyline "Kofi Goes Live".
@@ -87,6 +88,29 @@ const track: OriginalTrackDef = {
       thumbnailUrl: '/originals/responsive-web-design-css.jpg',
       upcomingUnits: 0,
       units: [r01, r02, r03, r04, r05],
+    },
+    {
+      level: 3,
+      slug: 'build-and-launch-a-website',
+      title: 'Build and Launch a Website',
+      subtitle: 'Kofi Goes Pro: forms, motion, accessibility and search, then launch night',
+      shortDescription:
+        'Turn your site into the real thing: a booking form, gentle motion, a site everyone can use, and pages people can find on search. Then launch it properly. Ten-minute lessons on a live page.',
+      description:
+        "Your site works on every screen. Now make it professional. Follow Kofi through the last two weeks before university as Mensah Beats gets a booking form the Sound Up Saturdays organiser actually fills in, motion that feels alive without making anyone dizzy, checks that make it work for everyone, and the titles, descriptions and sharing previews that help people find it. Then comes launch night: Mensah Beats v2.0. Miracle mentors him, Efua designs, and Ama and Grandma test everything. Every lesson changes a live page on your screen, and alongside Kofi's site you finish your own personal site, ready to share.",
+      startingPoint: 'You can build a responsive page with HTML and CSS, as in Responsive Web Design with CSS.',
+      endOutcome: 'Build and launch a complete, accessible website with forms, motion and search basics, and share it with confidence.',
+      outcomes: [
+        'Build forms with labels, the right input types and helpful checks',
+        'Add hover effects, transitions and animations that respect people who turn motion off',
+        'Make a site work for keyboard and screen reader users',
+        'Write titles, descriptions and sharing previews that help people find your site',
+        'Launch a finished website and share it',
+      ],
+      skills: ['HTML forms', 'CSS animation', 'Web accessibility', 'SEO basics'],
+      thumbnailUrl: '/originals/build-and-launch-a-website.jpg',
+      upcomingUnits: 4,
+      units: [b01],
     },
   ],
 };
