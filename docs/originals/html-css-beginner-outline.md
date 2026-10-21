@@ -494,6 +494,35 @@ The skip-link order check uses `a.skip-link ~ header` rather than `:first-child`
 | 19 | A page everyone can use | Read an accessible page and name who each piece helps | Tap to explore |
 | 20 | **Chapter Challenge: Mensah Beats v1.8** | | Mixed (climax) |
 
+## Course 3, Chapter 4 — Found on search (written 2026-10-21)
+
+**Story:** two days to uni. A wedding planner searched "beat producer Accra" and didn't find Kofi; his tab says "index". Specific titles, meta descriptions, how search works (crawl, index, rank, show; normal results can't be bought), a matching head (lang, viewport and mobile-first indexing, title, description, h1), people-first wording (no keyword stuffing), history (AltaVista, Google 1998 and links as votes, meta keywords ignored since 2009), descriptive file names and link text, earned (not bought) links, Open Graph previews (og:title/description/image/url, full https:// image addresses), a 1200x630 share image with og:image:alt (never someone else's photo), favicons, speed (resize to about 2x the shown size, compress, WebP, `loading="lazy"` below the fold, keep width/height), myths (no ranking guarantees), honest growth (real quotes with permission, no fake reviews, a search console), and a sitemap.xml. **Choice (l01):** clear titles, keyword stuffing, or ads only. **Choice (l11):** which share image. **Choice (l17):** "500 five-star reviews, GHS 150". **Climax (l20):** Mensah Beats v1.9; the wedding planner finds and books him.
+
+Placeholder addresses use mensahbeats.example.app. The compare card now wraps long URLs at phone width (RichLearnCard, `min-w-0` plus `overflow-wrap: anywhere`).
+
+| # | Lesson | What it teaches | Main Learn format |
+|---|---|---|---|
+| 1 | Nobody can find it | Explain what search engines need from a page | Story (choice) |
+| 2 | The search result you'd click | Write a meta description that sums up a page | Before / After |
+| 3 | How search actually works | Describe the four stages: crawl, index, rank, show | Step-by-step |
+| 4 | Everything search engines read first | Read a search-ready head | Tap to explore |
+| 5 | **Checkpoint: every tab has a name** | | Mixed review |
+| 6 | Write for people, not robots | Use the plain words people actually search for | Chat with Tey |
+| 7 | The keyword tag nobody reads | Describe how early search engines ranked pages | Reading |
+| 8 | Addresses that make sense | Name pages and images descriptively | Card deck |
+| 9 | When someone shares your link | Explain what a link preview is | Before / After |
+| 10 | **Checkpoint: the preview card** | | Mixed review |
+| 11 | Which picture shows up? | Choose a share image that works in previews | Story (choice) |
+| 12 | The little icon in the tab | Add a favicon with link rel="icon" | Tap to explore |
+| 13 | Why is it so slow? | Explain why page speed matters to visitors and search | Chat with Tey |
+| 14 | Make the gallery fast | Resize and compress images before uploading | Step-by-step |
+| 15 | **Checkpoint: sharp, small, fast** | | Mixed review |
+| 16 | Search: myth or fact? | Separate search myths from facts | Myth or Fact |
+| 17 | "500 five-star reviews, GHS 150" | Explain why fake reviews and bought links are harmful | Story (choice) |
+| 18 | Get your own site found | Give every page a title, description and preview tags | Step-by-step |
+| 19 | A head ready to be found | Read a complete, search-ready head | Tap to explore |
+| 20 | **Chapter Challenge: Mensah Beats v1.9** | | Mixed (climax) |
+
 ## Chapters 4–13 (stories; lesson lists are written chapter by chapter)
 
 **2 · Words on the page (11 weeks).** Kofi writes his story, track list and gig list. Headings, paragraphs, `<strong>` and `<em>`, ordered and unordered lists, line breaks. *Climax:* a page people actually read to the end. *Efua:* "It's a wall of text."
