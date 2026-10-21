@@ -3,6 +3,7 @@ import u01 from './clear-writing-at-work/beginner/u01';
 import u02 from './clear-writing-at-work/beginner/u02';
 import u03 from './clear-writing-at-work/beginner/u03';
 import u04 from './clear-writing-at-work/beginner/u04';
+import u05 from './clear-writing-at-work/beginner/u05';
 
 /**
  * Clear Writing at Work — storyline "Zanele Writes It Plain".
@@ -39,8 +40,8 @@ const track: OriginalTrackDef = {
         'Write bad news, a no and feedback clearly and kindly',
       ],
       skills: ['Plain language', 'Email writing', 'Business writing', 'Editing', 'Report writing'],
-      upcomingUnits: 1,
-      units: [u01, u02, u03, u04],
+      upcomingUnits: 0,
+      units: [u01, u02, u03, u04, u05],
     },
   ],
 };
