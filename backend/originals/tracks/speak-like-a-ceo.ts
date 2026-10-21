@@ -1,5 +1,6 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './speak-like-a-ceo/beginner/u01';
+import u02 from './speak-like-a-ceo/beginner/u02';
 
 /**
  * Speak Like a CEO — storyline "Lucía Takes the Room".
@@ -38,8 +39,8 @@ const track: OriginalTrackDef = {
         'Handle questions, including tough ones',
       ],
       skills: ['Public speaking', 'Presenting', 'Meeting skills', 'Executive presence'],
-      upcomingUnits: 4,
-      units: [u01],
+      upcomingUnits: 3,
+      units: [u01, u02],
     },
   ],
 };
