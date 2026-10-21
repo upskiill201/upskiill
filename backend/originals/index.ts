@@ -23,10 +23,11 @@ import acingJobInterviews from './tracks/acing-job-interviews';
 import clearWritingAtWork from './tracks/clear-writing-at-work';
 import speakLikeACeo from './tracks/speak-like-a-ceo';
 import budgeting from './tracks/budgeting';
+import saveMoney from './tracks/save-money';
 
 /**
  * Every Teyro Original the loader knows about (scripts/originals.ts).
  * Add a Track here once its file exists. Tracks with no units yet are
  * checked but never loaded.
  */
-export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, machineLearning, aiStack, validateBusinessIdea, priceProduct, negotiationBeginners, difficultNegotiations, conflictAtWork, acingJobInterviews, clearWritingAtWork, speakLikeACeo, budgeting, formatTour];
+export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, machineLearning, aiStack, validateBusinessIdea, priceProduct, negotiationBeginners, difficultNegotiations, conflictAtWork, acingJobInterviews, clearWritingAtWork, speakLikeACeo, budgeting, saveMoney, formatTour];
