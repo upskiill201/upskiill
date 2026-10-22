@@ -2583,21 +2583,14 @@ export class CourseService {
         console.warn(`[Unenroll] Error processing courseSubscription: ${subErr?.message || subErr}`);
       }
 
-      // 2. Mark Entitlement as Cancelled
+      // 2. Stop the renewal, keep what was paid for. Setting the entitlement
+      //    to CANCELLED here used to end paid access the moment a learner
+      //    left a course, even with weeks of their period still bought.
       try {
-        const entitlements = await this.prisma.courseAccessEntitlement.findMany({
+        await this.prisma.courseAccessEntitlement.updateMany({
           where: { userId, courseId, status: 'ACTIVE' },
+          data: { cancelAtPeriodEnd: true },
         });
-
-        for (const ent of entitlements) {
-          await this.prisma.courseAccessEntitlement.update({
-            where: { id: ent.id },
-            data: {
-              status: 'CANCELLED',
-              cancelAtPeriodEnd: true,
-            },
-          });
-        }
       } catch (entErr: any) {
         console.warn(`[Unenroll] Error processing courseAccessEntitlement: ${entErr?.message || entErr}`);
       }

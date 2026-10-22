@@ -20,12 +20,14 @@ import Button from '@/components/ui/Button';
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token') || '';
+  // Links name their account; without it the code can't be checked safely.
+  const email = searchParams.get('email') || '';
 
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState('');
 
   const handleConfirm = async () => {
-    if (!token || verifying) return;
+    if (!token || !email || verifying) return;
 
     setVerifying(true);
     setError('');
@@ -35,7 +37,7 @@ function VerifyEmailContent() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ token }),
+        body: JSON.stringify({ token, email }),
       });
 
       const data = await res.json();
@@ -53,7 +55,7 @@ function VerifyEmailContent() {
     }
   };
 
-  if (!token) {
+  if (!token || !email) {
     return (
       <VerifyCard>
         <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -61,7 +63,7 @@ function VerifyEmailContent() {
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-3">Missing verification token</h1>
         <p className="text-gray-600 mb-8 leading-relaxed">
-          This link looks incomplete. Please open the verification email again and tap the button inside it.
+          This link looks incomplete or comes from an older email. Type the 6-digit code from the email in the app, or ask for a new one.
         </p>
         <FallbackLink />
       </VerifyCard>

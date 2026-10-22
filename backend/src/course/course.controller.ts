@@ -81,6 +81,7 @@ export class CourseController {
       req.user.id as string,
       id,
       lessonId,
+      req.user.role === 'ADMIN',
     );
   }
 

@@ -18,6 +18,7 @@ import { ProfileService } from '../profile/profile.service';
 import { AuthEmailService } from '../email/auth-email.service';
 import { UserOnboardingService } from '../user-onboarding/user-onboarding.service';
 import { getJwtSecret } from './jwt-secret.util';
+import { forgetCachedSession } from './strategy/jwt.strategy';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 // Precomputed once at boot — lets credential-miss paths burn the same bcrypt
@@ -44,6 +45,7 @@ export class AuthService {
   }
 
   async signup(dto: SignupDto) {
+    // dto.email arrives trimmed and lowercased (NormalizeEmail on the DTO).
     let existing = await this.prisma.user.findUnique({
       where: { email: dto.email },
       include: { studentProfile: true },
@@ -306,8 +308,8 @@ export class AuthService {
       }
     }
 
-    // Send verification email — the magic link is built from the RAW code so
-    // verifyEmail()'s single sha256 matches the stored hash (sending the
+    // Send verification email — the magic link carries the RAW code plus the
+    // email, and goes through verifyCode() like a typed code (sending the
     // stored hash made the link double-hash and never verify).
     // Not awaited-to-block: the response returns as soon as this call is
     // issued, the send itself still happens immediately in the background.
@@ -478,7 +480,12 @@ export class AuthService {
     if (!pwMatches) {
       const newFailedAttempts = (user.failedLoginAttempts || 0) + 1;
       const shouldLock = newFailedAttempts >= 5;
-      const lockTime = new Date(now.getTime() + 15 * 60 * 1000); // 15 minutes
+      // Progressive: a flat 15-minute lock after five misses let anyone who
+      // knew an email lock its owner out on demand. Now the first lock is a
+      // minute and only sustained guessing earns the long one.
+      const lockMinutes =
+        newFailedAttempts >= 15 ? 15 : newFailedAttempts >= 10 ? 5 : 1;
+      const lockTime = new Date(now.getTime() + lockMinutes * 60 * 1000);
 
       await this.prisma.user.update({
         where: { id: user.id },
@@ -557,45 +564,14 @@ export class AuthService {
     };
   }
 
-  async verifyEmail(token: string) {
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-    const user = await this.prisma.user.findUnique({
-      where: { verifyToken: hashedToken },
-      include: { profile: true },
-    });
-
-    if (!user) {
-      throw new ForbiddenException('Invalid verification token');
-    }
-
-    if (user.tokenExpiry && new Date() > user.tokenExpiry) {
-      throw new ForbiddenException('Verification token expired');
-    }
-
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: {
-        isVerified: true,
-        verifyToken: null,
-        tokenExpiry: null,
-      },
-    });
-
-    void this.authEmails.sendWelcomeEmail(user.email, user.fullName, user.id);
-
-    // `role` lets the controller route the post-verification redirect:
-    // students land back in their flow (/dashboard), creators in studio.
-    return {
-      ...(await this.signToken(user.id, user.email, user.fullName, user.role)),
-      role: user.role,
-    };
-  }
-
   async verifyCode(email: string, code: string) {
     const hashedToken = crypto.createHash('sha256').update(code).digest('hex');
 
     // Look up by email alone — never filter on the token here, so every miss
     // flows through the same compare-and-count path (no existence oracle).
+    // The email link goes through here too: it used to look users up by the
+    // code alone, so each guess was tested against every pending code at once
+    // and a hit signed the guesser in as whoever owned it.
     const user = await this.prisma.user.findFirst({
       where: { email },
       include: { profile: true },
@@ -650,7 +626,12 @@ export class AuthService {
 
     void this.authEmails.sendWelcomeEmail(user.email, user.fullName, user.id);
 
-    return this.signToken(user.id, user.email, user.fullName, user.role);
+    // `role` lets the email-link page route students to the app and creators
+    // to the studio.
+    return {
+      ...(await this.signToken(user.id, user.email, user.fullName, user.role)),
+      role: user.role,
+    };
   }
 
   /**
@@ -937,6 +918,29 @@ export class AuthService {
     return access_token;
   }
 
+  /**
+   * Logout: records the cookie's jti so the JWT strategy refuses it from now
+   * on. Tokens minted before jti existed, or that no longer verify, have
+   * nothing to revoke and are simply ignored.
+   */
+  async revokeSession(token: string | undefined): Promise<void> {
+    if (!token) return;
+    let payload: { sub?: string; jti?: string; exp?: number };
+    try {
+      payload = await this.jwt.verifyAsync(token, { secret: getJwtSecret() });
+    } catch {
+      return;
+    }
+    if (!payload.jti || !payload.sub) return;
+    const expiresAt = new Date((payload.exp ?? Date.now() / 1000) * 1000);
+    await this.prisma.revokedSession.upsert({
+      where: { jti: payload.jti },
+      create: { jti: payload.jti, userId: payload.sub, expiresAt },
+      update: {},
+    });
+    forgetCachedSession(payload.sub, payload.jti);
+  }
+
   async signToken(
     userId: string,
     email: string,
@@ -954,6 +958,8 @@ export class AuthService {
       role,
       hasCreatorAccess: userRow?.hasCreatorAccess ?? false,
       hasStudentAccess: userRow?.hasStudentAccess ?? false,
+      // Lets logout revoke exactly this session (RevokedSession).
+      jti: crypto.randomUUID(),
     };
     const secret = getJwtSecret();
 

@@ -6,8 +6,10 @@ import {
   UseGuards,
   Req,
   BadRequestException,
+  GoneException,
   Headers,
 } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { PaymentService } from './payment.service';
 import { isPurchasablePlan } from '../course/pricing-engine';
 import { AuthGuard } from '@nestjs/passport';
@@ -94,19 +96,22 @@ export class PaymentController {
 
   // ── STRIPE ──────────────────────────────────────────────────────────────────
 
+  /**
+   * Retired cart checkout. It charged raw course prices and recorded a sale
+   * but never created an entitlement, so buyers paid and stayed locked out
+   * (getStudentLesson only opens on an entitlement). Courses are sold
+   * through the course paywall, and from now on through Teyro Pro.
+   */
   @UseGuards(AuthGuard('jwt'))
   @Post('stripe/create-intent')
-  async createStripeIntent(
-    @Req() req: Request,
-    @Body('courseIds') courseIds: string[],
-  ) {
-    if (!courseIds || courseIds.length === 0) {
-      throw new BadRequestException('No courses selected');
-    }
-    const userId = (req.user as { id: string }).id;
-    return this.paymentService.createStripeIntent(userId, courseIds);
+  createStripeIntent() {
+    throw new GoneException({
+      code: 'CART_CHECKOUT_RETIRED',
+      message: 'Cart checkout has been retired. Unlock courses from the course page.',
+    });
   }
 
+  @SkipThrottle()
   @Post('stripe/webhook')
   async stripeWebhook(
     @Req() req: Request & { rawBody?: Buffer },
@@ -130,33 +135,17 @@ export class PaymentController {
     return this.paymentService.getMesombConfig();
   }
 
+  /** Retired cart checkout over Mobile Money; same reason as stripe/create-intent. */
   @UseGuards(AuthGuard('jwt'))
   @Post('mesomb/collect')
-  async collectMesomb(
-    @Req() req: Request,
-    @Body('courseIds') courseIds: string[],
-    @Body('payerAccount') payerAccount: string,
-    @Body('service') service: string,
-    @Body('country') country?: string,
-  ) {
-    if (!courseIds || courseIds.length === 0) {
-      throw new BadRequestException('No courses selected');
-    }
-    if (!payerAccount || !service) {
-      throw new BadRequestException(
-        'Payer account and service (MTN/ORANGE) are required',
-      );
-    }
-    const userId = (req.user as { id: string }).id;
-    return this.paymentService.collectMesomb(
-      userId,
-      courseIds,
-      payerAccount,
-      service,
-      country,
-    );
+  collectMesomb() {
+    throw new GoneException({
+      code: 'CART_CHECKOUT_RETIRED',
+      message: 'Cart checkout has been retired. Unlock courses from the course page.',
+    });
   }
 
+  @SkipThrottle()
   @Post('mesomb/webhook')
   async mesombWebhook(
     @Req() req: Request & { rawBody?: Buffer },

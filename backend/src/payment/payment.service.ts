@@ -873,35 +873,6 @@ export class PaymentService {
 
   // ─── STRIPE WEBHOOKS ─────────────────────────────────────────────────────────
 
-  async createStripeIntent(userId: string, courseIds: string[]) {
-    const { courses, totalAmount } = await this.getCoursesTotal(courseIds);
-
-    const paymentIntent = await this.stripe.paymentIntents.create({
-      amount: Math.round(totalAmount * 100),
-      currency: 'usd',
-      metadata: {
-        userId,
-        courseIds: JSON.stringify(courseIds),
-      },
-    });
-
-    // Real purchase intent, not mere course interest (spec §10): the user
-    // reached the actual payment step. One CheckoutIntent per course in the
-    // cart — each is tracked and recovered independently.
-    for (const course of courses) {
-      this.eventEmitter.emit('checkout.started', {
-        userId,
-        courseId: course.id,
-        provider: 'STRIPE',
-        checkoutRef: paymentIntent.id,
-        amountMinor: Math.round(course.price * 100),
-        currency: 'USD',
-      });
-    }
-
-    return { clientSecret: paymentIntent.client_secret as string };
-  }
-
   /**
    * Records a webhook delivery in the idempotency ledger. Returns false when
    * this exact event was already processed — Stripe retries deliveries and
@@ -929,30 +900,26 @@ export class PaymentService {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     let event: StripeEvent;
 
-    if (webhookSecret && signature) {
-      try {
-        event = this.stripe.webhooks.constructEvent(
-          rawBody,
-          signature,
-          webhookSecret,
-        ) as StripeEvent;
-      } catch (err) {
-        throw new BadRequestException(
-          `Stripe webhook verification failed: ${err}`,
-        );
-      }
-    } else if (!webhookSecret && process.env.NODE_ENV !== 'production') {
-      // Local development only: no webhook secret configured, accept the raw
-      // body so the flow can be exercised without the Stripe CLI.
-      this.logger.warn(
-        'Stripe webhook accepted WITHOUT signature verification (development mode).',
+    // Every environment verifies. The old development fallback accepted any
+    // unsigned body whenever the secret was unset, and staging boxes don't set
+    // NODE_ENV=production — so a forged payload could mint entitlements there.
+    if (!webhookSecret) {
+      throw new ServiceUnavailableException(
+        'Stripe webhook verification is not configured.',
       );
-      event = rawBody as unknown as StripeEvent;
-    } else {
-      // Production with a missing secret/header is never acceptable — an
-      // unsigned payload here means someone forging entitlements.
+    }
+    if (!signature) {
+      throw new BadRequestException('Stripe webhook signature missing.');
+    }
+    try {
+      event = this.stripe.webhooks.constructEvent(
+        rawBody,
+        signature,
+        webhookSecret,
+      ) as StripeEvent;
+    } catch (err) {
       throw new BadRequestException(
-        'Stripe webhook signature missing or verification not configured.',
+        `Stripe webhook verification failed: ${err}`,
       );
     }
 
@@ -1103,16 +1070,22 @@ export class PaymentService {
           reason: `Customer refund (${latest.reason || 'requested'})`,
         });
       }
+      // A full refund ends the access it paid for; a partial one is goodwill.
+      if (charge?.refunded === true) {
+        await this.revokeSubscriptionAccess(charge.invoice, 'REFUND');
+      }
     }
 
     // 6. Dispute Opened — hold back the disputed amount
     if (event.type === 'charge.dispute.created' && obj?.id) {
       let refs: string[] = [];
+      let invoiceId: string | null = null;
       try {
         // The dispute object only carries the charge id; resolve it to find
         // the original sale's payment intent / invoice reference.
         const charge = await this.stripe.charges.retrieve(obj.charge);
         refs = [charge.payment_intent, charge.invoice].filter(Boolean);
+        invoiceId = charge.invoice ?? null;
       } catch {
         refs = []; // unmatched → audited inside the service, never silent
       }
@@ -1122,6 +1095,7 @@ export class PaymentService {
         disputeGrossMinor: Math.round(obj.amount ?? 0),
         reason: `Chargeback (${obj.reason || 'unspecified'})`,
       });
+      await this.revokeSubscriptionAccess(invoiceId, 'DISPUTE');
     }
 
     // 7. Dispute Closed in Creator's Favor — restore what was held
@@ -1171,26 +1145,63 @@ export class PaymentService {
     }
   }
 
-  // ─── MESOMB WEBHOOKS ─────────────────────────────────────────────────────────
-
-  async collectMesomb(
-    userId: string,
-    courseIds: string[],
-    payerAccount: string,
-    service: string,
-    country?: string,
+  /**
+   * A full refund or an opened dispute ends the access that charge paid for,
+   * and stops the renewal. Before this, refunded learners kept their
+   * entitlement until expiresAt and the subscription kept billing them.
+   */
+  private async revokeSubscriptionAccess(
+    invoiceId: string | null | undefined,
+    why: 'REFUND' | 'DISPUTE',
   ) {
-    const { totalAmount, courses } = await this.getCoursesTotal(courseIds);
-    return this.mesombProvider.createSubscription({
-      userId,
-      courseId: courseIds[0],
-      plan: 'MONTHLY',
-      price: totalAmount,
-      phone: payerAccount,
-      service,
-      country,
+    if (!invoiceId) return;
+    let subscriptionId: string | null = null;
+    try {
+      const invoice = await this.stripe.invoices.retrieve(invoiceId);
+      const sub = invoice?.subscription;
+      subscriptionId = typeof sub === 'string' ? sub : (sub?.id ?? null);
+    } catch (err) {
+      this.logger.warn(
+        `Could not resolve invoice ${invoiceId} for ${why} revocation: ${err}`,
+      );
+      return;
+    }
+    if (!subscriptionId) return;
+
+    const now = new Date();
+    const revoked = await this.prisma.courseAccessEntitlement.updateMany({
+      where: { stripeSubscriptionId: subscriptionId, status: 'ACTIVE' },
+      data: { status: 'EXPIRED', expiresAt: now, cancelAtPeriodEnd: true },
     });
+    await this.prisma.courseSubscription.updateMany({
+      where: {
+        providerSubscriptionId: subscriptionId,
+        status: { in: ['ACTIVE', 'PAST_DUE'] },
+      },
+      data: {
+        status: 'CANCELLED',
+        autoRenew: false,
+        cancelledAt: now,
+        endedAt: now,
+      },
+    });
+    if (revoked.count === 0) return;
+
+    try {
+      await this.stripe.subscriptions.cancel(subscriptionId);
+    } catch (err) {
+      // Already cancelled is fine; anything else is audited for a human.
+      this.logger.warn(`Cancel after ${why} failed for ${subscriptionId}: ${err}`);
+    }
+    await this.earnings.auditSystem(
+      'ACCESS_REVOKED',
+      'CourseSubscription',
+      subscriptionId,
+      { why, invoiceId },
+    );
   }
+
+  // ─── MESOMB WEBHOOKS ─────────────────────────────────────────────────────────
 
   /**
    * Verify MeSomb's webhook signature (docs.mesomb.com → Webhooks →

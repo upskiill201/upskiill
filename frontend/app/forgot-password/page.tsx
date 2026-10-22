@@ -21,8 +21,8 @@ export default function StudentForgotPasswordPage() {
     setLoading(true);
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://upskiill-backend.onrender.com';
-      const res = await fetch(`${API_URL}/auth/forgot-password`, {
+      // Never a hardcoded fallback: an unset env pointed every reset at staging.
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

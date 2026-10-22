@@ -69,6 +69,9 @@ describe('AuthService', () => {
             studentProfile: {
               upsert: jest.fn(),
             },
+            revokedSession: {
+              upsert: jest.fn(),
+            },
           },
         },
         {
@@ -76,6 +79,7 @@ describe('AuthService', () => {
           useValue: {
             signAsync: jest.fn().mockResolvedValue('mocked-jwt-token'),
             decode: jest.fn(),
+            verifyAsync: jest.fn(),
           },
         },
         {
@@ -413,6 +417,7 @@ describe('AuthService', () => {
           role: activeUser.role,
           hasCreatorAccess: false,
           hasStudentAccess: true,
+          jti: expect.any(String),
         },
         { expiresIn: '7d', secret: expect.any(String) },
       );
@@ -990,8 +995,8 @@ describe('AuthService', () => {
     });
   });
 
-  describe('verifyEmail', () => {
-    it('should verify with the RAW code from the magic link — single hash, matching the stored value', async () => {
+  describe('email link verification (verifyCode)', () => {
+    it('verifies the account the link names and returns its role', async () => {
       const code = '123456';
       const storedHash = require('crypto')
         .createHash('sha256')
@@ -1001,60 +1006,43 @@ describe('AuthService', () => {
         id: '1',
         email: 'verify@example.com',
         fullName: 'Verify User',
-        role: 'STUDENT',
+        role: 'INSTRUCTOR',
         verifyToken: storedHash,
         tokenExpiry: new Date(Date.now() + 5 * 60 * 1000),
+        verifyAttempts: 0,
         profile: null,
       };
+      (prisma.user.findFirst as jest.Mock).mockResolvedValue(mockUser);
+      (prisma.user.update as jest.Mock).mockResolvedValue(mockUser);
 
-      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
-      (prisma.user.update as jest.Mock).mockResolvedValue({
-        ...mockUser,
-        isVerified: true,
-        verifyToken: null,
-      });
+      const result = await service.verifyCode('verify@example.com', code);
 
-      const result = await service.verifyEmail(code);
-
-      // Lookup hashes the incoming token exactly ONCE
-      expect(prisma.user.findUnique).toHaveBeenCalledWith({
-        where: { verifyToken: storedHash },
+      // Looked up by the email in the link, never by the code alone
+      expect(prisma.user.findFirst).toHaveBeenCalledWith({
+        where: { email: 'verify@example.com' },
         include: { profile: true },
       });
-      expect(prisma.user.update).toHaveBeenCalledWith({
-        where: { id: '1' },
-        data: { isVerified: true, verifyToken: null, tokenExpiry: null },
-      });
-      expect(authEmails.sendWelcomeEmail).toHaveBeenCalled();
+      expect(result.role).toBe('INSTRUCTOR');
       expect(result.access_token).toBe('mocked-jwt-token');
     });
 
-    it('should reject an expired verification token', async () => {
-      const mockUser = {
+    it('counts a wrong code against that one account', async () => {
+      (prisma.user.findFirst as jest.Mock).mockResolvedValue({
         id: '1',
-        email: 'expired@example.com',
-        fullName: 'Expired User',
-        role: 'STUDENT',
-        verifyToken: 'some-hash',
-        tokenExpiry: new Date(Date.now() - 60 * 1000),
+        email: 'verify@example.com',
+        verifyToken: 'a'.repeat(64),
+        tokenExpiry: new Date(Date.now() + 5 * 60 * 1000),
+        verifyAttempts: 0,
         profile: null,
-      };
+      });
 
-      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
-
-      await expect(service.verifyEmail('123456')).rejects.toThrow(
-        ForbiddenException,
-      );
-      expect(prisma.user.update).not.toHaveBeenCalled();
-    });
-
-    it('should reject an unknown token without leaking whether the account exists', async () => {
-      (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
-
-      await expect(service.verifyEmail('000000')).rejects.toThrow(
-        ForbiddenException,
-      );
-      expect(prisma.user.update).not.toHaveBeenCalled();
+      await expect(
+        service.verifyCode('verify@example.com', '000000'),
+      ).rejects.toThrow(ForbiddenException);
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: '1' },
+        data: { verifyAttempts: { increment: 1 } },
+      });
     });
   });
 
@@ -1118,6 +1106,35 @@ describe('AuthService', () => {
     });
   });
 
+  describe('revokeSession (logout)', () => {
+    it('records the session id so the token stops working before it expires', async () => {
+      const exp = Math.floor(Date.now() / 1000) + 3600;
+      (jwt.verifyAsync as jest.Mock).mockResolvedValue({
+        sub: 'user-1',
+        jti: 'jti-1',
+        exp,
+      });
+
+      await service.revokeSession('a.b.c');
+
+      expect(prisma.revokedSession.upsert).toHaveBeenCalledWith({
+        where: { jti: 'jti-1' },
+        create: { jti: 'jti-1', userId: 'user-1', expiresAt: new Date(exp * 1000) },
+        update: {},
+      });
+    });
+
+    it('ignores tokens that do not verify or predate session ids', async () => {
+      (jwt.verifyAsync as jest.Mock).mockRejectedValueOnce(new Error('bad sig'));
+      await service.revokeSession('forged');
+      (jwt.verifyAsync as jest.Mock).mockResolvedValueOnce({ sub: 'user-1' });
+      await service.revokeSession('old-token');
+      await service.revokeSession(undefined);
+
+      expect(prisma.revokedSession.upsert).not.toHaveBeenCalled();
+    });
+  });
+
   describe('signToken', () => {
     it('should sign and return a token and user payload including access flags', async () => {
       const userId = '1';
@@ -1146,6 +1163,8 @@ describe('AuthService', () => {
           role,
           hasCreatorAccess: true,
           hasStudentAccess: true,
+          // Each session gets its own id so logout can revoke just that one
+          jti: expect.stringMatching(/^[0-9a-f-]{36}$/),
         },
         { expiresIn: '7d', secret: expect.any(String) },
       );

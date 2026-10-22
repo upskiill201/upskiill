@@ -743,6 +743,19 @@ model PasswordResetToken {
   @@index([userId])
 }
 
+/// A signed-out session. Session JWTs carry a `jti`; logging out records it
+/// here so the token stops working at once instead of living out its 7 days.
+/// Rows are only useful until the token would have expired anyway.
+model RevokedSession {
+  jti       String   @id
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+  @@map("revoked_sessions")
+}
+
 model OnboardingSession {
   id                 String    @id @default(uuid())
   userId             String    @unique
