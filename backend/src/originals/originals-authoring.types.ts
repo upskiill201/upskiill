@@ -9,6 +9,7 @@
  */
 
 import type { DomTest } from './originals-dom-checks';
+import type { ScreenTest } from './originals-screen-checks';
 
 export type CodeLanguage =
   | 'javascript'
@@ -26,7 +27,7 @@ export type CodeLanguage =
   | 'plaintext';
 
 /** Languages the in-browser code runner can run (frontend/lib/code). 'html' = a live page (HTML + CSS). */
-export type RunLanguage = 'python' | 'typescript' | 'html';
+export type RunLanguage = 'python' | 'typescript' | 'html' | 'react-native';
 
 /** The shared cast (docs/originals/CAST.md). */
 /** Course-only characters (efua, asante; brian, zanele, achieng, kamau, felix, pauline, emeka, wanjiku; jayden, priya, femi; diego; marta, sofia, tomas, carmen) are listed in CAST.md too. */
@@ -92,6 +93,8 @@ export interface AuthoredCodeCheck {
   typeErrorIncludes?: string;
   /** HTML: a check on the rendered page (originals-dom-checks.ts). For HTML, outputIncludes/outputEquals read the page's text. */
   dom?: DomTest;
+  /** React Native: a check on the rendered phone screen, after optional taps and typing (originals-screen-checks.ts). */
+  screen?: ScreenTest;
 }
 
 export type AuthoredExercise =
@@ -225,7 +228,9 @@ export interface OriginalTrackDef {
   /**
    * The language every Try it live card and Write and run exercise in this
    * track runs in. Default: Python. 'typescript' = type-checked TypeScript;
-   * 'html' = a live page (HTML + CSS), checked with page checks (`dom`).
+   * 'html' = a live page (HTML + CSS), checked with page checks (`dom`);
+   * 'react-native' = a React Native screen (TSX) in a phone preview, checked
+   * with screen checks (`screen`).
    */
   runner?: RunLanguage;
   levels: OriginalLevel[];

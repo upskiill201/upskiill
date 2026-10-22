@@ -12,6 +12,7 @@
  */
 
 import { domTestIssue } from '../originals/originals-dom-checks';
+import { screenTestIssue } from '../originals/originals-screen-checks';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- validating untyped creator JSON */
 
@@ -166,7 +167,7 @@ function richLearnCardProblem(c: any): string | null {
     }
     case 'tryIt':
       if (blank(c.code)) return 'A Try it live card has no code.';
-      if (c.language !== undefined && c.language !== 'python' && c.language !== 'typescript' && c.language !== 'html') return 'A Try it live card must be Python, TypeScript or HTML.';
+      if (c.language !== undefined && !RUN_LANGUAGES.includes(c.language)) return 'A Try it live card must be Python, TypeScript, HTML or React Native.';
       return list(c.stdin).length > RICH.stdin ? `Try it live allows up to ${RICH.stdin} lines of input.` : null;
     default:
       return 'A Learn card has an unknown type.';
@@ -230,7 +231,7 @@ export function exerciseProblem(e: any): string | null {
     }
     case 'writeCode': {
       const checks = Array.isArray(e.checks) ? e.checks : [];
-      if (e.language !== 'python' && e.language !== 'typescript' && e.language !== 'html') return 'A Write and run exercise must be Python, TypeScript or HTML.';
+      if (!RUN_LANGUAGES.includes(e.language)) return 'A Write and run exercise must be Python, TypeScript, HTML or React Native.';
       if (blank(e.solution)) return 'A Write and run exercise has no solution.';
       if (checks.length === 0 || checks.length > RICH.checks) return `A Write and run exercise needs 1 to ${RICH.checks} checks.`;
       if (Array.isArray(e.stdin) && e.stdin.length > RICH.stdin) return `Write and run allows up to ${RICH.stdin} lines of input.`;
@@ -241,13 +242,17 @@ export function exerciseProblem(e: any): string | null {
   }
 }
 
+/** The in-browser runners (frontend lib/code): Python, TypeScript, HTML pages, React Native screens. */
+const RUN_LANGUAGES: unknown[] = ['python', 'typescript', 'html', 'react-native'];
+
 /** One hidden check on a Write and run exercise. Mirrors codeCheckIssue in the frontend. */
 function codeCheckProblem(c: any): string | null {
   if (blank(c?.message)) return 'A code check has no message for the learner.';
-  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes, c.noTypeErrors, c.typeErrorIncludes, c.dom].filter((t) => t !== undefined);
+  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes, c.noTypeErrors, c.typeErrorIncludes, c.dom, c.screen].filter((t) => t !== undefined);
   if (tests.length !== 1) return 'A code check must test exactly one thing.';
   if (c.noTypeErrors !== undefined) return c.noTypeErrors === true ? null : 'A type-error check must be true.';
   if (c.dom !== undefined) return domTestIssue(c.dom);
+  if (c.screen !== undefined) return screenTestIssue(c.screen);
   return blank(tests[0]) ? 'A code check has nothing to test.' : null;
 }
 

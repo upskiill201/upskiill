@@ -35,6 +35,7 @@ import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import styles from './PythonPad.module.css';
 import { HtmlPad } from './HtmlPad';
+import { PhonePad } from './PhonePad';
 
 const INDENT = '    ';
 const QUICK_KEYS: { label: string; insert: string; aria?: string }[] = [
@@ -96,19 +97,40 @@ const HTML_QUICK_KEYS: { label: string; insert: string; aria?: string }[] = [
   { label: '!', insert: '!' },
 ];
 
+/** React Native (TSX): JSX and TypeScript keys. */
+const TSX_QUICK_KEYS: { label: string; insert: string; aria?: string }[] = [
+  { label: 'Tab', insert: TS_INDENT, aria: 'Indent' },
+  { label: '<', insert: '<' },
+  { label: '>', insert: '>' },
+  { label: '/', insert: '/' },
+  { label: '{', insert: '{' },
+  { label: '}', insert: '}' },
+  { label: '(', insert: '(' },
+  { label: ')', insert: ')' },
+  { label: '=', insert: '=' },
+  { label: "'", insert: "'" },
+  { label: ':', insert: ':' },
+  { label: ',', insert: ',' },
+  { label: '.', insert: '.' },
+  { label: '=>', insert: ' => ', aria: 'Insert arrow' },
+  { label: '$', insert: '$' },
+];
+
 /** What each runner is called in the UI. */
-const RUNNER_NAME: Record<RunLanguage, string> = { python: 'Python', typescript: 'TypeScript', html: 'HTML' };
+const RUNNER_NAME: Record<RunLanguage, string> = { python: 'Python', typescript: 'TypeScript', html: 'HTML', 'react-native': 'React Native' };
 
 /** Keep a runner's status (loading, ready...) in React state. */
 export function useRunnerStatus(language: RunLanguage = 'python'): PythonStatus {
+  // React Native lessons are compiled by the TypeScript runner's compiler.
+  const usesTs = language === 'typescript' || language === 'react-native';
   const [status, setStatus] = useState<PythonStatus>(() =>
-    language === 'html' ? 'ready' : language === 'typescript' ? getTypeScriptStatus() : getPythonStatus(),
+    language === 'html' ? 'ready' : usesTs ? getTypeScriptStatus() : getPythonStatus(),
   );
   useEffect(() => {
     // HTML needs nothing to load: the browser already speaks it.
     if (language === 'html') return;
-    return language === 'typescript' ? onTypeScriptStatus(setStatus) : onPythonStatus(setStatus);
-  }, [language]);
+    return usesTs ? onTypeScriptStatus(setStatus) : onPythonStatus(setStatus);
+  }, [language, usesTs]);
   return status;
 }
 
@@ -146,18 +168,21 @@ export function CodeEditor({
   onReset,
   language = 'python',
 }: EditorProps) {
-  const ts = language === 'typescript';
+  const rn = language === 'react-native';
+  const ts = language === 'typescript' || rn;
   const html = language === 'html';
   const indentUnit = ts || html ? TS_INDENT : INDENT;
-  const keys = html ? HTML_QUICK_KEYS : ts ? TS_QUICK_KEYS : QUICK_KEYS;
-  const file = fileName ?? (html ? 'index.html' : ts ? 'main.ts' : 'main.py');
+  const keys = html ? HTML_QUICK_KEYS : rn ? TSX_QUICK_KEYS : ts ? TS_QUICK_KEYS : QUICK_KEYS;
+  const file = fileName ?? (html ? 'index.html' : rn ? 'App.tsx' : ts ? 'main.ts' : 'main.py');
+  // TSX is highlighted as TypeScript (its JSX reads fine that way).
+  const highlightAs = rn ? 'typescript' : language;
   const ta = useRef<HTMLTextAreaElement>(null);
   const hl = useRef<HTMLPreElement>(null);
   const gutter = useRef<HTMLDivElement>(null);
   const lineCount = value.split('\n').length;
   const shown = Math.min(Math.max(lineCount, minLines), maxLines);
   // A trailing newline needs something after it, or the last line collapses.
-  const highlighted = useMemo(() => highlightCode(value.endsWith('\n') ? `${value} ` : value || ' ', language), [value, language]);
+  const highlighted = useMemo(() => highlightCode(value.endsWith('\n') ? `${value} ` : value || ' ', highlightAs), [value, highlightAs]);
 
   const syncScroll = () => {
     const t = ta.current;
@@ -410,9 +435,11 @@ export interface PythonPadProps {
   language?: RunLanguage;
 }
 
-/** The pad for any runner language. HTML gets the live page (HtmlPad); Python and TypeScript run as programs. */
+/** The pad for any runner language. HTML gets the live page (HtmlPad), React Native the phone preview (PhonePad); Python and TypeScript run as programs. */
 export function PythonPad(props: PythonPadProps) {
-  return props.language === 'html' ? <HtmlPad {...props} /> : <ProgramPad {...props} />;
+  if (props.language === 'html') return <HtmlPad {...props} />;
+  if (props.language === 'react-native') return <PhonePad {...props} />;
+  return <ProgramPad {...props} />;
 }
 
 function ProgramPad({

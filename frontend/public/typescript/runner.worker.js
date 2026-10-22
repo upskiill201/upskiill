@@ -216,7 +216,17 @@ async function run(code, exprs) {
   }
 
   self.onmessage = async (e) => {
-    const { id, code, exprs } = e.data || {};
+    const { id, code, exprs, kind } = e.data || {};
+    // The React Native runner borrows this compiler to turn TSX into JavaScript (public/react-native/transpile.js).
+    if (kind === 'transpileTsx') {
+      try {
+        if (!self.teyroTranspileTsx) importScripts('/react-native/transpile.js');
+        self.postMessage({ type: 'result', id, ...self.teyroTranspileTsx(ts, String(code || '')) });
+      } catch (err) {
+        self.postMessage({ type: 'result', id, js: null, error: { message: String(err && err.message ? err.message : err), line: null } });
+      }
+      return;
+    }
     try {
       const result = await run(String(code || ''), Array.isArray(exprs) ? exprs : []);
       self.postMessage({ type: 'result', id, ...result });

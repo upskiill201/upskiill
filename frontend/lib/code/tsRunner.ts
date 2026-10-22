@@ -143,6 +143,37 @@ export function runTypeScript(code: string, opts: RunOptions = {}): Promise<RawR
   return job;
 }
 
+/** TSX → JavaScript for the React Native runner, or the first syntax error. */
+export interface TranspiledTsx {
+  js: string | null;
+  error: { message: string; line: number | null } | null;
+}
+
+async function transpileNow(code: string): Promise<TranspiledTsx> {
+  await startWorker();
+  const w = worker!;
+  const id = nextId++;
+  return new Promise<TranspiledTsx>((resolve) => {
+    const onMessage = (e: MessageEvent) => {
+      if (e.data?.type !== 'result' || e.data.id !== id) return;
+      w.removeEventListener('message', onMessage);
+      resolve({ js: typeof e.data.js === 'string' ? e.data.js : null, error: e.data.error ?? null });
+    };
+    w.addEventListener('message', onMessage);
+    w.postMessage({ id, code, kind: 'transpileTsx' });
+  });
+}
+
+/**
+ * Turn a React Native lesson's TSX into JavaScript with the same compiler
+ * (public/react-native/transpile.js). Rejects only if TypeScript can't load.
+ */
+export function transpileTsx(code: string): Promise<TranspiledTsx> {
+  const job = queue.then(() => transpileNow(code));
+  queue = job.catch(() => undefined);
+  return job;
+}
+
 export function retryTypeScript(): void {
   resetWorker();
   warmTypeScript();

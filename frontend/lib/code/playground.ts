@@ -94,6 +94,56 @@ export const HTML_EXAMPLES: PlaygroundExample[] = [
   },
 ];
 
+/** React Native: a screen on the phone preview (lib/code/rnRunner.ts). */
+export const RN_EXAMPLES: PlaygroundExample[] = [
+  {
+    id: 'rn-hello',
+    label: 'Hello',
+    code: `import { View, Text, StyleSheet } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={styles.screen}>
+      <Text style={styles.title}>Hello from my phone</Text>
+      <Text>Change the words and watch the app change.</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, padding: 24, justifyContent: 'center' },
+  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 8 },
+});
+`,
+  },
+  {
+    id: 'rn-counter',
+    label: 'A button',
+    code: `import { useState } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+
+export default function App() {
+  const [count, setCount] = useState(0);
+  return (
+    <View style={styles.screen}>
+      <Text style={styles.count}>{count}</Text>
+      <Pressable style={styles.button} onPress={() => setCount(count + 1)}>
+        <Text style={styles.label}>Tap me</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  count: { fontSize: 64, fontWeight: 'bold' },
+  button: { backgroundColor: '#0172fd', paddingVertical: 14, paddingHorizontal: 32, borderRadius: 14 },
+  label: { color: 'white', fontSize: 18, fontWeight: 'bold' },
+});
+`,
+  },
+];
+
 export const EXAMPLES: PlaygroundExample[] = [
   {
     id: 'hello',

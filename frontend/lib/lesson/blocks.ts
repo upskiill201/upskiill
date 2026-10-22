@@ -21,6 +21,7 @@
  */
 
 import { domTestIssue, type DomTest } from '@/lib/code/domChecks';
+import { screenTestIssue, type ScreenTest } from '@/lib/code/screenChecks';
 
 // ─── Shared ────────────────────────────────────────────────────────────────
 
@@ -41,8 +42,11 @@ export const CODE_LANGUAGES = [
 ] as const;
 export type CodeLanguage = (typeof CODE_LANGUAGES)[number];
 
-/** Languages the in-browser code runner can run (lib/code). 'html' = a live page (HTML + CSS). */
-export type RunLanguage = 'python' | 'typescript' | 'html';
+/**
+ * Languages the in-browser code runner can run (lib/code). 'html' = a live page
+ * (HTML + CSS); 'react-native' = a React Native screen (TSX) in a phone preview.
+ */
+export type RunLanguage = 'python' | 'typescript' | 'html' | 'react-native';
 
 export const CODE_LANGUAGE_LABEL: Record<CodeLanguage, string> = {
   javascript: 'JavaScript',
@@ -382,6 +386,8 @@ export interface CodeCheck {
   typeErrorIncludes?: string;
   /** HTML: a check on the rendered page (lib/code/domChecks.ts). For HTML, outputIncludes/outputEquals read the page's text. */
   dom?: DomTest;
+  /** React Native: a check on the rendered phone screen, after optional taps and typing (lib/code/screenChecks.ts). */
+  screen?: ScreenTest;
 }
 
 /**
@@ -699,10 +705,11 @@ export function richLearnCardIssue(c: RichLearnCard): string | null {
 /** Problems with one hidden check on a Write and run exercise (mirrors the backend). */
 export function codeCheckIssue(c: CodeCheck): string | null {
   if (blank(c.message)) return 'Every check needs a message for the learner.';
-  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes, c.noTypeErrors, c.typeErrorIncludes, c.dom].filter((t) => t !== undefined);
+  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes, c.noTypeErrors, c.typeErrorIncludes, c.dom, c.screen].filter((t) => t !== undefined);
   if (tests.length !== 1) return 'Every check tests exactly one thing.';
   if (c.noTypeErrors !== undefined) return c.noTypeErrors === true ? null : 'A type-error check must be true.';
   if (c.dom !== undefined) return domTestIssue(c.dom);
+  if (c.screen !== undefined) return screenTestIssue(c.screen);
   return blank(tests[0] as string) ? 'A check has nothing to test.' : null;
 }
 

@@ -9,6 +9,7 @@ import type { CodeCheck, RunLanguage } from '@/lib/lesson/blocks';
 import { runPython, type PythonError, type RawRunResult } from './pythonRunner';
 import { runTypeScript, type TypeDiagnostic } from './tsRunner';
 import { renderAndCheckHtml } from './htmlRunner';
+import { renderAndCheckRn } from './rnRunner';
 
 export interface CheckResult {
   message: string;
@@ -74,6 +75,11 @@ export async function runAndCheck(
     // A page, not a program: render it and check the result (htmlRunner.ts, domChecks.ts).
     const page = await renderAndCheckHtml(clean, checks);
     return { ...page, allPassed: page.checks.length > 0 && page.checks.every((r) => r.passed) };
+  }
+  if (language === 'react-native') {
+    // A phone screen: render it offscreen and run the screen checks (rnRunner.ts, screenChecks.ts).
+    const screen = await renderAndCheckRn(clean, checks);
+    return { ...screen, allPassed: !screen.error && screen.checks.length > 0 && screen.checks.every((r) => r.passed) };
   }
   const exprs = checks.filter((c) => c.expr !== undefined).map((c) => c.expr as string);
   const run = language === 'typescript' ? await runTypeScript(clean, { exprs }) : await runPython(clean, { stdin, exprs });

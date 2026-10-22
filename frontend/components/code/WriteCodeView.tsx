@@ -51,7 +51,19 @@ export function WriteCodeView({
         readOnly={locked}
         stdin={exercise.stdin}
         checks={exercise.checks}
-        runLabel={exercise.language === 'html' ? (passed ? 'Check again' : 'Check my page') : passed ? 'Run again' : 'Run'}
+        runLabel={
+          exercise.language === 'html'
+            ? passed
+              ? 'Check again'
+              : 'Check my page'
+            : exercise.language === 'react-native'
+              ? passed
+                ? 'Check again'
+                : 'Check my app'
+              : passed
+                ? 'Run again'
+                : 'Run'
+        }
         minLines={Math.max(4, exercise.starter.split('\n').length + 1)}
         label={exercise.prompt}
         language={exercise.language}

@@ -26,6 +26,7 @@ import {
   type McqVariant,
 } from './blocks';
 import type { DomTest } from '@/lib/code/domChecks';
+import type { ScreenTest } from '@/lib/code/screenChecks';
 
 const str = (v: unknown, max: number = LIMITS.textChars): string =>
   typeof v === 'string' ? v.slice(0, max) : '';
@@ -132,7 +133,9 @@ function parseRichCard(c: any, cid: string): RichLearnCard | null {
       return {
         id: cid,
         kind: 'tryIt',
-        ...(c.language === 'typescript' || c.language === 'html' ? { language: c.language as 'typescript' | 'html' } : {}),
+        ...(c.language === 'typescript' || c.language === 'html' || c.language === 'react-native'
+          ? { language: c.language as 'typescript' | 'html' | 'react-native' }
+          : {}),
         title: optStr(c.title, 200),
         code: str(c.code, LIMITS.codeChars),
         caption: optStr(c.caption, 300),
@@ -303,7 +306,7 @@ export function parseExercise(e: any, i: number): Exercise | null {
       return {
         ...base,
         kind: 'writeCode',
-        language: e.language === 'typescript' || e.language === 'html' ? e.language : 'python',
+        language: e.language === 'typescript' || e.language === 'html' || e.language === 'react-native' ? e.language : 'python',
         starter: str(e.starter, LIMITS.codeChars),
         solution: str(e.solution, LIMITS.codeChars),
         hint: optStr(e.hint, 600),
@@ -327,10 +330,41 @@ function parseCheck(c: any): CodeCheck {
     ...(c?.noTypeErrors === true ? { noTypeErrors: true } : {}),
     ...(test(c?.typeErrorIncludes) !== undefined ? { typeErrorIncludes: test(c.typeErrorIncludes) } : {}),
     ...(parseDom(c?.dom) ? { dom: parseDom(c.dom) } : {}),
+    ...(parseScreen(c?.screen) ? { screen: parseScreen(c.screen) } : {}),
   };
 }
 
 /** A page check (HTML): a selector plus optional count/text/attr/style; anything else is dropped. */
+/** A screen check (React Native): only well-formed fields survive. */
+function parseScreen(s: any): ScreenTest | undefined {
+  if (!s || typeof s !== 'object') return undefined;
+  const text = (v: unknown, max = 200) => (typeof v === 'string' && v.trim() ? v.slice(0, max) : undefined);
+  const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : undefined);
+  const out: ScreenTest = {};
+  if (Array.isArray(s.tap)) out.tap = s.tap.slice(0, 10).map((t: unknown) => text(t)).filter((t: string | undefined): t is string => !!t);
+  if (Array.isArray(s.fill))
+    out.fill = s.fill
+      .slice(0, 10)
+      .filter((f: any) => text(f?.field) && typeof f?.text === 'string')
+      .map((f: any) => ({ field: text(f.field)!, text: String(f.text).slice(0, 200) }));
+  if (text(s.text)) out.text = text(s.text);
+  if (text(s.noText)) out.noText = text(s.noText);
+  if (text(s.button)) out.button = text(s.button);
+  if (num(s.images) !== undefined) out.images = num(s.images);
+  if (s.style && text(s.style.of) && text(s.style.prop, 60)) {
+    out.style = {
+      of: text(s.style.of)!,
+      prop: text(s.style.prop, 60)!,
+      ...(text(s.style.value, 100) !== undefined ? { value: text(s.style.value, 100) } : {}),
+      ...(num(s.style.min) !== undefined ? { min: num(s.style.min) } : {}),
+      ...(num(s.style.max) !== undefined ? { max: num(s.style.max) } : {}),
+    };
+  }
+  if (s.repeated && text(s.repeated.text) && num(s.repeated.min) !== undefined) out.repeated = { text: text(s.repeated.text)!, min: num(s.repeated.min)! };
+  const asserts = ['text', 'noText', 'button', 'images', 'style', 'repeated'] as const;
+  return asserts.some((k) => out[k] !== undefined) ? out : undefined;
+}
+
 function parseDom(d: any): DomTest | undefined {
   if (!d || typeof d.selector !== 'string' || !d.selector.trim()) return undefined;
   const s = (v: unknown) => (typeof v === 'string' ? v.slice(0, 300) : undefined);

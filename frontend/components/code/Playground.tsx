@@ -16,7 +16,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Check, Eye, Lightbulb, SquareTerminal, Trophy } from 'lucide-react';
-import { CHALLENGES, EXAMPLES, HTML_EXAMPLES, TS_EXAMPLES, type PlaygroundChallenge } from '@/lib/code/playground';
+import { CHALLENGES, EXAMPLES, HTML_EXAMPLES, RN_EXAMPLES, TS_EXAMPLES, type PlaygroundChallenge } from '@/lib/code/playground';
 import type { RunLanguage } from '@/lib/lesson/blocks';
 import { fireConfetti } from '@/lib/confetti';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -27,9 +27,15 @@ import styles from './Playground.module.css';
 
 const DRAFT_KEY = 'teyro.playground.draft';
 /** TypeScript keeps its own draft, so switching language never loses either one. */
-const draftKey = (language: RunLanguage) => (language === 'python' ? DRAFT_KEY : `${DRAFT_KEY}.${language === 'typescript' ? 'ts' : 'html'}`);
-const EXAMPLES_FOR: Record<RunLanguage, typeof EXAMPLES> = { python: EXAMPLES, typescript: TS_EXAMPLES, html: HTML_EXAMPLES };
-const PROGRAM_LABEL: Record<RunLanguage, string> = { python: 'Your Python program', typescript: 'Your TypeScript program', html: 'Your web page' };
+const draftKey = (language: RunLanguage) =>
+  language === 'python' ? DRAFT_KEY : `${DRAFT_KEY}.${language === 'typescript' ? 'ts' : language === 'react-native' ? 'rn' : 'html'}`;
+const EXAMPLES_FOR: Record<RunLanguage, typeof EXAMPLES> = { python: EXAMPLES, typescript: TS_EXAMPLES, html: HTML_EXAMPLES, 'react-native': RN_EXAMPLES };
+const PROGRAM_LABEL: Record<RunLanguage, string> = {
+  python: 'Your Python program',
+  typescript: 'Your TypeScript program',
+  html: 'Your web page',
+  'react-native': 'Your app',
+};
 const LANGUAGE_KEY = 'teyro.playground.language';
 const DONE_KEY = 'teyro.playground.done';
 
@@ -60,7 +66,7 @@ export function Playground() {
         </span>
         <div>
           <h1 className={styles.title}>Code playground</h1>
-          <p className={styles.sub}>Write and run Python, TypeScript or a web page right here, on any device. Nothing to install.</p>
+          <p className={styles.sub}>Write and run Python, TypeScript, a web page or a phone app right here, on any device. Nothing to install.</p>
         </div>
       </header>
 
@@ -103,7 +109,7 @@ function FreeCode() {
 function FreeCodeEditor() {
   const [language, setLanguage] = useState<RunLanguage>(() => {
     const saved = readStore(LANGUAGE_KEY);
-    return saved === 'typescript' || saved === 'html' ? saved : 'python';
+    return saved === 'typescript' || saved === 'html' || saved === 'react-native' ? saved : 'python';
   });
   return <FreeCodeFor key={language} language={language} onLanguage={setLanguage} />;
 }
@@ -125,6 +131,7 @@ function FreeCodeFor({ language, onLanguage }: { language: RunLanguage; onLangua
             ['python', 'Python'],
             ['typescript', 'TypeScript'],
             ['html', 'HTML & CSS'],
+            ['react-native', 'React Native'],
           ] as const
         ).map(([id, label]) => (
           <button
