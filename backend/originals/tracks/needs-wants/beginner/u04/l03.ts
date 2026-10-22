@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Great now, worse in 10 months, neutral in 10 years. What does that pattern suggest?',
         options: [
-          { text: 'Probably "not now"' },
           { text: 'Definitely buy', why: 'Only the first feeling is good.' },
           { text: 'It doesn\'t tell you anything', why: 'It shows the short-term pull.' },
+          { text: 'Probably "not now"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'In 10 minutes I\'d be so happy with the car, though.',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'Ten minutes counts, but it\'s one of three. What about you in 10 months, sitting in traffic with no savings?' },
           { text: 'Then do it.', why: 'Only the shortest view says yes.' },
+          { text: 'Ten minutes counts, but it\'s one of three. What about you in 10 months, sitting in traffic with no savings?' },
           { text: 'Feelings don\'t matter.', why: 'They matter, at all three times.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why run the test on the other option too?',
         options: [
-          { text: 'To compare: saying no has its own feelings at each time' },
           { text: 'To feel worse', why: 'It\'s to compare fairly.' },
           { text: 'No need', why: 'Both options deserve the test.' },
+          { text: 'To compare: saying no has its own feelings at each time' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

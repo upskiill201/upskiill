@@ -31,8 +31,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Kofi runs out of toothpaste, sees it at the hall shop, buys it. What kind of purchase?',
-      options: ['Unplanned but fine', 'Impulse', 'Planned'],
-      answer: 0,
+      options: ['Impulse', 'Unplanned but fine', 'Planned'],
+      answer: 1,
       explanation: 'He didn\'t plan it, but it\'s a need, and no urge or trick was involved.',
     },
     {
@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is a sign of an impulse buy?',
         options: [
-          { text: 'It feels like now or never' },
           { text: 'It\'s on your shopping list', why: 'That\'s planned.' },
           { text: 'You compared three prices first', why: 'That\'s careful buying.' },
+          { text: 'It feels like now or never' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which impulse buys does this course care most about?',
         options: [
-          { text: 'Big, frequent, unaffordable or regretted ones' },
           { text: 'Every unplanned GH₵2 purchase', why: 'Small, affordable treats aren\'t the problem.' },
           { text: 'Only online ones', why: 'Impulses happen in markets and shops too.' },
+          { text: 'Big, frequent, unaffordable or regretted ones' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

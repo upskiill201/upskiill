@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         message: 'Can I cut my art class to speed things up?',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'It\'s the one you love most. Protect it. There are other lines to look at first.' },
           { text: 'Yes, cut it.', why: 'Cutting joy first makes the plan feel like punishment.' },
+          { text: 'It\'s the one you love most. Protect it. There are other lines to look at first.' },
           { text: 'Take two classes instead.', why: 'Not what\'s needed now.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -87,21 +87,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Review, Chapter 1: what is need inflation?',
         options: [
-          { text: 'Wants becoming "needs" as they become normal' },
           { text: 'Prices rising', why: 'That\'s price inflation.' },
           { text: 'Needing more money', why: 'It\'s about the words and feelings shifting.' },
+          { text: 'Wants becoming "needs" as they become normal' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'Review, Chapter 1: what happens on the hedonic treadmill?',
         options: [
-          { text: 'Upgrades become normal; the pleasure fades and the cost stays' },
           { text: 'You get fitter', why: 'It\'s a metaphor.' },
+          { text: 'Upgrades become normal; the pleasure fades and the cost stays' },
           { text: 'You always feel happier', why: 'You drift back.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

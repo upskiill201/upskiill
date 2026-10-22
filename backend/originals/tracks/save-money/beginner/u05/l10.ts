@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ama has GH₵0 saved. What comes first?',
         options: [
-          { text: 'A small emergency fund, then the course goal' },
           { text: 'All money straight to the course', why: 'One emergency would then wipe out her course money.' },
+          { text: 'A small emergency fund, then the course goal' },
           { text: 'A loan for the course', why: 'Saving first costs far less.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         message: 'Ama keeps forgetting to move her savings on payday. What should she do?',
         prompt: 'Your best advice?',
         options: [
-          { text: 'Schedule an automatic transfer on payday into a separate, named pot. Then forgetting doesn\'t matter.' },
           { text: 'Try harder to remember.', why: 'Memory fails. Systems don\'t need it.' },
           { text: 'Save at the end of the month instead.', why: 'That\'s "save what\'s left".' },
+          { text: 'Schedule an automatic transfer on payday into a separate, named pot. Then forgetting doesn\'t matter.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ama reaches GH₵2,000. What should happen to her GH₵100 a week?',
         options: [
-          { text: 'Redirect it the next day: emergency fund, next goal, a bit more fun' },
           { text: 'Stop it: the goal is done', why: 'The habit is the real prize.' },
           { text: 'Spend it on a celebration every week', why: 'One celebration, planned. Then redirect.' },
+          { text: 'Redirect it the next day: emergency fund, next goal, a bit more fun' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -134,11 +134,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Kofi\'s phone is now full of sales and "pay later" offers. Why might that be a new risk?',
         options: [
-          { text: 'With money coming in weekly, impulse spending can quietly undo the habit' },
           { text: 'It isn\'t; ads don\'t work', why: 'Ads are designed by experts to work.' },
+          { text: 'With money coming in weekly, impulse spending can quietly undo the habit' },
           { text: 'Because sales are always scams', why: 'Not always. But they\'re built to make you buy now.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

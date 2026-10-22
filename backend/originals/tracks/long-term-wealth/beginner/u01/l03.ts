@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Folake say built her wealth?',
         options: [
-          { text: 'Saving 20% from 23, and patience' },
           { text: 'Rich parents', why: 'Her father was a bus driver.' },
+          { text: 'Saving 20% from 23, and patience' },
           { text: 'A lucky investment', why: 'She said patience.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'I\'m 27. Isn\'t it too late for me?',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'You have over 30 working years ahead. That\'s a lot of time for money to grow. Start this month.' },
           { text: 'Yes, too late.', why: 'At 27, there are decades ahead.' },
           { text: 'Wait until you\'re 40.', why: 'Waiting costs years of growth.' },
+          { text: 'You have over 30 working years ahead. That\'s a lot of time for money to grow. Start this month.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -130,11 +130,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can expensive debt cancel out saving?',
         options: [
-          { text: 'You pay more in interest on the debt than you earn on the savings' },
           { text: 'Debt is illegal', why: 'It\'s legal; it\'s the cost.' },
+          { text: 'You pay more in interest on the debt than you earn on the savings' },
           { text: 'It can\'t', why: 'High-interest debt grows faster than most savings.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -145,11 +145,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Miracle\'s dad is 59. Does he still have choices?',
         options: [
-          { text: 'Yes: later is far better than never' },
           { text: 'No, it\'s over', why: 'He still has options.' },
           { text: 'Only if he wins the lottery', why: 'Real choices exist.' },
+          { text: 'Yes: later is far better than never' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

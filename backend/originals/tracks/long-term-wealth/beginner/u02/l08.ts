@@ -20,8 +20,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'What\'s the emergency fund\'s most important job for a long-term saver?',
-      options: ['Protecting investments from being sold at a bad time', 'Earning the most interest', 'Paying for holidays'],
-      answer: 0,
+      options: ['Earning the most interest', 'Paying for holidays', 'Protecting investments from being sold at a bad time'],
+      answer: 2,
       explanation: 'It keeps emergencies from forcing you to sell long-term money at the bottom.',
     },
     {
@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do emergencies and market falls often come together?',
         options: [
-          { text: 'Recessions can bring job losses and falling prices at the same time' },
           { text: 'They never do', why: 'They often coincide.' },
+          { text: 'Recessions can bring job losses and falling prices at the same time' },
           { text: 'Banks plan it', why: 'It\'s about how economies work.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happens if you sell investments at the bottom?',
         options: [
-          { text: 'You lock in the loss and miss any recovery' },
           { text: 'Nothing; you can buy back later at the same price', why: 'Prices may have risen by then.' },
+          { text: 'You lock in the loss and miss any recovery' },
           { text: 'You make a profit', why: 'Selling at the bottom locks in a loss.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

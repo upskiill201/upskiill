@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'This time I\'ll save GH₵400 a week! Starting Monday!',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'What could you keep for a whole year? GH₵100 every week beats GH₵400 for three weeks.' },
           { text: 'Go for it!', why: 'He\'s crashed twice from this exact plan.' },
           { text: 'You\'ll never do it.', why: 'Unkind, and not true with a steady plan.' },
+          { text: 'What could you keep for a whole year? GH₵100 every week beats GH₵400 for three weeks.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Yaw\'s best weeks saved GH₵300; Kofi\'s saved GH₵125. Who saved more in total?',
         options: [
-          { text: 'Kofi, by far' },
           { text: 'Yaw', why: 'His bursts kept crashing. He ended with GH₵300.' },
+          { text: 'Kofi, by far' },
           { text: 'Same', why: 'About GH₵2,000 vs GH₵300.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

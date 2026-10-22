@@ -54,21 +54,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When were all of Yaw\'s raids?',
         options: [
-          { text: 'After 10 p.m.' },
           { text: 'On payday', why: 'Late at night, every time.' },
           { text: 'At the market', why: 'Late at night, on his phone.' },
+          { text: 'After 10 p.m.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'Why does a 24-hour rule work against late-night raids?',
         options: [
-          { text: 'The urge usually passes by morning' },
           { text: 'Banks close at night', why: 'Apps work all night. The rule is about the urge.' },
+          { text: 'The urge usually passes by morning' },
           { text: 'It doesn\'t work', why: 'Most impulses fade with a little time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'But what if I REALLY need the sneaker money tonight?',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'If it\'s a real emergency, that\'s what the emergency fund is for. Sneakers can wait 24 hours.' },
           { text: 'Then take it.', why: 'That\'s exactly the raid the rule prevents.' },
           { text: 'You never need anything.', why: 'Real emergencies happen. They have their own fund.' },
+          { text: 'If it\'s a real emergency, that\'s what the emergency fund is for. Sneakers can wait 24 hours.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

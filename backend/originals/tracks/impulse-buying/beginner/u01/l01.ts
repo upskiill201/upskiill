@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'GH₵480. At 2 a.m. You? Mr Laptop Jar?',
         prompt: 'Kofi\'s most honest reply?',
         options: [
-          { text: 'I know. I was upset about the penalty and tired, and the timer got me. I want to understand why.' },
           { text: 'It was a bargain!', why: 'GH₵480 for boots that don\'t fit isn\'t a bargain.' },
+          { text: 'I know. I was upset about the penalty and tired, and the timer got me. I want to understand why.' },
           { text: 'Mind your business.', why: 'Defensive. Honesty is where change starts.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How long did the good feeling last after "Order confirmed"?',
         options: [
-          { text: 'About four minutes' },
           { text: 'Four days', why: 'The good feeling was gone long before the box came.' },
           { text: 'Forever', why: 'Regret arrived with the box.' },
+          { text: 'About four minutes' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

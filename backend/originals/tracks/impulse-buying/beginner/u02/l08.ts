@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why couldn\'t the GH₵300 headphones help with the test?',
         options: [
-          { text: 'They\'d arrive after the test' },
           { text: 'Headphones never help focus', why: 'They might, sometimes. The timing made them useless here.' },
+          { text: 'They\'d arrive after the test' },
           { text: 'They were broken', why: 'They were fine; timing was the problem.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'But I really do want better headphones, not just because of stress.',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'Then they\'ll still be there after the test. Add them to the list and decide calmly.' },
           { text: 'Then buy them now.', why: 'Now is the stressed moment.' },
           { text: 'Then you can never have them.', why: 'A real want can be planned for.' },
+          { text: 'Then they\'ll still be there after the test. Add them to the list and decide calmly.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How did the want change when Kofi decided calmly?',
         options: [
-          { text: 'It shrank: a cheaper pair, bought later, from the fun line' },
           { text: 'It grew', why: 'Calm decisions tend to be smaller.' },
+          { text: 'It shrank: a cheaper pair, bought later, from the fun line' },
           { text: 'It vanished completely', why: 'He still wanted some, just less.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

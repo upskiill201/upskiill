@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Last year Kofi spent GH₵620 and still used 1 of 5 things a month later. What was the problem?',
         options: [
-          { text: 'He scrolled a feed of deals instead of searching for planned items' },
           { text: 'He bought from the wrong shops', why: 'The way he shopped was the problem.' },
           { text: 'The deals were too good', why: 'They were good at getting him to buy.' },
+          { text: 'He scrolled a feed of deals instead of searching for planned items' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'You bought the interface. Now browse a bit, there might be other deals!',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Nope. List done, app closed. Football?' },
           { text: 'Just five minutes.', why: 'Five minutes is how five purchases happen.' },
+          { text: 'Nope. List done, app closed. Football?' },
           { text: 'Fine, show me.', why: 'The plan was one item and close.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -122,11 +122,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Kofi do right after buying?',
         options: [
-          { text: 'Closed the app and went to play football' },
           { text: 'Browsed for more deals', why: 'That\'s last year\'s Kofi.' },
           { text: 'Bought a case for the interface', why: 'Not on the list.' },
+          { text: 'Closed the app and went to play football' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

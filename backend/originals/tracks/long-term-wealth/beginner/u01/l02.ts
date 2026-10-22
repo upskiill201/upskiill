@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the difference between income and wealth?',
         options: [
-          { text: 'Income flows in; wealth is what you keep and own, minus what you owe' },
           { text: 'They\'re the same', why: 'High earners can have little wealth.' },
           { text: 'Wealth is your salary', why: 'Salary is income.' },
+          { text: 'Income flows in; wealth is what you keep and own, minus what you owe' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'I earn ₦900,000 a month, so I\'m doing well, right?',
         prompt: 'Folake\'s best reply?',
         options: [
-          { text: 'You earn well. Whether you\'re building wealth depends on what you keep. What\'s your net worth?' },
           { text: 'Yes, you\'re rich.', why: 'Income isn\'t wealth.' },
+          { text: 'You earn well. Whether you\'re building wealth depends on what you keep. What\'s your net worth?' },
           { text: 'No, you\'re poor.', why: 'Her net worth is positive and growing.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

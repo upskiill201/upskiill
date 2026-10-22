@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'His GH₵200 every Saturday is steady. What should happen to it?',
         options: [
-          { text: 'A scheduled Saturday transfer of part of it, say GH₵50, to his goal pot' },
           { text: 'Spend it all, it\'s weekend money', why: 'Steady income can be automated too.' },
           { text: 'Keep it in his main wallet for later', why: 'Money that sits where you spend gets spent.' },
+          { text: 'A scheduled Saturday transfer of part of it, say GH₵50, to his goal pot' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'Can I name the sneaker fund "Sneakers"? That\'s honest.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Honest, yes. Make it specific: "White high-tops for my birthday, March." Specific names are harder to raid.' },
           { text: 'No, sneakers aren\'t a real goal.', why: 'Any goal can be earmarked. Yaw\'s goal is his.' },
+          { text: 'Honest, yes. Make it specific: "White high-tops for my birthday, March." Specific names are harder to raid.' },
           { text: 'Call it "Savings".', why: 'Vague names get raided.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Week 9: Kofi is ill. Which pot should pay for the clinic?',
         options: [
-          { text: 'The emergency fund' },
           { text: 'The laptop jar', why: 'That\'s exactly what the emergency fund exists to prevent.' },
+          { text: 'The emergency fund' },
           { text: 'A fast loan', why: 'He has GH₵300 for exactly this.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

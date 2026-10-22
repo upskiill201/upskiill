@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might a basic savings account be a problem for 30-year money?',
         options: [
-          { text: 'It may not keep up with rising prices over decades' },
           { text: 'It\'s illegal', why: 'It\'s fine for emergency money.' },
+          { text: 'It may not keep up with rising prices over decades' },
           { text: 'It\'s too risky', why: 'It\'s low-risk; the issue is inflation.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "a house in Buea near Papa\'s old school" a good future-me picture?',
         options: [
-          { text: 'It\'s specific, so it feels real and worth saving for' },
           { text: 'It\'s cheap', why: 'It\'s about being specific.' },
+          { text: 'It\'s specific, so it feels real and worth saving for' },
           { text: 'It isn\'t; it\'s too detailed', why: 'Details make it real.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which fragile habit does Chapter 2 tackle first?',
         options: [
-          { text: 'Saving by hand when she remembers' },
           { text: 'Her house picture', why: 'That\'s the goal, not a habit.' },
           { text: 'Her net worth', why: 'That\'s a number, not a habit.' },
+          { text: 'Saving by hand when she remembers' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

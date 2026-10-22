@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'GH₵3,500 − GH₵1,980. What\'s the gap?',
         options: [
-          { text: 'GH₵1,520' },
           { text: 'GH₵1,240', why: 'That was week 8\'s gap, before the refill slowed the jar.' },
           { text: 'GH₵520', why: '3,500 − 1,980 = 1,520.' },
+          { text: 'GH₵1,520' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'The gap is bigger than at week 8. Did the system fail?',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'No. Without it, malaria would have cost the jar GH₵280 AND left you with no fund. You lost a little progress, not the plan.' },
           { text: 'Yes, start again.', why: 'The system did exactly its job.' },
+          { text: 'No. Without it, malaria would have cost the jar GH₵280 AND left you with no fund. You lost a little progress, not the plan.' },
           { text: 'Take a loan to catch up.', why: 'The whole point is avoiding that.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Four weeks left and a GH₵1,520 gap. Which ideas could help?',
         options: [
-          { text: 'Earning a little more, using windfalls well, and finding the laptop cheaper' },
           { text: 'Emptying the emergency fund', why: 'That undoes the lesson of week 9.' },
           { text: 'The GH₵480-a-month deal', why: 'Still GH₵5,760 in total.' },
+          { text: 'Earning a little more, using windfalls well, and finding the laptop cheaper' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

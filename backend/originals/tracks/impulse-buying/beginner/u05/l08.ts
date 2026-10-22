@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         message: 'I bought a GH₵15 drink I didn\'t plan. Have I failed?',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'GH₵15, affordable, enjoyed? That\'s fine. Failing would be another GH₵2,900. You\'re nowhere near that.' },
           { text: 'Yes, start again.', why: 'Small slips aren\'t failure.' },
           { text: 'Never buy drinks.', why: 'Too strict to last.' },
+          { text: 'GH₵15, affordable, enjoyed? That\'s fine. Failing would be another GH₵2,900. You\'re nowhere near that.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -130,11 +130,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How do most people feel after changing their spending?',
         options: [
-          { text: 'Calmer: less regret and less money stress' },
           { text: 'Miserable', why: 'Usually not, if fun stays in the plan.' },
+          { text: 'Calmer: less regret and less money stress' },
           { text: 'Exactly the same', why: 'Less regret is a real change.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What added the most to net worth this quarter?',
         options: [
-          { text: 'The pension back-pay and three months of automatic saving' },
           { text: 'A lucky investment', why: 'No luck involved.' },
           { text: 'A raise', why: 'The raise is next quarter.' },
+          { text: 'The pension back-pay and three months of automatic saving' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'One and a half million in one quarter. I barely did anything!',
         prompt: 'Folake\'s best reply?',
         options: [
-          { text: 'That\'s the point. You set it up once; now it works without you.' },
           { text: 'It was luck.', why: 'It was habits.' },
+          { text: 'That\'s the point. You set it up once; now it works without you.' },
           { text: 'Now relax and stop checking.', why: 'Keep checking twice a year.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s Miracle\'s next emergency fund target?',
         options: [
-          { text: 'Six months of must-haves' },
           { text: 'None; three is the maximum', why: 'Six is better for many people.' },
           { text: 'Twelve months', why: 'Six is her target.' },
+          { text: 'Six months of must-haves' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

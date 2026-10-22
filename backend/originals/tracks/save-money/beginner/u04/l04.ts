@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         message: 'Kwame says asking his sister is embarrassing. The app is easier.',
         prompt: 'Efua\'s best reply?',
         options: [
-          { text: 'Easier for five minutes. Then GH₵60 in fees and messages to his contacts if he\'s late. His sister would rather be asked.' },
           { text: 'He\'s right, family is complicated.', why: 'Sometimes. But a clear, honest ask usually goes better than people fear.' },
+          { text: 'Easier for five minutes. Then GH₵60 in fees and messages to his contacts if he\'s late. His sister would rather be asked.' },
           { text: 'He should just suffer.', why: 'He needs treatment. There are better ways to pay.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the lesson for Kwame after he recovers?',
         options: [
-          { text: 'Start a small emergency fund, even GH₵20 a week' },
           { text: 'Never get ill', why: 'Not in anyone\'s control.' },
+          { text: 'Start a small emergency fund, even GH₵20 a week' },
           { text: 'Keep the loan app for next time', why: 'Better to need it never.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

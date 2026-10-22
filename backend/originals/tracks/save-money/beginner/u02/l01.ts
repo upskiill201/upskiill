@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why start with the music app?',
         options: [
-          { text: 'Zero value, quick to cancel, and it saves every month' },
           { text: 'Because it\'s the biggest', why: 'It\'s GH₵25. Small, but the easiest.' },
           { text: 'Because music is bad', why: 'Music is great. Paying for an app he never uses isn\'t.' },
+          { text: 'Zero value, quick to cancel, and it saves every month' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll just cut everything on the list. All nine.',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'Sort it first. Leaks go completely; choices get trimmed, not deleted. Cutting your joys too is how plans break.' },
           { text: 'Great, cut it all!', why: 'Some items are real choices with real value.' },
+          { text: 'Sort it first. Leaks go completely; choices get trimmed, not deleted. Cutting your joys too is how plans break.' },
           { text: 'Don\'t cut anything.', why: 'Some items buy nothing at all. Those go.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Miracle bet there was GH₵200 a month hiding. Why was she so sure?',
         options: [
-          { text: 'Because almost everyone has forgotten subscriptions, fees and habits that crept back' },
           { text: 'Because she checked his account', why: 'She hasn\'t seen it. She knows how leaks work.' },
           { text: 'Lucky guess', why: 'Experience, not luck.' },
+          { text: 'Because almost everyone has forgotten subscriptions, fees and habits that crept back' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

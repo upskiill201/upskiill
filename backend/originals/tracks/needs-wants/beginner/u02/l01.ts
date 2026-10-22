@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why not cut the art class first, even though it\'s ₦15,000?',
         options: [
-          { text: 'It\'s what she values most; cutting joy first makes the plan feel like punishment' },
           { text: 'It\'s free', why: 'It costs ₦15,000.' },
+          { text: 'It\'s what she values most; cutting joy first makes the plan feel like punishment' },
           { text: 'Lucía said so', why: 'It\'s about Ada\'s values.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Ngozi says cut the art class. It\'s the biggest extra.',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'Biggest isn\'t the test. Value is. The gym and subscriptions give you almost nothing for ₦20,000. Start there.' },
           { text: 'Ngozi\'s right.', why: 'Price alone doesn\'t decide what to cut.' },
           { text: 'Don\'t cut anything.', why: 'She needs ₦130,000 a month.' },
+          { text: 'Biggest isn\'t the test. Value is. The gym and subscriptions give you almost nothing for ₦20,000. Start there.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

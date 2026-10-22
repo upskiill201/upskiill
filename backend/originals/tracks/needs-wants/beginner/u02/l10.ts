@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Tunde says "I need rides, I can\'t do the bus." What\'s the best next step?',
         options: [
-          { text: 'Run the four questions: when does he truly need a ride?' },
           { text: 'Agree: rides are a need', why: 'Only some rides are.' },
           { text: 'Ban rides forever', why: 'Late nights and safety still count.' },
+          { text: 'Run the four questions: when does he truly need a ride?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         message: 'Tunde says the betting app is "just for fun, small small". What should I say?',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'Ask how much went in this month, honestly. If it\'s more than he expected, or he chases losses, suggest he stops and talks to someone. It\'s not a normal want.' },
           { text: 'It\'s fine, it\'s fun.', why: 'Betting can become a serious problem quickly.' },
+          { text: 'Ask how much went in this month, honestly. If it\'s more than he expected, or he chases losses, suggest he stops and talks to someone. It\'s not a normal want.' },
           { text: 'Lecture him for an hour.', why: 'A calm question works better.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Tunde\'s phone is slow but works. New one: ₦300,000. What does Chapter 2 say?',
         options: [
-          { text: 'Need later: a cheap fix now, and a sinking fund' },
           { text: 'Need now: buy it', why: 'It still works.' },
           { text: 'Never replace it', why: 'Eventually he will.' },
+          { text: 'Need later: a cheap fix now, and a sinking fund' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

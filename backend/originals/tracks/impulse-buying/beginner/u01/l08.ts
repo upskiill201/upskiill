@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "the habit" the sneakiest cost?',
         options: [
-          { text: 'Each impulse that feels good teaches the brain that buying fixes feelings' },
           { text: 'Because habits are expensive', why: 'The point is what the habit teaches.' },
           { text: 'It isn\'t a real cost', why: 'It makes the next impulse more likely.' },
+          { text: 'Each impulse that feels good teaches the brain that buying fixes feelings' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which purchase is most likely worth all five costs?',
         options: [
-          { text: 'A planned audio interface that helps Kofi earn more' },
           { text: 'Boots in the wrong size at 2 a.m.', why: 'High costs, almost no value.' },
           { text: 'A third phone case', why: 'Low value, adds to the habit.' },
+          { text: 'A planned audio interface that helps Kofi earn more' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

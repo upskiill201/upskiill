@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A pension payment is missing. Best first step?',
         options: [
-          { text: 'A calm email with the statement attached' },
           { text: 'A public complaint', why: 'Calm and private works faster.' },
           { text: 'Ignore it', why: 'It\'s your money.' },
+          { text: 'A calm email with the statement attached' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -96,21 +96,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Review, Chapter 1: what\'s net worth?',
         options: [
-          { text: 'Assets minus debts' },
           { text: 'Salary', why: 'That\'s income.' },
           { text: 'Savings only', why: 'Savings are one asset.' },
+          { text: 'Assets minus debts' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'Review, Chapter 1: what was Folake\'s "secret"?',
         options: [
-          { text: 'There\'s no secret: just habits and time' },
           { text: 'A hot tip', why: 'She avoided tips.' },
+          { text: 'There\'s no secret: just habits and time' },
           { text: 'Rich parents', why: 'Her father drove a bus.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

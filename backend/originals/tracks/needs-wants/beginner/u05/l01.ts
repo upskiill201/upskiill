@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'Obinna, Mum\'s freezer died. It\'s ₦200,000. I can do ₦70,000. Can you and Chidinma cover the rest between you?',
         prompt: 'Why is this a strong message?',
         options: [
-          { text: 'Clear about the need, clear about her share, and gives them a specific ask' },
           { text: 'It\'s demanding', why: 'It\'s clear and fair.' },
+          { text: 'Clear about the need, clear about her share, and gives them a specific ask' },
           { text: 'It\'s too long', why: 'It\'s short and specific.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Is the freezer a need or a want for Mum?',
         options: [
-          { text: 'A must-have: her shop\'s income depends on it' },
           { text: 'A want', why: 'Without it she loses customers daily.' },
           { text: 'A need later', why: 'It\'s broken now, and costing her every day.' },
+          { text: 'A must-have: her shop\'s income depends on it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

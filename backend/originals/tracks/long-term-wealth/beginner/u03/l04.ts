@@ -27,8 +27,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Money grows at 9% a year. About how long to double?',
-      options: ['About 8 years', 'About 4 years', 'About 20 years'],
-      answer: 0,
+      options: ['About 4 years', 'About 20 years', 'About 8 years'],
+      answer: 2,
       explanation: '72 ÷ 9 = 8.',
     },
     {
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'My loan app charges 20% a month. That\'s not so bad.',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: '72 ÷ 20 is under 4. Your debt doubles in under four months. Clear it before anything else.' },
           { text: 'Not bad at all.', why: 'It doubles in months.' },
           { text: 'Borrow more.', why: 'Never.' },
+          { text: '72 ÷ 20 is under 4. Your debt doubles in under four months. Clear it before anything else.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'From 25 to 60 at a 5% real return, about how many doublings?',
         options: [
-          { text: 'About two and a half' },
           { text: 'About seven', why: '35 ÷ 14 ≈ 2.5.' },
+          { text: 'About two and a half' },
           { text: 'Less than one', why: 'About 2.5 doublings.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

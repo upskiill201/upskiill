@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the gap of GH₵2,130 tell Kofi?',
         options: [
-          { text: 'Exactly how much more he needs to find, save, earn or cut from the price' },
           { text: 'That the goal is impossible', why: 'It tells him the size of the problem, not that it can\'t be solved.' },
+          { text: 'Exactly how much more he needs to find, save, earn or cut from the price' },
           { text: 'That he should take the payment plan', why: 'That costs GH₵2,260 extra, more than the gap.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'GH₵2,130 short? Just take my cousin\'s deal.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'It\'s on the jar: GH₵5,760 total. I\'d pay more extra than my whole gap.' },
           { text: 'Fine.', why: 'He\'d pay GH₵2,260 extra to avoid a GH₵2,130 gap.' },
           { text: 'I\'ll give up.', why: 'The gap is a problem to solve, not a verdict.' },
+          { text: 'It\'s on the jar: GH₵5,760 total. I\'d pay more extra than my whole gap.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'After a full six-week cycle, what has each member gained in money?',
         options: [
-          { text: 'Nothing extra: they paid GH₵300 and received GH₵300' },
           { text: 'GH₵300 profit', why: 'They paid it in too.' },
           { text: 'GH₵50', why: 'No extra money is created.' },
+          { text: 'Nothing extra: they paid GH₵300 and received GH₵300' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A traditional susu collector\'s fee is usually...',
         options: [
-          { text: 'About one day\'s contribution per month' },
           { text: 'Half of everything', why: 'Far too high. Traditionally about one day\'s deposit.' },
+          { text: 'About one day\'s contribution per month' },
           { text: 'Nothing', why: 'Collectors charge for the service, traditionally one day\'s deposit.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who benefits most from going first in a rotating group?',
         options: [
-          { text: 'Someone who needs a lump sum soon' },
           { text: 'Whoever goes last', why: 'They wait longest; it\'s just disciplined saving for them.' },
+          { text: 'Someone who needs a lump sum soon' },
           { text: 'Nobody', why: 'An early lump sum is a real benefit.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do subscriptions leak so easily?',
         options: [
-          { text: 'You decide once, then pay every month without deciding again' },
           { text: 'They\'re always expensive', why: 'Many are cheap. That\'s why they\'re forgotten.' },
           { text: 'Banks hide them', why: 'They appear in your history; we just stop looking.' },
+          { text: 'You decide once, then pay every month without deciding again' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll keep my three streaming apps. I might watch something someday.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Which did you open this month? Keep that one. Cancel the others; you can rejoin any time.' },
           { text: 'Good plan.', why: '"Someday" is how GH₵25 a month disappears for a year.' },
+          { text: 'Which did you open this month? Keep that one. Cancel the others; you can rejoin any time.' },
           { text: 'Streaming is a waste.', why: 'Not if you use it. Paying for three you don\'t use is.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

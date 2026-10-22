@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         message: 'But I\'m a professional. I deserve a fast laptop.',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'You do, and you\'ll have one. Fix this one for ₦40,000, go to Mexico, then start a laptop fund. A professional plans her tools.' },
           { text: 'Buy it now, deserve it.', why: 'That empties the Mexico fund.' },
           { text: 'Professionals use old laptops forever.', why: 'Not true. It\'s about timing.' },
+          { text: 'You do, and you\'ll have one. Fix this one for ₦40,000, go to Mexico, then start a laptop fund. A professional plans her tools.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s a "later need"?',
         options: [
-          { text: 'A real need that\'s coming, but not urgent yet' },
           { text: 'A want', why: 'It\'s a real need, just not urgent.' },
+          { text: 'A real need that\'s coming, but not urgent yet' },
           { text: 'Something you never need', why: 'It will be needed, later.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

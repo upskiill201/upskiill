@@ -20,8 +20,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'When does the "want" signal tend to be strongest?',
-      options: ['Just before buying', 'A week after buying', 'When you see the price'],
-      answer: 0,
+      options: ['A week after buying', 'Just before buying', 'When you see the price'],
+      answer: 1,
       explanation: 'Anticipation peaks before the purchase. That\'s why waiting helps.',
     },
     {
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Why did I feel amazing when I ordered, and nothing when they arrived?',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'That was wanting at its peak. Liking is a different system, and it was much smaller than the wanting promised.' },
           { text: 'Because the boots were bad.', why: 'They were fine boots, just the wrong size. The feeling was in his brain, not the boots.' },
+          { text: 'That was wanting at its peak. Liking is a different system, and it was much smaller than the wanting promised.' },
           { text: 'You\'re just ungrateful.', why: 'It\'s how everyone\'s brain works.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which action brings the "ouch" back?',
         options: [
-          { text: 'Working out the price in hours of work' },
           { text: 'Paying later', why: 'That hides the ouch.' },
           { text: 'Buying quickly', why: 'Speed is how the ouch gets skipped.' },
+          { text: 'Working out the price in hours of work' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do phone payments make impulse buys easier?',
         options: [
-          { text: 'They weaken the "ouch" of paying' },
           { text: 'They\'re cheaper', why: 'Same price. Less pain.' },
+          { text: 'They weaken the "ouch" of paying' },
           { text: 'They\'re slower', why: 'They\'re faster, which helps impulses.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

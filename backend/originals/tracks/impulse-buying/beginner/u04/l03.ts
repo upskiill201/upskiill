@@ -20,8 +20,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Yaw sees friends\' new sneakers online. What doesn\'t he see?',
-      options: ['How they paid, and whether they\'re in debt', 'The sneakers', 'Their faces'],
-      answer: 0,
+      options: ['The sneakers', 'Their faces', 'How they paid, and whether they\'re in debt'],
+      answer: 2,
       explanation: 'Debt and money stress don\'t show up in photos.',
     },
     {
@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is social comparison?',
         options: [
-          { text: 'Judging ourselves by comparing with others' },
           { text: 'Comparing prices', why: 'That\'s price comparison. This is about people.' },
+          { text: 'Judging ourselves by comparing with others' },
           { text: 'A type of loan', why: 'It\'s a psychological habit.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Everyone has new sneakers. I\'d look like the poor one.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'You see their photos, not their debts. Maybe some of them are where you are now. You don\'t need to keep up with a highlight reel.' },
           { text: 'True, buy more.', why: 'That\'s how GH₵2,900 happened.' },
           { text: 'They\'re all fake.', why: 'Some may be fine. The point is we can\'t see.' },
+          { text: 'You see their photos, not their debts. Maybe some of them are where you are now. You don\'t need to keep up with a highlight reel.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does buying to "catch up" rarely work?',
         options: [
-          { text: 'There\'s always someone with something newer, so the gap never closes' },
           { text: 'Shops run out', why: 'The gap is the problem, not stock.' },
           { text: 'It always works', why: 'Yaw\'s GH₵2,900 says otherwise.' },
+          { text: 'There\'s always someone with something newer, so the gap never closes' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

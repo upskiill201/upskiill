@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "you saved GH₵600" on a receipt really measure?',
         options: [
-          { text: 'The difference from the anchor price, not money in your pocket' },
           { text: 'Money added to your account', why: 'Your account went down by GH₵900.' },
+          { text: 'The difference from the anchor price, not money in your pocket' },
           { text: 'A refund', why: 'It\'s just a comparison.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         message: 'But the receipt says I saved GH₵600!',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Your account says you spent GH₵900. If you only needed socks, you saved nothing and spent GH₵870 extra.' },
           { text: 'Nice saving!', why: 'He spent GH₵900.' },
           { text: 'Receipts lie.', why: 'The number is real; it just doesn\'t mean what it suggests.' },
+          { text: 'Your account says you spent GH₵900. If you only needed socks, you saved nothing and spent GH₵870 extra.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When is a sale genuinely good for Kofi?',
         options: [
-          { text: 'When it\'s on his list and the price is really lower than usual' },
           { text: 'Whenever there\'s a big percentage off', why: 'Only if it\'s planned.' },
+          { text: 'When it\'s on his list and the price is really lower than usual' },
           { text: 'Never', why: 'Planned purchases on real sales are a real saving.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

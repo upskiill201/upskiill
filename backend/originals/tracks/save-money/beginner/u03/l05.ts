@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When should savings move?',
         options: [
-          { text: 'When money arrives, before spending' },
           { text: 'At the end of the month, if there\'s some left', why: 'That\'s "save what\'s left". It rarely works.' },
           { text: 'Whenever he remembers', why: 'He forgot in weeks 5 and 6.' },
+          { text: 'When money arrives, before spending' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'I named my savings "Sneakers fund". Is that earmarking?',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Yes! Now put it in its own pot and add a weekly reminder.' },
           { text: 'No, sneakers don\'t count.', why: 'Any goal counts. Earmarking is about the name and purpose.' },
+          { text: 'Yes! Now put it in its own pot and add a weekly reminder.' },
           { text: 'Rename it "Savings 2".', why: 'Vague names are easier to raid.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'GH₵90 leaked in two missed weeks. What fixed it?',
         options: [
-          { text: 'A system that moves money without relying on memory' },
           { text: 'Trying harder', why: 'He already tried.' },
           { text: 'A bigger goal', why: 'The goal wasn\'t the issue.' },
+          { text: 'A system that moves money without relying on memory' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

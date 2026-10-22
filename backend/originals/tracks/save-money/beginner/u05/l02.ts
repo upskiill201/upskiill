@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'Your uncle said buy something nice. Putting it in a jar is disrespectful!',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'A third is for something nice: a cloth for Mum and suya. The rest goes to the laptop. I\'ll send him a photo. He\'ll love it.' },
           { text: 'You\'re right, I\'ll spend it all.', why: 'Honouring the giver doesn\'t mean spending every cedi.' },
           { text: 'He doesn\'t get a say.', why: 'Honouring his wish matters, and a split does both.' },
+          { text: 'A third is for something nice: a cloth for Mum and suya. The rest goes to the laptop. I\'ll send him a photo. He\'ll love it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why send the uncle a photo of the jar?',
         options: [
-          { text: 'It honours the gift and shows what it\'s helping with' },
           { text: 'To ask for more', why: 'It\'s a thank-you, not a request.' },
+          { text: 'It honours the gift and shows what it\'s helping with' },
           { text: 'To show off', why: 'It\'s gratitude with a story.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

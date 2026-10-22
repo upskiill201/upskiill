@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How should you price paid work?',
         options: [
-          { text: 'By value and what others charge, with a clear offer' },
           { text: 'Whatever the first buyer offers', why: 'That\'s pricing by habit.' },
+          { text: 'By value and what others charge, with a clear offer' },
           { text: 'As high as possible', why: 'Too high loses the work.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         message: 'Hit GH₵2,000! Should I celebrate with something from the jar?',
         prompt: 'Efua\'s best reply?',
         options: [
-          { text: 'Celebrate from the fun line, as planned. The jar is for the laptop.' },
           { text: 'Yes, take GH₵200.', why: 'That moves the goal further away.' },
           { text: 'No celebrations.', why: 'Planned rewards keep you going.' },
+          { text: 'Celebrate from the fun line, as planned. The jar is for the laptop.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -97,21 +97,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Review, Chapter 4: what\'s the emergency test?',
         options: [
-          { text: 'Urgent, necessary and unexpected' },
           { text: 'Expensive and urgent', why: 'Expensive isn\'t part of the test.' },
+          { text: 'Urgent, necessary and unexpected' },
           { text: 'Anything a seller says is urgent', why: 'Seller urgency is fake urgency.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Review, Chapter 3: when should savings move?',
         options: [
-          { text: 'Automatically, when money arrives' },
           { text: 'At month end', why: 'That\'s "save what\'s left".' },
           { text: 'When you remember', why: 'Remembering fails.' },
+          { text: 'Automatically, when money arrives' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

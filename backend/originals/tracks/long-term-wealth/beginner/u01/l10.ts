@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Halima saves "whatever is left". Which Chapter 1 idea is that?',
         options: [
-          { text: 'A fragile habit with no system, like Dad\'s "next year"' },
           { text: 'Folake\'s method', why: 'Folake saved first, automatically.' },
+          { text: 'A fragile habit with no system, like Dad\'s "next year"' },
           { text: 'A strong habit', why: '"Whatever\'s left" is usually little.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'My net worth is ₦650,000. Miracle\'s is way more. I\'m behind.',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'It\'s a starting point, not a race. What matters is your direction from today. Let\'s automate your saving.' },
           { text: 'Yes, you\'re behind.', why: 'Comparing isn\'t helpful; direction is.' },
           { text: 'Stop tracking it.', why: 'Tracking is how it grows.' },
+          { text: 'It\'s a starting point, not a race. What matters is your direction from today. Let\'s automate your saving.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Four months of employer contributions are missing. What does this show?',
         options: [
-          { text: 'Checking your pension statement regularly matters' },
           { text: 'Pensions are scams', why: 'It\'s likely an error; checking catches it.' },
           { text: 'Nothing; ignore it', why: 'It\'s her money.' },
+          { text: 'Checking your pension statement regularly matters' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

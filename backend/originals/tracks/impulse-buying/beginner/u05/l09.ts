@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the last question before any big buy?',
         options: [
-          { text: 'Will I still be glad in a year?' },
           { text: 'Is there a countdown?', why: 'Countdowns are tested, not obeyed.' },
+          { text: 'Will I still be glad in a year?' },
           { text: 'Does Yaw have one?', why: 'That\'s comparison.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Your list is long. Will you really remember all of it?',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'I don\'t need to. It\'s pinned. In the moment I remember one thing: HALT, then pause.' },
           { text: 'No, I\'ll delete it.', why: 'It\'s his guide; it doesn\'t need memorising.' },
           { text: 'I\'ll make it longer.', why: 'It should fit on one screen.' },
+          { text: 'I don\'t need to. It\'s pinned. In the moment I remember one thing: HALT, then pause.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -113,21 +113,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why keep the list pinned instead of memorising it?',
         options: [
-          { text: 'In the moment you only need to remember to look' },
           { text: 'Memorising is impossible', why: 'Possible, but not necessary.' },
+          { text: 'In the moment you only need to remember to look' },
           { text: 'To show people', why: 'It\'s for him.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'What is the one thing Kofi remembers in the moment?',
         options: [
-          { text: 'HALT, then pause' },
           { text: 'Buy fast before it\'s gone', why: 'The opposite.' },
           { text: 'Ask Yaw', why: 'He has his own rules now.' },
+          { text: 'HALT, then pause' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

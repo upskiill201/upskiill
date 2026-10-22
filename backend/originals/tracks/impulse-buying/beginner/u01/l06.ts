@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Waiting a week feels like I\'ll miss the deal.',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'Deals come back all the time. A week tells you if you really want it. If it\'s gone, a fair price at another shop is fine.' },
           { text: 'True, never wait.', why: 'That\'s how the 2:14 a.m. boots happened.' },
           { text: 'Wait a year.', why: 'A week is usually enough to test the want.' },
+          { text: 'Deals come back all the time. A week tells you if you really want it. If it\'s gone, a fair price at another shop is fine.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What changed between the two ways?',
         options: [
-          { text: 'Only the process; the need and the boots were the same' },
           { text: 'Kofi\'s income', why: 'Same income.' },
+          { text: 'Only the process; the need and the boots were the same' },
           { text: 'The boots', why: 'Same kind of boots.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

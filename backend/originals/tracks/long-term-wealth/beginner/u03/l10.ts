@@ -29,11 +29,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Bisi feel her savings "never grow"?',
         options: [
-          { text: 'They grow slower than prices, so their buying power shrinks' },
           { text: 'The bank stole it', why: 'The number grew; inflation shrank its value.' },
           { text: 'She hasn\'t saved', why: 'She has ₦1.2 million.' },
+          { text: 'They grow slower than prices, so their buying power shrinks' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'A man at church says his scheme pays 5% a month, guaranteed.',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'Guaranteed high monthly returns are a classic warning sign. Check if it\'s regulated, and please don\'t put money in until you do.' },
           { text: 'Sounds great.', why: 'It\'s a red flag.' },
+          { text: 'Guaranteed high monthly returns are a classic warning sign. Check if it\'s regulated, and please don\'t put money in until you do.' },
           { text: 'Put a little in to test.', why: 'Scams often pay early "tests" to draw you in.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The bank job pays ₦600,000 more a month. What\'s the biggest risk?',
         options: [
-          { text: 'That spending rises to match, and the extra disappears' },
           { text: 'That she earns too much', why: 'Earning more is great with a plan.' },
           { text: 'None', why: 'Lifestyle creep is the big risk.' },
+          { text: 'That spending rises to match, and the extra disappears' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

@@ -20,8 +20,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Why did Ada\'s rides stop feeling special?',
-      options: ['She adapted: they became her new normal', 'The rides got worse', 'She stopped taking them'],
-      answer: 0,
+      options: ['The rides got worse', 'She adapted: they became her new normal', 'She stopped taking them'],
+      answer: 1,
       explanation: 'That\'s the hedonic treadmill: the pleasure fades as the upgrade becomes normal.',
     },
     {
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         message: 'If I go back to the bus, I\'ll be miserable forever.',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'It\'ll feel worse for a week or two. Then you\'ll adapt, the same way you adapted to rides. The treadmill works both ways.' },
           { text: 'Yes, forever.', why: 'Adaptation works backwards too.' },
+          { text: 'It\'ll feel worse for a week or two. Then you\'ll adapt, the same way you adapted to rides. The treadmill works both ways.' },
           { text: 'You\'re overreacting.', why: 'Her feeling is real at first. It fades.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -109,21 +109,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who first described the hedonic treadmill?',
         options: [
-          { text: 'Psychologists Brickman and Campbell, in the 1970s' },
           { text: 'A fitness company', why: 'It\'s from psychology research.' },
           { text: 'Ada', why: 'She\'s living it, not naming it.' },
+          { text: 'Psychologists Brickman and Campbell, in the 1970s' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'Where does the lift tend to last longest?',
         options: [
-          { text: 'Experiences, time with people, and tools for things you love' },
           { text: 'The newest phone', why: 'Phones become normal fast.' },
+          { text: 'Experiences, time with people, and tools for things you love' },
           { text: 'Daily delivery', why: 'Daily treats fade fastest.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

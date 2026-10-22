@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Miracle mean by "patterns can be changed"?',
         options: [
-          { text: 'If urges come from a feeling in a moment, changing the moment can change the urge' },
           { text: 'Kofi should change his personality', why: 'The situation, not the person.' },
           { text: 'Patterns are random', why: 'His log shows a clear repeat.' },
+          { text: 'If urges come from a feeling in a moment, changing the moment can change the urge' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll just delete every shopping app forever.',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'Try it, but also change the moment: phone across the room after 10, and something else for bad nights. Bans alone tend to snap back.' },
           { text: 'Perfect, that solves it.', why: 'Without a replacement, the urge finds another way.' },
+          { text: 'Try it, but also change the moment: phone across the room after 10, and something else for bad nights. Bans alone tend to snap back.' },
           { text: 'Don\'t bother.', why: 'Changes to the moment work well.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

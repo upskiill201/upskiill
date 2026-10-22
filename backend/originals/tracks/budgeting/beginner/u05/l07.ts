@@ -27,8 +27,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'A cousin asks for GH₵200. Kofi has no family line and GH₵200 is in savings. What\'s a good response?',
-      options: ['Send what fits from a flexible line, warmly, and consider a small family line in future', 'Send all GH₵200 from savings', 'Ignore the message'],
-      answer: 0,
+      options: ['Send all GH₵200 from savings', 'Ignore the message', 'Send what fits from a flexible line, warmly, and consider a small family line in future'],
+      answer: 2,
       explanation: 'Giving what you can, without draining savings or ignoring family, keeps both your budget and the relationship healthy.',
     },
     {
@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Kofi tell Mum "everything\'s fine" in Chapter 1?',
         options: [
-          { text: 'Because money talk felt tied to pride and respect' },
           { text: 'Because everything was fine', why: 'He had GH₵63 for 18 days.' },
+          { text: 'Because money talk felt tied to pride and respect' },
           { text: 'Because Mum doesn\'t care', why: 'She asked twice. She cares a lot.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why share wins with family, not just problems?',
         options: [
-          { text: 'So money talk isn\'t always bad news, and it\'s easier when problems come' },
           { text: 'To show off', why: 'It\'s about making money talk normal, not boasting.' },
+          { text: 'So money talk isn\'t always bad news, and it\'s easier when problems come' },
           { text: 'So they stop sending money', why: 'Nothing to do with that.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

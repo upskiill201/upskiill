@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Increases ₦100,000 = raise ₦60,000 + ... what?',
         options: [
-          { text: 'The ₦40,000 drop in saving' },
           { text: 'A loan', why: 'Her numbers add up without one.' },
           { text: 'Nothing; it doesn\'t add up', why: '60,000 + 40,000 = 100,000.' },
+          { text: 'The ₦40,000 drop in saving' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Can I just compare totals? Lines take ages.',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'Totals tell you that it grew. Lines tell you where. You can\'t change a total; you can change a line.' },
           { text: 'Sure, totals are enough.', why: 'Totals hide which upgrade did it.' },
+          { text: 'Totals tell you that it grew. Lines tell you where. You can\'t change a total; you can change a line.' },
           { text: 'Don\'t compare at all.', why: 'Then the raise stays a mystery.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the "creep list"?',
         options: [
-          { text: 'The lines that grew after the raise, biggest first' },
           { text: 'A list of things to buy', why: 'It\'s where the raise went.' },
           { text: 'A list of debts', why: 'Ada doesn\'t have new debts besides the phone.' },
+          { text: 'The lines that grew after the raise, biggest first' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

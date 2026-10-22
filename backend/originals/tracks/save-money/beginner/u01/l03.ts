@@ -27,8 +27,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Goal GH₵1,000, already saved GH₵200, 10 weeks. What\'s the weekly target?',
-      options: ['GH₵80', 'GH₵100', 'GH₵120'],
-      answer: 0,
+      options: ['GH₵100', 'GH₵120', 'GH₵80'],
+      answer: 2,
       explanation: '(1,000 − 200) ÷ 10 = 80.',
     },
     {
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'GH₵3,010 over 16 weeks is about how much a week?',
         options: [
-          { text: 'About GH₵188' },
           { text: 'About GH₵300', why: 'That would be about GH₵4,800.' },
+          { text: 'About GH₵188' },
           { text: 'About GH₵55', why: 'That\'s what he saves now, not what he needs.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll plan on GH₵3,400, the cheapest shop. Less to save!',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'Plan on the middle price, GH₵3,500. If you find it cheaper later, that\'s a bonus, not a shortfall.' },
           { text: 'Great idea, aim low.', why: 'If that shop sells out, he\'s short on day one.' },
           { text: 'Plan on GH₵5,000 to be safe.', why: 'Too high makes the goal feel impossible.' },
+          { text: 'Plan on the middle price, GH₵3,500. If you find it cheaper later, that\'s a bonus, not a shortfall.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

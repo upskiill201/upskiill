@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'I thought saving would make me miserable. I\'m happier.',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'Because you didn\'t cut your joys. You cut the stuff that never gave you any.' },
           { text: 'You\'re just lucky.', why: 'It was choices, not luck.' },
+          { text: 'Because you didn\'t cut your joys. You cut the stuff that never gave you any.' },
           { text: 'Happiness doesn\'t matter.', why: 'It\'s the point.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the biggest change in how Ada feels?',
         options: [
-          { text: 'From "where does it all go?" to "I know exactly where it goes"' },
           { text: 'From happy to sad', why: 'She\'s happier.' },
           { text: 'No change', why: 'Big change.' },
+          { text: 'From "where does it all go?" to "I know exactly where it goes"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

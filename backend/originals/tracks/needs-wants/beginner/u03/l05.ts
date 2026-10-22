@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         message: 'Is it wrong that I spent ₦55,000 on aso-ebi while saving for Mexico?',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'Not at all. Family is your top value. You honoured it and saved ₦30,000. That\'s exactly how values-based spending works.' },
           { text: 'Yes, Mexico should come first.', why: 'Family ranks higher for her.' },
           { text: 'You should have paid ₦85,000.', why: 'She found a better version.' },
+          { text: 'Not at all. Family is your top value. You honoured it and saved ₦30,000. That\'s exactly how values-based spending works.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Review, Chapter 2: what are the big three?',
         options: [
-          { text: 'Housing, transport and food' },
           { text: 'Phones, clothes and gyms', why: 'Usually much smaller.' },
+          { text: 'Housing, transport and food' },
           { text: 'Fun, friends and family', why: 'Important, but not the big cost lines.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

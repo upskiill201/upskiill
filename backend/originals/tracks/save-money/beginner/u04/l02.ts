@@ -27,8 +27,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'A cracked phone case (the phone is fine). Emergency?',
-      options: ['No: not necessary or urgent; the phone still works', 'Yes: anything broken is an emergency', 'Yes, if it\'s on sale'],
-      answer: 0,
+      options: ['Yes: anything broken is an emergency', 'Yes, if it\'s on sale', 'No: not necessary or urgent; the phone still works'],
+      answer: 2,
       explanation: 'It can wait, or come from flexible spending.',
     },
     {
@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"Sale ends tonight!" Which part of the test does it fail?',
         options: [
-          { text: 'Necessary: it\'s a want, however urgent it feels' },
           { text: 'None, it\'s an emergency', why: 'Urgent-feeling isn\'t the same as necessary.' },
+          { text: 'Necessary: it\'s a want, however urgent it feels' },
           { text: 'It passes all three', why: 'It isn\'t necessary or unexpected.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Exam fees due next month: urgent and necessary. Why aren\'t they an emergency?',
         options: [
-          { text: 'They\'re expected: they belong in a sinking fund' },
           { text: 'They\'re not necessary', why: 'They are necessary. They\'re just predictable.' },
+          { text: 'They\'re expected: they belong in a sinking fund' },
           { text: 'They are an emergency', why: 'Predictable costs aren\'t emergencies.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why protect the emergency fund from fake emergencies?',
         options: [
-          { text: 'So it\'s there when a real one comes, like week 9' },
           { text: 'To grow it forever', why: 'It\'s for using, on real emergencies.' },
           { text: 'Because banks require it', why: 'It\'s your rule.' },
+          { text: 'So it\'s there when a real one comes, like week 9' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

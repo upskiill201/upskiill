@@ -20,8 +20,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Which change probably saves Ada more each month?',
-      options: ['Rides only on late nights and in rain', 'No more ₦500 sweets', 'Skipping one coffee a week'],
-      answer: 0,
+      options: ['No more ₦500 sweets', 'Rides only on late nights and in rain', 'Skipping one coffee a week'],
+      answer: 1,
       explanation: 'Transport is a big-three line: about ₦20,000 a month, far more than small treats.',
     },
     {
@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do the big three matter so much?',
         options: [
-          { text: 'They make up the biggest share of most people\'s spending' },
           { text: 'They\'re the most fun', why: 'They\'re the biggest, not the most fun.' },
           { text: 'They\'re easy to cut to zero', why: 'You can\'t cut them to zero; you can change them.' },
+          { text: 'They make up the biggest share of most people\'s spending' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll give up chocolate and coffee to find the money.',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'Keep the chocolate. Cooking with Ngozi and bussing on dry mornings saves about ₦45,000. Chocolate saves maybe ₦3,000.' },
           { text: 'Good start.', why: 'Small joys aren\'t where the money is.' },
+          { text: 'Keep the chocolate. Cooking with Ngozi and bussing on dry mornings saves about ₦45,000. Chocolate saves maybe ₦3,000.' },
           { text: 'Give up food.', why: 'A joke, but no.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ada\'s rent is paid up for now. Why still think about housing?',
         options: [
-          { text: 'The next housing choice will shape the next two years of spending' },
           { text: 'To move tomorrow', why: 'Not needed now; plan for next time.' },
           { text: 'It doesn\'t matter', why: 'It\'s usually the biggest line of all.' },
+          { text: 'The next housing choice will shape the next two years of spending' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

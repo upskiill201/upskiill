@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the biggest pattern in Kofi\'s log?',
         options: [
-          { text: 'Most urges happen after 10 p.m., on his phone in bed' },
           { text: 'Most urges happen at Kejetia', why: 'Only 2 of 11.' },
+          { text: 'Most urges happen after 10 p.m., on his phone in bed' },
           { text: 'Most urges happen when he\'s happy', why: 'Only 2 of 11.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Of the 4 urges he waited on, he still wanted 1 the next morning. What does that suggest?',
         options: [
-          { text: 'Waiting lets most wants fade' },
           { text: 'Waiting doesn\'t work', why: 'Three of four faded.' },
+          { text: 'Waiting lets most wants fade' },
           { text: 'He should buy everything immediately', why: 'Most of the urges disappeared with time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

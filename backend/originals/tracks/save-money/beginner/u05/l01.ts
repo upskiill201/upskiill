@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Kofi charge GH₵80 before?',
         options: [
-          { text: 'Habit: the first buyer offered it and he said yes' },
           { text: 'He worked out his costs', why: 'He never did.' },
+          { text: 'Habit: the first buyer offered it and he said yes' },
           { text: 'It\'s the campus price', why: 'Others charge GH₵100 to GH₵250.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'They\'re my friends. Isn\'t charging GH₵150 a bit much?',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'It\'s fair: middle of the campus range, with changes and a deadline. Friends who value your work will pay a fair price.' },
           { text: 'Yes, do it for free.', why: 'He has a laptop to buy, and his time has value.' },
           { text: 'Charge GH₵500.', why: 'Above anyone else; he\'d lose the work.' },
+          { text: 'It\'s fair: middle of the campus range, with changes and a deadline. Friends who value your work will pay a fair price.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'At GH₵150 for about 4 hours, what\'s Kofi\'s hourly rate now?',
         options: [
-          { text: 'About GH₵37.50' },
           { text: 'GH₵20', why: 'That was at GH₵80.' },
+          { text: 'About GH₵37.50' },
           { text: 'GH₵150', why: 'That\'s per beat, which takes about 4 hours.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where should the GH₵450 go?',
         options: [
-          { text: 'Decided before it lands: for the last 4 weeks, all to the laptop jar' },
           { text: 'Decide when it arrives', why: 'Undecided money gets spent.' },
           { text: 'Into the emergency fund', why: 'The fund is full. The laptop has a deadline.' },
+          { text: 'Decided before it lands: for the last 4 weeks, all to the laptop jar' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why not just skip the aso-ebi to save ₦85,000?',
         options: [
-          { text: 'Family is one of her deepest values; missing out costs something money can\'t fix' },
           { text: 'It\'s illegal to skip', why: 'It\'s about her values.' },
           { text: 'She has plenty of money', why: 'She needs every naira for Mexico.' },
+          { text: 'Family is one of her deepest values; missing out costs something money can\'t fix' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Mum, I\'m getting the aso-ebi fabric but sewing with Ngozi\'s tailor. I\'m saving for Mexico. Is that okay?',
         prompt: 'Why is this a good message?',
         options: [
-          { text: 'It honours the family, explains the reason briefly, and asks rather than hides' },
           { text: 'It\'s rude', why: 'It\'s respectful and honest.' },
+          { text: 'It honours the family, explains the reason briefly, and asks rather than hides' },
           { text: 'It\'s too long', why: 'Short and clear.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

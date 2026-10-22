@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is an emergency fund for?',
         options: [
-          { text: 'Urgent, necessary, unexpected costs' },
           { text: 'Planned purchases like the laptop', why: 'That\'s goal savings. Separate jar.' },
           { text: 'Sales and bargains', why: 'A sale isn\'t an emergency, however good the price.' },
+          { text: 'Urgent, necessary, unexpected costs' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Starting the jar at GH₵490 instead of GH₵790 makes the goal slower. Why is it still worth it?',
         options: [
-          { text: 'One emergency can\'t knock the laptop plan over' },
           { text: 'It isn\'t worth it', why: 'Without it, week 9 would have cost him the laptop money.' },
           { text: 'Because emergency funds earn more', why: 'It\'s about protection, not earnings.' },
+          { text: 'One emergency can\'t knock the laptop plan over' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

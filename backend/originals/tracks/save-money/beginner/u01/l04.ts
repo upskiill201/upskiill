@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do posters lead with the monthly price?',
         options: [
-          { text: 'Because it sounds small, even when the total is large' },
           { text: 'Because it\'s the law', why: 'Rules vary, but the choice to lead with it is marketing.' },
           { text: 'Because the total is cheaper', why: 'The total is GH₵2,260 more.' },
+          { text: 'Because it sounds small, even when the total is large' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'But you get it 16 weeks earlier! That\'s worth something.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'It\'s worth something, but not GH₵2,260. Efua\'s old laptop covers me until then.' },
           { text: 'You\'re right, time is money.', why: 'True in general. GH₵2,260 for 16 weeks is a very high price for it.' },
+          { text: 'It\'s worth something, but not GH₵2,260. Efua\'s old laptop covers me until then.' },
           { text: 'Nothing is worth anything.', why: 'Getting things sooner has value. The question is how much.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

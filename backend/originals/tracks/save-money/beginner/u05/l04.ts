@@ -20,8 +20,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'In Hershfield\'s experiments, what made people save more?',
-      options: ['Seeing an aged image of their own face', 'Being paid more', 'Being told to save'],
-      answer: 0,
+      options: ['Being paid more', 'Being told to save', 'Seeing an aged image of their own face'],
+      answer: 2,
       explanation: 'Meeting their future selves made saving feel like caring for someone real.',
     },
     {
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Writing letters to yourself? That\'s strange, chale.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'A bit. But researchers found people who "met" their future selves saved more. And it works on me.' },
           { text: 'You\'re right, it\'s silly.', why: 'There\'s research behind it.' },
           { text: 'Only weird people do it.', why: 'Not true, and not kind.' },
+          { text: 'A bit. But researchers found people who "met" their future selves saved more. And it works on me.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When does connecting with future-you matter most?',
         options: [
-          { text: 'For long goals, like retirement, where future-you is decades away' },
           { text: 'Only for laptops', why: 'It helps most for long goals.' },
+          { text: 'For long goals, like retirement, where future-you is decades away' },
           { text: 'Never', why: 'Research suggests it helps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

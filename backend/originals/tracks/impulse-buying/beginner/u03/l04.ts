@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'I only needed one shirt, but it was buy 2 get 1 free, so I got three!',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Did you need three? If not, you paid for two to get the one you wanted.' },
           { text: 'Great deal!', why: 'Only if he needed three.' },
+          { text: 'Did you need three? If not, you paid for two to get the one you wanted.' },
           { text: 'Shirts are a waste.', why: 'The issue is quantity, not shirts.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When is "buy 2, get 1 free" genuinely good?',
         options: [
-          { text: 'When you\'d buy three anyway and will use them' },
           { text: 'Always', why: 'Not if you only needed one.' },
           { text: 'Never', why: 'For things you use regularly, it can be great.' },
+          { text: 'When you\'d buy three anyway and will use them' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

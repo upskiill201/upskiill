@@ -27,8 +27,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Kofi wants new headphones at 1 a.m. after a long day of exams. Which HALT letter fits best?',
-      options: ['T: tired', 'H: hungry', 'A: angry'],
-      answer: 0,
+      options: ['H: hungry', 'T: tired', 'A: angry'],
+      answer: 1,
       explanation: 'Exhausted after exams, at 1 a.m. The fix is sleep, then decide.',
     },
     {
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why should you avoid shopping when hungry?',
         options: [
-          { text: 'Hunger makes things look more appealing, so you buy more' },
           { text: 'Shops close at mealtimes', why: 'Not the reason.' },
           { text: 'It doesn\'t matter', why: 'Hunger makes quick fixes feel more urgent.' },
+          { text: 'Hunger makes things look more appealing, so you buy more' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'It\'s midnight, I\'m stressed about anatomy, and I want to buy a new hoodie.',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'HALT + BS says stressed and tired. Ten minutes of anatomy flashcards, then sleep. Screenshot the hoodie; check it tomorrow.' },
           { text: 'Buy it, you deserve a treat.', why: 'A treat for stress, at midnight, is the pattern itself.' },
+          { text: 'HALT + BS says stressed and tired. Ten minutes of anatomy flashcards, then sleep. Screenshot the hoodie; check it tomorrow.' },
           { text: 'Never buy hoodies.', why: 'The hoodie isn\'t the problem; the moment is.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where does the HALT check come from?',
         options: [
-          { text: 'Addiction-recovery groups, now used for many habits' },
           { text: 'A shopping app', why: 'Quite the opposite.' },
           { text: 'A bank', why: 'It comes from recovery groups.' },
+          { text: 'Addiction-recovery groups, now used for many habits' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

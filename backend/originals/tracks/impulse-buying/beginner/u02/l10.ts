@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s Abena\'s biggest feeling trigger?',
         options: [
-          { text: 'Lonely' },
           { text: 'Happy', why: 'Only 2 of 18.' },
+          { text: 'Lonely' },
           { text: 'Stressed', why: '4 of 18. Lonely is 7.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'Abena wants to delete social media completely. Good idea?',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'It could help, but the loneliness would still be there. Pair it with a swap: a Sunday call home, phone away after 9.' },
           { text: 'Yes, that fixes everything.', why: 'Bans without a swap tend to snap back.' },
+          { text: 'It could help, but the loneliness would still be there. Pair it with a swap: a Sunday call home, phone away after 9.' },
           { text: 'No, she should buy less expensive things.', why: 'The feeling is the trigger, not the price.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Yaw says "It\'s all pay later, I haven\'t paid anything." What does that suggest?',
         options: [
-          { text: 'The "ouch" of paying has been pushed into the future, and it may be piling up' },
           { text: 'Everything is free', why: 'Pay later means paying later, usually with conditions.' },
           { text: 'Nothing to worry about', why: 'Six parcels in a day, unopened, is a worrying sign.' },
+          { text: 'The "ouch" of paying has been pushed into the future, and it may be piling up' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Yaw doesn\'t open a single parcel. Which Chapter 2 idea might explain it?',
         options: [
-          { text: 'Buying to fix a feeling, not because he wanted the things' },
           { text: 'He doesn\'t like parcels', why: 'He bought six.' },
+          { text: 'Buying to fix a feeling, not because he wanted the things' },
           { text: 'He forgot', why: 'They\'re on his bed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

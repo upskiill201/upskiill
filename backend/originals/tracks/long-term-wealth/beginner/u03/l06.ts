@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happened to Emmanuel\'s ₦90,000 debt in a year, left unpaid?',
         options: [
-          { text: 'It more than tripled' },
           { text: 'It stayed the same', why: 'Fees and interest compounded.' },
           { text: 'It shrank', why: 'Unpaid debt grows.' },
+          { text: 'It more than tripled' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does high-interest debt come before investing?',
         options: [
-          { text: 'It compounds against you faster than most investments grow' },
           { text: 'Banks require it', why: 'It\'s maths, not rules.' },
           { text: 'It doesn\'t', why: 'It should.' },
+          { text: 'It compounds against you faster than most investments grow' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In the India study, which families saved the most?',
         options: [
-          { text: 'Those whose savings envelope had their children\'s photo on it' },
           { text: 'Those who kept all money together', why: 'Separating savings helped; the photo helped more.' },
           { text: 'There was no difference', why: 'There was a clear difference.' },
+          { text: 'Those whose savings envelope had their children\'s photo on it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'Naming your money? That\'s a bit much, chale.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Try it. You\'d spend "Savings 2" on sneakers. Would you spend "Mum\'s hospital fund" on sneakers?' },
           { text: 'You\'re right, it\'s silly.', why: 'Research says it works.' },
+          { text: 'Try it. You\'d spend "Savings 2" on sneakers. Would you spend "Mum\'s hospital fund" on sneakers?' },
           { text: 'Only rich people name money.', why: 'The study was with low-income families.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Earmarking is mental accounting used...',
         options: [
-          { text: 'On purpose, to protect money' },
           { text: 'By accident, to waste money', why: 'That\'s the trap side. Earmarking is the helpful side.' },
+          { text: 'On purpose, to protect money' },
           { text: 'Only by banks', why: 'Anyone can do it, with a name and a pot.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

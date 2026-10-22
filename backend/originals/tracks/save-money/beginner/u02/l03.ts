@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'It\'s only GH₵1.50, chale. Who cares?',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Once, nobody. Twelve times a month, every month, it\'s over GH₵40. That\'s a laptop key.' },
           { text: 'You\'re right.', why: 'Small fees repeat. Price × how often.' },
+          { text: 'Once, nobody. Twelve times a month, every month, it\'s over GH₵40. That\'s a laptop key.' },
           { text: 'Fees are theft!', why: 'They\'re the price of a service. The point is to use them less.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where can you find exactly what your provider charges?',
         options: [
-          { text: 'Its published fee table or price list' },
           { text: 'A friend\'s guess', why: 'Fees change; check the source.' },
           { text: 'Nowhere; it\'s secret', why: 'Providers publish their charges.' },
+          { text: 'Its published fee table or price list' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

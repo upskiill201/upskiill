@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does trigger 3 use a list and a cash limit instead of "stop going to Kejetia"?',
         options: [
-          { text: 'It protects his money without losing Saturdays with his friend' },
           { text: 'Kejetia is free', why: 'It\'s about keeping the friendship and the fun.' },
           { text: 'Lists don\'t work', why: 'They\'re one of the best tools there is.' },
+          { text: 'It protects his money without losing Saturdays with his friend' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How many triggers should a map have to start with?',
         options: [
-          { text: 'Two or three, the biggest ones' },
           { text: 'Twenty', why: 'Too many to remember in the moment.' },
           { text: 'One only, forever', why: 'Start small; add as you learn.' },
+          { text: 'Two or three, the biggest ones' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

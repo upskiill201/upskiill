@@ -27,8 +27,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Ada wants a third pair of sandals. She has two that are fine. First question of the check?',
-      options: ['Do I already have something that does this? Yes.', 'Is it on sale?', 'Will Ngozi like it?'],
-      answer: 0,
+      options: ['Is it on sale?', 'Do I already have something that does this? Yes.', 'Will Ngozi like it?'],
+      answer: 1,
       explanation: 'She already has two pairs that work. It\'s a want.',
     },
     {
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is a warning sign of a want dressed as a need?',
         options: [
-          { text: 'You\'re explaining to yourself why you need it' },
           { text: 'It\'s on your list', why: 'That\'s planned.' },
           { text: 'You ran out of it', why: 'That sounds like a need.' },
+          { text: 'You\'re explaining to yourself why you need it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Is buying something for the rush ever okay?',
         options: [
-          { text: 'Yes, on purpose, from your fun or upgrade budget' },
           { text: 'Never', why: 'Planned rushes are fine.' },
           { text: 'Always', why: 'Not when it eats the plan.' },
+          { text: 'Yes, on purpose, from your fun or upgrade budget' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -126,11 +126,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ada already has a dress she loves for the conference. What does the check say about the new one?',
         options: [
-          { text: 'It\'s a want; skip it or pay from the upgrade budget' },
           { text: 'It\'s a need', why: 'She already has one that works.' },
+          { text: 'It\'s a want; skip it or pay from the upgrade budget' },
           { text: 'It\'s a must-have', why: 'She has one.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

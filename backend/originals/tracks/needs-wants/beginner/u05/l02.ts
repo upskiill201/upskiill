@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why not promise anything in the first five minutes?',
         options: [
-          { text: 'You need to understand the need and your options before deciding' },
           { text: 'To be rude', why: 'It\'s about deciding well.' },
+          { text: 'You need to understand the need and your options before deciding' },
           { text: 'Family should wait', why: 'It\'s minutes, not days.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'My cousin wants ₦100,000 for a new phone. I feel bad saying no.',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'Is it a must-have? If his phone works, it\'s a want. You can say "I can\'t this time" kindly, or give a small gift from your family line.' },
           { text: 'Give it; family first.', why: 'Family first doesn\'t mean funding every want.' },
           { text: 'Block him.', why: 'Too much. A kind no works.' },
+          { text: 'Is it a must-have? If his phone works, it\'s a want. You can say "I can\'t this time" kindly, or give a small gift from your family line.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

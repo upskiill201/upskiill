@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'In year 1 it\'s only ₦10,000. That\'s nothing.',
         prompt: 'Folake\'s best reply?',
         options: [
-          { text: 'It looks like nothing at first. That\'s why most people give up early. The magic is in years 10 to 30.' },
           { text: 'You\'re right, don\'t bother.', why: 'The early years set up the later ones.' },
           { text: 'Take it out and spend it.', why: 'That stops the compounding.' },
+          { text: 'It looks like nothing at first. That\'s why most people give up early. The magic is in years 10 to 30.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'After 30 years, about how much of the ₦1,745,000 came from growth, not from the ₦100,000 put in?',
         options: [
-          { text: 'About ₦1,645,000' },
           { text: 'About ₦100,000', why: 'That\'s what was put in.' },
+          { text: 'About ₦1,645,000' },
           { text: 'About ₦745,000', why: '1,745,000 − 100,000 = 1,645,000.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

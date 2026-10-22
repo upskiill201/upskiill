@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Abena\'s biggest line is food out: GH₵500. What\'s the smartest first move there?',
         options: [
-          { text: 'A 15 to 20% cut: cook with her hall mates three nights a week' },
           { text: 'Cut food out to zero', why: 'Too much, too fast. It breaks.' },
           { text: 'Leave it; cut sweets instead', why: 'Big lines first: a small cut there beats cutting every sweet.' },
+          { text: 'A 15 to 20% cut: cook with her hall mates three nights a week' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         message: 'Abena wants to cut her weekly call home to save data. Good idea?',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'No. That\'s a choice with real value, and it costs little over Wi-Fi. Keep it.' },
           { text: 'Yes, every cedi counts.', why: 'Some cedis buy things that matter most.' },
+          { text: 'No. That\'s a choice with real value, and it costs little over Wi-Fi. Keep it.' },
           { text: 'Only call once a month.', why: 'Why cut something so valuable and cheap?' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Kofi missed two Sundays. What\'s the real problem?',
         options: [
-          { text: 'His saving depends on remembering, and remembering fails' },
           { text: 'He\'s lazy', why: 'Everyone forgets. The system is the problem, not the person.' },
+          { text: 'His saving depends on remembering, and remembering fails' },
           { text: 'The goal is too big', why: 'The goal is fine. The money just didn\'t move.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

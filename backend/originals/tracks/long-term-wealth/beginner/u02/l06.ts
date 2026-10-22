@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'I remember to save most months. Isn\'t that good enough?',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'Most months isn\'t every month. I missed four last year. Automatic doesn\'t forget, and you\'ll never notice it leaving.' },
           { text: 'Yes, that\'s fine.', why: 'Missed months add up.' },
+          { text: 'Most months isn\'t every month. I missed four last year. Automatic doesn\'t forget, and you\'ll never notice it leaving.' },
           { text: 'Stop saving.', why: 'The opposite.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why keep the emergency fund separate from long-term money?',
         options: [
-          { text: 'So long-term money isn\'t used for emergencies or everyday shortfalls' },
           { text: 'Banks require it', why: 'It\'s for protection.' },
           { text: 'No reason', why: 'Mixing them is how long-term money disappears.' },
+          { text: 'So long-term money isn\'t used for emergencies or everyday shortfalls' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

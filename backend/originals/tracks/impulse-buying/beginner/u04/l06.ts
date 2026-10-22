@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         message: 'What do I even say in the group chat?',
         prompt: 'Kofi\'s best suggestion?',
         options: [
-          { text: '"I\'m out for this one, I\'m saving this year. Beach day when you\'re back? I\'m in for that."' },
           { text: '"I\'m in!" and figure it out later.', why: 'That\'s GH₵1,200 more debt.' },
+          { text: '"I\'m out for this one, I\'m saving this year. Beach day when you\'re back? I\'m in for that."' },
           { text: 'A long message explaining all his debts.', why: 'He doesn\'t owe anyone his debt story.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What often happens after someone says no in a group chat?',
         options: [
-          { text: 'Someone else privately says they can\'t afford it either' },
           { text: 'Everyone leaves the group', why: 'Rarely.' },
+          { text: 'Someone else privately says they can\'t afford it either' },
           { text: 'They\'re banned from future plans', why: 'Usually not.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do people tend to remember?',
         options: [
-          { text: 'Who was there and part of things, not who paid most' },
           { text: 'Exactly who paid how much', why: 'Most people remember the time together.' },
           { text: 'Nothing', why: 'They remember who showed up.' },
+          { text: 'Who was there and part of things, not who paid most' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

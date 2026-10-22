@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which sign gave away the midnight earrings?',
         options: [
-          { text: 'Late at night, after a bad exam, from an ad' },
           { text: 'They were earrings', why: 'The item doesn\'t decide. The situation does.' },
           { text: 'They were cheap', why: 'Price isn\'t the sign.' },
+          { text: 'Late at night, after a bad exam, from an ad' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -68,21 +68,21 @@ const lesson: OriginalLesson = {
         message: 'So the bag was an impulse. But I like it. Was it a mistake?',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Not necessarily. Impulses aren\'t all bad. Was it worth all five costs, and did it fit your budget? If yes, fine. If not, now you know.' },
           { text: 'Yes, return it immediately.', why: 'Some impulses turn out fine. The question is whether it was worth it.' },
+          { text: 'Not necessarily. Impulses aren\'t all bad. Was it worth all five costs, and did it fit your budget? If yes, fine. If not, now you know.' },
           { text: 'All impulse buys are mistakes.', why: 'Small, affordable ones can be fine.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Why did Kofi feel great for four minutes after buying the boots?',
         options: [
-          { text: 'The "want" signal peaked, then faded; liking was small' },
           { text: 'The boots were perfect', why: 'Wrong size, no returns.' },
           { text: 'He was proud of the price', why: 'It was the want peaking.' },
+          { text: 'The "want" signal peaked, then faded; liking was small' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

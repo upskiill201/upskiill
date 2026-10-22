@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'I\'m so tired of saving. Maybe one big night out to reset?',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'Reset, yes, with a planned reward at your next milestone, from the fun line. Kelewele with Efua at GH₵2,500?' },
           { text: 'Yes, spend big.', why: 'An unplanned big night can undo weeks of saving.' },
+          { text: 'Reset, yes, with a planned reward at your next milestone, from the fun line. Kelewele with Efua at GH₵2,500?' },
           { text: 'No fun until the laptop.', why: 'Zero fun is how plans break.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did the "fresh start" research find?',
         options: [
-          { text: 'People are more likely to start goals at new beginnings like a new week or month' },
           { text: 'Fresh food helps saving', why: 'A fun guess, but no.' },
           { text: 'Starting over is a sign of failure', why: 'It\'s a natural restart point.' },
+          { text: 'People are more likely to start goals at new beginnings like a new week or month' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why tell Efua and Miracle at each milestone?',
         options: [
-          { text: 'Sharing progress makes it feel real and keeps you accountable' },
           { text: 'So they\'ll pay for the rewards', why: 'Rewards come from his fun line.' },
+          { text: 'Sharing progress makes it feel real and keeps you accountable' },
           { text: 'It doesn\'t help', why: 'Sharing progress is a well-known motivator.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

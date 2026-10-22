@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the debt feel "not like real money" to Yaw?',
         options: [
-          { text: 'Pay later split each buy into small payments and pushed the "ouch" into the future' },
           { text: 'Because it wasn\'t real', why: 'It\'s very real now.' },
           { text: 'Because he never bought anything', why: 'He bought a lot.' },
+          { text: 'Pay later split each buy into small payments and pushed the "ouch" into the future' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why start with the six unopened parcels?',
         options: [
-          { text: 'Unopened items may still be returnable, which could cut the debt fast' },
           { text: 'To sell them for profit', why: 'Returning for a refund is better if possible.' },
           { text: 'To open them for fun', why: 'Opening them may lose the return option.' },
+          { text: 'Unopened items may still be returnable, which could cut the debt fast' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

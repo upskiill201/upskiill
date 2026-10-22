@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do fees matter so much over decades?',
         options: [
-          { text: 'They compound against you, year after year' },
           { text: 'They don\'t', why: 'They compound too.' },
+          { text: 'They compound against you, year after year' },
           { text: 'They\'re paid once', why: 'Most are yearly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll wait until prices are at the bottom, then invest.',
         prompt: 'Folake\'s best reply?',
         options: [
-          { text: 'Nobody reliably knows where the bottom is. Investing a set amount monthly means you don\'t have to.' },
           { text: 'Smart, wait.', why: 'Waiting can last forever.' },
           { text: 'Put everything in today.', why: 'Regular amounts reduce the timing worry.' },
+          { text: 'Nobody reliably knows where the bottom is. Investing a set amount monthly means you don\'t have to.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -145,11 +145,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A good long-term investment has a bad year. What does that mean?',
         options: [
-          { text: 'It\'s normal; long-term investments go up and down' },
           { text: 'It\'s a scam', why: 'Bad years are normal.' },
           { text: 'Sell everything', why: 'Panic selling locks in losses.' },
+          { text: 'It\'s normal; long-term investments go up and down' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

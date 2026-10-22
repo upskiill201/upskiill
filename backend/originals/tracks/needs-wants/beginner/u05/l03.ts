@@ -27,8 +27,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'If money is short one month, what shrinks first?',
-      options: ['The lowest-ranked values and extras', 'Must-haves', 'Family support'],
-      answer: 0,
+      options: ['Must-haves', 'Family support', 'The lowest-ranked values and extras'],
+      answer: 2,
       explanation: 'The base and top values are protected. Lower ones flex.',
     },
     {
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Why organise by values instead of normal categories?',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'Because then every naira has a reason you care about. When something has to give, you already know what.' },
           { text: 'No reason; it\'s the same.', why: 'Values tell you what to protect.' },
+          { text: 'Because then every naira has a reason you care about. When something has to give, you already know what.' },
           { text: 'Categories are illegal.', why: 'Nonsense; values are just more useful.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s opportunity cost?',
         options: [
-          { text: 'What you give up by choosing something' },
           { text: 'A discount', why: 'It\'s a trade-off.' },
+          { text: 'What you give up by choosing something' },
           { text: 'The tax on a purchase', why: 'It\'s what you give up.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         message: 'I said no to the car. Was that just giving up on my dream?',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'No. You gave it a number and a date. That\'s how dreams actually happen, instead of becoming a weight.' },
           { text: 'Yes, dreams are silly.', why: 'Not at all. Timing matters.' },
           { text: 'Go and buy it now.', why: 'It still doesn\'t fit this year.' },
+          { text: 'No. You gave it a number and a date. That\'s how dreams actually happen, instead of becoming a weight.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -88,21 +88,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Review, Chapter 3: what does "generous where it matters, ruthless where it doesn\'t" mean?',
         options: [
-          { text: 'Spend freely on your values and cut hard elsewhere' },
           { text: 'Spend on everything equally', why: 'The opposite.' },
+          { text: 'Spend freely on your values and cut hard elsewhere' },
           { text: 'Never spend', why: 'It means spend well.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Review, Chapter 2: what\'s a "need later"?',
         options: [
-          { text: 'A real need that isn\'t urgent yet' },
           { text: 'A want', why: 'It\'s a real need, just not urgent.' },
           { text: 'Something you never need', why: 'It will be needed.' },
+          { text: 'A real need that isn\'t urgent yet' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

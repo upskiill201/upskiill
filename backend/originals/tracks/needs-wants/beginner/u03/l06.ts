@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why trim clothes instead of banning them?',
         options: [
-          { text: 'It\'s a middle score: some value, some waste' },
           { text: 'Clothes are a must-have', why: 'Some are; trends aren\'t.' },
+          { text: 'It\'s a middle score: some value, some waste' },
           { text: 'She forgot', why: 'It was deliberate.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Ngozi says you can\'t really be saving if you kept Friday dinners and giving. What do you tell her?',
         prompt: 'Ada\'s best answer?',
         options: [
-          { text: 'I am. ₦40,000 more a month, from the things I don\'t care about. The things I love stay.' },
           { text: 'You\'re right, I\'ll cut them.', why: 'They score 8 and 9.' },
           { text: 'I\'m not saving any more.', why: 'She\'s saving more than ever.' },
+          { text: 'I am. ₦40,000 more a month, from the things I don\'t care about. The things I love stay.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Ada say the new plan "sounds like me"?',
         options: [
-          { text: 'Her money now goes mostly to what she values' },
           { text: 'It has her name on it', why: 'It\'s about her values, not a label.' },
+          { text: 'Her money now goes mostly to what she values' },
           { text: 'It\'s cheaper', why: 'It\'s about alignment, not just cost.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

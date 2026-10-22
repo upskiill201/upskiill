@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What was Dad\'s main money mistake?',
         options: [
-          { text: 'Always planning to start saving "next year"' },
           { text: 'Earning too little', why: 'Teachers often earn little, but many save something. "Next year" was the trap.' },
           { text: 'Spending on his family', why: 'That was love, and necessary. The missing piece was starting.' },
+          { text: 'Always planning to start saving "next year"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Papa, how much have you saved, roughly?',
         prompt: 'Why is this a good question for Miracle to ask?',
         options: [
-          { text: 'You can\'t make a plan without knowing the starting point' },
           { text: 'To embarrass him', why: 'She asks gently, to help.' },
+          { text: 'You can\'t make a plan without knowing the starting point' },
           { text: 'It\'s none of her business', why: 'He asked for her help.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where does long-term wealth mostly come from?',
         options: [
-          { text: 'A few habits, started early and kept for decades' },
           { text: 'One lucky investment', why: 'Luck is rare and unreliable.' },
           { text: 'A very high salary', why: 'Income helps, but many high earners have little wealth.' },
+          { text: 'A few habits, started early and kept for decades' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

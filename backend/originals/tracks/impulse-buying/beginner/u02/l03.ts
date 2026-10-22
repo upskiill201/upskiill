@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         message: 'Science says retail therapy works. So I\'m fine.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'It says small, occasional, affordable buys help a bit. Six things on Tuesday is the habit version.' },
           { text: 'Science is wrong.', why: 'The research is real. The dose is the issue.' },
           { text: 'Yes, keep going.', why: 'Big and frequent is where it turns harmful.' },
+          { text: 'It says small, occasional, affordable buys help a bit. Six things on Tuesday is the habit version.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happens to the cause of the bad feeling after shopping?',
         options: [
-          { text: 'It\'s still there' },
           { text: 'It\'s fixed', why: 'Boots don\'t fix a missed penalty.' },
+          { text: 'It\'s still there' },
           { text: 'It gets smaller', why: 'The feeling lifts briefly; the cause doesn\'t change.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

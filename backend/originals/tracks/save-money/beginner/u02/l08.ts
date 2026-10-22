@@ -20,8 +20,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Kofi earns about GH₵20 an hour. How many hours is a GH₵60 jersey?',
-      options: ['3 hours', '6 hours', '1 hour'],
-      answer: 0,
+      options: ['6 hours', '1 hour', '3 hours'],
+      answer: 2,
       explanation: '60 ÷ 20 = 3.',
     },
     {
@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the point of thinking in hours?',
         options: [
-          { text: 'To see the real trade: this thing, or this much of my time' },
           { text: 'To feel guilty about every purchase', why: 'It\'s about clarity, not guilt.' },
+          { text: 'To see the real trade: this thing, or this much of my time' },
           { text: 'To work more hours', why: 'It helps you decide, not work more.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Kofi\'s money is mostly an allowance, not wages. How can he still use this trick?',
         options: [
-          { text: 'Use his beat rate, or think about the hours Mum worked for it' },
           { text: 'He can\'t', why: 'Any money came from someone\'s time.' },
+          { text: 'Use his beat rate, or think about the hours Mum worked for it' },
           { text: 'Assume GH₵1,000 an hour', why: 'That\'s not anyone\'s real rate.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

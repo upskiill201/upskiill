@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How do many pay-later providers make money if there\'s no interest?',
         options: [
-          { text: 'Shops pay them a fee, and late fees add more' },
           { text: 'They don\'t make money', why: 'They\'re businesses; they earn from shops and fees.' },
+          { text: 'Shops pay them a fee, and late fees add more' },
           { text: 'The government pays them', why: 'Shops and customers pay.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do shops like offering pay later?',
         options: [
-          { text: 'Shoppers using it tend to buy more and spend more' },
           { text: 'It\'s cheaper for the shop', why: 'Shops often pay a fee.' },
+          { text: 'Shoppers using it tend to buy more and spend more' },
           { text: 'Customers demand it', why: 'Mainly because it increases sales.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the Mexico City fund listed under "adventure"?',
         options: [
-          { text: 'Saving for something you value is spending on that value, later' },
           { text: 'It\'s a mistake', why: 'It\'s deliberate.' },
+          { text: 'Saving for something you value is spending on that value, later' },
           { text: 'Because it\'s risky', why: 'It\'s about her value of travel.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'I\'m ₦25,000 a month short. Should I cut Friday dinners?',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'They score 9. Look for one more thing with no value tag first, or a bigger choice. Next chapter is about exactly that.' },
           { text: 'Yes, cut them.', why: 'High-scoring lines are protected.' },
           { text: 'Give up on Mexico.', why: 'She\'s ₦25,000 away.' },
+          { text: 'They score 9. Look for one more thing with no value tag first, or a bigger choice. Next chapter is about exactly that.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

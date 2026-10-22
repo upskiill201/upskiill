@@ -20,8 +20,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'A creator uses a discount code "KOFI10" for a product. What does that usually mean?',
-      options: ['They likely earn something when you use it', 'They found it by chance', 'It\'s always the best product'],
-      answer: 0,
+      options: ['They found it by chance', 'It\'s always the best product', 'They likely earn something when you use it'],
+      answer: 2,
       explanation: 'Codes and affiliate links usually pay the creator a commission.',
     },
     {
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'He said it\'s a game changer. He\'s a real producer. I trust him.',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'He might be right for his studio. Check if he\'s paid, and what a GH₵300 mic would do for your bedroom beats.' },
           { text: 'Then buy it.', why: 'Trust is fine; checking is better.' },
           { text: 'He\'s a liar.', why: 'Being paid doesn\'t make him a liar. It makes the advice not neutral.' },
+          { text: 'He might be right for his studio. Check if he\'s paid, and what a GH₵300 mic would do for your bedroom beats.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might a paid post be labelled in small text, or not at all?',
         options: [
-          { text: 'A clear "#ad" can make people trust it less, so some hide it' },
           { text: 'Labels are illegal', why: 'In many places labels are required.' },
+          { text: 'A clear "#ad" can make people trust it less, so some hide it' },
           { text: 'There\'s no reason', why: 'Visibility of labels affects trust.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

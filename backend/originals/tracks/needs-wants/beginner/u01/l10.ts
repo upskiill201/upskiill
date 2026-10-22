@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ngozi says "I need rides now, I\'m a business owner." What\'s the honest test?',
         options: [
-          { text: 'What would actually happen if she took the bus for a month?' },
           { text: 'Do other business owners take rides?', why: 'Comparison, not need.' },
+          { text: 'What would actually happen if she took the bus for a month?' },
           { text: 'None; business owners always need rides', why: 'Some trips do; every trip doesn\'t.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -109,21 +109,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ada saves ₦20,000 a month. How short is she each month?',
         options: [
-          { text: '₦130,000' },
           { text: '₦150,000', why: 'That\'s the target. She already saves ₦20,000.' },
+          { text: '₦130,000' },
           { text: '₦20,000', why: 'That\'s what she saves now.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Ada said "Yes! Absolutely!" before checking. Which part of her character is that?',
         options: [
-          { text: 'She says yes to everything, then panics a little' },
           { text: 'She\'s careful with money', why: 'Not in that moment.' },
           { text: 'She hates travel', why: 'She\'s thrilled.' },
+          { text: 'She says yes to everything, then panics a little' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

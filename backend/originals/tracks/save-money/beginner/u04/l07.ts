@@ -20,8 +20,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'A freelancer with irregular income and two children. Bigger or smaller emergency fund?',
-      options: ['Bigger', 'Smaller', 'No fund needed'],
-      answer: 0,
+      options: ['Smaller', 'No fund needed', 'Bigger'],
+      answer: 2,
       explanation: 'Irregular income and dependants both raise the target.',
     },
     {
@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why start with stages instead of "six months of expenses"?',
         options: [
-          { text: 'A reachable target gets started; an impossible one doesn\'t' },
           { text: 'Six months is always wrong', why: 'It\'s right for many working adults, eventually.' },
+          { text: 'A reachable target gets started; an impossible one doesn\'t' },
           { text: 'Stages earn more', why: 'It\'s about getting started.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'GH₵300 barely covered malaria. Should I stop the laptop and build the fund to GH₵900 first?',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'Refill to GH₵300 now, keep the laptop on track, and grow the fund after the laptop. Stages.' },
           { text: 'Yes, pause the laptop.', why: 'The laptop has a deadline. The fund can grow in stages.' },
           { text: 'GH₵300 is plenty forever.', why: 'It just barely covered one emergency.' },
+          { text: 'Refill to GH₵300 now, keep the laptop on track, and grow the fund after the laptop. Stages.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

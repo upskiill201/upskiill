@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Compounding is slow. I want fast money.',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'Slow at first, powerful later. "Fast money" usually means big risk or a scam. Time is the cheapest engine there is.' },
           { text: 'Then gamble.', why: 'Never good advice.' },
+          { text: 'Slow at first, powerful later. "Fast money" usually means big risk or a scam. Time is the cheapest engine there is.' },
           { text: 'You\'re right, forget it.', why: 'Compounding is the point.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -98,21 +98,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Review, Chapter 2: why does the emergency fund come before investing?',
         options: [
-          { text: 'So emergencies never force you to sell investments at a bad time' },
           { text: 'It earns more', why: 'It\'s about protection.' },
           { text: 'It doesn\'t', why: 'Order matters.' },
+          { text: 'So emergencies never force you to sell investments at a bad time' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'Review, Chapter 2: what share of each future raise does Miracle save?',
         options: [
-          { text: 'Half' },
           { text: 'All', why: 'Half, so the raise still feels like a raise.' },
+          { text: 'Half' },
           { text: 'None', why: 'Half goes to long-term saving.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

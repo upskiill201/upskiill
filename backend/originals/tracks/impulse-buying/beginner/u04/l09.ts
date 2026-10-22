@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write pressure rules in advance?',
         options: [
-          { text: 'In the moment you won\'t have time to think, only to remember' },
           { text: 'To show friends', why: 'They\'re for Kofi.' },
           { text: 'They don\'t help', why: 'Rules decided calmly protect you in pressured moments.' },
+          { text: 'In the moment you won\'t have time to think, only to remember' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'Can I copy your rules?',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Copy them, then change them to fit you. Your log knows your triggers better than mine.' },
           { text: 'No, they\'re mine.', why: 'Sharing helps. Personalising helps more.' },
+          { text: 'Copy them, then change them to fit you. Your log knows your triggers better than mine.' },
           { text: 'You don\'t need rules.', why: 'He\'s the one who needs them most right now.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Rule 5 says savings aren\'t a friend\'s emergency fund. How did Kofi still help Yaw?',
         options: [
-          { text: 'With time, a plan, and not judging' },
           { text: 'He didn\'t help', why: 'He spent a whole night on Plan B.' },
           { text: 'By lending secretly', why: 'He didn\'t lend.' },
+          { text: 'With time, a plan, and not judging' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

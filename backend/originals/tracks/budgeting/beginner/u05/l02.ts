@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where should the GH₵15 come from?',
         options: [
-          { text: 'Lines that were under this week, like transport' },
           { text: 'Savings', why: 'Use flexible lines that came in under first.' },
+          { text: 'Lines that were under this week, like transport' },
           { text: 'Next week\'s food money', why: 'Borrowing from next week starts the cycle that empties week 4.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Ten minutes every Sunday? That\'s so boring.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Boring is the point. Ten boring minutes beats a very exciting day 12.' },
           { text: 'You\'re right, I\'ll do it monthly.', why: 'Monthly checks catch drift too late.' },
           { text: 'It takes me two hours.', why: 'It shouldn\'t. Round numbers and few categories keep it to ten.' },
+          { text: 'Boring is the point. Ten boring minutes beats a very exciting day 12.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

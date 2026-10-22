@@ -27,8 +27,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'What\'s the opportunity cost of Ada spending ₦125,000 on a weekend trip this month?',
-      options: ['A whole month of Mexico City saving', 'Nothing, it\'s her money', 'Only the hotel price'],
-      answer: 0,
+      options: ['Nothing, it\'s her money', 'Only the hotel price', 'A whole month of Mexico City saving'],
+      answer: 2,
       explanation: 'She saves ₦125,000 a month for Mexico. That\'s what the trip would replace.',
     },
     {
@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is opportunity cost?',
         options: [
-          { text: 'What you give up when you choose something' },
           { text: 'The discount you get', why: 'That\'s a saving, not a cost.' },
+          { text: 'What you give up when you choose something' },
           { text: 'A fee charged by shops', why: 'It\'s about trade-offs.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did reminding people of the alternative do in the study?',
         options: [
-          { text: 'They were more likely to keep the money' },
           { text: 'They spent more', why: 'The reminder made them save.' },
+          { text: 'They were more likely to keep the money' },
           { text: 'Nothing', why: 'It changed choices.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

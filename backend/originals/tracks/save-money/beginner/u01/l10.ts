@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'To close GH₵2,130 in 16 weeks, about how much extra a week does Kofi need, on top of his GH₵55?',
         options: [
-          { text: 'About GH₵133' },
           { text: 'About GH₵13', why: '13 × 16 = 208. Far too little.' },
           { text: 'About GH₵500', why: '500 × 16 = 8,000. Far too much.' },
+          { text: 'About GH₵133' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         message: 'Should I just move the emergency fund into the jar? It\'s GH₵300 closer.',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'No. The day you need it, you\'ll take it from the jar anyway, or borrow. Keep it apart.' },
           { text: 'Yes, emergencies are rare.', why: 'They\'re common. That\'s the point of the fund.' },
+          { text: 'No. The day you need it, you\'ll take it from the jar anyway, or borrow. Keep it apart.' },
           { text: 'Move half.', why: 'Half a cushion still leaves him exposed, and the habit of raiding it begins.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where does Miracle say the hunt for GH₵2,130 starts?',
         options: [
-          { text: 'In his own spending: more leaks' },
           { text: 'In a loan app', why: 'Never.' },
+          { text: 'In his own spending: more leaks' },
           { text: 'In asking Mum', why: 'She\'s already giving. The hunt starts with him.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

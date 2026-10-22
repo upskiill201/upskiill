@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Bola\'s night-shift rides: must-have or want?',
         options: [
-          { text: 'Must-have: safety at night is never a want' },
           { text: 'Want: she could walk', why: 'Safety first, always.' },
           { text: 'Nice-to-have', why: 'At night, it\'s a safety need.' },
+          { text: 'Must-have: safety at night is never a want' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         message: 'Bola wants to cut her weekly call-and-cook night with her sisters. It\'s ₦8,000.',
         prompt: 'Your best advice?',
         options: [
-          { text: 'Check joy per naira first. If it scores high (family, connection), protect it. Cut what gives nothing.' },
           { text: 'Cut it; every naira counts.', why: 'Cutting joys first breaks plans.' },
+          { text: 'Check joy per naira first. If it scores high (family, connection), protect it. Cut what gives nothing.' },
           { text: 'Double it.', why: 'Protect, not necessarily double.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -132,11 +132,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Ada cut that she loved, to get to Mexico City?',
         options: [
-          { text: 'Nothing: she cut what gave her nothing, and protected what she loved' },
           { text: 'Her art class', why: 'She kept it.' },
+          { text: 'Nothing: she cut what gave her nothing, and protected what she loved' },
           { text: 'Family support', why: 'Protected throughout.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

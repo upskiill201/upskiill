@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ada spends ₦55,000 on transport now. How much more would the car cost each month?',
         options: [
-          { text: '₦240,000 more' },
           { text: '₦95,000 more', why: 'That forgets fuel, insurance, repairs and parking.' },
+          { text: '₦240,000 more' },
           { text: '₦150,000 more', why: 'Only the payment. Running costs add much more.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'But I\'ve wanted a car since I was 15!',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'Then make it a real goal with a number and a date, for when it fits. Wanting it doesn\'t mean now.' },
           { text: 'Then buy it.', why: '₦295,000 a month doesn\'t fit this year.' },
           { text: 'Forget about cars.', why: 'It\'s a real want; give it a place.' },
+          { text: 'Then make it a real goal with a number and a date, for when it fits. Wanting it doesn\'t mean now.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

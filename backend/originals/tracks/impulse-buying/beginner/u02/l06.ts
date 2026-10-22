@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Kofi want the captain\'s boots that night especially?',
         options: [
-          { text: 'He\'d just missed a penalty and felt a gap in his footballer identity' },
           { text: 'His old boots were broken', why: 'They were fine. The feeling was the gap.' },
+          { text: 'He\'d just missed a penalty and felt a gap in his footballer identity' },
           { text: 'The ad was random', why: 'The timing and the boots matched his feeling exactly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'If I had better headphones, I\'d be a real producer.',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'Real producers finish beats. You\'re already selling them. Save for gear that improves the sound, when you need it.' },
           { text: 'True, buy them tonight.', why: 'Headphones don\'t finish beats.' },
           { text: 'You\'ll never be a real producer.', why: 'Unkind, and he already earns from it.' },
+          { text: 'Real producers finish beats. You\'re already selling them. Save for gear that improves the sound, when you need it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When does "buying to be someone" hit hardest?',
         options: [
-          { text: 'When we feel small: after a loss, a rejection or a bad exam' },
           { text: 'When we feel great', why: 'It can happen then, but gaps make it stronger.' },
+          { text: 'When we feel small: after a loss, a rejection or a bad exam' },
           { text: 'Never', why: 'It\'s a well-documented pattern.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When is buying gear for an identity actually fine?',
         options: [
-          { text: 'When it\'s planned and genuinely helps you do the thing' },
           { text: 'Never', why: 'Sometimes the right tool really helps.' },
           { text: 'Whenever an ad says so', why: 'That\'s the trap.' },
+          { text: 'When it\'s planned and genuinely helps you do the thing' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

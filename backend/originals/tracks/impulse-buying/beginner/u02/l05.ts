@@ -35,11 +35,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Kofi change first?',
         options: [
-          { text: 'The moment: phone across the room after 10, something else for bad nights' },
           { text: 'He deleted every app forever', why: 'Bans alone tend to snap back.' },
           { text: 'He only buys cheap things at night', why: 'That keeps the habit running.' },
+          { text: 'The moment: phone across the room after 10, something else for bad nights' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -97,21 +97,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Review, Chapter 1: what are the five costs of an impulse buy?',
         options: [
-          { text: 'Money, time, the next goal, the feeling, the habit' },
           { text: 'Only money', why: 'There are four more.' },
           { text: 'Money and delivery fees', why: 'Think wider: time, goals, feelings, habits.' },
+          { text: 'Money, time, the next goal, the feeling, the habit' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'Review, Chapter 1: why does the good feeling after buying fade fast?',
         options: [
-          { text: 'Wanting peaks before buying; liking is often smaller' },
           { text: 'The product breaks', why: 'Often it\'s fine. The feeling was the want.' },
+          { text: 'Wanting peaks before buying; liking is often smaller' },
           { text: 'It doesn\'t fade', why: 'Kofi\'s lasted four minutes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

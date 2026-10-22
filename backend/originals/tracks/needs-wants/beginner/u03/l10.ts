@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Sofía feels guilty spending on the photography club. What should Ada tell her?',
         options: [
-          { text: 'If growth is a top value, give it a size and keep it, guilt-free' },
           { text: 'Cut it, it\'s selfish', why: 'Spending on growth isn\'t selfish.' },
           { text: 'Spend unlimited on it', why: 'Generous still has a size.' },
+          { text: 'If growth is a top value, give it a size and keep it, guilt-free' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Everyone on the team goes to a fancy brunch every Sunday. I feel I have to.',
         prompt: 'Ada\'s best reply?',
         options: [
-          { text: 'Ask: who would actually notice, and would they mind? Go when it matters to you, and say a warm "not this week" when it doesn\'t.' },
           { text: 'Go every week, to fit in.', why: 'An assumed expectation, every week.' },
+          { text: 'Ask: who would actually notice, and would they mind? Go when it matters to you, and say a warm "not this week" when it doesn\'t.' },
           { text: 'Never go.', why: 'Connection may be one of her values.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -119,21 +119,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The cash price is ₦3.2 million. How much more is the payment plan?',
         options: [
-          { text: '₦400,000 more' },
           { text: 'The same', why: '3.6 million vs 3.2 million.' },
+          { text: '₦400,000 more' },
           { text: '₦3.6 million more', why: 'That\'s the total, not the extra.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'If Ada took the car, what would happen to the Mexico plan?',
         options: [
-          { text: '₦150,000 a month would go on the car, more than her whole Mexico saving' },
           { text: 'Nothing', why: 'It\'s ₦150,000 every month.' },
           { text: 'It would get easier', why: 'It would get impossible.' },
+          { text: '₦150,000 a month would go on the car, more than her whole Mexico saving' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

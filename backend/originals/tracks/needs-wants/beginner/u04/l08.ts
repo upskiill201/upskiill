@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'From now on I\'ll only buy the cheapest of everything.',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'Cheapest for things you don\'t care about, sure. For things you use every day, buy the best value. Cheap that breaks costs more.' },
           { text: 'Great, always cheapest.', why: 'False economy.' },
           { text: 'Buy the most expensive.', why: 'Price isn\'t quality either.' },
+          { text: 'Cheapest for things you don\'t care about, sure. For things you use every day, buy the best value. Cheap that breaks costs more.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -122,11 +122,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write down a big decision before making it?',
         options: [
-          { text: 'It slows the excitement and makes the costs and trade-offs clear' },
           { text: 'For your records', why: 'Mostly it improves the decision.' },
+          { text: 'It slows the excitement and makes the costs and trade-offs clear' },
           { text: 'No reason', why: 'It helps many people decide better.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

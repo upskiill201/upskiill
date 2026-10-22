@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the difference between an emergency and a crisis?',
         options: [
-          { text: 'A crisis is an emergency with no money to handle it' },
           { text: 'No difference', why: 'Miracle\'s point is that a fund turns one into the other.' },
           { text: 'Crises are smaller', why: 'Crises are usually bigger, because there was no plan.' },
+          { text: 'A crisis is an emergency with no money to handle it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         message: 'I don\'t need an emergency fund. Nothing bad happens to me.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'I thought that too. Then three things in one semester. The fund didn\'t stop them; it stopped me borrowing.' },
           { text: 'True, you\'re lucky.', why: 'Luck runs out for everyone eventually.' },
+          { text: 'I thought that too. Then three things in one semester. The fund didn\'t stop them; it stopped me borrowing.' },
           { text: 'Something bad will definitely happen to you.', why: 'True-ish, but scary. Share the experience instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -147,11 +147,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who has emergencies?',
         options: [
-          { text: 'Everyone, careful or not' },
           { text: 'Only careless people', why: 'Malaria doesn\'t check how careful you are.' },
+          { text: 'Everyone, careful or not' },
           { text: 'Only poor people', why: 'At every income, unexpected costs happen.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

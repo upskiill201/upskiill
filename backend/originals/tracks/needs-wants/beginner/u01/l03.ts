@@ -27,8 +27,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Ada\'s ₦20,000-a-month phone instalment for a new phone, when her old one worked. Where on the line?',
-      options: ['Want (her old phone already did the job)', 'Must-have', 'Should-have'],
-      answer: 0,
+      options: ['Must-have', 'Should-have', 'Want (her old phone already did the job)'],
+      answer: 2,
       explanation: 'A working phone is a should-have. She already had one. The new one is a want.',
     },
     {
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "should-have" mean?',
         options: [
-          { text: 'Makes life work much better; going without is hard but possible' },
           { text: 'Life-or-death', why: 'That\'s must-have.' },
+          { text: 'Makes life work much better; going without is hard but possible' },
           { text: 'Pure pleasure', why: 'That\'s want.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do most costs sit in more than one place on the line?',
         options: [
-          { text: 'There\'s a basic version that\'s a need, and an upgrade on top that\'s a choice' },
           { text: 'Because prices change', why: 'It\'s about the version, not the price changing.' },
+          { text: 'There\'s a basic version that\'s a need, and an upgrade on top that\'s a choice' },
           { text: 'They don\'t', why: 'Transport, food and phones all split.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

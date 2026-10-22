@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'Can\'t I just start investing now? Emergency funds are boring.',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'Boring is the point. Without one, your first emergency means selling investments or another loan app. Starter fund first, then the loan, then investing.' },
           { text: 'Sure, invest everything.', why: 'Out of order; one emergency would undo it.' },
           { text: 'Never invest.', why: 'He should, after the basics.' },
+          { text: 'Boring is the point. Without one, your first emergency means selling investments or another loan app. Starter fund first, then the loan, then investing.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Emmanuel gets a ₦60,000 raise next year. What should he decide now?',
         options: [
-          { text: 'That half, ₦30,000, goes to long-term saving the week it lands' },
           { text: 'Nothing; see how he feels', why: 'That\'s how raises disappear.' },
+          { text: 'That half, ₦30,000, goes to long-term saving the week it lands' },
           { text: 'Spend it all on chin chin', why: 'Tempting. No.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

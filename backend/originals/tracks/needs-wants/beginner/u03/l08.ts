@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Ada\'s mum say about the art class?',
         options: [
-          { text: 'She worked hard so Ada could do things like this: don\'t stop' },
           { text: 'Stop wasting money', why: 'The opposite.' },
+          { text: 'She worked hard so Ada could do things like this: don\'t stop' },
           { text: 'Pay her back', why: 'She was proud.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does values-based spending matter more on a small income?',
         options: [
-          { text: 'Every naira counts, so where it goes matters more' },
           { text: 'It doesn\'t', why: 'It matters more when there\'s less.' },
+          { text: 'Every naira counts, so where it goes matters more' },
           { text: 'Because small incomes have no needs', why: 'Small incomes have the same needs.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -145,11 +145,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'If Ada loves design, should she spend ₦150,000 a month on courses?',
         options: [
-          { text: 'No: generous still has a size that fits the whole plan' },
           { text: 'Yes, unlimited', why: 'That would break her plan.' },
           { text: 'Nothing at all', why: 'Growth is a top value.' },
+          { text: 'No: generous still has a size that fits the whole plan' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

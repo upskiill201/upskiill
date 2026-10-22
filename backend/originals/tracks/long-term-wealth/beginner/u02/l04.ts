@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll just rely on my kids when I\'m old.',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'They\'d help, I\'m sure. But wouldn\'t you rather they could help because they want to, not because they have to?' },
           { text: 'That\'s selfish.', why: 'Harsh. A question works better.' },
+          { text: 'They\'d help, I\'m sure. But wouldn\'t you rather they could help because they want to, not because they have to?' },
           { text: 'Good plan.', why: 'It passes the load on.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is Miracle starting her pension properly at 25?',
         options: [
-          { text: 'She\'s seeing what it\'s like when a parent has to rely on their children' },
           { text: 'Her boss told her to', why: 'It\'s her own decision.' },
           { text: 'It\'s required', why: 'The basic one is; extra is her choice.' },
+          { text: 'She\'s seeing what it\'s like when a parent has to rely on their children' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -145,11 +145,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the healthiest view of family support in old age?',
         options: [
-          { text: 'Welcome help, but don\'t make it the whole plan' },
           { text: 'Never accept help', why: 'Help is love.' },
+          { text: 'Welcome help, but don\'t make it the whole plan' },
           { text: 'It\'s the only plan you need', why: 'That puts the whole load on others.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

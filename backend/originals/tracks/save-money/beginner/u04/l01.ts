@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is malaria treatment an emergency-fund cost?',
         options: [
-          { text: 'It\'s urgent, necessary and unexpected' },
           { text: 'Because it\'s expensive', why: 'Size isn\'t the test. The three questions are.' },
           { text: 'It isn\'t; it should come from the laptop jar', why: 'The jar is for the planned laptop.' },
+          { text: 'It\'s urgent, necessary and unexpected' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Should I take a loan so I don\'t touch the emergency fund?',
         prompt: 'Efua\'s best reply?',
         options: [
-          { text: 'You built that fund for today. Use it. That\'s not failure, that\'s the plan working.' },
           { text: 'Yes, protect the fund.', why: 'Borrowing so as not to use an emergency fund in an emergency costs fees for nothing.' },
+          { text: 'You built that fund for today. Use it. That\'s not failure, that\'s the plan working.' },
           { text: 'Use the laptop jar instead.', why: 'Then the laptop slips, and the fund sits unused.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The ad appeared right when Kofi needed money. What should that make him think?',
         options: [
-          { text: 'Ads target moments of stress; that\'s a reason to slow down, not to tap' },
           { text: 'It\'s a sign', why: 'It\'s targeting, not fate.' },
           { text: 'Ads are always helpful', why: 'They\'re designed to sell, especially in stressful moments.' },
+          { text: 'Ads target moments of stress; that\'s a reason to slow down, not to tap' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

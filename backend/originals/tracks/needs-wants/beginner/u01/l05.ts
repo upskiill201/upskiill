@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         message: 'Transport is a need, so all ₦75,000 is a need.',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'The basic version, the bus at ₦40,000, is the need. The other ₦35,000 is a choice on top.' },
           { text: 'Yes, it\'s all a need.', why: 'Only the basic version is.' },
           { text: 'Transport is a want.', why: 'Getting to work is a must-have.' },
+          { text: 'The basic version, the bus at ₦40,000, is the need. The other ₦35,000 is a choice on top.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why compare lines, not just totals?',
         options: [
-          { text: 'Lines show where; you can change a line, not a total' },
           { text: 'Totals are always wrong', why: 'They\'re right, just not useful on their own.' },
+          { text: 'Lines show where; you can change a line, not a total' },
           { text: 'No reason', why: 'Lines are where the decisions are.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why gather at least two weeks first?',
         options: [
-          { text: 'With too few urges, patterns can be chance' },
           { text: 'Because shops change weekly', why: 'It\'s about having enough data.' },
+          { text: 'With too few urges, patterns can be chance' },
           { text: 'No reason', why: 'More urges make patterns clearer.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll fix all three triggers this week!',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'Start with the biggest one: late-night scrolling. Fix that well, then the next.' },
           { text: 'Great, do all three!', why: 'Trying everything at once usually means none stick.' },
           { text: 'Don\'t fix any.', why: 'One at a time works.' },
+          { text: 'Start with the biggest one: late-night scrolling. Fix that well, then the next.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why pick just one trigger to work on?',
         options: [
-          { text: 'Changing one well beats changing all of them a little' },
           { text: 'The others don\'t matter', why: 'They matter; they come next.' },
+          { text: 'Changing one well beats changing all of them a little' },
           { text: 'One trigger is all anyone has', why: 'Most people have a few.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is avoiding the sale right for Yaw but not for Kofi?',
         options: [
-          { text: 'Yaw needs a full break while paying off debt; Kofi has a planned, saved-for item' },
           { text: 'Kofi is better than Yaw', why: 'Different situations, not better people.' },
           { text: 'Avoiding is always wrong', why: 'For Yaw right now, it\'s wise.' },
+          { text: 'Yaw needs a full break while paying off debt; Kofi has a planned, saved-for item' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll just browse on the day and see what\'s good.',
         prompt: 'Efua\'s best reply?',
         options: [
-          { text: 'That\'s the sale\'s plan for you. Make your own: one item, a price limit, and a rule for everything else.' },
           { text: 'Good idea.', why: 'Browsing is how the tricks get you.' },
+          { text: 'That\'s the sale\'s plan for you. Make your own: one item, a price limit, and a rule for everything else.' },
           { text: 'Never buy anything.', why: 'He has a planned item worth buying.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes Black Friday especially risky?',
         options: [
-          { text: 'Anchors, countdowns, scarcity and pay-later all at once' },
           { text: 'Shops are closed', why: 'They\'re very open.' },
           { text: 'Prices go up', why: 'Some do, some don\'t. The tricks are the risk.' },
+          { text: 'Anchors, countdowns, scarcity and pay-later all at once' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why pay App 1 first?',
         options: [
-          { text: 'It\'s overdue, charging late fees and messaging contacts' },
           { text: 'It\'s the smallest', why: 'App 3 is smaller. App 1 is the most urgent.' },
+          { text: 'It\'s overdue, charging late fees and messaging contacts' },
           { text: 'It doesn\'t matter which first', why: 'Urgent and costly debts first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why remove saved cards from shopping apps during the plan?',
         options: [
-          { text: 'It adds friction, so new impulse buys are harder' },
           { text: 'Cards expire', why: 'It\'s about friction, not expiry.' },
+          { text: 'It adds friction, so new impulse buys are harder' },
           { text: 'It cancels the debt', why: 'It doesn\'t cancel anything; it prevents new spending.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

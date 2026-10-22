@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Target ₦900,000. What\'s the gap?',
         options: [
-          { text: '₦55,000' },
           { text: '₦90,000', why: 'That\'s what she sold. 900,000 − 845,000 = 55,000.' },
+          { text: '₦55,000' },
           { text: 'Nothing', why: 'She\'s ₦55,000 short.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: '₦55,000 short. So close. What now?',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'You have two months left. A small freelance job, or one more trim, would do it. Don\'t touch your joys now.' },
           { text: 'Borrow it.', why: '₦55,000 is reachable without debt.' },
           { text: 'Give up.', why: 'She\'s 94% there.' },
+          { text: 'You have two months left. A small freelance job, or one more trim, would do it. Don\'t touch your joys now.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'About what percent of the ₦900,000 target does ₦845,000 reach? (Roughly.)',
         options: [
-          { text: 'About 94%' },
           { text: 'About 50%', why: 'Much higher.' },
+          { text: 'About 94%' },
           { text: 'About 110%', why: 'Still slightly short.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

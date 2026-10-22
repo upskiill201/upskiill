@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'Abena\'s friend wants to borrow GH₵200 from her fund. Thoughts?',
         prompt: 'Kofi\'s best advice for the card?',
         options: [
-          { text: 'The fund is for her own emergencies. Lend only what she could afford to lose, from spare money.' },
           { text: 'Sure, friends first.', why: 'Then Abena\'s own emergency has nowhere to go.' },
           { text: 'Never help friends.', why: 'Help from spare money, or in other ways, is fine.' },
+          { text: 'The fund is for her own emergencies. Lend only what she could afford to lose, from spare money.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Uncle Kwesi\'s GH₵300 is a windfall. What does Kofi\'s split rule from Budgeting say?',
         options: [
-          { text: 'Give it jobs straight away: most to the goal, some to enjoy' },
           { text: 'Spend it all: it\'s a gift', why: 'Gifts are real money. The rule gives part to enjoy.' },
+          { text: 'Give it jobs straight away: most to the goal, some to enjoy' },
           { text: 'Put it all in the emergency fund', why: 'The fund is already full again.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

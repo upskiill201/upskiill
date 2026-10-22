@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is lifestyle creep?',
         options: [
-          { text: 'Spending quietly rising with income until the extra is gone' },
           { text: 'Buying luxury items to show off', why: 'It\'s usually far quieter.' },
           { text: 'Earning less over time', why: 'It\'s about spending rising, not income falling.' },
+          { text: 'Spending quietly rising with income until the extra is gone' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         message: 'So I should never upgrade anything ever again?',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'No. Upgrade on purpose. Decide where the next raise goes before it lands: some to savings, some to an upgrade you truly want.' },
           { text: 'Yes, live like a student forever.', why: 'Too strict, and it won\'t last.' },
+          { text: 'No. Upgrade on purpose. Decide where the next raise goes before it lands: some to savings, some to an upgrade you truly want.' },
           { text: 'Upgrade everything; you earned it.', why: 'That\'s how the raise vanished.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -130,11 +130,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does going back after an upgrade feel so hard?',
         options: [
-          { text: 'You adapt to the upgrade, so going back feels like a loss' },
           { text: 'The old option disappears', why: 'The bus is still there.' },
           { text: 'It doesn\'t feel hard', why: 'For most people, it does.' },
+          { text: 'You adapt to the upgrade, so going back feels like a loss' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

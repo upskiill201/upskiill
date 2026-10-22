@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         message: 'Only GH₵480 a month, chale!',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'For how many months, and what\'s the total?' },
           { text: 'Deal!', why: 'He hasn\'t checked the total.' },
+          { text: 'For how many months, and what\'s the total?' },
           { text: 'I hate shops.', why: 'The shop isn\'t the problem; the maths is.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Kofi\'s target is GH₵188 a week and he saves GH₵55. What does this chapter need to find?',
         options: [
-          { text: 'About GH₵133 a week more, or a cheaper goal, or both' },
           { text: 'A loan', why: 'The whole point is to avoid one.' },
           { text: 'Nothing; GH₵55 is enough', why: '16 × 55 = 880, nowhere near 3,010.' },
+          { text: 'About GH₵133 a week more, or a cheaper goal, or both' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Review, Budgeting: why plan savings before flexible spending?',
         options: [
-          { text: 'Because saving "whatever is left" rarely happens' },
           { text: 'Because savings earn more early in the month', why: 'Not the reason.' },
+          { text: 'Because saving "whatever is left" rarely happens' },
           { text: 'It doesn\'t matter', why: 'Order decides whether saving happens.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

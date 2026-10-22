@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes values-based spending different from just cutting?',
         options: [
-          { text: 'It can mean spending more on what you love, as well as cutting what you don\'t' },
           { text: 'It cuts everything equally', why: 'It cuts unevenly, on purpose.' },
+          { text: 'It can mean spending more on what you love, as well as cutting what you don\'t' },
           { text: 'It never cuts anything', why: 'It cuts ruthlessly where things don\'t matter.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Is it okay to spend MORE on design when I\'m trying to save?',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'After Mexico, yes, if it comes from cutting things you don\'t care about. That\'s the whole point.' },
           { text: 'Never spend more on anything.', why: 'Values-based spending moves money towards what matters.' },
           { text: 'Spend more on everything.', why: 'Only on what matters, by cutting elsewhere.' },
+          { text: 'After Mexico, yes, if it comes from cutting things you don\'t care about. That\'s the whole point.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is Ngozi\'s list different from Ada\'s?',
         options: [
-          { text: 'Everyone values different things' },
           { text: 'Ngozi is wrong', why: 'Her values fit her life.' },
+          { text: 'Everyone values different things' },
           { text: 'They earn different amounts', why: 'Values, not income, shape the list.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Can Ada save more and enjoy more at the same time?',
         options: [
-          { text: 'Yes: moving money from low-joy to high-joy lines does both' },
           { text: 'No, saving always means enjoying less', why: 'Not when you cut what you don\'t enjoy.' },
           { text: 'Only if she earns more', why: 'Reallocating is enough.' },
+          { text: 'Yes: moving money from low-joy to high-joy lines does both' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

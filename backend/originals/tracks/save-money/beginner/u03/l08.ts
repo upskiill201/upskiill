@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is "choice architecture"?',
         options: [
-          { text: 'Arranging options so the good choice is the easy one' },
           { text: 'Building design', why: 'In behavioural science it means how choices are set up.' },
           { text: 'Choosing with your friends', why: 'It\'s about how options are presented.' },
+          { text: 'Arranging options so the good choice is the easy one' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: 'You\'re just more disciplined than me, chale.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'I\'m really not. I missed two Sundays. My system just doesn\'t need me to be disciplined.' },
           { text: 'True, I\'m stronger.', why: 'Not true, and it doesn\'t help Yaw.' },
+          { text: 'I\'m really not. I missed two Sundays. My system just doesn\'t need me to be disciplined.' },
           { text: 'Try harder.', why: 'Effort fades. Systems don\'t.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -138,11 +138,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the healthiest response to a slip?',
         options: [
-          { text: 'Treat it as information and fix the system' },
           { text: 'Decide you\'re just bad at saving', why: 'That turns a slip into quitting.' },
+          { text: 'Treat it as information and fix the system' },
           { text: 'Ignore it', why: 'Then it happens again.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

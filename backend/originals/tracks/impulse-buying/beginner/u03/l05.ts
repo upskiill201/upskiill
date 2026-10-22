@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How do you test a countdown timer?',
         options: [
-          { text: 'Refresh the page and see if it restarts' },
           { text: 'Buy quickly before it ends', why: 'That\'s what it wants.' },
+          { text: 'Refresh the page and see if it restarts' },
           { text: 'Trust it', why: 'Many reset on refresh.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         message: 'Free delivery over GH₵300! I\'m at GH₵260, so I\'ll add a GH₵60 cap.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'How much is delivery? If it\'s under GH₵60, just pay it. You\'re spending more to "save".' },
           { text: 'Smart move.', why: 'Only if he wanted the cap anyway.' },
           { text: 'Never order online.', why: 'Online is fine; the threshold is the trick.' },
+          { text: 'How much is delivery? If it\'s under GH₵60, just pay it. You\'re spending more to "save".' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Review, Chapter 1: what\'s the difference between wanting and liking?',
         options: [
-          { text: 'Wanting is the pull before buying; liking is the pleasure of having' },
           { text: 'They\'re the same', why: 'They come from different systems.' },
           { text: 'Liking always beats wanting', why: 'Often wanting is stronger than liking turns out to be.' },
+          { text: 'Wanting is the pull before buying; liking is the pleasure of having' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

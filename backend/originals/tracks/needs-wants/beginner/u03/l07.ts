@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the test for a real obligation?',
         options: [
-          { text: 'Not paying would genuinely hurt a relationship you care about, or break a promise' },
           { text: 'Someone asked', why: 'Being asked isn\'t the same as an obligation.' },
           { text: 'It\'s in a group chat', why: 'Group chats create lots of assumed expectations.' },
+          { text: 'Not paying would genuinely hurt a relationship you care about, or break a promise' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What if someone genuinely minds?',
         options: [
-          { text: 'Have a real conversation; it\'s usually better than quietly overspending' },
           { text: 'Pay anyway', why: 'A conversation often solves it.' },
           { text: 'Never speak to them again', why: 'Too drastic.' },
+          { text: 'Have a real conversation; it\'s usually better than quietly overspending' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

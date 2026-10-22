@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         message: 'My bank doesn\'t do scheduled transfers. So I can\'t pay myself first.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Then set an alarm for payday morning and move it before you buy anything. Same rule, by hand.' },
           { text: 'True, you can\'t.', why: 'The rule works by hand too, as long as it\'s first.' },
           { text: 'Switch banks today.', why: 'Maybe later. An alarm works tonight.' },
+          { text: 'Then set an alarm for payday morning and move it before you buy anything. Same rule, by hand.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why check after the first week?',
         options: [
-          { text: 'Systems can fail silently; a quick check catches it' },
           { text: 'To take some back out', why: 'The check is to confirm, not to withdraw.' },
+          { text: 'Systems can fail silently; a quick check catches it' },
           { text: 'No need, it\'s automatic', why: 'Automatic doesn\'t mean infallible.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

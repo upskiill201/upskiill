@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did three weeks of hiding cost Yaw?',
         options: [
-          { text: 'GH₵80 in late fees, and more stress' },
           { text: 'Nothing', why: 'The debt grew while he hid.' },
+          { text: 'GH₵80 in late fees, and more stress' },
           { text: 'It saved him money', why: 'The opposite.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         message: 'I\'m such an idiot. Who gets into GH₵2,900 of debt for sneakers?',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Lots of people, with apps designed to make it easy. You\'re not an idiot. You\'re in a situation, and we\'re fixing it tonight.' },
           { text: 'Yeah, it was dumb.', why: 'True or not, shame makes it harder to act.' },
           { text: 'Don\'t worry about it at all.', why: 'He does need to act. Kindly.' },
+          { text: 'Lots of people, with apps designed to make it easy. You\'re not an idiot. You\'re in a situation, and we\'re fixing it tonight.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -146,11 +146,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do many lenders agree payment plans?',
         options: [
-          { text: 'They\'d rather be paid slowly than not at all' },
           { text: 'They\'re charities', why: 'They\'re businesses.' },
           { text: 'They never do', why: 'Many do, especially if contacted early.' },
+          { text: 'They\'d rather be paid slowly than not at all' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

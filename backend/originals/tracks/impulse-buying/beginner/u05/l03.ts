@@ -27,8 +27,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'A GH₵200 jacket you\'ll wear 100 times. Cost per use?',
-      options: ['GH₵2', 'GH₵20', 'GH₵200'],
-      answer: 0,
+      options: ['GH₵20', 'GH₵2', 'GH₵200'],
+      answer: 1,
       explanation: '200 ÷ 100 = 2.',
     },
     {
@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is better value?',
         options: [
-          { text: 'GH₵150 trainers worn 300 times' },
           { text: 'A GH₵60 shirt worn twice', why: 'GH₵30 per wear vs 50 pesewas.' },
           { text: 'They\'re the same', why: 'Very different cost per use.' },
+          { text: 'GH₵150 trainers worn 300 times' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'This GH₵400 watch, I\'ll wear it every day forever!',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Be honest: how many watches have you bought this year, and how often do you wear each one?' },
           { text: 'Every day forever? Then buy it.', why: 'We all overestimate uses of exciting things.' },
+          { text: 'Be honest: how many watches have you bought this year, and how often do you wear each one?' },
           { text: 'Watches are pointless.', why: 'Not the point. Honest uses are.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does price in hours help during a sale?',
         options: [
-          { text: 'It brings back the "ouch" that discounts try to remove' },
           { text: 'It makes things cheaper', why: 'Same price, clearer view.' },
           { text: 'It doesn\'t help', why: 'It\'s one of the best pause tools.' },
+          { text: 'It brings back the "ouch" that discounts try to remove' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

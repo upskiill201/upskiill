@@ -31,8 +31,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'The group is choosing between a restaurant (GH₵120 each) and a hall cookout (GH₵30 each). When is the best time to suggest the cookout?',
-      options: ['Before the plan is made', 'After everyone has booked', 'Never; go along with it'],
-      answer: 0,
+      options: ['After everyone has booked', 'Before the plan is made', 'Never; go along with it'],
+      answer: 1,
       explanation: 'Early suggestions shape the plan. Late ones feel like backing out.',
     },
     {
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might someone else in the group be glad you suggested the cheaper option?',
         options: [
-          { text: 'They may have been hoping for it too, but didn\'t want to be the one to say it' },
           { text: 'They want to save your money', why: 'More likely, their own.' },
+          { text: 'They may have been hoping for it too, but didn\'t want to be the one to say it' },
           { text: 'Nobody ever is', why: 'Often, several people are relieved.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -121,11 +121,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which group events are predictable enough to plan for?',
         options: [
-          { text: 'Birthdays, end-of-term trips, weddings, church harvest' },
           { text: 'None of them', why: 'Most are known well ahead.' },
           { text: 'Only weddings', why: 'Most group costs are predictable.' },
+          { text: 'Birthdays, end-of-term trips, weddings, church harvest' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

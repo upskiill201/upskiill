@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why keep one planned delivery night?',
         options: [
-          { text: 'Late deadlines happen; a planned treat beats an unplanned scramble' },
           { text: 'Delivery is a need', why: 'It\'s a planned choice.' },
           { text: 'She forgot to cut it', why: 'It\'s deliberate.' },
+          { text: 'Late deadlines happen; a planned treat beats an unplanned scramble' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does splitting with Ngozi help so much?',
         options: [
-          { text: 'Ingredients and gas cost about half each, and cooking is more fun together' },
           { text: 'Ngozi pays for everything', why: 'They split.' },
           { text: 'It doesn\'t', why: 'Sharing halves the cost.' },
+          { text: 'Ingredients and gas cost about half each, and cooking is more fun together' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

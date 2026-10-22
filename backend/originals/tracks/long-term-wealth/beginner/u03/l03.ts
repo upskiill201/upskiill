@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a "real return"?',
         options: [
-          { text: 'Growth after inflation' },
           { text: 'The headline interest rate', why: 'That\'s before inflation.' },
+          { text: 'Growth after inflation' },
           { text: 'Money you can touch', why: 'It\'s growth after inflation.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'So should I put my emergency fund in investments too, to beat inflation?',
         prompt: 'Folake\'s best reply?',
         options: [
-          { text: 'No. Emergency money needs to be safe and reachable more than it needs to beat inflation. It\'s long-term money that needs growth.' },
           { text: 'Yes, all of it.', why: 'Then it might be down when you need it.' },
           { text: 'Inflation doesn\'t matter.', why: 'It matters for long-term money.' },
+          { text: 'No. Emergency money needs to be safe and reachable more than it needs to beat inflation. It\'s long-term money that needs growth.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is inflation most dangerous for 30-year money?',
         options: [
-          { text: 'A negative real return repeated for decades eats much of the value' },
           { text: 'It isn\'t', why: 'Time multiplies its effect.' },
+          { text: 'A negative real return repeated for decades eats much of the value' },
           { text: 'Banks charge more', why: 'It\'s about buying power.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

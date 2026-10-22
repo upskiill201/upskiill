@@ -35,11 +35,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Ngozi find out before deciding?',
         options: [
-          { text: 'Whether the shop would bring enough extra sales to cover ₦2.18 million' },
           { text: 'What colour to paint it', why: 'First, whether it pays.' },
           { text: 'Whether her friends have shops', why: 'That\'s comparison.' },
+          { text: 'Whether the shop would bring enough extra sales to cover ₦2.18 million' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What could Ngozi try first, to test the idea cheaply?',
         options: [
-          { text: 'A stall at a weekend market for a month, to see if in-person sales are real' },
           { text: 'Sign the lease today', why: 'Test first; it\'s a ₦2 million decision.' },
           { text: 'Never try', why: 'A cheap test is the smart middle.' },
+          { text: 'A stall at a weekend market for a month, to see if in-person sales are real' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which of Ada\'s values are in tension now?',
         options: [
-          { text: 'Family (her top value) and adventure (Mexico City)' },
           { text: 'Growth and comfort', why: 'The tension is family vs the trip.' },
+          { text: 'Family (her top value) and adventure (Mexico City)' },
           { text: 'None', why: 'Two top values clash.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',

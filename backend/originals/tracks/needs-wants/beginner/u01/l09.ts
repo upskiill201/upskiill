@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the art class a should-have, not creep?',
         options: [
-          { text: 'It\'s how Ada grows as a designer; it matters to her' },
           { text: 'It\'s cheap', why: 'Price isn\'t the test; value to her is.' },
           { text: 'It\'s required by her job', why: 'It\'s her choice, and an important one.' },
+          { text: 'It\'s how Ada grows as a designer; it matters to her' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Should Ada cut every want?',
         options: [
-          { text: 'Not necessarily: she\'ll choose which wants matter to her (Chapter 3)' },
           { text: 'Yes, all of them', why: 'Zero wants is how plans break.' },
           { text: 'No, keep them all', why: 'Some clearly aren\'t worth it to her.' },
+          { text: 'Not necessarily: she\'ll choose which wants matter to her (Chapter 3)' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

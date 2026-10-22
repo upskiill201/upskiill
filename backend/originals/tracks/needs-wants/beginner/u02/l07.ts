@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s fixed, and what isn\'t?',
         options: [
-          { text: 'The need is fixed; the version and cost aren\'t' },
           { text: 'Everything is fixed', why: 'Ada changed food and transport.' },
+          { text: 'The need is fixed; the version and cost aren\'t' },
           { text: 'Nothing is a need', why: 'Food and getting to work are needs.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the bus feel impossible after three months of rides?',
         options: [
-          { text: 'Feelings follow habits; the ride had become normal' },
           { text: 'The bus got worse', why: 'Same bus.' },
+          { text: 'Feelings follow habits; the ride had become normal' },
           { text: 'She lost her job', why: 'She didn\'t.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -138,11 +138,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'For Ada, family support to Mum is a need. Why?',
         options: [
-          { text: 'It\'s part of her real life and values' },
           { text: 'Everyone must send money home', why: 'Not everyone; it\'s about Ada\'s life.' },
           { text: 'It isn\'t', why: 'For Ada, it is.' },
+          { text: 'It\'s part of her real life and values' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

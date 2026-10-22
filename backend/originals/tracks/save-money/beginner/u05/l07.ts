@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         message: 'So when you get the laptop, you\'ll finally stop saving and live a little?',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'I\'ve been living all semester. After the laptop, the GH₵125 goes to my emergency fund, my next goal, and a bit more fun.' },
           { text: 'Yes, saving is over.', why: 'The habit is the prize. Stopping wastes it.' },
+          { text: 'I\'ve been living all semester. After the laptop, the GH₵125 goes to my emergency fund, my next goal, and a bit more fun.' },
           { text: 'No, I\'ll never have fun.', why: 'He\'s had fun all semester.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which spending tends to bring longer-lasting happiness?',
         options: [
-          { text: 'Experiences and generosity' },
           { text: 'Newer versions of things you have', why: 'The joy of new things tends to fade quickly.' },
           { text: 'The most expensive option', why: 'Price isn\'t what makes it last.' },
+          { text: 'Experiences and generosity' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -137,11 +137,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the real prize of a semester of saving?',
         options: [
-          { text: 'The habit, which keeps working long after the laptop' },
           { text: 'Only the laptop', why: 'The habit outlasts the laptop.' },
+          { text: 'The habit, which keeps working long after the laptop' },
           { text: 'Being able to stop', why: 'Stopping throws away the habit.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

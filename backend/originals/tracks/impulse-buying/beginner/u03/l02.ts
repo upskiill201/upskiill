@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'The site says 12 people are looking at these sneakers RIGHT NOW. I have to buy!',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Can you check that? Neither can I. Screenshot it and look again tomorrow. I bet it still says 12.' },
           { text: 'Quick, buy them!', why: 'An unverifiable number designed to rush him.' },
+          { text: 'Can you check that? Neither can I. Screenshot it and look again tomorrow. I bet it still says 12.' },
           { text: 'Sneakers are bad.', why: 'The sneakers aren\'t the problem; the pressure is.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does scarcity make things feel more valuable?',
         options: [
-          { text: 'We tend to want things more when they seem rare or about to disappear' },
           { text: 'Scarce things are always better quality', why: 'Rarity doesn\'t mean quality.' },
           { text: 'It doesn\'t', why: 'It\'s one of the most studied levers of persuasion.' },
+          { text: 'We tend to want things more when they seem rare or about to disappear' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Concert tickets really are scarce. Should Kofi buy them because of that?',
         options: [
-          { text: 'Only if he really wants to go and it fits his budget' },
           { text: 'Yes, scarcity means buy', why: 'Missing something you didn\'t want costs nothing.' },
+          { text: 'Only if he really wants to go and it fits his budget' },
           { text: 'Never buy scarce things', why: 'If he wants to go and can afford it, fine.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

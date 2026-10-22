@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the first thing Kofi should tell Mum to check?',
         options: [
-          { text: 'What blenders like this cost at two or three other shops' },
           { text: 'Whether to buy Deluxe Plus', why: 'That\'s the decoy\'s target.' },
+          { text: 'What blenders like this cost at two or three other shops' },
           { text: 'How fast she can order', why: 'Speed is what the ad wants.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Deluxe GH₵1,149, Deluxe Plus GH₵1,199. What is Deluxe for?',
         options: [
-          { text: 'To make Deluxe Plus look like a bargain' },
           { text: 'For people who want the middle', why: 'It\'s priced to push people up, not to be chosen.' },
+          { text: 'To make Deluxe Plus look like a bargain' },
           { text: 'Nothing', why: 'Decoys have a clear job.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might "pay later" be risky for Mum?',
         options: [
-          { text: 'It hides the "ouch" and adds a debt with rules she may not have read' },
           { text: 'It\'s always illegal', why: 'It\'s legal. The risks are in the terms.' },
           { text: 'It isn\'t risky', why: 'Missed payments can bring fees and pressure.' },
+          { text: 'It hides the "ouch" and adds a debt with rules she may not have read' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The message about Yaw went to all his contacts. Which Chapter 2 or 3 idea does it connect to?',
         options: [
-          { text: 'Pay-later and loan apps that take contact access, the risk Kofi saw in Budgeting' },
           { text: 'Anchoring', why: 'This is about debt collection, not prices.' },
+          { text: 'Pay-later and loan apps that take contact access, the risk Kofi saw in Budgeting' },
           { text: 'Decoys', why: 'This is about debt.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

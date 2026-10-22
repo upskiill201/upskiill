@@ -31,8 +31,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'At checkout, "Phone protection: GH₵25" is already in your basket. You didn\'t add it. What dark pattern is this?',
-      options: ['Sneaking', 'Confirmshaming', 'Fake scarcity'],
-      answer: 0,
+      options: ['Confirmshaming', 'Sneaking', 'Fake scarcity'],
+      answer: 1,
       explanation: 'Something quietly added to your basket that you didn\'t choose.',
     },
     {
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'The site says "No thanks, I don\'t like great deals." I feel bad clicking it.',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'That\'s confirmshaming. The guilt is the trick. Click it, you\'re fine.' },
           { text: 'Better take the deal then.', why: 'The guilt is designed to make you say yes.' },
+          { text: 'That\'s confirmshaming. The guilt is the trick. Click it, you\'re fine.' },
           { text: 'Close your phone forever.', why: 'Just recognise the trick and click no.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can saved card details lead to more impulse buys?',
         options: [
-          { text: 'They remove the pause of typing your details' },
           { text: 'They charge more', why: 'Same price. Less friction.' },
           { text: 'They don\'t', why: 'One-tap buying skips your thinking time.' },
+          { text: 'They remove the pause of typing your details' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -132,11 +132,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A site keeps adding things to your basket and hiding fees. What\'s the best move?',
         options: [
-          { text: 'Leave and shop somewhere fairer' },
           { text: 'Keep using it but be careful', why: 'A site designed to trick you will keep trying.' },
+          { text: 'Leave and shop somewhere fairer' },
           { text: 'Buy more to get your money\'s worth', why: 'That\'s exactly what it wants.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

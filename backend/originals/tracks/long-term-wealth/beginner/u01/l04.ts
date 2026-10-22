@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'My net worth feels small for someone with my salary.',
         prompt: 'Folake\'s best reply?',
         options: [
-          { text: 'It\'s a starting point, not a grade. What matters is which way it moves every quarter from now.' },
           { text: 'It is small. Shame.', why: 'Shame doesn\'t help.' },
           { text: 'Don\'t track it then.', why: 'Tracking is how it grows.' },
+          { text: 'It\'s a starting point, not a grade. What matters is which way it moves every quarter from now.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What surprised Miracle most?',
         options: [
-          { text: 'She\'d never looked at her pension' },
           { text: 'She had no savings', why: 'She has ₦1.4 million.' },
+          { text: 'She\'d never looked at her pension' },
           { text: 'She had huge debts', why: 'Only a small staff loan.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

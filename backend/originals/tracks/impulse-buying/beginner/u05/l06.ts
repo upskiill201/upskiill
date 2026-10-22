@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the boots lose their magic fast?',
         options: [
-          { text: 'Hedonic adaptation, and in this case they didn\'t even fit' },
           { text: 'They were cheap', why: 'Price isn\'t why the feeling fades.' },
           { text: 'They didn\'t; he loves them', why: 'He sold them at a loss.' },
+          { text: 'Hedonic adaptation, and in this case they didn\'t even fit' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'So I should never buy things, only experiences?',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'No. Things you use for things you love can be great, like my interface. Ask if you\'ll still be glad in a year.' },
           { text: 'Yes, never buy things.', why: 'Too strict; tools and gear can create experiences.' },
+          { text: 'No. Things you use for things you love can be great, like my interface. Ask if you\'ll still be glad in a year.' },
           { text: 'Only buy things.', why: 'The research points the other way for many people.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which purchase is most likely to pass the one-year test?',
         options: [
-          { text: 'A trip with friends, or gear used for something you love' },
           { text: 'A flash-sale gadget you\'ll use twice', why: 'Probably forgotten.' },
+          { text: 'A trip with friends, or gear used for something you love' },
           { text: 'Something bought to keep up with others', why: 'Comparison purchases fade fast.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

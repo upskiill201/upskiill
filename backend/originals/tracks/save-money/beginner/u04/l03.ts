@@ -27,8 +27,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Gap GH₵150, refilling GH₵50 a week. How many weeks?',
-      options: ['3', '5', '2'],
-      answer: 0,
+      options: ['5', '3', '2'],
+      answer: 1,
       explanation: '150 ÷ 50 = 3.',
     },
     {
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does refilling jump ahead of the laptop?',
         options: [
-          { text: 'Until it\'s full, the next surprise would hit the laptop jar or a loan' },
           { text: 'Because the laptop doesn\'t matter', why: 'It matters; the fund protects it.' },
           { text: 'Because banks require it', why: 'It\'s Kofi\'s rule.' },
+          { text: 'Until it\'s full, the next surprise would hit the laptop jar or a loan' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'Can I skip refilling? I\'ll be careful not to get ill again.',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'You can\'t plan not to have emergencies. Four weeks of refilling protects twelve weeks of laptop saving.' },
           { text: 'Sure, lightning doesn\'t strike twice.', why: 'Emergencies don\'t take turns.' },
           { text: 'Stop saving for the laptop instead.', why: 'Both can happen; the laptop just slows for a month.' },
+          { text: 'You can\'t plan not to have emergencies. Four weeks of refilling protects twelve weeks of laptop saving.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

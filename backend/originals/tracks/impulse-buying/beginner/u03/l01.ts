@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Mum mean by "She\'ll sell today. You\'ll sell for twenty years"?',
         options: [
-          { text: 'Lies win one sale; honesty wins customers who come back' },
           { text: 'The neighbour is a better seller', why: 'For one day. Mum means the long run.' },
           { text: 'Selling takes twenty years', why: 'She means trust builds a business that lasts.' },
+          { text: 'Lies win one sale; honesty wins customers who come back' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The customer came back an hour later and bought two. Why?',
         options: [
-          { text: 'She trusted the stall, and she\'d had time to decide she really wanted it' },
           { text: 'She was tricked', why: 'Nobody tricked her. That\'s the point.' },
           { text: 'It was cheaper', why: 'Same price. She bought on trust.' },
+          { text: 'She trusted the stall, and she\'d had time to decide she really wanted it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the one question to ask any seller\'s claim?',
         options: [
-          { text: '"Is that really true?"' },
           { text: '"Can I have it free?"', why: 'Fun, but not the point.' },
+          { text: '"Is that really true?"' },
           { text: '"How fast can I buy?"', why: 'That\'s the question pressure sellers want.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

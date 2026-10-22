@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is a basic savings account risky for 30-year money?',
         options: [
-          { text: 'If it grows slower than prices, it loses buying power over decades' },
           { text: 'It could disappear', why: 'The risk is inflation, not disappearing.' },
+          { text: 'If it grows slower than prices, it loses buying power over decades' },
           { text: 'It isn\'t risky at all', why: 'Inflation is a real long-term risk.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'But my cousin doubled his money!',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'Good for him. For every story like that, there are others who lost. I want a plan I understand, not a bet.' },
           { text: 'Then I\'ll put it all in.', why: 'One story isn\'t evidence.' },
           { text: 'Your cousin is lying.', why: 'He might not be; it\'s still a bet.' },
+          { text: 'Good for him. For every story like that, there are others who lost. I want a plan I understand, not a bet.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "homework" the cheapest protection?',
         options: [
-          { text: 'Understanding what you invest in helps you avoid scams, bad bets and panic' },
           { text: 'It guarantees profits', why: 'Nothing guarantees profits.' },
+          { text: 'Understanding what you invest in helps you avoid scams, bad bets and panic' },
           { text: 'It\'s required', why: 'It\'s wise, not required.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -126,11 +126,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does this course NOT do?',
         options: [
-          { text: 'Tell you exactly what to invest in' },
           { text: 'Explain compounding', why: 'It does.' },
           { text: 'Explain inflation', why: 'It does.' },
+          { text: 'Tell you exactly what to invest in' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

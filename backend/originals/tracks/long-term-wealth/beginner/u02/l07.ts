@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why decide before the raise arrives?',
         options: [
-          { text: 'Once you\'re used to the bigger number, saving it feels like a pay cut' },
           { text: 'HR needs to know', why: 'It\'s about how it feels.' },
+          { text: 'Once you\'re used to the bigger number, saving it feels like a pay cut' },
           { text: 'It doesn\'t matter when', why: 'Timing changes how it feels.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'If I save half the raise, does it still feel like a raise?',
         prompt: 'Folake\'s best reply?',
         options: [
-          { text: 'Yes: your take-home still goes up ₦50,000. And future-you gets the other half. Both of you win.' },
           { text: 'No, it feels like nothing.', why: '₦50,000 more take-home is real.' },
           { text: 'Save all of it.', why: 'Enjoying part keeps the plan going.' },
+          { text: 'Yes: your take-home still goes up ₦50,000. And future-you gets the other half. Both of you win.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

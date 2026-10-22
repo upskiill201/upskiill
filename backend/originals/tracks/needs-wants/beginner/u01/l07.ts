@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the problem with "I deserve it"?',
         options: [
-          { text: 'It has no limit, so it can justify everything, every day' },
           { text: 'Ada doesn\'t deserve it', why: 'She does. The issue is the limit.' },
           { text: 'Rewards are always bad', why: 'Rewards are good with a size.' },
+          { text: 'It has no limit, so it can justify everything, every day' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does a planned reward often feel better than a daily one?',
         options: [
-          { text: 'Daily rewards become normal; planned ones still feel like rewards' },
           { text: 'Planned rewards are more expensive', why: 'Not necessarily.' },
           { text: 'They don\'t', why: 'Most people find planned treats feel more special.' },
+          { text: 'Daily rewards become normal; planned ones still feel like rewards' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

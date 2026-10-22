@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         message: 'You owe me for the haggling. GH₵350 off!',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'I do. Suya on me tonight, from the fun line. And I\'ll show you how to do the jar.' },
           { text: 'Take the GH₵30 left.', why: 'Generous, but a planned thank-you from the fun line is better.' },
+          { text: 'I do. Suya on me tonight, from the fun line. And I\'ll show you how to do the jar.' },
           { text: 'You did nothing.', why: 'He saved GH₵350. Thank him.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The GH₵3,200 shop price was lower than GH₵3,500. Why did Kofi plan on GH₵3,500 all along?',
         options: [
-          { text: 'Planning on the honest middle price meant a cheaper find was a bonus, not a lifeline' },
           { text: 'He didn\'t know better', why: 'It was a deliberate choice in Chapter 1.' },
           { text: 'To impress Mum', why: 'It was about planning honestly.' },
+          { text: 'Planning on the honest middle price meant a cheaper find was a bonus, not a lifeline' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

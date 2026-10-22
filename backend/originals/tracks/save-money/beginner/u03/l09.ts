@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'GH₵1,260 + GH₵1,000 = GH₵2,260. What\'s the gap to GH₵3,500?',
         options: [
-          { text: 'GH₵1,240' },
           { text: 'GH₵1,150', why: 'That was the week-4 projection, before GH₵90 leaked.' },
           { text: 'GH₵240', why: '3,500 − 2,260 = 1,240.' },
+          { text: 'GH₵1,240' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'The gap went UP from GH₵1,150 to GH₵1,240. That\'s depressing.',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'GH₵90 leaked, and you caught it. Now the system stops that happening again. Keep the rate, and Chapter 5 is for the rest.' },
           { text: 'Yes, give up.', why: 'He\'s at GH₵1,260 from GH₵490. That\'s progress.' },
+          { text: 'GH₵90 leaked, and you caught it. Now the system stops that happening again. Keep the rate, and Chapter 5 is for the rest.' },
           { text: 'Use the emergency fund to close it.', why: 'That fund is for emergencies, and one is coming.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the system protecting most?',
         options: [
-          { text: 'The GH₵125 weekly rate' },
           { text: 'The emergency fund\'s growth', why: 'The emergency fund stays at 300; the rate is what grows the jar.' },
           { text: 'His fun line', why: 'Fun is in the budget, not the jar.' },
+          { text: 'The GH₵125 weekly rate' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

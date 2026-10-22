@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is raising it not "ungrateful"?',
         options: [
-          { text: 'Pension money is part of her pay, for her future' },
           { text: 'It is ungrateful', why: 'It\'s her money.' },
+          { text: 'Pension money is part of her pay, for her future' },
           { text: 'Because Folake is her friend', why: 'It\'s about her pay, not friendship.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What was the cause?',
         options: [
-          { text: 'A payroll error after a system change, now fixed with back-payment' },
           { text: 'Afiya stopped paying on purpose', why: 'It was an error.' },
+          { text: 'A payroll error after a system change, now fixed with back-payment' },
           { text: 'Nobody found out', why: 'HR fixed it in two days.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

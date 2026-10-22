@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is an anchor?',
         options: [
-          { text: 'A first number that everything else gets judged against' },
           { text: 'The cheapest price', why: 'Anchors are often high, on purpose.' },
           { text: 'A fixed price set by law', why: 'It\'s about how our minds judge numbers.' },
+          { text: 'A first number that everything else gets judged against' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'Mum, a trader just asked GH₵300 for this bag. Should I offer GH₵250?',
         prompt: 'What would Mum say?',
         options: [
-          { text: 'GH₵300 is just where she started. Ask two other stalls first. If they say GH₵150, GH₵250 is no deal at all.' },
           { text: 'Yes, GH₵250 is a big discount.', why: 'Only against her anchor.' },
           { text: 'Pay GH₵300; it\'s polite.', why: 'Opening prices in markets are made to be negotiated.' },
+          { text: 'GH₵300 is just where she started. Ask two other stalls first. If they say GH₵150, GH₵250 is no deal at all.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In Tversky and Kahneman\'s experiment, what happened to people\'s guesses?',
         options: [
-          { text: 'They were pulled towards a random number they\'d just seen' },
           { text: 'They were always correct', why: 'The anchor pulled them off.' },
+          { text: 'They were pulled towards a random number they\'d just seen' },
           { text: 'Nothing; the number had no effect', why: 'That\'s why it\'s famous: even random numbers had an effect.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

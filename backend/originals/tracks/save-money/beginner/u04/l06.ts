@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the safest rule for lending to friends?',
         options: [
-          { text: 'Only lend what you could afford to lose' },
           { text: 'Lend whatever they ask; they\'re friends', why: 'That\'s how friendships and savings both get hurt.' },
           { text: 'Never help anyone', why: 'Helping is good. Lending beyond your means isn\'t.' },
+          { text: 'Only lend what you could afford to lose' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         message: 'Chale, GH₵400, just till Friday. You have it in your laptop jar.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'I can\'t do GH₵400, it\'s all spoken for. I can give you GH₵40, no need to pay back. And I\'m here if you want to talk about what\'s going on.' },
           { text: 'Sure, take it from the jar.', why: 'The jar is a laptop with a deadline.' },
+          { text: 'I can\'t do GH₵400, it\'s all spoken for. I can give you GH₵40, no need to pay back. And I\'m here if you want to talk about what\'s going on.' },
           { text: 'No. Figure it out yourself.', why: 'Cold, and misses that something is wrong.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'If you DO lend a larger amount to a friend, what helps most?',
         options: [
-          { text: 'Agreeing the amount and a repayment date clearly, in writing' },
           { text: 'Never mentioning it again', why: 'Unclear loans cause most of the hurt.' },
+          { text: 'Agreeing the amount and a repayment date clearly, in writing' },
           { text: 'Adding interest', why: 'Between friends, clarity matters more than interest.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

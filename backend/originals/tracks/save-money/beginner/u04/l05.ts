@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'After using the emergency fund, what comes first?',
         options: [
-          { text: 'Refilling it, with a set amount and end date' },
           { text: 'Celebrating with a treat', why: 'Refill first.' },
           { text: 'Locking it so it can\'t be used again', why: 'It must stay reachable.' },
+          { text: 'Refilling it, with a set amount and end date' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         message: 'My friend needs GH₵300 for a clinic bill. He found an app that gives it in 5 minutes.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Tell him to ask the clinic for a payment plan and ask family first. The app is the last option.' },
           { text: 'Great, apps are fast.', why: 'Fast and expensive, with contact-access risks.' },
+          { text: 'Tell him to ask the clinic for a payment plan and ask family first. The app is the last option.' },
           { text: 'He should skip the clinic.', why: 'Health first, always.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Review, Chapter 3: what makes savings hard to raid at 11 p.m.?',
         options: [
-          { text: 'A separate place, no spending link, and a 24-hour rule' },
           { text: 'Willpower alone', why: 'Willpower is lowest at 11 p.m.' },
           { text: 'Keeping it in the main wallet', why: 'That makes it easiest to raid.' },
+          { text: 'A separate place, no spending link, and a 24-hour rule' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

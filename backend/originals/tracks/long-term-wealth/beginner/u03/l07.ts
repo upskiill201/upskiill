@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do most long-term savers spread money across many things?',
         options: [
-          { text: 'So one bad result doesn\'t sink them' },
           { text: 'To pay more fees', why: 'Spreading isn\'t about fees.' },
+          { text: 'So one bad result doesn\'t sink them' },
           { text: 'It\'s the law', why: 'It\'s wise, not required.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do property investments have extra risks?',
         options: [
-          { text: 'Big starting cost, hard to sell quickly, running costs' },
           { text: 'They never grow', why: 'They can grow; the risks are cost and selling.' },
+          { text: 'Big starting cost, hard to sell quickly, running costs' },
           { text: 'They have no risks', why: 'All investments have risks.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How do long-term investors think about time?',
         options: [
-          { text: 'In decades, not months' },
           { text: 'In days', why: 'That\'s trading, not long-term investing.' },
           { text: 'It doesn\'t matter', why: 'Time is the key ingredient.' },
+          { text: 'In decades, not months' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

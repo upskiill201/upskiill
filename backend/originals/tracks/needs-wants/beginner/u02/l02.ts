@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why keep rides for late nights?',
         options: [
-          { text: 'Safety is a must-have; that part of the upgrade is a real need' },
           { text: 'Rides are cheaper at night', why: 'It\'s about safety, not price.' },
           { text: 'She shouldn\'t', why: 'Late-night safety matters.' },
+          { text: 'Safety is a must-have; that part of the upgrade is a real need' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'The bus adds 25 minutes. That\'s 25 minutes of my life!',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'True. Is that worth ₦1,000 a trip to you on an ordinary morning? Podcasts on the bus might make the 25 minutes useful.' },
           { text: 'Time doesn\'t matter.', why: 'Time matters. The question is what it\'s worth.' },
+          { text: 'True. Is that worth ₦1,000 a trip to you on an ordinary morning? Podcasts on the bus might make the 25 minutes useful.' },
           { text: 'Then ride every day.', why: 'Then the ₦130,000 gap stays.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why build the emergency fund before long-term investing?',
         options: [
-          { text: 'So an emergency doesn\'t force you to sell long-term investments at a bad time' },
           { text: 'Emergency funds grow faster', why: 'They usually grow slower; they\'re for safety.' },
           { text: 'It doesn\'t matter which first', why: 'Order protects the long-term money.' },
+          { text: 'So an emergency doesn\'t force you to sell long-term investments at a bad time' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Should I pay off my staff loan early before investing?',
         prompt: 'Folake\'s best reply?',
         options: [
-          { text: 'It\'s interest-free, so paying early doesn\'t save you anything. Keep paying normally and start the long-term saving.' },
           { text: 'Yes, all debt first.', why: 'Interest-free debt isn\'t costing her anything.' },
+          { text: 'It\'s interest-free, so paying early doesn\'t save you anything. Keep paying normally and start the long-term saving.' },
           { text: 'Stop paying it.', why: 'Always pay what you owe on time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

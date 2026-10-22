@@ -20,8 +20,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Which of Ada\'s lines has the lowest joy per naira?',
-      options: ['Random online shopping: ₦35,000 for a 2 out of 10', 'Art class: ₦15,000 for a 10', 'Family support: ₦40,000 for a 10'],
-      answer: 0,
+      options: ['Art class: ₦15,000 for a 10', 'Family support: ₦40,000 for a 10', 'Random online shopping: ₦35,000 for a 2 out of 10'],
+      answer: 2,
       explanation: 'High cost, low joy. That\'s where to cut.',
     },
     {
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'So delivery is "buying time" and that\'s good?',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'On deadline nights, when it frees time you value, yes. On a relaxed Tuesday, it\'s just habit. Keep the first, cut the second.' },
           { text: 'Yes, order every day.', why: 'Only when it truly frees valuable time.' },
           { text: 'Never order.', why: 'Sometimes it\'s a good trade.' },
+          { text: 'On deadline nights, when it frees time you value, yes. On a relaxed Tuesday, it\'s just habit. Keep the first, cut the second.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do daily treats score lower than occasional ones?',
         options: [
-          { text: 'Things you have every day stop feeling special' },
           { text: 'They cost less', why: 'They usually cost more in total.' },
+          { text: 'Things you have every day stop feeling special' },
           { text: 'They don\'t', why: 'Occasional treats tend to stay special.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

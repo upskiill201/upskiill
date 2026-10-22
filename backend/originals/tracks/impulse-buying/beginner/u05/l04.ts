@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         message: 'Shouldn\'t I just become a more disciplined person?',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'You can\'t become a different person in two weeks. You can make your phone a different place in twenty minutes.' },
           { text: 'Yes, try harder.', why: 'That\'s willpower again. Design beats it.' },
           { text: 'Throw your phone away.', why: 'He needs it for beats and studies.' },
+          { text: 'You can\'t become a different person in two weeks. You can make your phone a different place in twenty minutes.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why mute sponsored and "drop" accounts but not friends?',
         options: [
-          { text: 'They\'re the triggers; friends are the good part of the phone' },
           { text: 'Friends are worse', why: 'The aim is to keep connection and cut selling.' },
+          { text: 'They\'re the triggers; friends are the good part of the phone' },
           { text: 'Muting is rude', why: 'Muting accounts is private and harmless.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

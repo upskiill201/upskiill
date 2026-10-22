@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the home deposit pot "steadier" than the long-term pot?',
         options: [
-          { text: 'She\'ll need it in five years, so there\'s less time to recover from a fall' },
           { text: 'Houses never fall in price', why: 'They can; the point is the time horizon.' },
+          { text: 'She\'ll need it in five years, so there\'s less time to recover from a fall' },
           { text: 'It\'s smaller', why: 'It\'s about when she needs it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which rule did Folake say mattered most?',
         options: [
-          { text: 'No panic in bad years' },
           { text: 'Check daily', why: 'The opposite.' },
+          { text: 'No panic in bad years' },
           { text: 'Always buy the hottest thing', why: 'The opposite.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

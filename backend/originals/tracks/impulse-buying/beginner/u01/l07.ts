@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         message: 'I\'m just weak with money. Can\'t help it.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Same here at 2 a.m. But change the situation: no apps after 11, card details deleted. It\'s not about being strong.' },
           { text: 'Yes, you are.', why: 'Unkind and unhelpful.' },
+          { text: 'Same here at 2 a.m. But change the situation: no apps after 11, card details deleted. It\'s not about being strong.' },
           { text: 'Just try harder.', why: 'That\'s the myth.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which rule would have stopped the 2:14 a.m. boots?',
         options: [
-          { text: '"No buying anything after 11 p.m. Screenshot it and decide in the morning."' },
           { text: '"Try harder."', why: 'Effort runs out at 2 a.m.' },
           { text: '"Only buy boots on sale."', why: 'They were on "sale". That was the trap.' },
+          { text: '"No buying anything after 11 p.m. Screenshot it and decide in the morning."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -146,11 +146,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who designs the countdown timers and "only 2 left" messages?',
         options: [
-          { text: 'Teams whose job is to get people to buy' },
           { text: 'Nobody; they\'re random', why: 'They\'re carefully designed.' },
+          { text: 'Teams whose job is to get people to buy' },
           { text: 'The government', why: 'Sellers design them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

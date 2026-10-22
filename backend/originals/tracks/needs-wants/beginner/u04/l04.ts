@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the old phone in the drawer matter?',
         options: [
-          { text: 'It\'s about ₦60,000 of value doing nothing' },
           { text: 'It\'s a good backup', why: 'She hasn\'t needed it once.' },
           { text: 'It doesn\'t', why: 'Unused value can be turned into cash.' },
+          { text: 'It\'s about ₦60,000 of value doing nothing' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'I can\'t undo the phone. Was this lesson just to make me feel bad?',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'No: two practical moves. Sell the old phone for about ₦60,000, and use total cost before the next big buy.' },
           { text: 'Yes, feel bad.', why: 'Guilt doesn\'t help; actions do.' },
+          { text: 'No: two practical moves. Sell the old phone for about ₦60,000, and use total cost before the next big buy.' },
           { text: 'Return the new phone.', why: 'Probably not possible. Selling the old one is.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

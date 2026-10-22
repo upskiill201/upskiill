@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should a sale plan include?',
         options: [
-          { text: 'A list, a price limit and the usual price' },
           { text: 'A plan to browse everything', why: 'Browsing is how tricks win.' },
+          { text: 'A list, a price limit and the usual price' },
           { text: 'Pay later switched on, just in case', why: 'That\'s a door left open.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'There\'s a speaker on my wishlist from 30 days ago. Can I buy it?',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Ask the three questions: still want it? Fits your budget from a planned line, while you\'re paying debt? Fair price?' },
           { text: 'Yes, 30 days are up.', why: 'The pause ends with questions, not an automatic yes.' },
           { text: 'Never buy speakers.', why: 'The questions decide, not a ban.' },
+          { text: 'Ask the three questions: still want it? Fits your budget from a planned line, while you\'re paying debt? Fair price?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -91,21 +91,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Review, Chapter 4: why is pay later still borrowing?',
         options: [
-          { text: 'You get the item now and owe money later' },
           { text: 'It isn\'t', why: 'You owe payments.' },
+          { text: 'You get the item now and owe money later' },
           { text: 'Because it charges high interest always', why: 'Often it doesn\'t; it\'s still a debt.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Review, Chapter 3: "Was GH₵1,500" is a...',
         options: [
-          { text: 'An anchor' },
           { text: 'A guarantee', why: 'It\'s a claim.' },
           { text: 'A decoy', why: 'A decoy is a third option.' },
+          { text: 'An anchor' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

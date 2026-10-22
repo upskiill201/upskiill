@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'I NEED the gym. It\'s self-care.',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'Exercise is self-care. Two visits a month for ₦12,000 isn\'t, though. What if you ran with Ngozi on Saturdays instead?' },
           { text: 'Yes, keep paying.', why: 'She went twice.' },
+          { text: 'Exercise is self-care. Two visits a month for ₦12,000 isn\'t, though. What if you ran with Ngozi on Saturdays instead?' },
           { text: 'Self-care is a waste.', why: 'Self-care matters. The question is what form works.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why rename a "need" honestly?',
         options: [
-          { text: 'It turns it back into a choice you can make on purpose' },
           { text: 'To feel guilty', why: 'It\'s about clarity, not guilt.' },
           { text: 'It doesn\'t matter', why: 'Words shape what feels possible to change.' },
+          { text: 'It turns it back into a choice you can make on purpose' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'If Ada went back to the bus for a month, what would happen?',
         options: [
-          { text: 'A bit less comfort, longer trips, about ₦35,000 saved' },
           { text: 'She\'d lose her job', why: 'She got to work by bus before.' },
+          { text: 'A bit less comfort, longer trips, about ₦35,000 saved' },
           { text: 'Nothing at all', why: 'There\'d be some discomfort, and real savings.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

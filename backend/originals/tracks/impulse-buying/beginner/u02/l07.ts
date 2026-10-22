@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'Last night the old routine won. I bought a phone case. The swap doesn\'t work.',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'One night out of seven. Last month it was seven out of seven. Count the wins, and tonight, try again.' },
           { text: 'You\'re right, give up.', why: 'Habits change gradually.' },
           { text: 'Delete your phone.', why: 'Overreaction. The swap is working most nights.' },
+          { text: 'One night out of seven. Last month it was seven out of seven. Count the wins, and tonight, try again.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write the plan as "if..., then..."?',
         options: [
-          { text: 'Plans tied to a specific situation are much more likely to happen' },
           { text: 'It sounds clever', why: 'It works because of how it links cue and action.' },
+          { text: 'Plans tied to a specific situation are much more likely to happen' },
           { text: 'No real reason', why: 'Research on implementation intentions supports it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

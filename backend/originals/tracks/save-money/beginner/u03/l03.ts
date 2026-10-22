@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In the Philippines study, what happened to people offered the commitment account?',
         options: [
-          { text: 'They saved noticeably more after a year than similar customers' },
           { text: 'They saved less', why: 'The opposite.' },
+          { text: 'They saved noticeably more after a year than similar customers' },
           { text: 'Nothing changed', why: 'There was a clear difference.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Should I lock the emergency fund too, so I can\'t touch it?',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'No. Emergencies don\'t wait. Keep it separate and named, but reachable within a day.' },
           { text: 'Yes, lock everything.', why: 'A locked emergency fund fails exactly when it\'s needed.' },
           { text: 'Keep it in your spending wallet.', why: 'Then it gets spent on Thursdays.' },
+          { text: 'No. Emergencies don\'t wait. Keep it separate and named, but reachable within a day.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -98,21 +98,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Kofi ask Efua to ask "why?" before withdrawals?',
         options: [
-          { text: 'A small social check adds friction without handing her his money' },
           { text: 'He wants her to control his money', why: 'He keeps control; she just asks a question.' },
+          { text: 'A small social check adds friction without handing her his money' },
           { text: 'So she can borrow it', why: 'Not part of the plan.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Many people in the study turned down the locked account. What does that tell us?',
         options: [
-          { text: 'Commitment devices suit some people and some goals, not everyone' },
           { text: 'Locked accounts never work', why: 'They worked for those who used them.' },
           { text: 'Nobody wants to save', why: 'They wanted to save; not everyone wanted a lock.' },
+          { text: 'Commitment devices suit some people and some goals, not everyone' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

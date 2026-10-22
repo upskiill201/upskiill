@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did GH₵90 disappear?',
         options: [
-          { text: 'It sat in his spending money, so small purchases slowly used it' },
           { text: 'Someone stole it', why: 'Nobody took it. It leaked into everyday buys.' },
           { text: 'A big purchase', why: 'He can\'t even name three of the things.' },
+          { text: 'It sat in his spending money, so small purchases slowly used it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'I feel so stupid. GH₵90, gone.',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'You\'re not stupid. Your system had a hole. Move the GH₵160 tonight and close the hole.' },
           { text: 'Yes, that was careless.', why: 'Blame doesn\'t fix systems.' },
+          { text: 'You\'re not stupid. Your system had a hole. Move the GH₵160 tonight and close the hole.' },
           { text: 'Forget the laptop then.', why: 'One leak is no reason to quit.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Kofi do with the GH₵160 tonight?',
         options: [
-          { text: 'Move it to the jar now, then set up the system' },
           { text: 'Spend it; the moment is gone', why: 'It\'s still GH₵160 toward the laptop.' },
           { text: 'Wait until next week', why: 'Waiting is how GH₵90 leaked.' },
+          { text: 'Move it to the jar now, then set up the system' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

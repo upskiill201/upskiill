@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which rule stops the next raise from vanishing?',
         options: [
-          { text: 'Next raise: half to goals' },
           { text: 'Freelance: 50, 25, 25', why: 'That\'s for freelance income.' },
+          { text: 'Next raise: half to goals' },
           { text: 'Checks on the 1st', why: 'Helpful, but the raise rule is the one.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'v1 was "where did my money go?". v5 is "this is where it goes."',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'And every line has a reason you care about. That\'s the whole course in one sentence.' },
           { text: 'Same thing really.', why: 'Opposite things.' },
           { text: 'Start again at v1.', why: 'She\'s done the work.' },
+          { text: 'And every line has a reason you care about. That\'s the whole course in one sentence.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

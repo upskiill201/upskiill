@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the "gap"?',
         options: [
-          { text: 'The difference between what you value and what you actually pay for' },
           { text: 'Your overdraft', why: 'It\'s about values.' },
+          { text: 'The difference between what you value and what you actually pay for' },
           { text: 'The Mexico shortfall', why: 'Related, but the gap is between values and spending.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'This feels a bit deep for a money lesson.',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'It\'s the most practical money lesson there is. Once you know what matters, every "should I buy this?" gets easier.' },
           { text: 'You\'re right, skip it.', why: 'Values make every decision easier.' },
           { text: 'Money has nothing to do with values.', why: 'Money is how values show up in real life.' },
+          { text: 'It\'s the most practical money lesson there is. Once you know what matters, every "should I buy this?" gets easier.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why read the sentence before big decisions?',
         options: [
-          { text: 'It reminds you what money is for, so the decision is clearer' },
           { text: 'It\'s a ritual for luck', why: 'It\'s a practical guide.' },
+          { text: 'It reminds you what money is for, so the decision is clearer' },
           { text: 'No reason', why: 'It\'s a quick check against your values.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

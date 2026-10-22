@@ -27,8 +27,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Kofi\'s GH₵300 "do not touch" money for clinic visits is a...',
-      options: ['Emergency fund', 'Goal savings', 'Buffer'],
-      answer: 0,
+      options: ['Goal savings', 'Emergency fund', 'Buffer'],
+      answer: 1,
       explanation: 'Separate, for urgent, necessary, unexpected costs.',
     },
     {
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Why save at all if inflation eats it?',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Inflation chips away slowly. Not saving means having nothing when the laptop dies, or the clinic bill comes.' },
           { text: 'True, spend it all now.', why: 'Then every surprise becomes a loan, which costs far more than inflation.' },
+          { text: 'Inflation chips away slowly. Not saving means having nothing when the laptop dies, or the clinic bill comes.' },
           { text: 'Inflation isn\'t real.', why: 'It is. But it\'s no reason not to save.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -101,11 +101,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'For Kofi\'s 16-week laptop goal, what\'s the sensible inflation move?',
         options: [
-          { text: 'Price it honestly with a small margin in case it costs a bit more' },
           { text: 'Ignore prices completely', why: 'Prices could rise a little in 16 weeks.' },
           { text: 'Invest it to beat inflation', why: 'For a short goal, steady saving matters more than investing. (Investment risk is its own course.)' },
+          { text: 'Price it honestly with a small margin in case it costs a bit more' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

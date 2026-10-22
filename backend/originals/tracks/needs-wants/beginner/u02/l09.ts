@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'The easy cuts are done. Where does the last ₦65,000 come from?',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'From knowing what you really value. Next we look at what matters to you, and what you\'re spending on that doesn\'t.' },
           { text: 'Cut the art class.', why: 'Still protected.' },
+          { text: 'From knowing what you really value. Next we look at what matters to you, and what you\'re spending on that doesn\'t.' },
           { text: 'A loan.', why: 'Never for a trip.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

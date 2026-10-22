@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why set aside a quarter for taxes and costs?',
         options: [
-          { text: 'Freelance income is usually taxable and has business costs' },
           { text: 'To give it away', why: 'It\'s for taxes and tools.' },
+          { text: 'Freelance income is usually taxable and has business costs' },
           { text: 'No reason', why: 'Surprise tax bills are common for freelancers.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'I\'m earning more now. Can I go back to rides every day?',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'That\'s how the raise disappeared. Rides on bad days are already in your plan. Put the extra where your values are.' },
           { text: 'Yes, you earned it.', why: 'That\'s lifestyle creep, round two.' },
           { text: 'Never ride again.', why: 'Rides on bad days are fine.' },
+          { text: 'That\'s how the raise disappeared. Rides on bad days are already in your plan. Put the extra where your values are.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How did Ada price the first logo?',
         options: [
-          { text: 'She checked what other designers charge and quoted ₦125,000 with two rounds of changes' },
           { text: 'She guessed', why: 'She used what she learned about negotiating.' },
+          { text: 'She checked what other designers charge and quoted ₦125,000 with two rounds of changes' },
           { text: 'She did it for free', why: 'She charged a fair price.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why limit it to two logos a month?',
         options: [
-          { text: 'Extra income isn\'t worth losing sleep and the things she values' },
           { text: 'Cafés only want two', why: 'It\'s her choice, for balance.' },
           { text: 'Laziness', why: 'It\'s protecting her values.' },
+          { text: 'Extra income isn\'t worth losing sleep and the things she values' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

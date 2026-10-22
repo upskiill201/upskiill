@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s Ada\'s rule for the next raise?',
         options: [
-          { text: 'Half of the increase to goals, before the first payday' },
           { text: 'Spend it all, she deserves it', why: 'That\'s how the last raise vanished.' },
+          { text: 'Half of the increase to goals, before the first payday' },
           { text: 'Refuse raises', why: 'Raises are great with a plan.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         message: 'Do I have to check my spending every day forever?',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'No. Fifteen minutes a month on your line, plus a redraw after big changes. The habits do the rest.' },
           { text: 'Yes, every naira, every day.', why: 'Too much; it would burn out.' },
           { text: 'Never check again.', why: 'Creep is quiet. A monthly look catches it.' },
+          { text: 'No. Fifteen minutes a month on your line, plus a redraw after big changes. The habits do the rest.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -145,11 +145,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When should Ada redraw her line completely?',
         options: [
-          { text: 'After big life changes' },
           { text: 'Every day', why: 'Too often.' },
           { text: 'Never', why: 'Life changes; the line should too.' },
+          { text: 'After big life changes' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

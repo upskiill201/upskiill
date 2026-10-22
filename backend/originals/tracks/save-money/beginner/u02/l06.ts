@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Three separate 1 kg bags cost GH₵22 each. How much does each person save by sharing the 5 kg bag (GH₵30 each for about 1.7 kg)?',
         options: [
-          { text: 'They pay GH₵8 more but get 70% more rice: much better value' },
           { text: 'Nothing; it\'s more expensive', why: 'Per kilo it\'s far cheaper: GH₵18 vs GH₵22.' },
+          { text: 'They pay GH₵8 more but get 70% more rice: much better value' },
           { text: 'They save GH₵22', why: 'Compare price per kilo: 18 vs 22.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why "pay happily and come back"?',
         options: [
-          { text: 'Regular, friendly customers tend to get the best prices' },
           { text: 'To show off', why: 'It\'s about the relationship.' },
+          { text: 'Regular, friendly customers tend to get the best prices' },
           { text: 'It doesn\'t matter', why: 'Relationships matter in markets.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

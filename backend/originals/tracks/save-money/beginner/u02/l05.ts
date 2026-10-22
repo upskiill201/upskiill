@@ -70,21 +70,21 @@ const lesson: OriginalLesson = {
         message: 'My three streaming apps might be useful someday.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Keep the one you used this month. Cancel the rest; you can rejoin any day.' },
           { text: 'Keep them all.', why: '"Someday" costs every month.' },
+          { text: 'Keep the one you used this month. Cancel the rest; you can rejoin any day.' },
           { text: 'Cancel everything, including the one you use.', why: 'The used one may be worth it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Why did the big-lines approach save more than cutting small things?',
         options: [
-          { text: 'A small percentage of a big line is more money than all of a small line' },
           { text: 'Big lines are always wasteful', why: 'They\'re often needs. A small trim adds up.' },
           { text: 'Luck', why: 'Maths.' },
+          { text: 'A small percentage of a big line is more money than all of a small line' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Review, Chapter 1: what comes before saving for the laptop?',
         options: [
-          { text: 'A starter emergency fund' },
           { text: 'A loan', why: 'Never.' },
           { text: 'A new phone', why: 'Not a priority.' },
+          { text: 'A starter emergency fund' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

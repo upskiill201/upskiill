@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The early saver put in ₦6 million more but ended about ₦27 million ahead. Why?',
         options: [
-          { text: 'Compounding: the early money had ten extra years to grow' },
           { text: 'They got a better rate', why: 'Same example rate.' },
+          { text: 'Compounding: the early money had ten extra years to grow' },
           { text: 'Luck', why: 'Same rate, more time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'I\'m 27. So I\'ve already lost?',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'Not at all. You\'re two years from 25, not ten. And starting at 35 still beats never. Start this month.' },
           { text: 'Yes, you lost.', why: 'At 27, there\'s still a long runway.' },
           { text: 'Wait until 35.', why: 'Waiting is the costly part.' },
+          { text: 'Not at all. You\'re two years from 25, not ten. And starting at 35 still beats never. Start this month.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

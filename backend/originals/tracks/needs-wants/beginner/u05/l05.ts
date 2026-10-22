@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         message: 'A cousin wants ₦50,000 for a party. Must-have?',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'Nice-to-have. A small gift from your family line if you want, or a kind no.' },
           { text: 'Must-have, pay it.', why: 'A party isn\'t a must-have.' },
           { text: 'Use the emergency fund.', why: 'Not an emergency.' },
+          { text: 'Nice-to-have. A small gift from your family line if you want, or a kind no.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Review, Chapter 4: what\'s the 10/10/10 test?',
         options: [
-          { text: 'How you\'ll feel in 10 minutes, 10 months and 10 years' },
           { text: 'Spend 10%, save 10%, give 10%', why: 'Different idea.' },
+          { text: 'How you\'ll feel in 10 minutes, 10 months and 10 years' },
           { text: 'Ten questions in ten seconds', why: 'It\'s about time horizons.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

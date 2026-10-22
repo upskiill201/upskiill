@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         message: 'Looking at all this makes me feel like I\'ve wasted so much.',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'You\'re learning: "I don\'t use tablets" is worth knowing. Sell what you can, keep what you love, and buy better next time.' },
           { text: 'You have.', why: 'Guilt doesn\'t help.' },
           { text: 'Buy something to cheer up.', why: 'That\'s the habit we\'re breaking.' },
+          { text: 'You\'re learning: "I don\'t use tablets" is worth knowing. Sell what you can, keep what you love, and buy better next time.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the real benefit of "would I buy it again?"',
         options: [
-          { text: 'It makes you better at buying next time' },
           { text: 'It makes you feel bad', why: 'It\'s about learning, not guilt.' },
+          { text: 'It makes you better at buying next time' },
           { text: 'It stops all spending', why: 'It improves spending.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

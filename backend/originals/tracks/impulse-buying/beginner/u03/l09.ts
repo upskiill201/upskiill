@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Basic is GH₵599. If Kofi takes "pay later", how much more does he pay in total?',
         options: [
-          { text: 'GH₵1 more, but it pushes the "ouch" into the future' },
           { text: 'Nothing; it\'s the same', why: '600 vs 599, and it adds a debt.' },
           { text: 'GH₵150 more', why: 'The total is 4 × 150 = 600.' },
+          { text: 'GH₵1 more, but it pushes the "ouch" into the future' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the single most useful move against this page?',
         options: [
-          { text: 'Close it, and decide tomorrow, with other prices in hand' },
           { text: 'Buy before the timer ends', why: 'That\'s the page\'s plan, not yours.' },
           { text: 'Buy Pro Max', why: 'Decoy.' },
+          { text: 'Close it, and decide tomorrow, with other prices in hand' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which app should Akua deal with first?',
         options: [
-          { text: 'App X: it\'s late and adding fees' },
           { text: 'App Y: it\'s smaller', why: 'Smaller, but on time. The late one costs more every week.' },
           { text: 'Neither until after the trip', why: 'Waiting adds fees.' },
+          { text: 'App X: it\'s late and adding fees' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         message: 'Akua\'s friends want her on the GH₵800 trip. What do I tell her to say?',
         prompt: 'Kofi\'s best suggestion?',
         options: [
-          { text: '"I\'m out for this one, I\'m saving. Let\'s do something when you\'re back." Short, honest, no debt story needed.' },
           { text: 'Go on pay later, it\'s just one more.', why: 'That would make it GH₵2,400.' },
+          { text: '"I\'m out for this one, I\'m saving. Let\'s do something when you\'re back." Short, honest, no debt story needed.' },
           { text: 'Tell them everything about her debts.', why: 'She doesn\'t owe them her story.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Black Friday: "Up to 80% off." Which tricks will Kofi probably meet?',
         options: [
-          { text: 'Anchors, countdowns, scarcity and pay-later offers, all at once' },
           { text: 'None; Black Friday is honest', why: 'It\'s the biggest trick season of the year.' },
+          { text: 'Anchors, countdowns, scarcity and pay-later offers, all at once' },
           { text: 'Only real discounts', why: 'Some are real. Many use the tricks from Chapter 3.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

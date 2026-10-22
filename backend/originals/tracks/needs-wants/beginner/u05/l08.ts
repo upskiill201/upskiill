@@ -20,8 +20,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'When should Ada raise her automatic savings transfer?',
-      options: ['The same week the new salary arrives', 'After a few months, once she\'s used to it', 'Never'],
-      answer: 0,
+      options: ['After a few months, once she\'s used to it', 'The same week the new salary arrives', 'Never'],
+      answer: 1,
       explanation: 'Before she gets used to the bigger number. That\'s when creep starts.',
     },
     {
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'Should I just save the whole raise?',
         prompt: 'Lucía\'s best reply?',
         options: [
-          { text: 'You could, but enjoying part of it on purpose makes the plan last. Half to goals, the rest split between values and chosen upgrades.' },
           { text: 'Yes, never enjoy anything.', why: 'Zero enjoyment makes plans break.' },
+          { text: 'You could, but enjoying part of it on purpose makes the plan last. Half to goals, the rest split between values and chosen upgrades.' },
           { text: 'Spend it all.', why: 'That\'s last time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why add upgrades one at a time?',
         options: [
-          { text: 'So you can tell whether each one really makes life better' },
           { text: 'Shops limit you', why: 'It\'s about noticing value.' },
           { text: 'It\'s cheaper', why: 'It\'s about noticing.' },
+          { text: 'So you can tell whether each one really makes life better' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

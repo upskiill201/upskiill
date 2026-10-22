@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A friend in debt asks to borrow your savings. What usually helps most?',
         options: [
-          { text: 'Saying no to the loan, and yes to helping make a plan' },
           { text: 'Giving them all your savings', why: 'It often removes the push to change and puts you at risk.' },
+          { text: 'Saying no to the loan, and yes to helping make a plan' },
           { text: 'Ignoring them', why: 'They need someone in their corner.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'The team wants a GH₵150 dinner for the end of season. I can\'t.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Suggest a hall cookout now, before it\'s booked. I bet half the team would be relieved.' },
           { text: 'Put it on pay later.', why: 'That\'s how GH₵2,900 happened.' },
           { text: 'Just don\'t go.', why: 'A cheaper plan keeps him with the team.' },
+          { text: 'Suggest a hall cookout now, before it\'s booked. I bet half the team would be relieved.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -101,11 +101,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Review, Chapter 2: what is the habit loop?',
         options: [
-          { text: 'Cue, routine, reward' },
           { text: 'Buy, regret, return', why: 'A common pattern, but not the loop.' },
           { text: 'Save, spend, save', why: 'Not the habit loop.' },
+          { text: 'Cue, routine, reward' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

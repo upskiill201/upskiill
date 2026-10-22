@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'Ama\'s friend says: "Everyone\'s doing a Black Friday haul. Do yours on pay later!"',
         prompt: 'Your best advice for Ama?',
         options: [
-          { text: 'One planned blender, paid in full. A haul on pay later is how Yaw\'s GH₵2,900 started.' },
           { text: 'Do the haul, it\'s once a year.', why: 'Once a year can still mean months of debt.' },
           { text: 'Skip the blender too.', why: 'It\'s planned and saved for. That\'s a good buy.' },
+          { text: 'One planned blender, paid in full. A haul on pay later is how Yaw\'s GH₵2,900 started.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ama uses the blender every morning for two years (about 700 uses). Cost per use?',
         options: [
-          { text: 'About 70 pesewas' },
           { text: 'About GH₵7', why: '499 ÷ 700 ≈ 0.71.' },
+          { text: 'About 70 pesewas' },
           { text: 'About GH₵70', why: 'Far too high: 499 ÷ 700 is under one cedi.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -135,11 +135,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Mum laugh at the end?',
         options: [
-          { text: 'Kofi used her own rule on a trader: "Is it really the last one?"' },
           { text: 'The trader was funny', why: 'She laughed because of what Kofi did.' },
+          { text: 'Kofi used her own rule on a trader: "Is it really the last one?"' },
           { text: 'Kofi bought the earbuds', why: 'He didn\'t.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

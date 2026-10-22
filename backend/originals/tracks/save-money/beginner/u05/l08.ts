@@ -31,8 +31,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'The goal is reached. What should happen to the automatic transfers?',
-      options: ['Point them at the next job straight away', 'Stop them for a few months', 'Cancel them forever'],
-      answer: 0,
+      options: ['Stop them for a few months', 'Cancel them forever', 'Point them at the next job straight away'],
+      answer: 2,
       explanation: 'Paused habits often never restart. Redirect, don\'t stop.',
     },
     {
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'Should my next goal be new sneakers or the audio interface?',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'Both can happen. The interface first: it helps you earn more. Sneakers from the fun line when they fit.' },
           { text: 'Sneakers, you deserve them.', why: 'Maybe! But the interface pays back.' },
           { text: 'Neither, save forever.', why: 'Goals are for using.' },
+          { text: 'Both can happen. The interface first: it helps you earn more. Sneakers from the fun line when they fit.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -121,11 +121,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the audio interface a good second goal?',
         options: [
-          { text: 'It could help Kofi earn more from beats' },
           { text: 'It\'s expensive', why: 'Price isn\'t the reason.' },
+          { text: 'It could help Kofi earn more from beats' },
           { text: 'Yaw recommended it', why: 'It\'s about what it does for Kofi.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'GH₵850 + GH₵1,500 = GH₵2,350. What\'s the gap to GH₵3,500?',
         options: [
-          { text: 'GH₵1,150' },
           { text: 'GH₵2,130', why: 'That was the gap in week 0.' },
           { text: 'GH₵350', why: '3,500 − 2,350 = 1,150.' },
+          { text: 'GH₵1,150' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Gap\'s halved! Maybe I can relax a bit now.',
         prompt: 'Miracle\'s best reply?',
         options: [
-          { text: 'Celebrate tonight. Then remember: the rate only holds if you keep moving the money every week. GH₵1,150 is still a lot.' },
           { text: 'Yes, relax, it\'ll work out.', why: 'Relaxing is how the drift happened in Budgeting.' },
+          { text: 'Celebrate tonight. Then remember: the rate only holds if you keep moving the money every week. GH₵1,150 is still a lot.' },
           { text: 'Don\'t celebrate anything.', why: 'Progress deserves celebrating. Then back to the plan.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does Kofi most need to protect now?',
         options: [
-          { text: 'The GH₵125 weekly rate, every single week' },
           { text: 'His fun line, by doubling it', why: 'Fun is protected already, at its size.' },
           { text: 'Nothing; it\'s sorted', why: 'The gap is still GH₵1,150.' },
+          { text: 'The GH₵125 weekly rate, every single week' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

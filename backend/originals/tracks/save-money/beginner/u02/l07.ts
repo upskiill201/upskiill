@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the difference between frugal and cheap?',
         options: [
-          { text: 'Frugal is good value on purpose; cheap is the lowest price even when it costs more later' },
           { text: 'No difference', why: 'Kofi\'s screen repair shows the difference.' },
           { text: 'Cheap is better', why: 'Cheap that breaks costs more in the end.' },
+          { text: 'Frugal is good value on purpose; cheap is the lowest price even when it costs more later' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         message: 'If I start saving, I\'ll have a boring life.',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'You lost your voice at the final on Saturday. Cost: GH₵6 of stew. Boring?' },
           { text: 'Yes, saving is boring.', why: 'His own Saturday proves it doesn\'t have to be.' },
+          { text: 'You lost your voice at the final on Saturday. Cost: GH₵6 of stew. Boring?' },
           { text: 'Then don\'t save.', why: 'Saving and fun can live together.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -126,11 +126,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does happiness research keep finding matters more than purchases?',
         options: [
-          { text: 'Relationships and time with people' },
           { text: 'Expensive brands', why: 'The research points elsewhere.' },
           { text: 'Having the newest phone', why: 'The pleasure of new things fades fast.' },
+          { text: 'Relationships and time with people' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

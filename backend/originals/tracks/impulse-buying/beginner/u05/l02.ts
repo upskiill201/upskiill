@@ -72,21 +72,21 @@ const lesson: OriginalLesson = {
         message: 'But if I wait 30 days, the sale will be over!',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Then it wasn\'t planned. If you still want it in 30 days, another sale will come, and you\'ll have saved for it.' },
           { text: 'True, buy now.', why: 'That\'s the urgency trick.' },
           { text: 'Then never buy it.', why: 'The pause isn\'t a ban.' },
+          { text: 'Then it wasn\'t planned. If you still want it in 30 days, another sale will come, and you\'ll have saved for it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'Why screenshot it to a wishlist?',
         options: [
-          { text: 'It calms the fear of losing it, so waiting is easier' },
           { text: 'To show friends', why: 'It\'s for you.' },
+          { text: 'It calms the fear of losing it, so waiting is easier' },
           { text: 'To buy it faster later', why: 'It\'s to make waiting easier.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

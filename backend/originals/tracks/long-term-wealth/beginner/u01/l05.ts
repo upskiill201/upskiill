@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         message: 'Papa, will you do your net worth with me on Sunday?',
         prompt: 'Why is this a good next step for Dad?',
         options: [
-          { text: 'He needs to know where he stands before any plan' },
           { text: 'To make him feel bad', why: 'It\'s to help.' },
+          { text: 'He needs to know where he stands before any plan' },
           { text: 'It\'s pointless at 59', why: 'Later beats never.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How often will Miracle update her net worth?',
         options: [
-          { text: 'Every quarter' },
           { text: 'Every day', why: 'Too often for a long-term number.' },
           { text: 'Never', why: 'Tracking direction is the point.' },
+          { text: 'Every quarter' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

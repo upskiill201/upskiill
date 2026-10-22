@@ -20,8 +20,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Why does automatic saving break the "next year" cycle?',
-      options: ['It doesn\'t need a monthly decision that something else can win', 'It earns more interest', 'It\'s compulsory'],
-      answer: 0,
+      options: ['It earns more interest', 'It\'s compulsory', 'It doesn\'t need a monthly decision that something else can win'],
+      answer: 2,
       explanation: 'When saving happens by default, "next year" has nothing to delay.',
     },
     {
@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Was Dad careless?',
         options: [
-          { text: 'No: he faced the same pulls everyone does, with real costs every year' },
           { text: 'Yes, totally', why: 'He paid for school fees, medicine and a roof.' },
+          { text: 'No: he faced the same pulls everyone does, with real costs every year' },
           { text: 'He didn\'t care about the future', why: 'He cared; the system was missing.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'Papa, it\'s not your fault. But it\'s not too late to do something. Can we make a plan?',
         prompt: 'Why is this a good thing to say?',
         options: [
-          { text: 'It removes blame and moves straight to action' },
           { text: 'It\'s untrue', why: 'He wasn\'t careless; and it isn\'t too late.' },
           { text: 'It\'s pointless', why: 'A plan at 59 still matters.' },
+          { text: 'It removes blame and moves straight to action' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What picture of future-you is most likely to get saved for?',
         options: [
-          { text: 'A specific one: a place, an age, people, what you\'re doing' },
           { text: '"Being comfortable someday"', why: 'Too vague to feel real.' },
           { text: 'No picture at all', why: 'Then future-you stays a stranger.' },
+          { text: 'A specific one: a place, an age, people, what you\'re doing' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

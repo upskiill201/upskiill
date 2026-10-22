@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Folake do with each raise?',
         options: [
-          { text: 'Half of the raise went to her saving too' },
           { text: 'Spent all of it', why: 'That\'s lifestyle creep.' },
           { text: 'Nothing changed', why: 'She grew her saving with every raise.' },
+          { text: 'Half of the raise went to her saving too' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         message: 'Did your investments ever fall?',
         prompt: 'What would Folake say?',
         options: [
-          { text: 'Many times. I didn\'t sell in a panic and kept adding. That\'s the hardest part, and the part that mattered most.' },
           { text: 'Never. I\'m a genius.', why: 'Everyone\'s investments fall sometimes.' },
+          { text: 'Many times. I didn\'t sell in a panic and kept adding. That\'s the hardest part, and the part that mattered most.' },
           { text: 'Yes, so I stopped investing.', why: 'That\'s what she didn\'t do.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Folake drives a ten-year-old car. What does that show?',
         options: [
-          { text: 'She spends on what matters to her, not on looking wealthy' },
           { text: 'She can\'t afford a new one', why: 'She chooses not to.' },
+          { text: 'She spends on what matters to her, not on looking wealthy' },
           { text: 'Cars don\'t matter to anyone', why: 'They don\'t matter much to her.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

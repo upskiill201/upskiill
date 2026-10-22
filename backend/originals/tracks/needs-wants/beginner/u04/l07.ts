@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is 40-year-old Ada more likely to wonder about?',
         options: [
-          { text: 'Not going to the Mexico City conference' },
           { text: 'Not buying Emeka-Obi\'s silver car', why: 'Things tend to fade from memory.' },
+          { text: 'Not going to the Mexico City conference' },
           { text: 'Neither', why: 'Missed chances often stay with people.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'So I should say yes to every adventure?',
         prompt: 'Tey\'s best reply?',
         options: [
-          { text: 'No. Regret about debt is real too. Use it as a tie-breaker between options that fit your plan, like Mexico vs the car.' },
           { text: 'Yes, YOLO.', why: 'Adventures on credit bring their own regret.' },
           { text: 'Never take adventures.', why: 'Missed chances are the long-term regrets.' },
+          { text: 'No. Regret about debt is real too. Use it as a tie-breaker between options that fit your plan, like Mexico vs the car.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do missed chances stay with us longer?',
         options: [
-          { text: 'We make peace with actions over time, but "what if?" stays open' },
           { text: 'We forget actions instantly', why: 'Not instantly; we just come to terms with them.' },
+          { text: 'We make peace with actions over time, but "what if?" stays open' },
           { text: 'They don\'t', why: 'The research suggests they do.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who did the research on regret described here?',
         options: [
-          { text: 'Gilovich and Medvec (1995)' },
           { text: 'Ada and Lucía', why: 'They\'re using it, not researching it.' },
           { text: 'A car company', why: 'It was psychology research.' },
+          { text: 'Gilovich and Medvec (1995)' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

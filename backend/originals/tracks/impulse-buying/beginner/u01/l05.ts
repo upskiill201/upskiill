@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         message: 'Logging urges? Why not just not buy stuff?',
         prompt: 'Kofi\'s best reply?',
         options: [
-          { text: 'Because I didn\'t know why I was buying. The log shows me. Then I can change it.' },
           { text: 'You\'re right, logging is pointless.', why: 'It already stopped one buy.' },
+          { text: 'Because I didn\'t know why I was buying. The log shows me. Then I can change it.' },
           { text: 'Because I like writing.', why: 'Not the reason.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "70% off" mainly do in the brain?',
         options: [
-          { text: 'Turns down the "ouch" of the price' },
           { text: 'Makes you like the product more after buying', why: 'It affects the moment of buying, not later liking.' },
           { text: 'Nothing', why: 'Discounts are designed to reduce the pain of paying.' },
+          { text: 'Turns down the "ouch" of the price' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -107,21 +107,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which impulse buys does this course focus on?',
         options: [
-          { text: 'Big, frequent, unaffordable or regretted ones' },
           { text: 'All small treats', why: 'Small planned treats are fine.' },
+          { text: 'Big, frequent, unaffordable or regretted ones' },
           { text: 'Only expensive ones', why: 'Frequent small ones add up too.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Review, Budgeting: why do phone payments feel easier than cash?',
         options: [
-          { text: 'The pain of paying is weaker' },
           { text: 'They\'re cheaper', why: 'Same money.' },
           { text: 'They take longer', why: 'They\'re faster.' },
+          { text: 'The pain of paying is weaker' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

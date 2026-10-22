@@ -27,8 +27,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Miracle pays 8% and Afiya pays 10%. What total percentage of her pay goes into her pension?',
-      options: ['18%', '8%', '10%'],
-      answer: 0,
+      options: ['8%', '10%', '18%'],
+      answer: 2,
       explanation: '8 + 10 = 18% of her pay, every month.',
     },
     {
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In Nigeria\'s Contributory Pension Scheme, what are the minimum contributions?',
         options: [
-          { text: '8% from the employee, 10% from the employer' },
           { text: '10% from the employee, 8% from the employer', why: 'The other way round.' },
+          { text: '8% from the employee, 10% from the employer' },
           { text: 'Nothing; it\'s optional', why: 'It applies to many employers by law.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'Should I pay in extra on top of the 8%?',
         prompt: 'Folake\'s best reply?',
         options: [
-          { text: 'Once your emergency fund is solid and you have no expensive debt, extra contributions are a strong habit. Check the rules and any tax benefits.' },
           { text: 'Never, 8% is plenty.', why: 'For many people, 8% plus 10% isn\'t enough on its own.' },
           { text: 'Put all your money in, even emergency money.', why: 'Emergency money must be reachable.' },
+          { text: 'Once your emergency fund is solid and you have no expensive debt, extra contributions are a strong habit. Check the rules and any tax benefits.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
