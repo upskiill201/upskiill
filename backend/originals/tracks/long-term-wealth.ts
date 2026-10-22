@@ -2,6 +2,7 @@ import type { OriginalTrackDef } from '../../src/originals/originals-authoring.t
 import u01 from './long-term-wealth/beginner/u01';
 import u02 from './long-term-wealth/beginner/u02';
 import u03 from './long-term-wealth/beginner/u03';
+import u04 from './long-term-wealth/beginner/u04';
 
 /**
  * Money Habits That Build Long-Term Wealth — storyline "Miracle's Long Game".
@@ -51,8 +52,8 @@ const track: OriginalTrackDef = {
         'Stay the course through bad years and support family without sinking',
       ],
       skills: ['Wealth building', 'Long-term saving', 'Compound interest', 'Retirement planning', 'Personal finance'],
-      upcomingUnits: 2,
-      units: [u01, u02, u03],
+      upcomingUnits: 1,
+      units: [u01, u02, u03, u04],
     },
   ],
 };
