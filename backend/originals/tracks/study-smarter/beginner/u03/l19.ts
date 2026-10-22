@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why trim the routine to fit your subjects?',
         options: [
-          { text: 'A small routine you keep beats a perfect one you drop' },
           { text: 'Because the steps do not work', why: 'They work. Not all are needed for every subject.' },
           { text: 'To have less to do', why: 'The point is keeping it going.' },
+          { text: 'A small routine you keep beats a perfect one you drop' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'This is too much. I can\'t do all of it every day.',
         prompt: 'What should Kofi say?',
         options: [
-          { text: "You don't have to. Most of it fits in the lesson, 15 minutes that evening and 10 on Sunday. Start with the parts that help your hardest subject." },
           { text: 'Then do none of it.', why: 'Part of it is far better than none.' },
           { text: 'Do it all, no excuses.', why: 'A routine you drop does not help.' },
+          { text: "You don't have to. Most of it fits in the lesson, 15 minutes that evening and 10 on Sunday. Start with the parts that help your hardest subject." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

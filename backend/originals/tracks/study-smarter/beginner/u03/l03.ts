@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: "Kofi, your one-sentence summary is 47 words long.",
         prompt: 'What should Kofi do?',
         options: [
-          { text: "Cut it again. If it's that long, he hasn't decided what matters most yet." },
           { text: 'Keep it, more words means more learning.', why: 'Shortening is the learning here.' },
+          { text: "Cut it again. If it's that long, he hasn't decided what matters most yet." },
           { text: 'Ask the AI to write the sentence.', why: 'Then the AI decides what matters, not him.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

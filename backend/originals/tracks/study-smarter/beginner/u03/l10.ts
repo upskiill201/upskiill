@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Kofi has 25 History pages tonight. Which first step is best?',
         options: [
-          { text: 'Skim the headings and summary, then turn the headings into questions.' },
           { text: 'Paste it all into the AI for a summary.', why: 'Replaces the reading.' },
+          { text: 'Skim the headings and summary, then turn the headings into questions.' },
           { text: 'Read all 25 pages, then write notes.', why: 'Too much to recall at once.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Should I use the AI to write my cue questions? It\'s faster.',
         prompt: 'What should Kofi say?',
         options: [
-          { text: 'Write them yourself first, then ask it which key points are missing a question.' },
           { text: 'Yes, always let it write them.', why: 'Writing them is part of the learning.' },
           { text: 'Never use AI for notes.', why: 'It is useful for checking.' },
+          { text: 'Write them yourself first, then ask it which key points are missing a question.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why should every link on a mind map have a label?',
         options: [
-          { text: 'The label says HOW the ideas are connected, which is what exams test' },
           { text: 'To fill space', why: 'Labels carry the meaning.' },
+          { text: 'The label says HOW the ideas are connected, which is what exams test' },
           { text: 'Teachers count them', why: 'The point is your understanding.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',

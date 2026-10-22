@@ -27,11 +27,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Kofi\'s first question ("explain moles in chemistry") get a wall of text?',
         options: [
-          { text: 'It said nothing about who was asking, so the AI aimed at nobody in particular' },
           { text: 'Moles are too hard for AI', why: 'The AI explained it well once it knew who was asking.' },
           { text: 'He used the wrong app', why: 'A different app would have guessed the same way.' },
+          { text: 'It said nothing about who was asking, so the AI aimed at nobody in particular' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'I asked the AI about vectors and it used "scalar" five times. I still have no idea what scalar means.',
         prompt: 'What should Kofi tell David?',
         options: [
-          { text: 'Ask it: "What does scalar mean? Explain it simply before you use it again."' },
           { text: 'Ignore that word.', why: 'It might be the key word in the whole topic.' },
+          { text: 'Ask it: "What does scalar mean? Explain it simply before you use it again."' },
           { text: 'Ask a different question.', why: 'He should fill the gap, not avoid it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -122,11 +122,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The AI says something about moles that disagrees with Kofi\'s textbook. What should he trust?',
         options: [
-          { text: 'The textbook, then ask his teacher if he is unsure' },
           { text: 'The AI, because it sounds more confident', why: 'Confidence is not the same as being right.' },
           { text: 'Whichever is shorter', why: 'Length has nothing to do with being right.' },
+          { text: 'The textbook, then ask his teacher if he is unsure' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

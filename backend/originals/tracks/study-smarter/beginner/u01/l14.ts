@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the syllabus so useful for revision?',
         options: [
-          { text: "It lists everything you're allowed to be asked" },
           { text: 'It contains the exam questions', why: 'It lists topics, not the actual questions.' },
+          { text: "It lists everything you're allowed to be asked" },
           { text: 'It is shorter than the textbook', why: 'True, but that is not the main reason.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

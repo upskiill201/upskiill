@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is an unchecked fact in your handwriting risky?',
         options: [
-          { text: 'It feels like yours, so you stop questioning it, and it spreads' },
           { text: 'Handwriting makes facts wrong', why: 'It makes them feel trustworthy, which is the risk.' },
+          { text: 'It feels like yours, so you stop questioning it, and it spreads' },
           { text: 'Teachers can tell', why: 'The risk is learning and sharing it, not getting caught.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         message: "I'm about to post my revision sheet in the group chat. 40 people are in it.",
         prompt: 'What should Kofi say?',
         options: [
-          { text: 'Check the AI-marked bits and any "always/never" lines against the textbook first. Your mistakes become 40 people\'s mistakes.' },
           { text: 'Post it now, quick.', why: 'Unchecked lines would spread to 40 people.' },
           { text: 'Never share notes.', why: 'Sharing is great once it is checked.' },
+          { text: 'Check the AI-marked bits and any "always/never" lines against the textbook first. Your mistakes become 40 people\'s mistakes.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which is the best check for "all enzymes work best at exactly 37°C"?',
         options: [
-          { text: 'Look it up in the textbook or ask the teacher' },
           { text: 'Ask the same AI again', why: 'Helpful as a hint, but not a real source.' },
+          { text: 'Look it up in the textbook or ask the teacher' },
           { text: 'Ask in the group chat', why: 'They might have the same mistake.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

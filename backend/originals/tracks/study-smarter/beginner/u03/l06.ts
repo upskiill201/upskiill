@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         message: 'I tried Cornell notes. Took notes on the right, then never wrote the questions on the left.',
         prompt: 'What should Kofi say?',
         options: [
-          { text: 'The questions are what make it work. Without them it is just normal notes with an empty column.' },
           { text: 'That is fine, the layout is what matters.', why: 'The layout is useless without the cues.' },
+          { text: 'The questions are what make it work. Without them it is just normal notes with an empty column.' },
           { text: 'Ask the AI to fill in the column.', why: 'Write them yourself first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',

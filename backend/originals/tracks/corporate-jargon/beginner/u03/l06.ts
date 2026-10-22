@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'For the deck: what\'s the ROI on the courier test so far?',
         prompt: 'What is Brian asking?',
         options: [
-          { text: 'Whether the test has been worth what it cost, so far' },
           { text: 'How many routes are in the test', why: 'ROI is about return on money or effort.' },
+          { text: 'Whether the test has been worth what it cost, so far' },
           { text: 'When the test started', why: 'ROI is about value, not dates.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

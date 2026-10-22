@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does active transport need energy?',
         options: [
-          { text: 'It moves substances against the concentration gradient, from low to high' },
           { text: 'It is faster', why: 'Speed is not the reason.' },
           { text: 'It only moves water', why: 'That is osmosis.' },
+          { text: 'It moves substances against the concentration gradient, from low to high' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         message: "I don't do mind maps. They take forever and look messy.",
         prompt: 'What could Kofi say that is fair to Efua?',
         options: [
-          { text: "Your notes already have arrows between ideas, which is the important part. A map just puts all the links on one page." },
           { text: 'You are wrong, mind maps are always best.', why: 'They are one tool. Her method already links ideas.' },
+          { text: "Your notes already have arrows between ideas, which is the important part. A map just puts all the links on one page." },
           { text: 'You should copy mine.', why: 'Building your own is what helps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

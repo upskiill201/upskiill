@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which request helps Kofi prepare without doing his job for him?',
         options: [
-          { text: "I'm teaching limiting reagents to a classmate for 20 minutes. Suggest one worked example and one practice question. Don't write the explanation, I'll do that." },
           { text: 'Write a lesson I can read out to Efua.', why: 'Then the AI is teaching, and Kofi learns less.' },
+          { text: "I'm teaching limiting reagents to a classmate for 20 minutes. Suggest one worked example and one practice question. Don't write the explanation, I'll do that." },
           { text: 'Teach Efua for me.', why: 'Both of them would miss the learning.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         message: "Can you just do this one so I can see how?",
         prompt: 'Kofi already showed one worked example. What is the best reply?',
         options: [
-          { text: "I did one already. Your turn. I'll stay quiet, and give a hint if you get stuck twice." },
           { text: 'Sure, here is the answer.', why: 'Then she watches again instead of doing.' },
           { text: 'You should already know this.', why: 'Unkind, and it does not help.' },
+          { text: "I did one already. Your turn. I'll stay quiet, and give a hint if you get stuck twice." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

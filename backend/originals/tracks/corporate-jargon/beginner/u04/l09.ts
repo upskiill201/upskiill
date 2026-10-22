@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the long apology make things worse?',
         options: [
-          { text: 'It made a small mistake into a big moment, and Brian had to reassure Remi' },
           { text: 'Apologising is always wrong', why: 'A short apology for a real mistake is right.' },
           { text: 'It had too few apologies', why: 'The opposite.' },
+          { text: 'It made a small mistake into a big moment, and Brian had to reassure Remi' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -121,11 +121,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why didn\'t the silent fix work?',
         options: [
-          { text: 'Brian didn\'t know if Remi had seen it, or if the CFO knew it was fixed' },
           { text: 'Fixing mistakes is wrong', why: 'Fixing is right. Silence was the problem.' },
+          { text: 'Brian didn\'t know if Remi had seen it, or if the CFO knew it was fixed' },
           { text: 'Slides can\'t be changed', why: 'They can.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

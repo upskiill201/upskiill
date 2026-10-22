@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Changing courier was "parked". What does that mean?',
         options: [
-          { text: 'It was raised but deliberately left for another time' },
           { text: 'It was decided: Synergix is changing courier', why: 'Parked means NOT decided yet.' },
           { text: 'It\'s about the car park', why: 'Ha. It\'s a picture: a car parked, waiting to be driven later.' },
+          { text: 'It was raised but deliberately left for another time' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

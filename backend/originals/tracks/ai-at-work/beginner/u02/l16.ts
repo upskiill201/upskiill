@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do organisations keep style guides?',
         options: [
-          { text: 'Consistency builds trust, and decisions get made once' },
           { text: 'To make writing longer', why: 'Usually the opposite.' },
+          { text: 'Consistency builds trust, and decisions get made once' },
           { text: 'Only for legal reasons', why: 'Mostly for clarity and consistency.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         message: "I keep telling the AI 'no exclamation marks in client emails'. Every. Single. Time.",
         prompt: 'What should Ada suggest?',
         options: [
-          { text: "Put it in a personal style guide and add it to your tool's saved instructions, or paste it at the top." },
           { text: 'Keep telling it each time.', why: 'That is the problem a style guide solves.' },
           { text: 'Accept the exclamation marks.', why: 'She does not have to.' },
+          { text: "Put it in a personal style guide and add it to your tool's saved instructions, or paste it at the top." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -159,11 +159,11 @@ const lesson: OriginalLesson = {
         message: "Do I need one style guide or several? I write very differently to my team vs to our CEO.",
         prompt: "What's the best advice?",
         options: [
-          { text: 'One guide with defaults per reader works; or keep two short ones if your hats are very different.' },
           { text: 'Exactly one, always.', why: 'Different hats can need different guides.' },
+          { text: 'One guide with defaults per reader works; or keep two short ones if your hats are very different.' },
           { text: 'One per email you send.', why: 'Far too many to maintain.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -184,11 +184,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How often should Ada update her style guide?',
         options: [
-          { text: 'Whenever she keeps correcting the AI on the same thing' },
           { text: 'Never', why: 'Writing habits change; keep it alive.' },
           { text: 'Every hour', why: 'Too often to be useful.' },
+          { text: 'Whenever she keeps correcting the AI on the same thing' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

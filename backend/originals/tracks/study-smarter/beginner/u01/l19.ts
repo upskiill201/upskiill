@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         message: 'OK OK, my prompt was bad. Which ONE fix matters most?',
         prompt: 'What would Kofi say from his own experience?',
         options: [
-          { text: "Tell it your level. That's what fixed my wall of text on day one." },
           { text: 'Add "please".', why: 'Politeness is nice, but it is not what changes the answer.' },
+          { text: "Tell it your level. That's what fixed my wall of text on day one." },
           { text: 'Use a different app.', why: 'Same prompt, same guess.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -122,11 +122,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "Write it like a textbook" a mistake for Clinton?',
         options: [
-          { text: "The textbook style is what he didn't understand in the first place" },
           { text: 'Textbooks are always wrong', why: 'They are usually right. The style just did not work for him.' },
           { text: 'AI cannot write like a textbook', why: 'It can. That is the problem.' },
+          { text: "The textbook style is what he didn't understand in the first place" },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',

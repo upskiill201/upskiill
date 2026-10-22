@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         message: 'Before you ask the AI anything, what does your textbook say?',
         prompt: 'Miracle asks this on every call. What does she want Kofi to do?',
         options: [
-          { text: 'Start from his own course material, then ask the AI to explain it' },
           { text: 'Stop using AI', why: 'She uses AI too. She wants it grounded in his course.' },
+          { text: 'Start from his own course material, then ask the AI to explain it' },
           { text: 'Read the whole textbook first', why: 'Just the part he is stuck on.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',

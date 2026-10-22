@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: "The AI made me 200 flashcards in one go. I'll just start studying them.",
         prompt: 'What should Kofi say?',
         options: [
-          { text: 'Check them first. Fix the wrong ones and delete the ones you don\'t need. 200 is probably too many.' },
           { text: 'Great, start now.', why: 'Some may be wrong, and he would learn them.' },
           { text: 'Ask for 400.', why: 'More cards are not better.' },
+          { text: 'Check them first. Fix the wrong ones and delete the ones you don\'t need. 200 is probably too many.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

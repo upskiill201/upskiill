@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         message: 'Send me your wrap-up update, I\'ll tell you if it sounds okay! Voice note me if you want.',
         prompt: 'Which update should Remi send Ada?',
         options: [
-          { text: 'Cleaned the supplier list, checked 3 suppliers, found a KSh 186,000 double payment. Next: summary Monday. Need: invoice system access.' },
           { text: 'Hit the ground running, deep dive, moved the needle, aligned. Circle back soon.', why: 'Ada will reply with a laughing voice note and the word "translation??".' },
+          { text: 'Cleaned the supplier list, checked 3 suppliers, found a KSh 186,000 double payment. Next: summary Monday. Need: invoice system access.' },
           { text: 'It went well.', why: 'Ada can\'t help with that. Neither could Brian.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -148,11 +148,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Is ALL jargon bad in an update?',
         options: [
-          { text: 'No: short words everyone in the room knows, like "Q4" or "action item", are fine. Cut the ones that hide the facts' },
           { text: 'Yes: never use any', why: 'Shared shorthand can save time. The problem is jargon that hides what happened.' },
           { text: 'No: the more the better', why: 'More jargon usually means fewer facts.' },
+          { text: 'No: short words everyone in the room knows, like "Q4" or "action item", are fine. Cut the ones that hide the facts' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',

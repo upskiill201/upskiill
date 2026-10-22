@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the "so what" for a senior reader?',
         options: [
-          { text: 'Why it matters to them: money, time, risk or customers' },
           { text: 'The full history of the project', why: 'History is rarely what they need.' },
           { text: 'How hard the team worked', why: 'Nice, but not what helps them decide.' },
+          { text: 'Why it matters to them: money, time, risk or customers' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         message: "My CEO wants a decision on extending our contract with you. Can you send something she can decide from in 30 seconds?",
         prompt: 'Which opening should Ada send?',
         options: [
-          { text: 'Recommendation: extend for 6 months. Why: launch is on track and phase 2 is ready to start. Ask: a yes by the 30th.' },
           { text: 'Thank you for this wonderful partnership over the past months, which started when...', why: 'Story order. The decision is buried.' },
+          { text: 'Recommendation: extend for 6 months. Why: launch is on track and phase 2 is ready to start. Ask: a yes by the 30th.' },
           { text: 'Here is our full project history attached.', why: 'Not decidable in 30 seconds.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -193,11 +193,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why give two or three options instead of one?',
         options: [
-          { text: 'It shows you considered alternatives and makes the decision easy' },
           { text: 'To avoid making a recommendation', why: 'You should still recommend one.' },
+          { text: 'It shows you considered alternatives and makes the decision easy' },
           { text: 'Directors like long lists', why: 'Two or three, not long lists.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

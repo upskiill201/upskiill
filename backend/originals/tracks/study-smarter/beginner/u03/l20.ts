@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happens to an animal cell put in pure water?',
         options: [
-          { text: 'Water enters by osmosis and it may swell and burst, because it has no cell wall' },
           { text: 'Nothing, osmosis only happens in plants', why: 'Osmosis happens in animal cells too.' },
+          { text: 'Water enters by osmosis and it may swell and burst, because it has no cell wall' },
           { text: 'It shrinks', why: 'In pure water (dilute), water moves IN, so it swells.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: "Can I just have your sheet? I'll print it and study from it.",
         prompt: "What is the reply that fits Efua's rule, and helps Clinton most?",
         options: [
-          { text: "Build your own from a blank page first, then use ours to check it. That's where you'll find your gaps." },
           { text: 'Sure, here it is.', why: 'He would skip the part that actually teaches him.' },
+          { text: "Build your own from a blank page first, then use ours to check it. That's where you'll find your gaps." },
           { text: 'No, never.', why: 'Sharing is fine once he has built his own.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which flashcard is built best?',
         options: [
-          { text: 'Front: "In osmosis, water moves from a ___ to a ___ solution." Back: "dilute → concentrated"' },
           { text: 'Front: "Osmosis". Back: a full paragraph', why: 'Tells, does not test.' },
           { text: 'Front: "Biology". Back: "cells"', why: 'Says nothing.' },
+          { text: 'Front: "In osmosis, water moves from a ___ to a ___ solution." Back: "dilute → concentrated"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

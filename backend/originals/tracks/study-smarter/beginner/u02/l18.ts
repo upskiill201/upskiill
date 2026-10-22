@@ -72,21 +72,21 @@ const lesson: OriginalLesson = {
         message: "I only had 4 minutes tonight, so I did Gap, Words and Idea and skipped Explain back.",
         prompt: 'What should Kofi say?',
         options: [
-          { text: "Next time skip something else. Explain back is the one that tells you if you actually got it." },
           { text: 'Perfect choice.', why: 'He skipped the one step he should never skip.' },
+          { text: "Next time skip something else. Explain back is the one that tells you if you actually got it." },
           { text: 'Four minutes is useless.', why: 'Four minutes is enough if you keep the right step.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Why does a longer spanner make a bolt easier to turn?',
         options: [
-          { text: 'More distance from the pivot gives a bigger moment for the same force' },
           { text: 'Longer spanners are heavier', why: 'It is about distance, not weight.' },
           { text: 'It does not', why: 'It does: moment = force × distance.' },
+          { text: 'More distance from the pivot gives a bigger moment for the same force' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Kofi starts a new History topic: the causes of a war. Which first request starts the routine?',
         options: [
-          { text: 'What do I need to know before studying the causes of this war? Ask me one question on each.' },
           { text: 'Write my History essay.', why: 'Not studying, and not his work.' },
+          { text: 'What do I need to know before studying the causes of this war? Ask me one question on each.' },
           { text: 'Tell me all of History.', why: 'Far too much.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',

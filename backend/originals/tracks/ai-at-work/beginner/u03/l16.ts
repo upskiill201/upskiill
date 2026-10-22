@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         message: "Our survey summary lists 12 improvements. Where do we even start?",
         prompt: 'What should Ada suggest?',
         options: [
-          { text: 'Rate each on impact and effort, start with the quick wins, plan the big bets, and drop the time sinks.' },
           { text: 'Do all 12 at once.', why: 'Nothing finishes that way.' },
           { text: 'Start with the easiest, whatever the impact.', why: 'Easy but useless is a fill-in.' },
+          { text: 'Rate each on impact and effort, start with the quick wins, plan the big bets, and drop the time sinks.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -160,11 +160,11 @@ const lesson: OriginalLesson = {
         message: "The AI rated 'add a progress bar' as low effort, but your developers say it's two weeks.",
         prompt: 'What should Ada do?',
         options: [
-          { text: "Trust the developers, move it to 'big bet' (or time sink), and re-rank." },
           { text: 'Trust the AI.', why: 'The team knows their effort; the AI guessed.' },
+          { text: "Trust the developers, move it to 'big bet' (or time sink), and re-rank." },
           { text: 'Drop the grid.', why: 'Correct it; the grid still helps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

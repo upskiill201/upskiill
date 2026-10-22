@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does an AI do with everything your question leaves out?',
         options: [
-          { text: 'It guesses, and aims for a middle-of-the-road answer' },
           { text: 'It asks you every time', why: 'Sometimes it does, but usually it just guesses.' },
+          { text: 'It guesses, and aims for a middle-of-the-road answer' },
           { text: 'It looks up your school records', why: 'It can\'t see anything about you unless you tell it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         message: 'Bro, AI is useless for chemistry. I asked it about moles and it gave me an essay. A whole essay.',
         prompt: 'Kofi met Clinton in Miracle\'s study group. What should Kofi reply?',
         options: [
-          { text: 'Same! What did you ask it? Mine got way better when I told it my level and where I was stuck.' },
           { text: 'Yeah, AI is useless.', why: "Kofi just found out it isn't. The question was the problem." },
           { text: 'Ask it ten times until it\'s shorter.', why: 'The same question gets the same kind of guess.' },
+          { text: 'Same! What did you ask it? Mine got way better when I told it my level and where I was stuck.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
