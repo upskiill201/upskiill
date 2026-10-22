@@ -87,6 +87,7 @@ These three join the shared cast. They first appear in Study Smarter with AI and
 - Clinton and David go to the same school in Buea; Clinton moved there from Bamenda.
 - Kofi meets Clinton and David through Miracle's group.
 - **Kofi Goes Live (HTML & CSS for Beginners):** the summer after Study Smarter with AI, twelve weeks before Kofi starts university. Kofi makes beats on his phone as **Mensah Beats**; a small Accra event, Sound Up Saturdays, offers him a set and asks for his website, so he builds one. Miracle (just started at Afiya in Lagos) mentors him on video calls; Clinton ("Head of Quality, unpaid") and David are his first fans; Efua reviews his pages; Ama, his sister, tests them. Map markers count down from "12 weeks to uni" to "Launch night". The Intermediate level continues at university with JavaScript.
+- **Order Up (React Native for Beginners, added 2026-10-22):** Theo builds an order-ahead app for Pho Real, his mum Linh's food truck in Austin, before the Eastside Food Truck Festival (fictional). Arjun, who met Theo on an online developers' forum, reviews his code on video calls from Bengaluru. Mai tests; Ray cooks. Prices in US dollars. Film 1 of a planned trilogy: Order Up: Rush Hour (full-stack) and Order Up: Opening Day (launch) are announced as in production.
 
 ## Course-only characters
 
@@ -121,6 +122,10 @@ These appear in one Original only and don't join the shared cast.
 | Halima | How to Motivate a Team | Newest on Clinic Success at Afiya, a former nurse from Kano. Quiet, brilliant with clinics, unsure she belongs in tech. |
 | Folake | How to Motivate a Team | Afiya's COO, Miracle's boss. Fast, demanding, fair; thinks motivation is "a pizza problem" until shown otherwise. |
 | Ama | HTML & CSS for Beginners | Kofi's sister, 10, Osu (Accra). His "user tester": blunt, curious, finds bugs in thirty seconds ("if Ama can't find the play button, nobody can"). Wants her own section on his site ("Ama's corner"). |
+| Theo Nguyen | React Native for Beginners (Order Up trilogy, lead) | 22, Austin, Texas. Just finished a coding bootcamp; knows JavaScript and a little TypeScript, has never shipped anything. Funny, fast, overconfident; codes at the food truck's window between orders. Builds Pho Real's order-ahead app. CastId `theo`. |
+| Linh Nguyen | React Native for Beginners | 51, Theo's mum. Has run Pho Real, the family's pho food truck in Austin, for 12 years. Sharp, practical, allergic to anything that slows the line ("Paper never crashes"). Her approval is the real finish line. CastId `linh`. |
+| Mai Nguyen | React Native for Beginners | 16, Theo's sister. Always filming, brutally honest tester ("this font is giving 2009"), the voice of every impatient customer. CastId `mai`. |
+| Ray | React Native for Beginners | Pho Real's cook. Speaks only in order numbers. Narrated. |
 | Emmanuel | How to Motivate a Team | Clinic Success agent at Afiya. The funniest person on the team, does the minimum, always eating chin chin. Not lazy: bored, and quietly brilliant at fixing the same bug twice. |
 
 ## Decisions

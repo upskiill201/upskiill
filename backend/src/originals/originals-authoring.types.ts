@@ -31,7 +31,7 @@ export type RunLanguage = 'python' | 'typescript' | 'html' | 'react-native';
 
 /** The shared cast (docs/originals/CAST.md). */
 /** Course-only characters (efua, asante; brian, zanele, achieng, kamau, felix, pauline, emeka, wanjiku; jayden, priya, femi; diego; marta, sofia, tomas, carmen) are listed in CAST.md too. */
-export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel' | 'ama';
+export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel' | 'ama' | 'theo' | 'linh' | 'mai';
 export type Speaker = 'narrator' | 'tey' | CastId;
 
 // ─── Learn cards ───────────────────────────────────────────────────────────

@@ -141,7 +141,7 @@ export type LearnCard =
 // to be finished before Continue.
 
 /** The shared Originals cast (docs/originals/CAST.md). */
-export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'ama'] as const;
+export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'ama', 'theo', 'linh', 'mai'] as const;
 export type CastId = (typeof CAST_IDS)[number];
 export const CAST_NAMES: Record<CastId, string> = {
   ada: 'Ada',
@@ -180,6 +180,9 @@ export const CAST_NAMES: Record<CastId, string> = {
   folake: 'Folake',
   emmanuel: 'Emmanuel',
   ama: 'Ama',
+  theo: 'Theo',
+  linh: 'Linh',
+  mai: 'Mai',
 };
 
 /** Who says a story line: the narrator (Tey's voice-over), Tey, or a cast member. */
