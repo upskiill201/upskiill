@@ -1,5 +1,6 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './react-native/beginner/u01';
+import u02 from './react-native/beginner/u02';
 
 /**
  * Mobile App Development with React Native — the "Order Up" trilogy.
@@ -32,6 +33,7 @@ const track: OriginalTrackDef = {
       level: 1,
       slug: 'react-native-for-beginners',
       title: 'React Native for Beginners',
+      thumbnailUrl: '/originals/react-native-for-beginners.jpg',
       subtitle: 'Order Up: build your first real phone app, screen by screen',
       shortDescription:
         'Build a real phone app with React Native: one codebase for Android and iPhone. Ten-minute lessons, real code in every one, and screens you can tap right in the lesson, then on your own phone.',
@@ -50,8 +52,8 @@ const track: OriginalTrackDef = {
         'Run your app on your own phone with Expo Go',
       ],
       skills: ['React Native', 'Expo', 'TypeScript', 'Mobile app development', 'UI development'],
-      upcomingUnits: 4,
-      units: [u01],
+      upcomingUnits: 3,
+      units: [u01, u02],
     },
   ],
 };
