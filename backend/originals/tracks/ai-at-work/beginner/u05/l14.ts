@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Is "Source: ChatGPT" a proper citation?',
         options: [
-          { text: 'No; cite the document you opened' },
           { text: 'Yes, it\'s where the fact came from', why: 'It\'s where you heard it, not the source.' },
+          { text: 'No; cite the document you opened' },
           { text: 'Only for numbers', why: 'Never.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why add the date you checked a page?',
         options: [
-          { text: 'Pages change; it shows when your fact was true' },
           { text: 'It looks formal', why: 'It\'s practical.' },
           { text: 'No reason', why: 'Pages change.' },
+          { text: 'Pages change; it shows when your fact was true' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -144,11 +144,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the main purpose of a work citation?',
         options: [
-          { text: 'Letting anyone check your claim in seconds' },
           { text: 'Looking academic', why: 'It\'s about checkability.' },
           { text: 'Making the document longer', why: 'It\'s about checkability.' },
+          { text: 'Letting anyone check your claim in seconds' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

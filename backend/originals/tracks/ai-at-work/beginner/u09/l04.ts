@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"Visits to all shops - T to do". What\'s missing?',
         options: [
-          { text: 'A date' },
           { text: 'An owner', why: 'T is Tolu.' },
+          { text: 'A date' },
           { text: 'Nothing', why: 'There\'s no date.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Did we agree to send shops a text message?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Not yet: Carmen was going to think about it. Shall I draft one in case she says yes?' },
           { text: 'Yes, it\'s agreed.', why: 'It was "maybe".' },
           { text: 'No, never.', why: 'It\'s still open.' },
+          { text: 'Not yet: Carmen was going to think about it. Shall I draft one in case she says yes?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

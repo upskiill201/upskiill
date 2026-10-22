@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         message: 'Tolu\'s pilot ran so smoothly. What\'s his secret?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'A simple routine: Monday plan, Friday update and review, and replanning the same day when something changes.' },
           { text: 'Luck.', why: 'It was the routine.' },
+          { text: 'A simple routine: Monday plan, Friday update and review, and replanning the same day when something changes.' },
           { text: 'The AI did everything.', why: 'AI helped; Tolu ran the routine.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where does AI help most in the routine?',
         options: [
-          { text: 'First drafts: plans, breakdowns, risks, updates, options' },
           { text: 'Deciding priorities', why: 'People decide.' },
           { text: 'Choosing owners', why: 'People agree owners.' },
+          { text: 'First drafts: plans, breakdowns, risks, updates, options' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -138,11 +138,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the simplest part to start with this week?',
         options: [
-          { text: 'The 10-minute Friday review' },
           { text: 'A 30-page project plan', why: 'Start small.' },
           { text: 'Everything at once', why: 'One habit at a time.' },
+          { text: 'The 10-minute Friday review' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

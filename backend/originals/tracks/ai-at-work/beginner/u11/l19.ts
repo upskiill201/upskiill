@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why keep the playbook to one page?',
         options: [
-          { text: 'It\'s easy to use and share' },
           { text: 'Pages are expensive', why: 'Usability.' },
+          { text: 'It\'s easy to use and share' },
           { text: 'Longer is better', why: 'One page gets used.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Carmen wants to give your playbook to our whole team. Can we?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Yes. Keep the structure, swap in your tools, prompts and rules, and give it an owner who updates it.' },
           { text: 'Only copy it exactly.', why: 'Adapt it.' },
           { text: 'No, it\'s personal.', why: 'Sharing helps.' },
+          { text: 'Yes. Keep the structure, swap in your tools, prompts and rules, and give it an owner who updates it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -139,11 +139,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What keeps the playbook from going stale?',
         options: [
-          { text: 'The Friday review and testing after updates' },
           { text: 'Printing it', why: 'Upkeep does.' },
           { text: 'Nothing; it\'s permanent', why: 'Tools change.' },
+          { text: 'The Friday review and testing after updates' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

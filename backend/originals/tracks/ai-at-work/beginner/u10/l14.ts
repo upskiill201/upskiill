@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why tell IT the use case first?',
         options: [
-          { text: 'They can\'t judge the risk without knowing what you\'ll do with it' },
           { text: 'To sound busy', why: 'Risk depends on use.' },
+          { text: 'They can\'t judge the risk without knowing what you\'ll do with it' },
           { text: 'They don\'t need it', why: 'They do.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Our team just started using a new AI note-taker. Should we have asked IT?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Yes, ideally before. Pause it for client calls and send IT the six questions today.' },
           { text: 'No, it\'s fine.', why: 'Call recordings may include sensitive data.' },
           { text: 'Delete everything and panic.', why: 'Pause and ask.' },
+          { text: 'Yes, ideally before. Pause it for client calls and send IT the six questions today.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

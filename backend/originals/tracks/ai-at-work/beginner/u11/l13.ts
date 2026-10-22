@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the "jagged frontier"?',
         options: [
-          { text: 'AI is strong at some tasks and weak at similar-looking ones' },
           { text: 'A border in a map', why: 'It\'s about AI\'s uneven strengths.' },
+          { text: 'AI is strong at some tasks and weak at similar-looking ones' },
           { text: 'AI is equally good at everything', why: 'It\'s uneven.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'My junior team uses AI for everything. Should I worry?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'A little. Ask them to draft some things first and compare with AI. Their judgement is what catches AI mistakes.' },
           { text: 'No, AI does it all now.', why: 'Judgement still matters.' },
           { text: 'Ban AI for juniors.', why: 'Balance, not a ban.' },
+          { text: 'A little. Ask them to draft some things first and compare with AI. Their judgement is what catches AI mistakes.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

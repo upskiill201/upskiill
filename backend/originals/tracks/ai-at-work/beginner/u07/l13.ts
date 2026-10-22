@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Active shops went from 60% to 75%. Which is correct?',
         options: [
-          { text: 'Up 15 percentage points, a 25% increase' },
           { text: 'Up 15%', why: 'It\'s 15 points, or 25% change.' },
+          { text: 'Up 15 percentage points, a 25% increase' },
           { text: 'Up 75%', why: '75 is the new value.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'The failure rate fell from 5% to 4%. Can I say "failures fell 1%"?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Say "fell by 1 percentage point", or "fell by a fifth". "1%" sounds much smaller than it is.' },
           { text: 'Yes, 1%.', why: 'Ambiguous; it\'s 1 point or 20%.' },
           { text: 'Say it fell 5%.', why: 'Neither number is 5%.' },
+          { text: 'Say "fell by 1 percentage point", or "fell by a fifth". "1%" sounds much smaller than it is.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

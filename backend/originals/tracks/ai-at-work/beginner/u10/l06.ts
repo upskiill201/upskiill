@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "rotating" an API key mean?',
         options: [
-          { text: 'Switching off the old key and issuing a new one' },
           { text: 'Typing it backwards', why: 'It means replacing it.' },
+          { text: 'Switching off the old key and issuing a new one' },
           { text: 'Sharing it with more people', why: 'The opposite.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Tolu says he might have pasted a key into an AI chat but it\'s probably fine.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Let\'s treat it as exposed: tell IT now and rotate the key. It takes ten minutes and removes the risk.' },
           { text: 'Probably fine, leave it.', why: 'Treat it as exposed.' },
           { text: 'Fire Tolu.', why: 'Fix it; learn from it.' },
+          { text: 'Let\'s treat it as exposed: tell IT now and rotate the key. It takes ten minutes and removes the risk.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

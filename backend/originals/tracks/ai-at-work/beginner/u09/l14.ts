@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happened with the 2023 university condolence email?',
         options: [
-          { text: 'It said it was paraphrased from ChatGPT, causing anger and an apology' },
           { text: 'Nobody noticed', why: 'People were upset.' },
+          { text: 'It said it was paraphrased from ChatGPT, causing anger and an apology' },
           { text: 'It won an award', why: 'It caused anger.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'I need to tell a team member her role is ending. Can AI write the email?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'That needs a conversation first, in person or on a call. AI could help you prepare what to say, but the news should come from you.' },
           { text: 'Sure, send an AI email.', why: 'Life-changing news needs a person.' },
           { text: 'Don\'t tell her.', why: 'She deserves to know, properly.' },
+          { text: 'That needs a conversation first, in person or on a call. AI could help you prepare what to say, but the news should come from you.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -145,11 +145,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How can AI still help with a hard personal message?',
         options: [
-          { text: 'Helping you think about what matters to say, before you write it yourself' },
           { text: 'Writing and sending it for you', why: 'It should be yours.' },
           { text: 'It can\'t help at all', why: 'It can help you think.' },
+          { text: 'Helping you think about what matters to say, before you write it yourself' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

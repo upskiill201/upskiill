@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '9:00. Before starting, what\'s Ada\'s first question?',
         options: [
-          { text: 'What happens if this is wrong?' },
           { text: 'Which slide looks prettiest?', why: 'Stakes first.' },
+          { text: 'What happens if this is wrong?' },
           { text: 'Can I skip checking today?', why: 'A CEO deck is high stakes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: '9:50. The fee slide says 1%. Two AI tools agreed. Good to go?',
         prompt: 'Best reply?',
         options: [
-          { text: 'Agreement isn\'t proof. I checked the provider\'s page today: it\'s 1.5%. Updating the slide.' },
           { text: 'Yes, two tools agree.', why: 'They may share old data.' },
           { text: 'Remove fees entirely.', why: 'Use the checked figure.' },
+          { text: 'Agreement isn\'t proof. I checked the provider\'s page today: it\'s 1.5%. Updating the slide.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -146,11 +146,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '11:40. Ada spots that yesterday\'s summary to Lucía\'s team had 1% too. What first?',
         options: [
-          { text: 'Confirm 1.5% is right, then send a short same-day correction to everyone who got it' },
           { text: 'Hope nobody used it', why: 'People may be budgeting with it.' },
           { text: 'Write a long apology about the AI', why: 'Short and clear, and own it.' },
+          { text: 'Confirm 1.5% is right, then send a short same-day correction to everyone who got it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
@@ -180,11 +180,11 @@ const lesson: OriginalLesson = {
         message: '12:30. Carmen loved it. One question though: should we launch in Ghana next, or somewhere else? I need an answer in two days.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'I\'ll research it properly: real sources, options side by side, and I\'ll flag what we can\'t know. Two days works.' },
           { text: 'I\'ll ask the AI and send you its answer in five minutes.', why: 'A big decision needs real research.' },
+          { text: 'I\'ll research it properly: real sources, options side by side, and I\'ll flag what we can\'t know. Two days works.' },
           { text: 'Ghana, obviously.', why: 'That\'s the agreeable answer to test, not to assume.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

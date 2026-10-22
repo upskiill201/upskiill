@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The AI says the pilot processed 6,000,000 GHS. Ada\'s estimate is about 60,000. What now?',
         options: [
-          { text: 'Recalculate in the spreadsheet; the AI is likely off by a factor of 100' },
           { text: 'Trust the AI', why: 'The estimate says it\'s far too high.' },
+          { text: 'Recalculate in the spreadsheet; the AI is likely off by a factor of 100' },
           { text: 'Average the two', why: 'Recalculate exactly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         message: 'The AI says average payment is 127.4 GHS. Can I quote it?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Let me check it with a formula in the sheet first. Two minutes.' },
           { text: 'Yes, it\'s precise.', why: 'Precise isn\'t the same as correct.' },
           { text: 'Never quote averages.', why: 'Just check it.' },
+          { text: 'Let me check it with a formula in the sheet first. Two minutes.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

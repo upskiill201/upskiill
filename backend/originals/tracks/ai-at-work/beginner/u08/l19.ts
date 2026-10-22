@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which step catches unanswered questions?',
         options: [
-          { text: 'Rehearse and prepare' },
           { text: 'Visuals', why: 'Rehearsal does.' },
+          { text: 'Rehearse and prepare' },
           { text: 'Notes', why: 'Rehearsal does.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Can I borrow your recipe for my team\'s quarterly review?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Of course. Start with step 1: audience, time and goal in one line each. Everything else follows.' },
           { text: 'It only works for founders.', why: 'It works for any talk.' },
           { text: 'Just let the AI make it.', why: 'AI helps; you decide.' },
+          { text: 'Of course. Start with step 1: audience, time and goal in one line each. Everything else follows.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -139,11 +139,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the simplest step to try this week?',
         options: [
-          { text: 'Asking for a one-line-per-slide outline before designing' },
           { text: 'Redesigning every old deck', why: 'Start small.' },
           { text: 'All seven at once', why: 'One at a time.' },
+          { text: 'Asking for a one-line-per-slide outline before designing' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

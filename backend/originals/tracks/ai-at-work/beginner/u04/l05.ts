@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can an AI sound certain and be wrong?',
         options: [
-          { text: 'It predicts likely text; its tone doesn\'t change with accuracy' },
           { text: 'It only sounds certain when it\'s right', why: 'Same tone either way.' },
+          { text: 'It predicts likely text; its tone doesn\'t change with accuracy' },
           { text: 'It is being dishonest', why: 'No intent; just prediction.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'Can you add a big number about Ghana\'s fintech market to slide 2? Any number.',
         prompt: 'Best reply?',
         options: [
-          { text: 'Yes, from a source I can open and cite on the slide. If I can\'t find one by noon, I\'ll leave it out.' },
           { text: 'Sure, I\'ll ask the AI for one.', why: 'Without a source, that risks another invented figure.' },
           { text: 'Numbers aren\'t allowed on slides.', why: 'They are; they just need sources.' },
+          { text: 'Yes, from a source I can open and cite on the slide. If I can\'t find one by noon, I\'ll leave it out.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -146,11 +146,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a missing number cost compared to a false one?',
         options: [
-          { text: 'Far less; a false one can cost trust' },
           { text: 'More; decks need numbers', why: 'A gap is safer than a falsehood.' },
           { text: 'Nothing either way', why: 'False claims get repeated.' },
+          { text: 'Far less; a false one can cost trust' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

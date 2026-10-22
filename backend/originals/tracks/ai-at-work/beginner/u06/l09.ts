@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why plan backwards from the date?',
         options: [
-          { text: 'You can see what must be done by when, so nothing is left too late' },
           { text: 'It\'s more fun', why: 'It shows deadlines clearly.' },
+          { text: 'You can see what must be done by when, so nothing is left too late' },
           { text: 'Forwards is impossible', why: 'Backwards just shows the deadlines.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'What if the mobile network goes down during the launch?',
         prompt: 'Best reply from Tolu\'s plan?',
         options: [
-          { text: 'Plan B: we\'ll have a backup data plan on a second network, and we\'ll do the first payments again in the afternoon if needed.' },
           { text: 'It won\'t.', why: 'Plan for the likely problems.' },
           { text: 'Then we cancel the pilot.', why: 'Plan B, not cancel.' },
+          { text: 'Plan B: we\'ll have a backup data plan on a second network, and we\'ll do the first payments again in the afternoon if needed.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

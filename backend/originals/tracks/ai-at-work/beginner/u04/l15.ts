@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A detector says a draft is "90% AI". What should Ada do?',
         options: [
-          { text: 'Judge the draft on accuracy and specifics; don\'t treat the score as proof' },
           { text: 'Reject it immediately', why: 'Detectors are unreliable.' },
+          { text: 'Judge the draft on accuracy and specifics; don\'t treat the score as proof' },
           { text: 'Trust it completely', why: 'Scores aren\'t proof either way.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         message: 'Your email promised a refund within 24 hours. Is that real?',
         prompt: 'If Ada didn\'t mean to promise that, best reply?',
         options: [
-          { text: 'My mistake, I shouldn\'t have promised that. Let me confirm the real timeline with finance and get back to you today.' },
           { text: 'The AI wrote that part.', why: 'Own it.' },
           { text: 'Yes, of course.', why: 'Don\'t make a promise you can\'t keep.' },
+          { text: 'My mistake, I shouldn\'t have promised that. Let me confirm the real timeline with finance and get back to you today.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -142,11 +142,11 @@ const lesson: OriginalLesson = {
         message: 'Should we stop using AI after the invoice mix-up?',
         prompt: 'Best reply?',
         options: [
-          { text: 'No, the fix is checking. AI drafts, we recheck numbers and promises before anything goes out.' },
           { text: 'Yes, it\'s too risky.', why: 'Overcorrection.' },
           { text: 'Yes, but only for invoices.', why: 'Checking fixes it everywhere.' },
+          { text: 'No, the fix is checking. AI drafts, we recheck numbers and promises before anything goes out.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

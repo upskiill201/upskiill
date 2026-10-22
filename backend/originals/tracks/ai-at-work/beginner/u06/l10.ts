@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the planning fallacy?',
         options: [
-          { text: 'Underestimating how long things will take' },
           { text: 'Planning too far ahead', why: 'It\'s about optimism.' },
+          { text: 'Underestimating how long things will take' },
           { text: 'Not planning', why: 'It\'s about estimates.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How long should a working checklist be?',
         options: [
-          { text: 'About 5 to 9 items' },
           { text: '30 or more', why: 'Long lists get skipped.' },
           { text: 'One item', why: 'Too short to help.' },
+          { text: 'About 5 to 9 items' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -151,11 +151,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do experts like surgeons use checklists?',
         options: [
-          { text: 'Under pressure, anyone can skip a step' },
           { text: 'They\'re beginners', why: 'Experts use them too.' },
           { text: 'It\'s just tradition', why: 'They measurably reduce mistakes.' },
+          { text: 'Under pressure, anyone can skip a step' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

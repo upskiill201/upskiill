@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why give the AI a "sceptical investor" role?',
         options: [
-          { text: 'It pushes the AI to find weaknesses instead of agreeing' },
           { text: 'Investors are always right', why: 'The role is a tool to find gaps.' },
+          { text: 'It pushes the AI to find weaknesses instead of agreeing' },
           { text: 'To make the answer longer', why: 'To make it critical.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'The AI says our plan has holes. Should I worry?',
         prompt: 'Best reply?',
         options: [
-          { text: 'That\'s why I asked it to look. One hole really matters: why shops would switch. I\'ll have an answer, or an honest "unknown", tomorrow.' },
           { text: 'No, the AI is just negative.', why: 'Some holes are real.' },
           { text: 'Yes, let\'s cancel.', why: 'Gaps are for filling.' },
+          { text: 'That\'s why I asked it to look. One hole really matters: why shops would switch. I\'ll have an answer, or an honest "unknown", tomorrow.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

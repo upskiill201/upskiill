@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The AI says the three customer groups are 40%, 35% and 30%. What\'s wrong?',
         options: [
-          { text: 'They add up to 105%' },
           { text: 'Nothing', why: '40 + 35 + 30 = 105.' },
+          { text: 'They add up to 105%' },
           { text: 'Percentages can\'t be used', why: 'They can; these just don\'t add up.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'The plan says the launch call is "Tuesday 14 March". Is that right?',
         prompt: 'What should Ada do?',
         options: [
-          { text: 'Check the date on a calendar before confirming, and fix the day or date if they don\'t match.' },
           { text: 'Say yes; the AI wrote it.', why: 'AI often mixes up days and dates.' },
           { text: 'Remove the day of the week only.', why: 'Check both first.' },
+          { text: 'Check the date on a calendar before confirming, and fix the day or date if they don\'t match.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is health information extra sensitive?',
         options: [
-          { text: 'Most data laws give it special protection, and leaks can seriously harm people' },
           { text: 'It\'s boring', why: 'It\'s protected.' },
+          { text: 'Most data laws give it special protection, and leaks can seriously harm people' },
           { text: 'It isn\'t', why: 'It\'s special-category data in many laws.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'Can I paste our new campaign budget into an AI to tidy it?',
         prompt: 'It\'s confidential and the tool isn\'t approved. Best reply?',
         options: [
-          { text: 'I\'d use a company-approved tool for that, or replace the real numbers with placeholders first.' },
           { text: 'Sure, it\'s only numbers.', why: 'Confidential documents.' },
           { text: 'Never use AI again.', why: 'Use approved tools or placeholders.' },
+          { text: 'I\'d use a company-approved tool for that, or replace the real numbers with placeholders first.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

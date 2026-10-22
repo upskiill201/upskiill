@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         message: 'Week 3. The bank says settlement is two weeks late! Is the launch off?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Not off. We\'re taking two options to Tobi today: on time with manual daily settlement, or two weeks later. Decision tonight.' },
           { text: 'Yes, it\'s off.', why: 'There are options.' },
+          { text: 'Not off. We\'re taking two options to Tobi today: on time with manual daily settlement, or two weeks later. Decision tonight.' },
           { text: 'What delay?', why: 'Don\'t hide it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -154,11 +154,11 @@ const lesson: OriginalLesson = {
         message: 'Month 5. The pilot\'s data is in: 3,000 rows of sign-ups and payments. Carmen wants the story in tomorrow\'s 9am meeting. Help?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Yes. Send me the spreadsheet tonight. I\'ll use AI to help clean it and find the main trends, and check every number before 9.' },
           { text: 'I\'ll let the AI read it and send whatever it says.', why: 'Numbers need checking.' },
           { text: 'Spreadsheets aren\'t my thing.', why: 'That\'s exactly what Unit 7 teaches.' },
+          { text: 'Yes. Send me the spreadsheet tonight. I\'ll use AI to help clean it and find the main trends, and check every number before 9.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

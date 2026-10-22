@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'Your notes are just bullets. Won\'t you forget what to say?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'The bullets remind me of each point, and I know my first and last lines by heart. Reading full sentences would sound stiff.' },
           { text: 'Probably, yes.', why: 'Bullets work as prompts.' },
+          { text: 'The bullets remind me of each point, and I know my first and last lines by heart. Reading full sentences would sound stiff.' },
           { text: 'I\'ll read a full script instead.', why: 'Reading sounds stiff.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does reading only the titles in order test?',
         options: [
-          { text: 'Whether the story flows' },
           { text: 'Whether the colours match', why: 'It tests the story.' },
           { text: 'Whether slides are long enough', why: 'It tests the story.' },
+          { text: 'Whether the story flows' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

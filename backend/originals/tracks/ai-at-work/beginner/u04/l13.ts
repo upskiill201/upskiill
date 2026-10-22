@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did OpenAI withdraw its AI text classifier in 2023?',
         options: [
-          { text: 'Its accuracy was too low' },
           { text: 'It was too accurate', why: 'The opposite.' },
+          { text: 'Its accuracy was too low' },
           { text: 'It was too expensive', why: 'Accuracy was the reason given.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'A detector says the freelancer\'s draft is "87% AI". Should we stop paying her?',
         prompt: 'Best reply?',
         options: [
-          { text: 'Detectors aren\'t reliable. Let\'s judge the draft on accuracy and specifics, and ask her about her process if we\'re unsure.' },
           { text: 'Yes, 87% is proof.', why: 'Detector scores aren\'t proof.' },
           { text: 'Run five detectors and average them.', why: 'Averaging unreliable tools isn\'t proof either.' },
+          { text: 'Detectors aren\'t reliable. Let\'s judge the draft on accuracy and specifics, and ask her about her process if we\'re unsure.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -156,11 +156,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes writing trustworthy, whoever wrote it?',
         options: [
-          { text: 'Accurate, specific, checkable content' },
           { text: 'A low detector score', why: 'Scores are unreliable.' },
           { text: 'Long paragraphs', why: 'Length isn\'t trust.' },
+          { text: 'Accurate, specific, checkable content' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

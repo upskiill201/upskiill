@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'It\'s 4pm in Lagos. What time is it in Mexico City?',
         options: [
-          { text: '9am' },
           { text: '10pm', why: 'Mexico City is behind, not ahead.' },
+          { text: '9am' },
           { text: '4pm', why: 'Seven hours behind Lagos.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'I joined at 4pm and nobody was there!',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'So sorry, my invite said 4pm without the city. It was 4pm Lagos, 9am for you. I\'ll put every city\'s time in invites from now on.' },
           { text: 'You should have known it was Lagos time.', why: 'Her invite was unclear.' },
           { text: 'Time zones are confusing.', why: 'Fix the invite.' },
+          { text: 'So sorry, my invite said 4pm without the city. It was 4pm Lagos, 9am for you. I\'ll put every city\'s time in invites from now on.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

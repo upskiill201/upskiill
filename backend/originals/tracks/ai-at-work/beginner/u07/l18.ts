@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where should the numbers in the report come from?',
         options: [
-          { text: 'Copied from the checked sheet' },
           { text: 'From memory', why: 'Easy to slip.' },
+          { text: 'Copied from the checked sheet' },
           { text: 'From the AI\'s draft', why: 'Check them against the sheet.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: 'Can I forward your report to Carmen as is?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Yes: I\'ve checked every number against the sheet, and the limits are at the bottom.' },
           { text: 'Probably, the AI wrote it.', why: 'She should have checked it.' },
           { text: 'Not until it\'s 20 pages.', why: 'One page is the point.' },
+          { text: 'Yes: I\'ve checked every number against the sheet, and the limits are at the bottom.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

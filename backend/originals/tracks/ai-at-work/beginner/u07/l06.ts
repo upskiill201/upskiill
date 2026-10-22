@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a pivot table?',
         options: [
-          { text: 'A tool that groups rows and adds them up for you' },
           { text: 'A table that spins', why: 'It summarises data.' },
+          { text: 'A tool that groups rows and adds them up for you' },
           { text: 'A chart', why: 'It\'s a summary table.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Does the table include failed payments?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'No, completed only; it says so under the title. Failed payments are in a separate line if you want them.' },
           { text: 'Not sure.', why: 'She should know what\'s counted.' },
           { text: 'Everything is included.', why: 'It\'s completed only.' },
+          { text: 'No, completed only; it says so under the title. Failed payments are in a separate line if you want them.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

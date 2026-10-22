@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'Did you use AI on our work? Legal is asking.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Yes, for drafts and summaries in our approved tool; no confidential data entered, and I checked every figure.' },
           { text: 'No.', why: 'Never pretend.' },
+          { text: 'Yes, for drafts and summaries in our approved tool; no confidential data entered, and I checked every figure.' },
           { text: 'Does it matter?', why: 'Answer plainly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Lucía asks for the confidential bank contract. What should Ada do?',
         options: [
-          { text: 'Decline, and offer to explain what the relevant clause says' },
           { text: 'Send it', why: 'Confidential.' },
           { text: 'Ignore her', why: 'Offer what she can share.' },
+          { text: 'Decline, and offer to explain what the relevant clause says' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',

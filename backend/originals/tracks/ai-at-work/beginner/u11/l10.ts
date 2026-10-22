@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'Can I just edit the shared prompts directly when I improve them?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Suggest the change and I\'ll test it; check the "why" notes first so we don\'t lose an important rule.' },
           { text: 'Edit anything, anytime.', why: 'That broke the follow-up.' },
+          { text: 'Suggest the change and I\'ll test it; check the "why" notes first so we don\'t lose an important rule.' },
           { text: 'Never suggest changes.', why: 'Improvements are welcome.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why keep an hour a day AI-free?',
         options: [
-          { text: 'Deep thinking needs space' },
           { text: 'Tools are down', why: 'It\'s deliberate.' },
           { text: 'No reason', why: 'For thinking.' },
+          { text: 'Deep thinking needs space' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

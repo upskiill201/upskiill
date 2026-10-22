@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the AI not need names?',
         options: [
-          { text: 'The analysis was about patterns; Shop IDs were enough' },
           { text: 'AI can\'t read names', why: 'It can; it just doesn\'t need them.' },
+          { text: 'The analysis was about patterns; Shop IDs were enough' },
           { text: 'Names were wrong', why: 'They weren\'t needed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Can you send the AI the full customer list so it can write personal messages?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Not with their details in a public AI tool. I\'ll get it to write a template with a [name] blank, and we\'ll fill names in our own system.' },
           { text: 'Sure, paste it all.', why: 'Personal data.' },
           { text: 'AI can\'t write messages.', why: 'It can, with a template.' },
+          { text: 'Not with their details in a public AI tool. I\'ll get it to write a template with a [name] blank, and we\'ll fill names in our own system.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

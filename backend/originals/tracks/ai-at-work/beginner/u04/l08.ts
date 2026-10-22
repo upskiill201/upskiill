@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is processing fluency?',
         options: [
-          { text: 'Easy-to-read information tends to feel truer' },
           { text: 'How fast the AI types', why: 'It\'s about how we judge information.' },
+          { text: 'Easy-to-read information tends to feel truer' },
           { text: 'A way to check sources', why: 'It\'s a bias, not a check.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'The AI summary says Ghana is "the obvious next market". That\'s what I thought too!',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'That\'s why we should check it extra carefully. Let\'s find the evidence for and against before we decide.' },
           { text: 'Great, we agree, so it must be right.', why: 'Agreement is when we check least.' },
           { text: 'The AI is always neutral.', why: 'It often echoes the framing of the question.' },
+          { text: 'That\'s why we should check it extra carefully. Let\'s find the evidence for and against before we decide.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',

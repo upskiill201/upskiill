@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The formula gives 0 but Ada knows there are Makola sales. What\'s a likely cause?',
         options: [
-          { text: 'The text doesn\'t match exactly, e.g. "makola" vs "Makola" or extra spaces' },
           { text: 'There are no sales', why: 'She knows there are.' },
+          { text: 'The text doesn\'t match exactly, e.g. "makola" vs "Makola" or extra spaces' },
           { text: 'Spreadsheets can\'t add', why: 'They can; the rule didn\'t match.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'Is the Makola total right? It seems low.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'I tested it against 10 rows I checked by hand and it matched. I\'ll also check for spelling differences in the Market column.' },
           { text: 'The AI wrote it, so yes.', why: 'Test it.' },
           { text: 'Probably wrong.', why: 'Check it, then say.' },
+          { text: 'I tested it against 10 rows I checked by hand and it matched. I\'ll also check for spelling differences in the Market column.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

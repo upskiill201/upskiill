@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "low-context" communication mean?',
         options: [
-          { text: 'Saying things explicitly, not relying on shared understanding' },
           { text: 'Not saying much', why: 'It means explicit.' },
+          { text: 'Saying things explicitly, not relying on shared understanding' },
           { text: 'Being rude', why: 'It\'s a style, not rudeness.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Your emails to me are so short now. Are you upset?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Not at all, just a busy week! Sorry they felt curt. I\'ll add a line of context so they read better.' },
           { text: 'Short is efficient.', why: 'She felt it was curt; adapt.' },
           { text: 'Yes.', why: 'She isn\'t upset.' },
+          { text: 'Not at all, just a busy week! Sorry they felt curt. I\'ll add a line of context so they read better.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

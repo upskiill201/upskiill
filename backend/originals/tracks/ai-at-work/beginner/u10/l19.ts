@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the safest assumption about pasted text?',
         options: [
-          { text: 'It may be kept, so only paste what you\'d be OK sharing' },
           { text: 'It\'s gone instantly', why: 'Not guaranteed.' },
+          { text: 'It may be kept, so only paste what you\'d be OK sharing' },
           { text: 'Nobody could ever see it', why: 'Not guaranteed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'We pay for our AI tool, so anything goes, right?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Paid plans often protect data better, but check the terms and settings, and follow company rules on what data can go in.' },
           { text: 'Yes, anything goes.', why: 'Check terms and rules.' },
           { text: 'Paid tools are less safe.', why: 'Often safer; still check.' },
+          { text: 'Paid plans often protect data better, but check the terms and settings, and follow company rules on what data can go in.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

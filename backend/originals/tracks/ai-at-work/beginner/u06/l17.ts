@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'I heard the bank is late. Is the launch cancelled?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Not cancelled. We have two options with Tobi today: launch on time with manual daily settlement, or move it two weeks. Decision by tonight.' },
           { text: 'Probably, yes.', why: 'There are real options.' },
+          { text: 'Not cancelled. We have two options with Tobi today: launch on time with manual daily settlement, or move it two weeks. Decision by tonight.' },
           { text: 'Nothing\'s changed.', why: 'Don\'t hide it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -135,11 +135,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why check options with the people who\'d do the work?',
         options: [
-          { text: 'They know if it\'s really possible, and what it costs them' },
           { text: 'To share the blame', why: 'It\'s about realistic options.' },
           { text: 'No need; AI listed them', why: 'The AI doesn\'t know their workload.' },
+          { text: 'They know if it\'s really possible, and what it costs them' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

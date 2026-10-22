@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why start a new chat?',
         options: [
-          { text: 'So the earlier conversation doesn\'t steer the answer' },
           { text: 'Because old chats are deleted', why: 'It\'s about a fresh start.' },
+          { text: 'So the earlier conversation doesn\'t steer the answer' },
           { text: 'To make it faster', why: 'It\'s about independence.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         message: 'Two AI tools both said fees are 1%. So that\'s confirmed, right?',
         prompt: 'What should Ada say?',
         options: [
-          { text: 'Not yet. They might share the same old data. Let\'s check the provider\'s page.' },
           { text: 'Yes, two tools agree.', why: 'Agreement isn\'t proof.' },
           { text: 'Ask a third tool and go with the majority.', why: 'Voting doesn\'t replace a source.' },
+          { text: 'Not yet. They might share the same old data. Let\'s check the provider\'s page.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

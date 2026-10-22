@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'You handled outage week brilliantly. What would you tell someone new?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Prepare before, listen during, follow up within the hour. And let AI help you calm down before replying, but write the personal stuff yourself.' },
           { text: 'Let AI handle it all.', why: 'AI helps; you lead.' },
+          { text: 'Prepare before, listen during, follow up within the hour. And let AI help you calm down before replying, but write the personal stuff yourself.' },
           { text: 'Just stay calm.', why: 'There\'s more to it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the first move when an angry message arrives?',
         options: [
-          { text: 'Pause, and vent to the AI rather than the person' },
           { text: 'Reply immediately', why: 'Pause first.' },
           { text: 'Ignore it', why: 'Reply calmly.' },
+          { text: 'Pause, and vent to the AI rather than the person' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
@@ -139,11 +139,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the simplest habit to start this week?',
         options: [
-          { text: 'A five-part follow-up after every meeting' },
           { text: 'Rewriting every old email', why: 'Start small.' },
           { text: 'Everything at once', why: 'One habit at a time.' },
+          { text: 'A five-part follow-up after every meeting' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why leave about a quarter of each day free?',
         options: [
-          { text: 'Unexpected work always turns up' },
           { text: 'To take long breaks', why: 'It\'s buffer for surprises.' },
+          { text: 'Unexpected work always turns up' },
           { text: 'It\'s required by law', why: 'It\'s just realistic.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'Will the shop list be ready this week?',
         prompt: 'Tolu cut it from this week. Best reply?',
         options: [
-          { text: 'Not this week. The budget sign-off comes first; you\'ll have the list next Tuesday.' },
           { text: 'Yes, definitely.', why: 'He already knows it won\'t be.' },
           { text: 'Maybe.', why: 'Give a clear date.' },
+          { text: 'Not this week. The budget sign-off comes first; you\'ll have the list next Tuesday.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who owns a mistake in an email Ada sent with AI help?',
         options: [
-          { text: 'Ada' },
           { text: 'The AI tool', why: 'The reader only sees Ada\'s name.' },
+          { text: 'Ada' },
           { text: 'Nobody', why: 'Someone has to fix it: the sender.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         message: 'Our finance team found the wrong total. What happened?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'That was my mistake, sorry. The correct total is attached, and I\'m now rechecking every total before I send.' },
           { text: 'The AI miscalculated it.', why: 'Lucía didn\'t hire the AI.' },
           { text: 'It was only a small difference.', why: 'Minimising makes it worse.' },
+          { text: 'That was my mistake, sorry. The correct total is attached, and I\'m now rechecking every total before I send.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -144,11 +144,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Tobi say "they know there was Ada"?',
         options: [
-          { text: 'Readers judge the sender, not the tools behind the message' },
           { text: 'Because Ada wrote it all by hand', why: 'She used AI; it doesn\'t matter to the reader.' },
           { text: 'To embarrass her', why: 'He was being patient and clear.' },
+          { text: 'Readers judge the sender, not the tools behind the message' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

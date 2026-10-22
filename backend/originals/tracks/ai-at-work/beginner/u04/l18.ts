@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does step 4, "fresh and fair", check?',
         options: [
-          { text: 'Whether it\'s current, and whether it passes the swap test' },
           { text: 'Whether the font is modern', why: 'Currency and fairness.' },
+          { text: 'Whether it\'s current, and whether it passes the swap test' },
           { text: 'Whether it\'s short', why: 'Currency and fairness.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'Your routine sounds slow. Do you do all five for every email?',
         prompt: 'Best reply?',
         options: [
-          { text: 'No. Quick messages get steps 1 and 5, about ten seconds. The full routine is for things people will rely on.' },
           { text: 'Yes, every single one.', why: 'Match the effort to the stakes.' },
           { text: 'No, I skip it when I\'m busy.', why: 'Busy is when mistakes happen.' },
+          { text: 'No. Quick messages get steps 1 and 5, about ten seconds. The full routine is for things people will rely on.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -133,11 +133,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why fold everything into one routine?',
         options: [
-          { text: 'A short routine is easy to remember and use every day' },
           { text: 'To impress Tobi', why: 'It\'s about using it daily.' },
           { text: 'It replaces thinking', why: 'It supports thinking.' },
+          { text: 'A short routine is easy to remember and use every day' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

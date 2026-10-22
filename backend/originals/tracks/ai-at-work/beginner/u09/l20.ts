@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Monday 10:16. Carmen\'s furious email arrives. First move?',
         options: [
-          { text: 'Pause, and vent the first reply to the AI, not to Carmen' },
           { text: 'Reply right away explaining it was the bank', why: 'Defensive.' },
+          { text: 'Pause, and vent the first reply to the AI, not to Carmen' },
           { text: 'Ignore it until after the call', why: 'A short calm reply helps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         message: 'Wednesday. Carmen wants to pause the whole pilot for a month.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'I understand why a pause feels safer. We both want shops to trust the app; in our data, paused shops often didn\'t return. Could we try daily check-ins for two weeks instead? Her call.' },
           { text: 'That\'s a panic reaction.', why: 'Criticises the person.' },
           { text: 'OK, pause it.', why: 'Shops would lose out.' },
+          { text: 'I understand why a pause feels safer. We both want shops to trust the app; in our data, paused shops often didn\'t return. Could we try daily check-ins for two weeks instead? Her call.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -162,21 +162,21 @@ const lesson: OriginalLesson = {
         message: 'Month 8. New problem: our marketing agency wants all shop owners\' names and phone numbers for a campaign, by tomorrow. Tolu says he\'ll just paste the list into an AI tool to tidy it up. OK?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Please hold off. That\'s personal data. Let me check what we\'re allowed to share and which tools we can use before anything gets pasted.' },
           { text: 'Sure, quicker that way.', why: 'Next unit: why not.' },
           { text: 'Send it straight to the agency.', why: 'Personal data needs rules.' },
+          { text: 'Please hold off. That\'s personal data. Let me check what we\'re allowed to share and which tools we can use before anything gets pasted.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'What\'s the one idea behind all of Unit 9?',
         options: [
-          { text: 'AI helps you prepare, cool down and draft; you listen, own it, and follow through' },
           { text: 'Let AI handle hard conversations', why: 'You handle them.' },
+          { text: 'AI helps you prepare, cool down and draft; you listen, own it, and follow through' },
           { text: 'Avoid hard conversations', why: 'Handle them well.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why add "what to check" to each entry?',
         options: [
-          { text: 'So anyone using it knows how to make the result safe' },
           { text: 'To make it longer', why: 'It\'s about safe use.' },
+          { text: 'So anyone using it knows how to make the result safe' },
           { text: 'It\'s optional decoration', why: 'It matters most when sharing.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Where should my team keep shared prompts?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'One shared document or folder everyone can find, with an entry per prompt: name, when, prompt, checks, date.' },
           { text: 'Everyone in their own chats.', why: 'Hard to share and find.' },
           { text: 'On sticky notes.', why: 'Easy to lose.' },
+          { text: 'One shared document or folder everyone can find, with an entry per prompt: name, when, prompt, checks, date.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why use SUM formulas instead of typing totals?',
         options: [
-          { text: 'Formulas update when a cost changes; typed totals go stale' },
           { text: 'They look better', why: 'They stay correct.' },
+          { text: 'Formulas update when a cost changes; typed totals go stale' },
           { text: 'No difference', why: 'Typed totals don\'t update.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'Is the 300 GHS per shop final?',
         prompt: 'The bank fee isn\'t invoiced yet. Best reply?',
         options: [
-          { text: 'Nearly: the bank fee is an estimate until their invoice arrives, so it could be 280-320 per shop.' },
           { text: 'Yes, final.', why: 'Part of it is an estimate.' },
           { text: 'I don\'t know.', why: 'She knows which part is firm.' },
+          { text: 'Nearly: the bank fee is an estimate until their invoice arrives, so it could be 280-320 per shop.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

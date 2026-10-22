@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the clearest sign a prompt is worth saving?',
         options: [
-          { text: 'You use it often, it works, and you keep rewriting it' },
           { text: 'It\'s very long', why: 'Length isn\'t value.' },
+          { text: 'You use it often, it works, and you keep rewriting it' },
           { text: 'It was the first you wrote', why: 'Use and quality matter.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Can you send me all your prompts?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'I\'m picking the six I use every week that work best. I\'ll send those, with a note on when to use each.' },
           { text: 'Here are all 300.', why: 'Too many to use.' },
           { text: 'They\'re in my chats somewhere.', why: 'Not useful to others.' },
+          { text: 'I\'m picking the six I use every week that work best. I\'ll send those, with a note on when to use each.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -144,11 +144,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does saving the prompt save Ada?',
         options: [
-          { text: 'Time, and getting consistently good results' },
           { text: 'Nothing', why: 'Time and consistency.' },
           { text: 'Only typing', why: 'Also quality.' },
+          { text: 'Time, and getting consistently good results' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

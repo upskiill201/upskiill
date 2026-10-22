@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why keep an hour a day without AI?',
         options: [
-          { text: 'Deep thinking and original ideas need space without constant prompting' },
           { text: 'AI tools are offline then', why: 'It\'s deliberate.' },
+          { text: 'Deep thinking and original ideas need space without constant prompting' },
           { text: 'To rest the computer', why: 'It\'s for thinking.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'I feel like I use AI all day and still don\'t get through things.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Try tying AI to a few moments: inbox, plan, follow-ups, wrap-up. And keep an hour with it closed for real thinking.' },
           { text: 'Use it even more.', why: 'Structure, not more.' },
           { text: 'Stop using AI.', why: 'Use it more deliberately.' },
+          { text: 'Try tying AI to a few moments: inbox, plan, follow-ups, wrap-up. And keep an hour with it closed for real thinking.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -137,11 +137,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why plan the day at 9:00, not 3:00?',
         options: [
-          { text: 'You can still shape the day before it fills up' },
           { text: 'AI works better in the morning', why: 'It\'s about your day.' },
           { text: 'No reason', why: 'Early planning helps.' },
+          { text: 'You can still shape the day before it fills up' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

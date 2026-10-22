@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why not just ask the AI "Tell me about this bank"?',
         options: [
-          { text: 'It may give old or mixed-up facts' },
           { text: 'AI can\'t talk about banks', why: 'It can, but may be out of date.' },
+          { text: 'It may give old or mixed-up facts' },
           { text: 'It takes too long', why: 'Speed isn\'t the issue; accuracy is.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'The AI says their head of partnerships is Mr Mensah. Can I address the email to him?',
         prompt: 'Best reply?',
         options: [
-          { text: 'Let\'s check their website or LinkedIn first. People change roles, and a wrong name is a bad start.' },
           { text: 'Yes, the AI knows.', why: 'Names and titles go stale fast.' },
           { text: 'Just write "Dear Sir".', why: 'Check the name instead.' },
+          { text: 'Let\'s check their website or LinkedIn first. People change roles, and a wrong name is a bad start.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

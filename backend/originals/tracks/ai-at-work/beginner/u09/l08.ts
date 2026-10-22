@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Flynn and Lake (2008) find?',
         options: [
-          { text: 'People underestimated how likely others were to help' },
           { text: 'People rarely help', why: 'The opposite.' },
+          { text: 'People underestimated how likely others were to help' },
           { text: 'Asking is always rude', why: 'Not the finding.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Is the week 8 review still on for Wednesday?',
         prompt: 'Ada needs two more days. Best reply?',
         options: [
-          { text: 'Can we move it to Friday? The outage took two days of my week. You\'ll have it by Friday 3pm.' },
           { text: 'Yes!', why: 'She knows it won\'t be ready.' },
           { text: 'Probably not, sorry.', why: 'Give a new date.' },
+          { text: 'Can we move it to Friday? The outage took two days of my week. You\'ll have it by Friday 3pm.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

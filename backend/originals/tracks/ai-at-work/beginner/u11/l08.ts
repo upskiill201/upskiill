@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can very long chats go wrong?',
         options: [
-          { text: 'They can drift, and early details can get lost' },
           { text: 'AI gets tired', why: 'It\'s about context.' },
+          { text: 'They can drift, and early details can get lost' },
           { text: 'They can\'t', why: 'They often drift.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'It took me 20 messages to get the AI to write our campaign brief right. Do I have to do that every time?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'No: ask it to write one prompt that gets the final result first time, save it, and test it in a fresh chat.' },
           { text: 'Yes, every time.', why: 'Capture it.' },
           { text: 'Copy the whole 20-message chat each time.', why: 'One prompt is cleaner.' },
+          { text: 'No: ask it to write one prompt that gets the final result first time, save it, and test it in a fresh chat.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -135,11 +135,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a fresh start with a summary mean?',
         options: [
-          { text: 'Open a new chat and paste a short summary of what matters from the old one' },
           { text: 'Delete everything and forget it', why: 'Carry over a summary.' },
           { text: 'Copy the whole old chat', why: 'Just the summary.' },
+          { text: 'Open a new chat and paste a short summary of what matters from the old one' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'The bank won\'t cover refunds. Disaster?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'No: shops are refunded either way. I\'m offering options: half the cost or a fee waiver.' },
           { text: 'Yes, total disaster.', why: 'She has a BATNA and options.' },
+          { text: 'No: shops are refunded either way. I\'m offering options: half the cost or a fee waiver.' },
           { text: 'Let\'s threaten them.', why: 'Damages the partnership.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Lucía has to tell someone their role is ending. Best approach?',
         options: [
-          { text: 'A conversation first; a written note can follow' },
           { text: 'An AI-written email', why: 'Life-changing news needs a person.' },
           { text: 'A group chat message', why: 'Private conversation first.' },
+          { text: 'A conversation first; a written note can follow' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

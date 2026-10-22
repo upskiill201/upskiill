@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a trigger?',
         options: [
-          { text: 'The time or event that starts the automation' },
           { text: 'A type of AI', why: 'It starts the steps.' },
+          { text: 'The time or event that starts the automation' },
           { text: 'The final email', why: 'It\'s the start.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         message: 'Could the automation just send the status update to me directly?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'I\'d rather keep a quick check: it drafts, I read and send. Two minutes, and nothing wrong reaches you.' },
           { text: 'Sure, no need to check.', why: 'Keep the human check.' },
           { text: 'Automations can\'t send emails.', why: 'They can; a check is safer.' },
+          { text: 'I\'d rather keep a quick check: it drafts, I read and send. Two minutes, and nothing wrong reaches you.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -138,11 +138,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Ada do if the automation breaks?',
         options: [
-          { text: 'Notice it (because she checks drafts) and fix or pause it' },
           { text: 'Nothing; it runs itself', why: 'Automations break.' },
           { text: 'Delete all automations', why: 'Fix that one.' },
+          { text: 'Notice it (because she checks drafts) and fix or pause it' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

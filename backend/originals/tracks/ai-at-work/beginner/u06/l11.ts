@@ -35,11 +35,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a pre-mortem?',
         options: [
-          { text: 'Imagining the project has already failed, and asking why' },
           { text: 'A review after the project ends', why: 'That\'s a post-mortem.' },
+          { text: 'Imagining the project has already failed, and asking why' },
           { text: 'A celebration before launch', why: 'It\'s a risk exercise.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Isn\'t it negative to imagine the pilot failing?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'It\'s the opposite: we find the problems now, while they\'re cheap to fix.' },
           { text: 'Yes, let\'s skip it.', why: 'It\'s how you prevent failure.' },
           { text: 'It\'s just for fun.', why: 'It\'s a serious tool.' },
+          { text: 'It\'s the opposite: we find the problems now, while they\'re cheap to fix.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

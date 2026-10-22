@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is lateral reading?',
         options: [
-          { text: 'Checking what other sources say about a website and who runs it' },
           { text: 'Reading a page very slowly', why: 'Fact-checkers leave the page instead.' },
+          { text: 'Checking what other sources say about a website and who runs it' },
           { text: 'Reading only the headings', why: 'It\'s about checking the source.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'I found a site called "Ghana Fintech Facts". It has great numbers! Use them?',
         prompt: 'Best reply?',
         options: [
-          { text: 'Let me check who runs it first: if it\'s anonymous or selling something, I\'ll find the official source for those numbers instead.' },
           { text: 'Yes, the numbers look great.', why: 'Looking great isn\'t evidence.' },
           { text: 'No, websites are never reliable.', why: 'Some are; check who runs it.' },
+          { text: 'Let me check who runs it first: if it\'s anonymous or selling something, I\'ll find the official source for those numbers instead.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

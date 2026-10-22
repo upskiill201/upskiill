@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What question decides how much to check?',
         options: [
-          { text: 'What happens if this is wrong, and who gets hurt?' },
           { text: 'How long is the answer?', why: 'Length doesn\'t measure risk.' },
+          { text: 'What happens if this is wrong, and who gets hurt?' },
           { text: 'Which AI tool wrote it?', why: 'All tools can be wrong.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'Can we just use the AI\'s answer on Ghana\'s data protection law for the launch plan?',
         prompt: 'Best reply?',
         options: [
-          { text: 'It\'s a good list of questions to ask. Let\'s confirm the answers with the regulator\'s guidance and our lawyer.' },
           { text: 'Yes, it sounded very sure.', why: 'High stakes need a qualified human.' },
           { text: 'No, never ask AI about law.', why: 'It can help you prepare questions.' },
+          { text: 'It\'s a good list of questions to ask. Let\'s confirm the answers with the regulator\'s guidance and our lawyer.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

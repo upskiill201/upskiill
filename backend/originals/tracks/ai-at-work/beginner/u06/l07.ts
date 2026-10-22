@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes a task "important"?',
         options: [
-          { text: 'It moves the goal forward' },
           { text: 'Someone asked loudly', why: 'Loud is often urgent, not important.' },
+          { text: 'It moves the goal forward' },
           { text: 'It has a deadline', why: 'That\'s urgent.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'Can Tolu redo the flyer colours today? It\'s urgent for me.',
         prompt: 'Tolu is finishing the budget for Thursday. Best reply from Ada?',
         options: [
-          { text: 'He\'s on the budget sign-off today. Can the colours wait until Friday? If not, I\'ll do a quick version.' },
           { text: 'Sure, he\'ll drop the budget.', why: 'The budget is important and urgent.' },
           { text: 'No.', why: 'Explain and offer a time.' },
+          { text: 'He\'s on the budget sign-off today. Can the colours wait until Friday? If not, I\'ll do a quick version.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

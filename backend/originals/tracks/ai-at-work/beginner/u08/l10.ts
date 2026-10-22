@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do image tools often garble?',
         options: [
-          { text: 'Text and logos' },
           { text: 'Sky colour', why: 'Text and logos.' },
+          { text: 'Text and logos' },
           { text: 'Shadows', why: 'Text and logos.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'Can we use an AI picture of "our real shops" on slide 4?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Let\'s use real photos taken with permission. An AI image labelled as our shops would be misleading.' },
           { text: 'Sure, nobody will know.', why: 'Misleading.' },
           { text: 'No images ever.', why: 'Real photos work well.' },
+          { text: 'Let\'s use real photos taken with permission. An AI image labelled as our shops would be misleading.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

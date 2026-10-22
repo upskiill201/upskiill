@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'Thanks for the follow-up so fast. Carmen calmed down a lot reading it.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Glad it helped. I\'ll stick to Thursday\'s 4pm update, and flag anything sooner if it comes up.' },
           { text: 'Phew, crisis over.', why: 'The actions still need doing.' },
+          { text: 'Glad it helped. I\'ll stick to Thursday\'s 4pm update, and flag anything sooner if it comes up.' },
           { text: 'The AI wrote it.', why: 'Ada owns it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why send within the hour?',
         options: [
-          { text: 'Memories are fresh and the client sees you acting fast' },
           { text: 'Emails expire', why: 'It\'s about trust and accuracy.' },
           { text: 'No reason', why: 'Speed shows commitment.' },
+          { text: 'Memories are fresh and the client sees you acting fast' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

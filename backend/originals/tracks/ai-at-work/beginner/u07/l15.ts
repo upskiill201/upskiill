@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What comes first when explaining numbers to Carmen?',
         options: [
-          { text: 'What they mean' },
           { text: 'Sample sizes', why: 'Meaning first.' },
+          { text: 'What they mean' },
           { text: 'Jargon', why: 'Plain words.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Failure rate fell from 5% to 4%. Most precise?',
         options: [
-          { text: 'Down 1 percentage point (a fifth)' },
           { text: 'Down 1%', why: 'Ambiguous.' },
           { text: 'Down 4%', why: 'Wrong.' },
+          { text: 'Down 1 percentage point (a fifth)' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -145,11 +145,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why use SUM formulas for totals?',
         options: [
-          { text: 'They update when costs change' },
           { text: 'They look fancy', why: 'They stay correct.' },
           { text: 'No reason', why: 'Typed totals go stale.' },
+          { text: 'They update when costs change' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

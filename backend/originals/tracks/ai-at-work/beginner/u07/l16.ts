@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What can four weeks of data NOT tell Ada?',
         options: [
-          { text: 'Whether shops keep using it after the novelty wears off' },
           { text: 'How many payments happened', why: 'The data shows that.' },
+          { text: 'Whether shops keep using it after the novelty wears off' },
           { text: 'Which market is bigger', why: 'The data shows that.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         message: 'So the pilot is a success?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'So far, yes: growth is ahead of plan and failures are low. Four weeks can\'t show if shops stick with it, so we should review again at week 8.' },
           { text: 'Totally, forever.', why: 'Too early to say forever.' },
           { text: 'Who knows.', why: 'The data says a lot already.' },
+          { text: 'So far, yes: growth is ahead of plan and failures are low. Four weeks can\'t show if shops stick with it, so we should review again at week 8.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happened after the WHO Surgical Safety Checklist was introduced in the 2009 study?',
         options: [
-          { text: 'Deaths fell from 1.5% to 0.8%' },
           { text: 'Nothing changed', why: 'Deaths and complications fell.' },
+          { text: 'Deaths fell from 1.5% to 0.8%' },
           { text: 'Surgeries got much longer', why: 'The finding was about safety.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         message: 'Tolu\'s checklist has 34 items. Isn\'t that thorough?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Too long to use at a busy market stall. We\'re cutting it to the 8 steps people actually miss.' },
           { text: 'Yes, longer is better.', why: 'Long checklists get skipped.' },
           { text: 'We\'ll drop the checklist.', why: 'Trim it instead.' },
+          { text: 'Too long to use at a busy market stall. We\'re cutting it to the 8 steps people actually miss.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

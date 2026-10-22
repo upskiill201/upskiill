@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Two slides make the same point. What should Ada do?',
         options: [
-          { text: 'Merge them into one slide with one idea' },
           { text: 'Put both on one slide, smaller', why: 'That\'s cramming.' },
+          { text: 'Merge them into one slide with one idea' },
           { text: 'Keep both', why: 'No time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'You cut the cost slide? Won\'t they ask about money?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Probably. It\'s a backup slide right after "Thank you", so I can show it the moment they ask.' },
           { text: 'I deleted it.', why: 'Move, don\'t delete.' },
           { text: 'They won\'t ask.', why: 'Founders always ask about money.' },
+          { text: 'Probably. It\'s a backup slide right after "Thank you", so I can show it the moment they ask.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

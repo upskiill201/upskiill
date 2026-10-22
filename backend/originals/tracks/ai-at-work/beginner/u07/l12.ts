@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should come first when explaining numbers to Carmen?',
         options: [
-          { text: 'What the numbers mean' },
           { text: 'The exact sample size', why: 'Detail can come after.' },
+          { text: 'What the numbers mean' },
           { text: 'The standard deviation', why: 'Jargon first loses her.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'What does "4.2% failure rate" mean in normal words?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'About 1 in every 25 payments doesn\'t go through, and most of those work on the second try.' },
           { text: 'It\'s 4.2%.', why: 'Same words, no meaning.' },
           { text: 'It\'s complicated.', why: 'It can be said simply.' },
+          { text: 'About 1 in every 25 payments doesn\'t go through, and most of those work on the second try.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes "40 of 50 shops pay every week" better than "keep shops active"?',
         options: [
-          { text: 'It\'s measurable: you can tell if it happened' },
           { text: 'It\'s longer', why: 'Measurability is the point.' },
+          { text: 'It\'s measurable: you can tell if it happened' },
           { text: 'It sounds harder', why: 'It\'s checkable.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'What\'s Tolu\'s plan if shops stop using the app?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'When a shop has no payments for 7 days, he calls them that day. If it\'s confusion, he visits within 2 days.' },
           { text: 'He\'ll try his best.', why: 'Give the concrete plan.' },
           { text: 'They won\'t stop.', why: 'Plan for it anyway.' },
+          { text: 'When a shop has no payments for 7 days, he calls them that day. If it\'s confusion, he visits within 2 days.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

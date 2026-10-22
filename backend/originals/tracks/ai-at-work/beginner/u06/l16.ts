@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why one owner per task?',
         options: [
-          { text: 'With two owners, each assumes the other is doing it' },
           { text: 'To save names', why: 'It\'s about clear responsibility.' },
+          { text: 'With two owners, each assumes the other is doing it' },
           { text: 'Rules say so', why: 'It\'s practical.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'Do I need to approve the settlement agreement?',
         prompt: 'Lucía is "keep informed" on that row. Best reply?',
         options: [
-          { text: 'No need: Tobi decides. We\'ll update you when it\'s agreed, by 20 August.' },
           { text: 'Yes, everyone approves everything.', why: 'That slows everything down.' },
           { text: 'I don\'t know.', why: 'The plan says who decides.' },
+          { text: 'No need: Tobi decides. We\'ll update you when it\'s agreed, by 20 August.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

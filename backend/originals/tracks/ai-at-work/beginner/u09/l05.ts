@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Your agenda has no "AOB". Is that on purpose?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Yes: with 30 minutes, every item has a purpose. Anything new goes in the follow-up.' },
           { text: 'I forgot it.', why: 'It was deliberate.' },
+          { text: 'Yes: with 30 minutes, every item has a purpose. Anything new goes in the follow-up.' },
           { text: 'AOB is required.', why: 'It isn\'t.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why give an upset client\'s concerns time early?',
         options: [
-          { text: 'People need to feel heard before discussing solutions' },
           { text: 'To fill the agenda', why: 'It helps the call work.' },
           { text: 'It\'s a legal rule', why: 'It\'s good practice.' },
+          { text: 'People need to feel heard before discussing solutions' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

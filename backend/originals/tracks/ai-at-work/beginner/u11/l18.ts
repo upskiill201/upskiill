@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happens without a review?',
         options: [
-          { text: 'Problems repeat and good prompts get lost in chats' },
           { text: 'Nothing changes; that\'s fine', why: 'Good prompts get lost.' },
+          { text: 'Problems repeat and good prompts get lost in chats' },
           { text: 'AI improves itself', why: 'Your playbook doesn\'t.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'How does your playbook keep getting better?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Two minutes every Friday: what helped, what didn\'t, what to save, and one change.' },
           { text: 'The AI improves it.', why: 'Ada\'s review does.' },
           { text: 'It doesn\'t.', why: 'It does, weekly.' },
+          { text: 'Two minutes every Friday: what helped, what didn\'t, what to save, and one change.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

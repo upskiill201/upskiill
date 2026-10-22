@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does being quizzed help you learn?',
         options: [
-          { text: 'Recalling answers makes knowledge stick' },
           { text: 'It tests the AI', why: 'It tests you.' },
+          { text: 'Recalling answers makes knowledge stick' },
           { text: 'It doesn\'t', why: 'Retrieval practice works.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'Five pros, five cons. It\'s 50/50, right?',
         prompt: 'Best reply?',
         options: [
-          { text: 'Not until we weigh them. The licence timeline alone could decide it.' },
           { text: 'Yes, a coin toss.', why: 'Counting isn\'t weighing.' },
           { text: 'Let\'s find more pros.', why: 'Count doesn\'t matter.' },
+          { text: 'Not until we weigh them. The licence timeline alone could decide it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -146,11 +146,11 @@ const lesson: OriginalLesson = {
         message: 'The AI critic says nobody will switch apps. Is the plan dead?',
         prompt: 'Best reply?',
         options: [
-          { text: 'Not yet. It\'s the right question. I\'ll find out what shops dislike about their current apps, and we\'ll see if we solve it.' },
           { text: 'Yes, cancel it.', why: 'Research the gap first.' },
           { text: 'Ignore the critic.', why: 'It found the key question.' },
+          { text: 'Not yet. It\'s the right question. I\'ll find out what shops dislike about their current apps, and we\'ll see if we solve it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

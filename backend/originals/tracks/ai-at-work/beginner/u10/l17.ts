@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why thank Tolu instead of blaming him?',
         options: [
-          { text: 'If people are punished for reporting, the next mistake gets hidden' },
           { text: 'To be nice only', why: 'It protects future reporting.' },
+          { text: 'If people are punished for reporting, the next mistake gets hidden' },
           { text: 'It doesn\'t matter', why: 'Culture decides whether people report.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'I heard there was a data slip with our shops. Should I be worried?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Thanks for asking. Ten owners\' contact details went into a free AI tool. We reported it the same day and our data protection lead is handling it. I\'ll update you Friday.' },
           { text: 'Nothing happened.', why: 'Be honest.' },
           { text: 'It was Tolu\'s fault.', why: 'Blame doesn\'t help.' },
+          { text: 'Thanks for asking. Ten owners\' contact details went into a free AI tool. We reported it the same day and our data protection lead is handling it. I\'ll update you Friday.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

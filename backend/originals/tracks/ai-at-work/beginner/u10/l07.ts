@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ada needs the full contract summarised. What should she do?',
         options: [
-          { text: 'Use the company-approved AI tool, or ask the legal team' },
           { text: 'Paste it into a free tool', why: 'Unapproved.' },
+          { text: 'Use the company-approved AI tool, or ask the legal team' },
           { text: 'Guess', why: 'Use the right channel.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Can you send me the bank contract so I can ask my AI about it?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'It\'s confidential between us and the bank, so I can\'t share it. I can tell you what the outage clause says.' },
           { text: 'Sure, here it is.', why: 'Confidential.' },
           { text: 'Ask the bank yourself.', why: 'Offer what she can share.' },
+          { text: 'It\'s confidential between us and the bank, so I can\'t share it. I can tell you what the outage clause says.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

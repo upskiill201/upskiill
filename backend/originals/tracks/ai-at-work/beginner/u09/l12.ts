@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does BATNA stand for?',
         options: [
-          { text: 'Best Alternative To a Negotiated Agreement' },
           { text: 'Bank Agreement To New Accounts', why: 'Best Alternative To a Negotiated Agreement.' },
+          { text: 'Best Alternative To a Negotiated Agreement' },
           { text: 'Basic Approval Then New Action', why: 'Best Alternative To a Negotiated Agreement.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'The bank said no. Are the shops out of luck?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'No: shops get refunded either way. I\'m now discussing options with the bank, like them covering half or waiving next month\'s fees.' },
           { text: 'Yes, sorry.', why: 'Her company covers it regardless.' },
           { text: 'We\'re suing them.', why: 'Not the plan.' },
+          { text: 'No: shops get refunded either way. I\'m now discussing options with the bank, like them covering half or waiving next month\'s fees.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -136,11 +136,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does knowing your BATNA keep you calm?',
         options: [
-          { text: 'You know you\'re fine even if there\'s no deal, so you don\'t accept a bad one' },
           { text: 'It makes you aggressive', why: 'It makes you calmer.' },
           { text: 'It doesn\'t', why: 'It reduces pressure.' },
+          { text: 'You know you\'re fine even if there\'s no deal, so you don\'t accept a bad one' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

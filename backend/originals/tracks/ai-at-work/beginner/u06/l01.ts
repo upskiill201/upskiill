@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the biggest value of the AI\'s first plan?',
         options: [
-          { text: 'Something to react to, plus the questions nobody had answered' },
           { text: 'It\'s the final plan', why: 'It\'s a draft.' },
+          { text: 'Something to react to, plus the questions nobody had answered' },
           { text: 'It saves Tolu from talking to anyone', why: 'He still needs owners to agree.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'Tolu sent me a plan already! Is it final?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'It\'s a first draft. We\'re confirming owners and dates with the team this week; you\'ll get the agreed version Friday.' },
           { text: 'Yes, the AI made it.', why: 'Owners and dates need agreeing.' },
           { text: 'Ignore it.', why: 'Explain that it\'s a draft.' },
+          { text: 'It\'s a first draft. We\'re confirming owners and dates with the team this week; you\'ll get the agreed version Friday.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

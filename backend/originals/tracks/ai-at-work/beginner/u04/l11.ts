@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The AI wrote "We will fix this by tomorrow." Ada doesn\'t know if that\'s true. What should she do?',
         options: [
-          { text: 'Change it to what she can promise, or check with the team first' },
           { text: 'Send it; it sounds reassuring', why: 'A broken promise is worse than none.' },
+          { text: 'Change it to what she can promise, or check with the team first' },
           { text: 'Remove the whole message', why: 'Just fix the promise.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         message: 'Your last email to my boss said "Dear Carmin". It\'s Carmen!',
         prompt: 'Which check would have caught it?',
         options: [
-          { text: 'Names: check every name against the original.' },
           { text: 'Tone', why: 'It\'s a name error.' },
           { text: 'Numbers', why: 'It\'s a name error.' },
+          { text: 'Names: check every name against the original.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
@@ -139,11 +139,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why read it "as the person receiving it"?',
         options: [
-          { text: 'You notice what they\'ll notice: wrong names, odd tone, unclear asks' },
           { text: 'It\'s polite', why: 'It\'s practical.' },
           { text: 'To make it longer', why: 'To catch problems.' },
+          { text: 'You notice what they\'ll notice: wrong names, odd tone, unclear asks' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

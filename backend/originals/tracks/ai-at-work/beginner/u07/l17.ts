@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What went wrong at Public Health England in 2020?',
         options: [
-          { text: 'An old Excel format\'s row limit cut off nearly 16,000 cases' },
           { text: 'A virus deleted the file', why: 'It was a format limit.' },
+          { text: 'An old Excel format\'s row limit cut off nearly 16,000 cases' },
           { text: 'Someone typed the wrong total', why: 'It was a row limit.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: 'Why does SUM ignore some amounts?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Some cells are text, like "GHS 80" or "120 " with a space. SUM skips text. I\'ve converted them to numbers.' },
           { text: 'Spreadsheets are broken.', why: 'It\'s the data format.' },
           { text: 'No idea.', why: 'Text-numbers are a common cause.' },
+          { text: 'Some cells are text, like "GHS 80" or "120 " with a space. SUM skips text. I\'ve converted them to numbers.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why one idea per slide?',
         options: [
-          { text: 'People can\'t read lots of text and listen to you at the same time' },
           { text: 'It saves ink', why: 'It\'s about attention.' },
+          { text: 'People can\'t read lots of text and listen to you at the same time' },
           { text: 'Founders dislike text', why: 'Everyone struggles to read and listen.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'Your slide only has one line. Where did all the numbers go?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'They\'re in my speaker notes. I\'ll say them; the slide just shows the one thing to remember.' },
           { text: 'I deleted them.', why: 'They moved to notes.' },
           { text: 'The AI lost them.', why: 'Ada moved them on purpose.' },
+          { text: 'They\'re in my speaker notes. I\'ll say them; the slide just shows the one thing to remember.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

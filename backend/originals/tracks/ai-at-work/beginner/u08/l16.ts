@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'Nervous about tomorrow?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'A bit. But I\'ve run it four times, it\'s under 5 minutes, and I\'ve practised answers to the three hardest questions.' },
           { text: 'Terrified, I haven\'t practised.', why: 'She has.' },
+          { text: 'A bit. But I\'ve run it four times, it\'s under 5 minutes, and I\'ve practised answers to the three hardest questions.' },
           { text: 'No, I\'ll improvise.', why: 'Preparation beats improvising.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -130,11 +130,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why practise the first and last minute most?',
         options: [
-          { text: 'They shape first impressions and what people remember' },
           { text: 'The middle doesn\'t matter', why: 'It does; these matter most.' },
           { text: 'They\'re the longest', why: 'They\'re the most memorable.' },
+          { text: 'They shape first impressions and what people remember' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

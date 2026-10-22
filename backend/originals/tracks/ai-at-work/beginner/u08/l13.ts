@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Want me to look at the deck before the founders do?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Yes please! The AI flagged slide 4. Could you tell me if the story makes sense to someone outside our team?' },
           { text: 'No, the AI already checked it.', why: 'A real person adds a lot.' },
+          { text: 'Yes please! The AI flagged slide 4. Could you tell me if the story makes sense to someone outside our team?' },
           { text: 'Only if you say it\'s perfect.', why: 'She wants honest feedback.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why name the weakest slide?',
         options: [
-          { text: 'It tells you exactly where to spend your time' },
           { text: 'To feel bad', why: 'It focuses effort.' },
           { text: 'No reason', why: 'It focuses effort.' },
+          { text: 'It tells you exactly where to spend your time' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

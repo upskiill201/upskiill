@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happened at Arup in Hong Kong in 2024?',
         options: [
-          { text: 'A worker paid about US$25 million after a deepfake video call' },
           { text: 'A phishing email asked for a password', why: 'It was a deepfake video call.' },
+          { text: 'A worker paid about US$25 million after a deepfake video call' },
           { text: 'Nothing was lost', why: 'About US$25 million was paid.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         message: 'I just got a voice note from "Carmen" asking me to send her the agency\'s bank details urgently. Sounds exactly like her.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Call Carmen on her usual number before doing anything. Voices can be cloned now.' },
           { text: 'If it sounds like her, it\'s her.', why: 'Voices can be faked.' },
           { text: 'Reply to the voice note to check.', why: 'Use a channel you already know.' },
+          { text: 'Call Carmen on her usual number before doing anything. Voices can be cloned now.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -137,11 +137,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does pressure ("do it now, tell no one") matter?',
         options: [
-          { text: 'Scammers use urgency and secrecy to stop you checking' },
           { text: 'Real bosses always do this', why: 'It\'s a classic scam tactic.' },
           { text: 'It doesn\'t matter', why: 'It\'s a key warning sign.' },
+          { text: 'Scammers use urgency and secrecy to stop you checking' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

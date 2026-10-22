@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Ada\'s fee message go through compliance?',
         options: [
-          { text: 'Rules require customer communications to be clear, accurate and fair' },
           { text: 'Compliance likes reading', why: 'It\'s about regulation.' },
+          { text: 'Rules require customer communications to be clear, accurate and fair' },
           { text: 'AI wrote it', why: 'It would need checking even if a human wrote it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Could your AI just decide which shops qualify for the new credit feature?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'It can help analyse data, but decisions like that need a person to decide and explain them, under our lending rules.' },
           { text: 'Sure, faster that way.', why: 'Decisions about people need a human.' },
           { text: 'AI can\'t do anything with numbers.', why: 'It can assist.' },
+          { text: 'It can help analyse data, but decisions like that need a person to decide and explain them, under our lending rules.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

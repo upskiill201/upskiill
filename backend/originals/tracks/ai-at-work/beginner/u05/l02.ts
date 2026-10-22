@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why start with the decision?',
         options: [
-          { text: 'It tells you which questions matter and when to stop' },
           { text: 'It makes the report longer', why: 'It keeps research focused.' },
+          { text: 'It tells you which questions matter and when to stop' },
           { text: 'It doesn\'t matter where you start', why: 'Without a decision, research never ends.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         message: 'Why are you asking about licences? I only care if customers will want it.',
         prompt: 'Best reply?',
         options: [
-          { text: 'If we can\'t get a licence in time, customer demand won\'t matter. It could change the decision, so it\'s on the list.' },
           { text: 'You\'re right, I\'ll drop it.', why: 'It could block the launch.' },
           { text: 'The AI told me to.', why: 'Explain why it matters to the decision.' },
+          { text: 'If we can\'t get a licence in time, customer demand won\'t matter. It could change the decision, so it\'s on the list.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

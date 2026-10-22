@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What shape usually marks a decision in a flowchart?',
         options: [
-          { text: 'A diamond' },
           { text: 'A circle', why: 'Usually start or end.' },
+          { text: 'A diamond' },
           { text: 'A star', why: 'Not a standard flowchart shape.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'The flowchart looks great. Is that really how it works?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'I\'ve checked it with Tolu and our support lead; they corrected one step. Now it matches what really happens.' },
           { text: 'The AI made it, so yes.', why: 'Check with the people who do it.' },
           { text: 'Roughly.', why: 'It should be checked.' },
+          { text: 'I\'ve checked it with Tolu and our support lead; they corrected one step. Now it matches what really happens.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

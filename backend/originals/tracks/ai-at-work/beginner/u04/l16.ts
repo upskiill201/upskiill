@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do most managers care about most?',
         options: [
-          { text: 'Whether the work is right and useful' },
           { text: 'Whether you typed every word', why: 'They care about quality and honesty.' },
+          { text: 'Whether the work is right and useful' },
           { text: 'Which AI tool you prefer', why: 'Outcome and checking matter more.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'Did you use AI for this market summary? Our legal team asks every supplier now.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Yes, I used it to draft the summary, then checked every figure against the sources listed at the end.' },
           { text: 'No, I wrote it all myself.', why: 'Never pretend you didn\'t.' },
           { text: 'Does it matter?', why: 'Their legal team says it does. Answer plainly.' },
+          { text: 'Yes, I used it to draft the summary, then checked every figure against the sources listed at the end.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What matters more in the disclosure: the tool or the checking?',
         options: [
-          { text: 'What you checked' },
           { text: 'The tool\'s name', why: 'Checking shows reliability.' },
           { text: 'Neither', why: 'The checking matters.' },
+          { text: 'What you checked' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

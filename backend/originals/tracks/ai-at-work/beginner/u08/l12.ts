@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why say the number out loud too?',
         options: [
-          { text: 'People remember better when they see and hear it together' },
           { text: 'In case the slide breaks', why: 'It\'s about memory.' },
+          { text: 'People remember better when they see and hear it together' },
           { text: 'No reason', why: 'Seeing plus hearing helps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'Where are the failed payments? The founders might ask.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'They\'re on a backup slide. The main slide shows growth; if they ask about failures, I\'ll switch to it.' },
           { text: 'I deleted that data.', why: 'It\'s on a backup slide.' },
           { text: 'Failures don\'t matter.', why: 'They do, as backup.' },
+          { text: 'They\'re on a backup slide. The main slide shows growth; if they ask about failures, I\'ll switch to it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

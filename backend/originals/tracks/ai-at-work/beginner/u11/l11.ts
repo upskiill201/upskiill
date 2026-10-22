@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Noy and Zhang (2023) find?',
         options: [
-          { text: 'Writing tasks were about 40% faster with ChatGPT' },
           { text: 'AI made people slower', why: 'Faster.' },
+          { text: 'Writing tasks were about 40% faster with ChatGPT' },
           { text: 'No difference', why: 'About 40% faster.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'An AI answer takes 2 minutes but 20 to fix. Time saved, compared to 15 minutes by hand?',
         options: [
-          { text: 'None: it took 22 minutes, longer than doing it by hand' },
           { text: '13 minutes', why: 'Count the fixing time.' },
           { text: '20 minutes', why: 'It took longer overall.' },
+          { text: 'None: it took 22 minutes, longer than doing it by hand' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -136,11 +136,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why report where AI didn\'t help?',
         options: [
-          { text: 'It makes the whole report more trustworthy and guides where not to use it' },
           { text: 'To look modest', why: 'To be accurate.' },
           { text: 'No reason', why: 'It\'s useful information.' },
+          { text: 'It makes the whole report more trustworthy and guides where not to use it' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

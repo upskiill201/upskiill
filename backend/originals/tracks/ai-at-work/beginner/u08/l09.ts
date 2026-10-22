@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'The cover looks too cartoonish next to your clean charts.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Good point. I\'ll ask for "same scene, simple flat style with our two brand colours" so it matches.' },
           { text: 'I\'ll start a brand-new prompt.', why: 'Steer instead.' },
+          { text: 'Good point. I\'ll ask for "same scene, simple flat style with our two brand colours" so it matches.' },
           { text: 'Covers don\'t matter.', why: 'They set the tone.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why leave space on the left?',
         options: [
-          { text: 'So the slide title fits without covering the subject' },
           { text: 'It looks artistic', why: 'It\'s for the title.' },
           { text: 'No reason', why: 'It\'s practical.' },
+          { text: 'So the slide title fits without covering the subject' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

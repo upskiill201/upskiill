@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'My team\'s prompts are all over the place. Where should they go?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'One shared library, an entry per prompt: name, when, prompt, checks, date.' },
           { text: 'Leave them in chats.', why: 'Hard to find.' },
+          { text: 'One shared library, an entry per prompt: name, when, prompt, checks, date.' },
           { text: 'Email them around.', why: 'They get lost.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -130,11 +130,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When is a template ready to share?',
         options: [
-          { text: 'After it works on a new case' },
           { text: 'As soon as it\'s written', why: 'Test first.' },
           { text: 'Never', why: 'After testing.' },
+          { text: 'After it works on a new case' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

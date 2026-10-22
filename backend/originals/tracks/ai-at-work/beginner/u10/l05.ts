@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What can happen to text typed into an AI tool?',
         options: [
-          { text: 'It may be stored, reviewed or used for training, depending on tool and settings' },
           { text: 'Nothing', why: 'It leaves your computer.' },
+          { text: 'It may be stored, reviewed or used for training, depending on tool and settings' },
           { text: 'It\'s deleted at once', why: 'Not guaranteed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         message: 'Just send the agency the full shop list. Everyone does it.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'They gave details for payments, not marketing. Let\'s send an opt-in message and share only those who agree.' },
           { text: 'OK, sending.', why: 'New purpose.' },
           { text: 'No, never.', why: 'Opt-in is the route.' },
+          { text: 'They gave details for payments, not marketing. Let\'s send an opt-in message and share only those who agree.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -139,11 +139,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Samsung do after staff pasted confidential code?',
         options: [
-          { text: 'Restricted public AI tool use' },
           { text: 'Nothing', why: 'It restricted use.' },
           { text: 'Celebrated', why: 'It restricted use.' },
+          { text: 'Restricted public AI tool use' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

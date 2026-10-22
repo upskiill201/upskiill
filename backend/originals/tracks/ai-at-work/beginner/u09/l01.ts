@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'Carmen is really angry. Are you ready for 11:30?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Nearly. I have the facts, her likely questions, and Tolu is getting me the answer on preventing it again.' },
           { text: 'I\'ll just wing it.', why: 'Prepare.' },
+          { text: 'Nearly. I have the facts, her likely questions, and Tolu is getting me the answer on preventing it again.' },
           { text: 'Can you take the call instead?', why: 'It\'s Ada\'s to handle.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask for the hardest questions first?',
         options: [
-          { text: 'They need the most preparation, and the right people to help answer' },
           { text: 'To feel worse', why: 'To prepare.' },
           { text: 'Order doesn\'t matter', why: 'Hard ones need more time.' },
+          { text: 'They need the most preparation, and the right people to help answer' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

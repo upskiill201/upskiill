@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did the Arup deepfake case involve?',
         options: [
-          { text: 'A fake video call that led to about US$25 million being paid' },
           { text: 'A typo in an email', why: 'A deepfake call.' },
+          { text: 'A fake video call that led to about US$25 million being paid' },
           { text: 'A stolen laptop', why: 'A deepfake call.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         message: '"Carmen" just voice-noted me for the agency\'s bank details. Sounds just like her.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Call Carmen on her usual number first. Voices can be cloned.' },
           { text: 'Send them.', why: 'Verify first.' },
           { text: 'Reply to the note.', why: 'Use a known channel.' },
+          { text: 'Call Carmen on her usual number first. Voices can be cloned.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'The plan says the bank\'s "Kwame" owns settlement. Who\'s Kwame?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Good catch: the AI invented that name. We\'re confirming the real owner with the bank this week.' },
           { text: 'No idea, the AI knows.', why: 'The AI made him up.' },
+          { text: 'Good catch: the AI invented that name. We\'re confirming the real owner with the bank this week.' },
           { text: 'Probably someone at the bank.', why: 'Confirm, don\'t guess.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask the AI for owner roles rather than names?',
         options: [
-          { text: 'It doesn\'t know your team and may invent names' },
           { text: 'Roles are shorter', why: 'It\'s about invented names.' },
           { text: 'Names aren\'t allowed', why: 'They are, from people, not the AI.' },
+          { text: 'It doesn\'t know your team and may invent names' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Midnight. 400, 470, 530, 600, but week 3 had a festival. What does Ada say?',
         options: [
-          { text: 'Steady growth overall; part of week 3 may be the festival' },
           { text: 'Festivals triple sales', why: 'One-off.' },
+          { text: 'Steady growth overall; part of week 3 may be the festival' },
           { text: 'No trend', why: 'Four weeks of rise.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '1:30am. The AI says total processed is 5,800,000 GHS. Ada\'s head estimate is about 60,000. What now?',
         options: [
-          { text: 'Recalculate in the sheet; the AI is roughly 100x too high' },
           { text: 'Use the AI number', why: 'The estimate says it\'s wrong.' },
           { text: 'Split the difference', why: 'Recalculate.' },
+          { text: 'Recalculate in the sheet; the AI is roughly 100x too high' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -156,21 +156,21 @@ const lesson: OriginalLesson = {
         message: '9:20am. Carmen loved it. She\'s told your founders, and they want you to present the pilot to them next month. Ready?',
         prompt: 'It\'s Ada\'s first time presenting to the founders. Best reply?',
         options: [
-          { text: 'Nervous, but yes. I\'ll build a short deck from this report and practise it properly.' },
           { text: 'I\'ll just read the report out.', why: 'A pitch needs a deck and practice.' },
           { text: 'Can someone else do it?', why: 'It\'s her work to present.' },
+          { text: 'Nervous, but yes. I\'ll build a short deck from this report and practise it properly.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'What\'s the one idea behind all of Unit 7?',
         options: [
-          { text: 'AI explains and drafts; the spreadsheet calculates; you check every number and tell the story honestly' },
           { text: 'Let AI do all the maths', why: 'Spreadsheets calculate.' },
+          { text: 'AI explains and drafts; the spreadsheet calculates; you check every number and tell the story honestly' },
           { text: 'Avoid numbers', why: 'You can handle them now.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

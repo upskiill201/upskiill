@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the planning fallacy?',
         options: [
-          { text: 'Underestimating how long tasks will take' },
           { text: 'Planning too much', why: 'It\'s about time estimates.' },
+          { text: 'Underestimating how long tasks will take' },
           { text: 'Refusing to plan', why: 'It\'s about optimism.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'Tolu says sign-ups take one week. Can I tell Carmen that?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Let\'s say two weeks likely, three at worst. Shops ask to come back later, and there\'s a holiday that week.' },
           { text: 'Yes, one week.', why: 'Likely optimistic.' },
           { text: 'We can\'t estimate it.', why: 'A range is honest and useful.' },
+          { text: 'Let\'s say two weeks likely, three at worst. Shops ask to come back later, and there\'s a holiday that week.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

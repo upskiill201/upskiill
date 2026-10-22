@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'How\'s the founders\' deck going? Have you started designing?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Not yet: I\'ve got a 7-line outline and I\'m fixing the story first. Slides tomorrow.' },
           { text: 'Yes, 30 slides done!', why: 'Too many, too soon.' },
+          { text: 'Not yet: I\'ve got a 7-line outline and I\'m fixing the story first. Slides tomorrow.' },
           { text: 'I\'ll wing it.', why: 'Founders deserve preparation.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'About how long per slide in a 10-minute, 7-slide talk?',
         options: [
-          { text: 'About a minute and a half' },
           { text: 'About 10 seconds', why: 'Too fast.' },
           { text: 'About 5 minutes', why: 'That would be 35 minutes.' },
+          { text: 'About a minute and a half' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

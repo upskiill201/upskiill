@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do AI image tools often get wrong?',
         options: [
-          { text: 'Text, logos and numbers in the image' },
           { text: 'Colours', why: 'Text and logos are the usual problem.' },
+          { text: 'Text, logos and numbers in the image' },
           { text: 'Lighting', why: 'Text and logos are the usual problem.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'Can you generate an image of a chart showing our growth? Looks fancier than Excel.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'An AI image might draw the numbers wrong. I\'ll make the chart from the real data and style it nicely instead.' },
           { text: 'Sure, it\'s close enough.', why: 'Images aren\'t data.' },
           { text: 'Charts are boring; skip it.', why: 'The chart is the evidence.' },
+          { text: 'An AI image might draw the numbers wrong. I\'ll make the chart from the real data and style it nicely instead.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -151,11 +151,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why add text in the slide tool rather than in the AI image?',
         options: [
-          { text: 'Slide tools render text exactly; image tools often garble it' },
           { text: 'It\'s required', why: 'It\'s about accuracy.' },
           { text: 'No difference', why: 'Image tools often garble text.' },
+          { text: 'Slide tools render text exactly; image tools often garble it' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

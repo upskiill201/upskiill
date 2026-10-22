@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Does crediting a website make its photo OK to use?',
         options: [
-          { text: 'No; credit isn\'t permission' },
           { text: 'Yes', why: 'You need permission or a licence.' },
+          { text: 'No; credit isn\'t permission' },
           { text: 'Only for small images', why: 'Size doesn\'t matter.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'The AI says your deck is "excellent". Done?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'I asked it to be direct and it flagged slide 4. And I\'m showing Tobi tomorrow, because he knows the founders.' },
           { text: 'Yes, excellent.', why: 'Praise isn\'t a review.' },
           { text: 'AI reviews are useless.', why: 'Useful when asked well.' },
+          { text: 'I asked it to be direct and it flagged slide 4. And I\'m showing Tobi tomorrow, because he knows the founders.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

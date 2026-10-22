@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What went wrong when Arjun shortened the follow-up prompt?',
         options: [
-          { text: 'He removed the line that stopped invented promises' },
           { text: 'He made it too long', why: 'He removed a key line.' },
+          { text: 'He removed the line that stopped invented promises' },
           { text: 'Nothing', why: 'A false promise went out.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Sorry about the follow-up. I didn\'t know that line mattered.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'My fault for not explaining it. I\'ve added a "why" note. Your shorter version is good otherwise; want to suggest it again?' },
           { text: 'Never touch the library again.', why: 'Improvements are welcome.' },
           { text: 'It doesn\'t matter.', why: 'It caused a false promise.' },
+          { text: 'My fault for not explaining it. I\'ve added a "why" note. Your shorter version is good otherwise; want to suggest it again?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -144,11 +144,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Tolu add that improved results?',
         options: [
-          { text: '"Flag anything unclear"' },
           { text: 'More emojis', why: 'The flag instruction.' },
           { text: 'A password', why: 'Never.' },
+          { text: '"Flag anything unclear"' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

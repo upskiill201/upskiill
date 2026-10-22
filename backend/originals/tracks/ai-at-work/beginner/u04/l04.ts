@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the answer with working better?',
         options: [
-          { text: 'You can check each step and fix the wrong assumption' },
           { text: 'It\'s longer, so it\'s more accurate', why: 'Length doesn\'t make it right; checkability does.' },
+          { text: 'You can check each step and fix the wrong assumption' },
           { text: 'It gives a different number', why: 'Same number, but now you can check it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         message: 'We forecast 2,000 users in month one, not 5,000.',
         prompt: 'With the same working, how many agents (before leave cover)?',
         options: [
-          { text: '2' },
           { text: '5', why: 'That was with 5,000 users.' },
           { text: '20', why: '2,000 x 10% = 200 tickets; 200 / 100 = 2.' },
+          { text: '2' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

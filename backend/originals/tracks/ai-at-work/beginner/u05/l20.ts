@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '12:00. The AI\'s table ends "Kenya is clearly best". What now?',
         options: [
-          { text: 'Ask again with our criteria, a source or "unknown" in each cell, and no recommendation' },
           { text: 'Switch to Kenya', why: 'It decided without your criteria.' },
+          { text: 'Ask again with our criteria, a source or "unknown" in each cell, and no recommendation' },
           { text: 'Ignore the whole table', why: 'Redo it properly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: '2pm. I asked the AI why Ghana is best and it totally agreed!',
         prompt: 'Best reply?',
         options: [
-          { text: 'It tends to agree with how we ask. I\'ve asked it what would make Ghana the wrong choice; here\'s the biggest risk it found.' },
           { text: 'Great, done.', why: 'Leading question, agreeing answer.' },
           { text: 'AI can\'t help with this.', why: 'It can, when asked neutrally.' },
+          { text: 'It tends to agree with how we ask. I\'ve asked it what would make Ghana the wrong choice; here\'s the biggest risk it found.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -164,21 +164,21 @@ const lesson: OriginalLesson = {
         message: 'Thursday 6pm. Carmen approved the pilot! Can your team turn it into a plan by next week?',
         prompt: 'Tobi has asked Ada\'s new colleague Tolu to run the pilot. Best reply from Ada?',
         options: [
-          { text: 'Yes. Our new colleague Tolu is running it, and I\'ll work with him tomorrow to turn the brief into a plan.' },
           { text: 'I\'ll ask the AI to write the whole plan tonight.', why: 'Planning is next, and it needs people.' },
           { text: 'That\'s not my job.', why: 'She\'s the one who knows the research.' },
+          { text: 'Yes. Our new colleague Tolu is running it, and I\'ll work with him tomorrow to turn the brief into a plan.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'What\'s the one idea behind all of Unit 5?',
         options: [
-          { text: 'AI to plan, explain and challenge; sources to verify; people to decide' },
           { text: 'AI should make research decisions', why: 'People decide.' },
+          { text: 'AI to plan, explain and challenge; sources to verify; people to decide' },
           { text: 'Read everything before deciding', why: 'Stop when more wouldn\'t change the decision.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

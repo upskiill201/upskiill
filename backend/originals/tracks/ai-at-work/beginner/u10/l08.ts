@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the US Copyright Office say about fully AI-generated material?',
         options: [
-          { text: 'It isn\'t protected without human creative contribution' },
           { text: 'The user owns full copyright automatically', why: 'Human authorship is required.' },
+          { text: 'It isn\'t protected without human creative contribution' },
           { text: 'It\'s illegal to publish', why: 'It\'s not illegal; just not protected alone.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         message: 'The agency says AI blog posts are free content we can publish anywhere. True?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'We can use AI to draft, but let\'s add our own data and stories, edit properly, and check nothing is copied before publishing.' },
           { text: 'Yes, totally free.', why: 'Check for copying and add your work.' },
           { text: 'AI content can never be published.', why: 'It can, with care.' },
+          { text: 'We can use AI to draft, but let\'s add our own data and stories, edit properly, and check nothing is copied before publishing.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

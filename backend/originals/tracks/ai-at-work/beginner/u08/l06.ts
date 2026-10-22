@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How many boxes should a simple process visual have?',
         options: [
-          { text: 'About 3 to 5' },
           { text: '12 or more', why: 'Too many to read in seconds.' },
+          { text: 'About 3 to 5' },
           { text: 'Just 1', why: 'A process needs steps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'Can you add every technical step to the payment diagram?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'For founders, three boxes is clearer. I\'ll keep the full technical version as a backup slide in case they ask.' },
           { text: 'Sure, all 14 steps.', why: 'Too much to read in a glance.' },
           { text: 'No diagrams at all.', why: 'A simple one helps a lot.' },
+          { text: 'For founders, three boxes is clearer. I\'ll keep the full technical version as a backup slide in case they ask.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

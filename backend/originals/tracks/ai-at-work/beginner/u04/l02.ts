@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happened in Mata v. Avianca (2023)?',
         options: [
-          { text: 'Lawyers cited court cases ChatGPT had invented, and were fined' },
           { text: 'An airline used AI to set prices', why: 'It was about fake legal citations.' },
+          { text: 'Lawyers cited court cases ChatGPT had invented, and were fined' },
           { text: 'A judge used AI to write a ruling', why: 'The lawyers used it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         message: 'The AI gave me five sources for the Ghana stats. Can I just paste them into the appendix?',
         prompt: 'What should Ada say?',
         options: [
-          { text: 'Open each one first. Keep only the ones that exist and actually contain the claim.' },
           { text: 'Yes, five sources looks thorough.', why: 'Some may not exist.' },
           { text: 'Delete them all, AI sources are always fake.', why: 'Some may be real. Check them.' },
+          { text: 'Open each one first. Keep only the ones that exist and actually contain the claim.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

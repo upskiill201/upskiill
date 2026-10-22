@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the AI give a confident number with no real source?',
         options: [
-          { text: 'It predicts likely-sounding text, and confident numbers often appear in that kind of writing' },
           { text: 'It was trying to trick Ada', why: 'It has no intent; it predicts text.' },
+          { text: 'It predicts likely-sounding text, and confident numbers often appear in that kind of writing' },
           { text: 'It checked a database and made a typo', why: 'It didn\'t look anything up.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         message: 'Love slide 4! What\'s the source for the 72%? Our CEO always asks.',
         prompt: 'What should Ada reply?',
         options: [
-          { text: 'Honestly, I can\'t confirm it, so I\'ve taken it out. I\'ll find a figure with a real source by tomorrow.' },
           { text: 'It\'s from a report, trust me.', why: 'She couldn\'t find the report.' },
           { text: 'The AI said so.', why: 'That isn\'t a source.' },
+          { text: 'Honestly, I can\'t confirm it, so I\'ve taken it out. I\'ll find a figure with a real source by tomorrow.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

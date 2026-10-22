@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a training cut-off?',
         options: [
-          { text: 'The date after which the model learned nothing new' },
           { text: 'The time limit on a chat', why: 'It\'s about what the model learned.' },
+          { text: 'The date after which the model learned nothing new' },
           { text: 'The maximum length of an answer', why: 'It\'s about dates.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         message: 'The plan says transfer fees in Ghana are 1%. Is that current?',
         prompt: 'What should Ada do?',
         options: [
-          { text: 'Check the current fee on an official or provider page, note the date, and update the plan.' },
           { text: 'Say yes; the AI is up to date.', why: 'It may be using old data.' },
           { text: 'Remove all fees from the plan.', why: 'Check and keep the correct one.' },
+          { text: 'Check the current fee on an official or provider page, note the date, and update the plan.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

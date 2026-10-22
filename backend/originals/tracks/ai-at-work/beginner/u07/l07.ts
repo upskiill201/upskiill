@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the median?',
         options: [
-          { text: 'The middle value when you sort them' },
           { text: 'The average', why: 'The average is the mean.' },
+          { text: 'The middle value when you sort them' },
           { text: 'The biggest value', why: 'That\'s the maximum.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'For those five shops (2, 3, 3, 4, 88), the average is 20. Why is the median more honest here?',
         options: [
-          { text: 'One huge shop pulls the average up; most shops did 2-4' },
           { text: 'Averages are always wrong', why: 'Only when a few values dominate.' },
           { text: 'It isn\'t', why: '20 describes no real shop.' },
+          { text: 'One huge shop pulls the average up; most shops did 2-4' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -143,11 +143,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Ada do after AI describes a pattern?',
         options: [
-          { text: 'Look at the numbers herself to confirm it' },
           { text: 'Put it straight in the deck', why: 'Check it first.' },
           { text: 'Ask for a bigger pattern', why: 'Confirm first.' },
+          { text: 'Look at the numbers herself to confirm it' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

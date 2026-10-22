@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does every good task start with?',
         options: [
-          { text: 'A verb' },
           { text: 'A deadline', why: 'Helpful, but a verb makes it doable.' },
+          { text: 'A verb' },
           { text: 'The word "maybe"', why: 'A verb.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         message: 'What does "sort out the budget" mean on Tolu\'s list?',
         prompt: 'Best rewrite?',
         options: [
-          { text: 'Send Tobi the budget table for sign-off by Thursday (30 min).' },
           { text: 'Budget things.', why: 'Still vague.' },
           { text: 'Do the money.', why: 'Still vague.' },
+          { text: 'Send Tobi the budget table for sign-off by Thursday (30 min).' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where does bias in AI answers mostly come from?',
         options: [
-          { text: 'Patterns in the human writing it learned from' },
           { text: 'The AI\'s own opinions', why: 'It has no opinions; it repeats patterns.' },
+          { text: 'Patterns in the human writing it learned from' },
           { text: 'Random errors only', why: 'Bias is systematic, not random.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'These personas look fine to me. Can we use them in the deck?',
         prompt: 'What should Ada say?',
         options: [
-          { text: 'Nearly. Only the woman "needs help with technology" and everyone is in Accra. Let\'s base them on our real user data.' },
           { text: 'Yes, the AI made them, so they\'re objective.', why: 'AI can repeat stereotypes.' },
           { text: 'No, never use personas.', why: 'Personas are fine when based on real users.' },
+          { text: 'Nearly. Only the woman "needs help with technology" and everyone is in Accra. Let\'s base them on our real user data.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

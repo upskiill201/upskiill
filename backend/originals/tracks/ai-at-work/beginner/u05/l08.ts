@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask the AI to quiz you?',
         options: [
-          { text: 'Recalling answers makes learning stick better than re-reading' },
           { text: 'To test the AI', why: 'It tests you.' },
+          { text: 'Recalling answers makes learning stick better than re-reading' },
           { text: 'It\'s faster than reading', why: 'It\'s about memory, not speed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'You learned all this last night? How do you know it\'s right?',
         prompt: 'Best reply?',
         options: [
-          { text: 'The AI helped me understand the ideas. The specific rules and numbers I checked on the regulator\'s site.' },
           { text: 'The AI told me, so it\'s right.', why: 'Understanding yes; rules need checking.' },
           { text: 'I don\'t, really.', why: 'She checked the key facts.' },
+          { text: 'The AI helped me understand the ideas. The specific rules and numbers I checked on the regulator\'s site.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

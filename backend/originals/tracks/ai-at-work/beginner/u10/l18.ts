@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'Can my team use your safety checklist?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Please do. Swap in your own approved tools and data contact, and keep it next to wherever people use AI.' },
           { text: 'It only works for fintech.', why: 'It works anywhere.' },
+          { text: 'Please do. Swap in your own approved tools and data contact, and keep it next to wherever people use AI.' },
           { text: 'You don\'t need one.', why: 'Every team does.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should happen with an urgent request for money that seems to come from Tobi?',
         options: [
-          { text: 'Verify on a second channel you already know' },
           { text: 'Pay if it sounds like him', why: 'Voices can be faked.' },
           { text: 'Reply to the message', why: 'Use a known channel.' },
+          { text: 'Verify on a second channel you already know' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
@@ -139,11 +139,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the simplest step to start with today?',
         options: [
-          { text: 'Asking "whose data is it?" before every paste' },
           { text: 'Reading every law', why: 'Start with one habit.' },
           { text: 'Never using AI', why: 'Use it safely.' },
+          { text: 'Asking "whose data is it?" before every paste' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

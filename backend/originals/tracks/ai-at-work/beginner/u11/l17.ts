@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Ada\'s template suddenly give long answers?',
         options: [
-          { text: 'The tool was updated and behaves differently' },
           { text: 'Ada typed it wrong', why: 'Same prompt; the tool changed.' },
+          { text: 'The tool was updated and behaves differently' },
           { text: 'The report was longer', why: 'The tool changed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Your summary template stopped working for my team this week!',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'The tool updated. I\'ve added "exactly 5 bullets, no introduction" and updated the shared version today. Try that one.' },
           { text: 'It works for me.', why: 'Fix the shared version.' },
           { text: 'Stop using it.', why: 'It\'s fixable.' },
+          { text: 'The tool updated. I\'ve added "exactly 5 bullets, no introduction" and updated the shared version today. Try that one.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

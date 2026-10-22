@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s missing from "1. The outage 2. Next steps 3. AOB"?',
         options: [
-          { text: 'A goal, owners, timings and which items need decisions' },
           { text: 'More items', why: 'Detail, not quantity.' },
+          { text: 'A goal, owners, timings and which items need decisions' },
           { text: 'Nothing', why: 'It keeps no time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'Can you send the agenda before the call? Carmen likes to know what\'s coming.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Sending it now: four items, 30 minutes, and her concerns get ten minutes early on.' },
           { text: 'I\'ll share it on the call.', why: 'Share before.' },
           { text: 'We don\'t need one.', why: 'An angry call needs structure.' },
+          { text: 'Sending it now: four items, 30 minutes, and her concerns get ten minutes early on.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

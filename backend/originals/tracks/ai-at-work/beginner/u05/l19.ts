@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which steps are the short version?',
         options: [
-          { text: 'Decision, sources, brief' },
           { text: 'Only "orient with AI"', why: 'Sources can\'t be skipped.' },
+          { text: 'Decision, sources, brief' },
           { text: 'None; always do all seven', why: 'Scale to the question.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Could my team use your recipe for our own research?',
         prompt: 'Best reply?',
         options: [
-          { text: 'Yes. Start every project with step 1: write down the decision. Everything else follows from it.' },
           { text: 'It only works for Ghana.', why: 'It works for any research.' },
           { text: 'Only if they use the same AI tool.', why: 'Tool-neutral.' },
+          { text: 'Yes. Start every project with step 1: write down the decision. Everything else follows from it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -139,11 +139,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why start with the decision?',
         options: [
-          { text: 'It tells you what to research and when to stop' },
           { text: 'It\'s the easiest step', why: 'It\'s the most important.' },
           { text: 'It looks good', why: 'It focuses everything.' },
+          { text: 'It tells you what to research and when to stop' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

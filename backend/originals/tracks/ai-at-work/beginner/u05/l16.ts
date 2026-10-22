@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can\'t the AI know what Makola shop owners will do?',
         options: [
-          { text: 'It has never met them; it can only guess from general patterns' },
           { text: 'It\'s banned from talking about markets', why: 'It just has no data on them.' },
+          { text: 'It has never met them; it can only guess from general patterns' },
           { text: 'It can, if you ask nicely', why: 'Politeness doesn\'t add data.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'The AI says 80% of shop owners will love our app. Great, right?',
         prompt: 'Best reply?',
         options: [
-          { text: 'That\'s a guess; it\'s never met them. Let\'s talk to ten shop owners this week instead.' },
           { text: 'Amazing, let\'s put it in the brief.', why: 'Invented number.' },
           { text: 'Ask the AI again to be sure.', why: 'It still can\'t know.' },
+          { text: 'That\'s a guess; it\'s never met them. Let\'s talk to ten shop owners this week instead.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

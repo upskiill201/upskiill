@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Ada say "probably", not "yes"?',
         options: [
-          { text: 'She hadn\'t confirmed with a lawyer, so it wasn\'t final' },
           { text: 'She was nervous', why: 'She was being accurate about confidence.' },
+          { text: 'She hadn\'t confirmed with a lawyer, so it wasn\'t final' },
           { text: 'The regulator was unclear', why: 'She hadn\'t had expert confirmation.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'I only need a yes or no for the call. Can you drop the "probably"?',
         prompt: 'Best reply?',
         options: [
-          { text: 'Say "likely yes, based on the regulator\'s guidance; we\'ll confirm with a lawyer". It\'s still clear, and nobody gets surprised later.' },
           { text: 'OK: yes, definitely.', why: 'Overstates what she knows.' },
           { text: 'I can\'t answer at all.', why: 'She has a useful, honest answer.' },
+          { text: 'Say "likely yes, based on the regulator\'s guidance; we\'ll confirm with a lawyer". It\'s still clear, and nobody gets surprised later.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

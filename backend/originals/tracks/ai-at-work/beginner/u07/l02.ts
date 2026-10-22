@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does =SUMIF(E:E,"completed",C:C) do?',
         options: [
-          { text: 'Adds column C where column E says "completed"' },
           { text: 'Counts completed rows', why: 'That would be COUNTIF.' },
+          { text: 'Adds column C where column E says "completed"' },
           { text: 'Adds all of column E', why: 'E is the rule column; C is added.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'What does the "COUNTIF" in your sheet count?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'It counts how many payments have Status "failed", so we can see the failure rate.' },
           { text: 'I\'m not sure, the AI wrote it.', why: 'She should understand her own formulas.' },
           { text: 'Everything.', why: 'It counts matching rows.' },
+          { text: 'It counts how many payments have Status "failed", so we can see the failure rate.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

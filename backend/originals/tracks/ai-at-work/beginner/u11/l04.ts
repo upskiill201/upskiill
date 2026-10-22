@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What are custom instructions?',
         options: [
-          { text: 'Standing instructions the tool applies to every new chat' },
           { text: 'A one-off prompt', why: 'They apply every time.' },
+          { text: 'Standing instructions the tool applies to every new chat' },
           { text: 'IT rules', why: 'They\'re your own settings.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'I always have to tell the AI to stop using American spelling. Annoying!',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Put it in your custom instructions once: "Use Mexican Spanish" or "British English", and it applies to every chat.' },
           { text: 'Just keep telling it.', why: 'Set it once.' },
           { text: 'Switch tools.', why: 'Use the setting.' },
+          { text: 'Put it in your custom instructions once: "Use Mexican Spanish" or "British English", and it applies to every chat.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

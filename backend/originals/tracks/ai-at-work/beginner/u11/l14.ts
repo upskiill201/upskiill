@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why start with their own task?',
         options: [
-          { text: 'It\'s relevant, so they remember and use it' },
           { text: 'To save Ada preparing', why: 'It\'s about relevance.' },
+          { text: 'It\'s relevant, so they remember and use it' },
           { text: 'Made-up examples are banned', why: 'Real ones stick better.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         message: 'My team found your session really practical. What made it work?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'They worked on their own real tasks, did it themselves, and left with a template to use tomorrow.' },
           { text: 'My slides.', why: 'It was hands-on.' },
           { text: 'Luck.', why: 'It was the approach.' },
+          { text: 'They worked on their own real tasks, did it themselves, and left with a template to use tomorrow.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

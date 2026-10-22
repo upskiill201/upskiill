@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes audiences reject a slide?',
         options: [
-          { text: 'Generic, empty content, not the tool used' },
           { text: 'Any AI involvement', why: 'They react to empty slides.' },
+          { text: 'Generic, empty content, not the tool used' },
           { text: 'Using real photos', why: 'Real photos help.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'The AI made your slides look super glossy. Keep that style?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'I\'m switching to our company template and real launch photos. Glossy looks generic; ours looks like it actually happened.' },
           { text: 'Yes, glossy is professional.', why: 'Glossy often reads as generic.' },
           { text: 'I\'ll add more effects.', why: 'Less is more.' },
+          { text: 'I\'m switching to our company template and real launch photos. Glossy looks generic; ours looks like it actually happened.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

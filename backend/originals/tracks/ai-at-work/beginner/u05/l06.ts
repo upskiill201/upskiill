@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Seven pros, two cons. Is Ghana a good choice?',
         options: [
-          { text: 'You can\'t tell until you weigh them' },
           { text: 'Yes, more pros', why: 'One con could outweigh them all.' },
+          { text: 'You can\'t tell until you weigh them' },
           { text: 'No, any cons mean no', why: 'Weigh them instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'The list looks really balanced: five pros, five cons. So it\'s 50/50?',
         prompt: 'Best reply?',
         options: [
-          { text: 'Not necessarily. The licence timeline alone could decide it. Let\'s weigh the big ones, not count them.' },
           { text: 'Yes, it\'s a coin toss.', why: 'Counting isn\'t weighing.' },
           { text: 'Let\'s add more pros.', why: 'More items doesn\'t help.' },
+          { text: 'Not necessarily. The licence timeline alone could decide it. Let\'s weigh the big ones, not count them.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

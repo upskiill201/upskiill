@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the realistic view of AI accuracy?',
         options: [
-          { text: 'Very useful, but anything important needs checking' },
           { text: 'Always right if you pay', why: 'All tools can be wrong.' },
+          { text: 'Very useful, but anything important needs checking' },
           { text: 'Never worth using', why: 'It saves real time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'My colleague says we should ban AI because of the fake statistic. Thoughts?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'The fix was a check, not a ban. We caught it because we asked for the source. That habit is what keeps it safe.' },
           { text: 'Agreed, ban it.', why: 'Overreaction; checking worked.' },
           { text: 'Fake statistics don\'t matter.', why: 'They matter a lot.' },
+          { text: 'The fix was a check, not a ban. We caught it because we asked for the source. That habit is what keeps it safe.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

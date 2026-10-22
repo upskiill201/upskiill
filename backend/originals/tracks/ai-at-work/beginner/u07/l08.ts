@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why should bar charts start at zero?',
         options: [
-          { text: 'Otherwise small differences look huge' },
           { text: 'It looks nicer', why: 'It\'s about honesty.' },
+          { text: 'Otherwise small differences look huge' },
           { text: 'They shouldn\'t', why: 'Cutting the axis exaggerates.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         message: 'Can we make the chart start at 500 so the growth looks bigger?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'The growth is real, so let\'s show it honestly from zero, with a title that says "up 50% in four weeks". It\'s strong as it is.' },
           { text: 'Sure.', why: 'That exaggerates.' },
           { text: 'Charts don\'t matter.', why: 'They do.' },
+          { text: 'The growth is real, so let\'s show it honestly from zero, with a title that says "up 50% in four weeks". It\'s strong as it is.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

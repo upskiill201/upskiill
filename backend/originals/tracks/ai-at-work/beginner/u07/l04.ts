@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Ada do before cleaning?',
         options: [
-          { text: 'Keep a copy of the original data' },
           { text: 'Delete the duplicates', why: 'Copy first, so nothing is lost.' },
+          { text: 'Keep a copy of the original data' },
           { text: 'Email it to everyone', why: 'Copy first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'Why did the Makola total change from 41,000 to 58,000 GHS?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'The market name was spelled four ways, so many rows weren\'t counted. I standardised it; the original data is saved if you want to check.' },
           { text: 'The AI changed it.', why: 'Explain the cleaning.' },
           { text: 'No idea.', why: 'She knows why.' },
+          { text: 'The market name was spelled four ways, so many rows weren\'t counted. I standardised it; the original data is saved if you want to check.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

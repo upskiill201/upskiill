@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Settlement is slower than promised, and Ada is raising it Monday. What colour?',
         options: [
-          { text: 'Amber' },
           { text: 'Green', why: 'There\'s a real problem.' },
+          { text: 'Amber' },
           { text: 'Red', why: 'It\'s being handled; no decision needed yet.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'Why is the pilot amber? Is something wrong?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Sign-ups are on track. Settlement takes 2 days instead of 1; we\'re raising it with the bank Monday. Amber means it\'s handled, not a crisis.' },
           { text: 'It\'s nothing, really green.', why: 'Don\'t downplay a real issue.' },
           { text: 'Everything is wrong.', why: 'Overreaction.' },
+          { text: 'Sign-ups are on track. Settlement takes 2 days instead of 1; we\'re raising it with the bank Monday. Amber means it\'s handled, not a crisis.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

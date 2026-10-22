@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which point is about "meaning first, plain numbers"?',
         options: [
-          { text: 'Words' },
           { text: 'Formulas', why: 'That\'s about calculation.' },
+          { text: 'Words' },
           { text: 'Clean', why: 'That\'s about data quality.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         message: 'How do you make sure your numbers are always right?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'An eight-point checklist, five minutes, before any number goes out. It\'s caught three mistakes this week.' },
           { text: 'The AI checks them.', why: 'She checks them.' },
           { text: 'I\'m just good at maths.', why: 'It\'s the checklist.' },
+          { text: 'An eight-point checklist, five minutes, before any number goes out. It\'s caught three mistakes this week.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -141,11 +141,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why save the original before cleaning?',
         options: [
-          { text: 'So you can always go back and check what changed' },
           { text: 'To use more storage', why: 'It\'s your safety net.' },
           { text: 'No need', why: 'Cleaning mistakes happen.' },
+          { text: 'So you can always go back and check what changed' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

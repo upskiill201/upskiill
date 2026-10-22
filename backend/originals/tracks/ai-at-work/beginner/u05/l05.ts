@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do professional fact-checkers do with an unfamiliar site?',
         options: [
-          { text: 'Leave it and check what others say about who runs it' },
           { text: 'Read every page closely', why: 'They read laterally instead.' },
+          { text: 'Leave it and check what others say about who runs it' },
           { text: 'Trust it if it looks professional', why: 'Design isn\'t evidence.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'The table has three "unknown" cells. Can you just fill them in with the AI\'s guesses?',
         prompt: 'Best reply?',
         options: [
-          { text: 'I\'d rather keep them honest. I\'ll try to find real figures today; anything still unknown, we\'ll flag in the brief.' },
           { text: 'Sure, guesses are fine.', why: 'They\'d look like facts.' },
           { text: 'Delete those rows.', why: 'They may matter.' },
+          { text: 'I\'d rather keep them honest. I\'ll try to find real figures today; anything still unknown, we\'ll flag in the brief.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -146,11 +146,11 @@ const lesson: OriginalLesson = {
         message: 'The AI said Kenya is "clearly best". Should we just go with that?',
         prompt: 'Best reply?',
         options: [
-          { text: 'It didn\'t know our priorities. Let\'s agree what matters most to us, then look at the table together.' },
           { text: 'Yes, it\'s clearly best.', why: 'It decided without your criteria.' },
           { text: 'No, Kenya is bad.', why: 'The point is who decides and how.' },
+          { text: 'It didn\'t know our priorities. Let\'s agree what matters most to us, then look at the table together.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

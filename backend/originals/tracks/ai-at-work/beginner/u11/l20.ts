@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Week 2. I removed "only include what we agreed" from the follow-up. It\'s cleaner!',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'That line stops invented promises. I\'ve added a "why" note. Want to suggest a shorter version that keeps it?' },
           { text: 'Great, cleaner is better.', why: 'Key rule removed.' },
+          { text: 'That line stops invented promises. I\'ve added a "why" note. Want to suggest a shorter version that keeps it?' },
           { text: 'Never edit anything.', why: 'Suggestions welcome.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Week 3. The tool updated and the summary template now rambles. Fix?',
         options: [
-          { text: 'Add "exactly 5 bullets, no introduction", test it, update the library with a date' },
           { text: 'Stop using summaries', why: 'It\'s fixable.' },
           { text: 'Ignore it', why: 'It wastes time.' },
+          { text: 'Add "exactly 5 bullets, no introduction", test it, update the library with a date' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -158,21 +158,21 @@ const lesson: OriginalLesson = {
         message: 'Month 10. Carmen got pitched five new AI tools this week. She wants your view on which, if any, our teams should use. Help?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Happy to. Let\'s start from the tasks your team does, then compare tools on those, including cost and data safety.' },
           { text: 'Pick the newest one.', why: 'Next unit: choosing well.' },
           { text: 'Use all five.', why: 'Too many tools.' },
+          { text: 'Happy to. Let\'s start from the tasks your team does, then compare tools on those, including cost and data safety.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'What\'s the one idea behind all of Unit 11?',
         options: [
-          { text: 'Save what works, make it reusable and shareable, measure it honestly, and keep improving it' },
           { text: 'Write every prompt from scratch', why: 'Save and reuse.' },
+          { text: 'Save what works, make it reusable and shareable, measure it honestly, and keep improving it' },
           { text: 'Automate everything', why: 'Automate with checks.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

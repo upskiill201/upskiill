@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why name a shared goal?',
         options: [
-          { text: 'It shows you\'re on the same side, arguing about how, not whether' },
           { text: 'To flatter her', why: 'It reframes the disagreement.' },
+          { text: 'It shows you\'re on the same side, arguing about how, not whether' },
           { text: 'It\'s filler', why: 'It changes the tone.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         message: 'Carmen read your email. She says "fair point, let\'s try the check-ins". How did you manage that?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'I showed I understood her worry, used our own data, and offered an alternative instead of just saying no.' },
           { text: 'I told her she was wrong.', why: 'She didn\'t.' },
           { text: 'Luck.', why: 'It was the approach.' },
+          { text: 'I showed I understood her worry, used our own data, and offered an alternative instead of just saying no.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

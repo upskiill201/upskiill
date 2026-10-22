@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Di Stefano and colleagues find?',
         options: [
-          { text: 'Trainees who reflected for 15 minutes performed better than those who practised more' },
           { text: 'Reflection wastes time', why: 'The opposite.' },
+          { text: 'Trainees who reflected for 15 minutes performed better than those who practised more' },
           { text: 'Only managers benefit', why: 'It was trainees.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         message: 'Why does Tolu stop at 4:30 on Fridays? Isn\'t that lost time?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'It\'s his 10-minute weekly review. It\'s why his sign-ups got faster: he noticed mornings work better.' },
           { text: 'Yes, he should stop.', why: 'Reflection pays off.' },
           { text: 'He\'s tired.', why: 'It\'s a deliberate habit.' },
+          { text: 'It\'s his 10-minute weekly review. It\'s why his sign-ups got faster: he noticed mornings work better.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

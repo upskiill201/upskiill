@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'Could your guide work for new people on my team too?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'The structure will. The details are ours, so swap in your own tools and people. Happy to share the template.' },
           { text: 'Yes, send it to them as is.', why: 'Different company, different details.' },
+          { text: 'The structure will. The details are ours, so swap in your own tools and people. Happy to share the template.' },
           { text: 'No, it\'s secret.', why: 'The structure is easy to share.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why organise the guide by "when you need it"?',
         options: [
-          { text: 'A newcomer can follow it in order without feeling overwhelmed' },
           { text: 'It looks nicer', why: 'It\'s about what they need first.' },
           { text: 'Alphabetical is confusing', why: 'Timing is the point.' },
+          { text: 'A newcomer can follow it in order without feeling overwhelmed' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

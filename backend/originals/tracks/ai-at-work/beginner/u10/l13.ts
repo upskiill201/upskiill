@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the "training" setting usually control?',
         options: [
-          { text: 'Whether your chats may be used to improve the model' },
           { text: 'How fast it answers', why: 'It\'s about data use.' },
+          { text: 'Whether your chats may be used to improve the model' },
           { text: 'Your font size', why: 'It\'s about data use.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ve never looked at my AI tool\'s settings. Should I?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Yes, it takes five minutes: check training, history, memory, connected apps and your login security.' },
           { text: 'No, defaults are always fine.', why: 'Defaults vary.' },
           { text: 'Only IT can change them.', why: 'Many are user settings.' },
+          { text: 'Yes, it takes five minutes: check training, history, memory, connected apps and your login security.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -136,11 +136,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s a temporary chat good for?',
         options: [
-          { text: 'Questions you don\'t want saved in your history' },
           { text: 'Pasting passwords safely', why: 'Never paste passwords.' },
           { text: 'Nothing', why: 'It limits what\'s kept.' },
+          { text: 'Questions you don\'t want saved in your history' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s wrong with "We apologise for any inconvenience caused"?',
         options: [
-          { text: 'It doesn\'t say what happened or take responsibility' },
           { text: 'It\'s too long', why: 'It\'s empty, not long.' },
+          { text: 'It doesn\'t say what happened or take responsibility' },
           { text: 'Nothing', why: 'It says nothing specific.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In a 2016 study, which apology parts did people value most?',
         options: [
-          { text: 'Taking responsibility and offering repair' },
           { text: 'Explaining whose fault it was', why: 'Responsibility and repair mattered most.' },
           { text: 'Long expressions of regret', why: 'Responsibility and repair mattered most.' },
+          { text: 'Taking responsibility and offering repair' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -142,11 +142,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why say what changes, not just sorry?',
         options: [
-          { text: 'It shows it\'s less likely to happen again' },
           { text: 'To sound busy', why: 'It\'s about prevention.' },
           { text: 'Sorry is enough', why: 'Change rebuilds trust.' },
+          { text: 'It shows it\'s less likely to happen again' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

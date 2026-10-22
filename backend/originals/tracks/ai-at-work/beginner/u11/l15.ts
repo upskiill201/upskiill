@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '3 minutes with AI plus 15 minutes fixing, vs 12 minutes by hand. Saved?',
         options: [
-          { text: 'Nothing; it took 18 minutes' },
           { text: '9 minutes', why: 'Count fixing.' },
+          { text: 'Nothing; it took 18 minutes' },
           { text: '15 minutes', why: 'It took longer.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The answer is weak. Best move?',
         options: [
-          { text: 'Add the missing context and ask once' },
           { text: 'Regenerate ten times', why: 'Time sink.' },
           { text: 'Give up on AI', why: 'Fix the request.' },
+          { text: 'Add the missing context and ask once' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -125,21 +125,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why let learners type their own prompt in training?',
         options: [
-          { text: 'Doing it is how they learn' },
           { text: 'To save time', why: 'For learning.' },
           { text: 'No reason', why: 'Active practice.' },
+          { text: 'Doing it is how they learn' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'Why report where AI didn\'t help?',
         options: [
-          { text: 'It makes the report trustworthy and shows where not to use AI' },
           { text: 'To look modest', why: 'For accuracy.' },
+          { text: 'It makes the report trustworthy and shows where not to use AI' },
           { text: 'Never report that', why: 'It\'s useful.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

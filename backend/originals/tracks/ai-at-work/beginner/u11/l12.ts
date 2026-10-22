@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The answer is bad. What\'s usually faster?',
         options: [
-          { text: 'Improve the request with missing context, then ask once' },
           { text: 'Regenerate ten times', why: 'Usually slower.' },
+          { text: 'Improve the request with missing context, then ask once' },
           { text: 'Switch tools immediately', why: 'Fix the request first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'I spent an hour regenerating an email until it felt perfect.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Try adding what was missing (who it\'s for, tone, the one ask) and ask once. And decide when it\'s good enough.' },
           { text: 'Keep going until perfect.', why: 'Time sink.' },
           { text: 'Never use AI for emails.', why: 'Use it better.' },
+          { text: 'Try adding what was missing (who it\'s for, tone, the one ask) and ask once. And decide when it\'s good enough.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

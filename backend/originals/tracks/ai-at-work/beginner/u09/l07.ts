@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who teaches the SBI model?',
         options: [
-          { text: 'The Center for Creative Leadership' },
           { text: 'The bank', why: 'CCL.' },
+          { text: 'The Center for Creative Leadership' },
           { text: 'Tobi', why: 'CCL.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'How do you give feedback to someone new without upsetting them?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Say what happened, what it caused, and ask what would help. Keep it about the action, not who they are.' },
           { text: 'Don\'t give feedback to new people.', why: 'They need it most.' },
           { text: 'Tell them they\'re doing badly.', why: 'Too vague and harsh.' },
+          { text: 'Say what happened, what it caused, and ask what would help. Keep it about the action, not who they are.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

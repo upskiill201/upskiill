@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Ada do first?',
         options: [
-          { text: 'Call Tobi on his known number, or ask him in person' },
           { text: 'Reply to the new number', why: 'That\'s the scammer.' },
+          { text: 'Call Tobi on his known number, or ask him in person' },
           { text: 'Buy the cards quickly', why: 'Classic scam.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         message: 'I got a video message from "our CEO" asking me to approve a payment. It looked real.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Don\'t approve anything yet. Call the CEO\'s office on the known number and tell IT. Video can be faked now.' },
           { text: 'If it looked real, approve it.', why: 'Deepfakes look real.' },
           { text: 'Reply to the video to ask.', why: 'Use a known channel.' },
+          { text: 'Don\'t approve anything yet. Call the CEO\'s office on the known number and tell IT. Video can be faked now.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -137,11 +137,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes a deepfake dangerous at work?',
         options: [
-          { text: 'It can look and sound exactly like someone you trust' },
           { text: 'It\'s always low quality', why: 'Often convincing.' },
           { text: 'Nothing', why: 'It can trick people.' },
+          { text: 'It can look and sound exactly like someone you trust' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

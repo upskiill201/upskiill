@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might an AI give last year\'s fee?',
         options: [
-          { text: 'Its training data stops at a cut-off date' },
           { text: 'It prefers old numbers', why: 'It simply doesn\'t know newer ones.' },
+          { text: 'Its training data stops at a cut-off date' },
           { text: 'Fees never change', why: 'They do.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'This AI summary says exactly what I hoped. Ship it?',
         prompt: 'Best reply?',
         options: [
-          { text: 'Let\'s ask for the strongest case against first, then check the key facts.' },
           { text: 'Yes, it agrees with you.', why: 'That\'s when to be most careful.' },
           { text: 'No, delete it.', why: 'Test it rather than throw it away.' },
+          { text: 'Let\'s ask for the strongest case against first, then check the key facts.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
@@ -147,11 +147,11 @@ const lesson: OriginalLesson = {
         message: 'Our AI tool can browse the web, so its fees are current, right?',
         prompt: 'Best reply?',
         options: [
-          { text: 'Probably closer, but let\'s check the date on the page it used.' },
           { text: 'Yes, always.', why: 'Web pages can be old.' },
           { text: 'Browsing makes it less accurate.', why: 'It helps, but still check dates.' },
+          { text: 'Probably closer, but let\'s check the date on the page it used.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

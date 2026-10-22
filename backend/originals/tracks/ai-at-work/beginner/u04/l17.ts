@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why confirm the right answer before correcting?',
         options: [
-          { text: 'A wrong correction is worse than the first mistake' },
           { text: 'To delay', why: 'Check fast, then send.' },
+          { text: 'A wrong correction is worse than the first mistake' },
           { text: 'It doesn\'t matter', why: 'Two wrong numbers lose much more trust.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'Thanks for the correction. Does this change our budget?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Yes, by about $300 a month if you used the 1% figure. I\'ve updated the budget sheet too.' },
           { text: 'Probably not.', why: 'She knows it does; say how much.' },
           { text: 'You\'d have to check yourself.', why: 'Flag the knock-on effects for her.' },
+          { text: 'Yes, by about $300 a month if you used the 1% figure. I\'ve updated the budget sheet too.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -137,11 +137,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Ada tell Tobi afterwards?',
         options: [
-          { text: 'What happened, that it\'s fixed, and the habit she changed' },
           { text: 'Nothing, it\'s fixed', why: 'Managers prefer to hear it from you.' },
           { text: 'That the AI is to blame', why: 'Own it.' },
+          { text: 'What happened, that it\'s fixed, and the habit she changed' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

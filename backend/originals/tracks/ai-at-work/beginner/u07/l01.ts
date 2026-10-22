@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why not paste all 3,000 rows into the AI?',
         options: [
-          { text: 'Its arithmetic can be unreliable, and the sheet has personal data' },
           { text: 'AI can\'t read numbers', why: 'It can; the risks are accuracy and privacy.' },
+          { text: 'Its arithmetic can be unreliable, and the sheet has personal data' },
           { text: 'It\'s against the law', why: 'It\'s about accuracy and privacy.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'Can you just send me what the AI says the total is?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'I\'ll send the total from the spreadsheet itself, using a formula the AI helped me write. That way it\'s exact.' },
           { text: 'Sure, the AI added it up.', why: 'AI arithmetic can be wrong.' },
           { text: 'I can\'t do totals.', why: 'A formula can.' },
+          { text: 'I\'ll send the total from the spreadsheet itself, using a formula the AI helped me write. That way it\'s exact.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What can happen to text typed into an AI tool?',
         options: [
-          { text: 'Depending on tool and settings, it may be stored, reviewed or used for training' },
           { text: 'Nothing; it disappears', why: 'It leaves your computer.' },
+          { text: 'Depending on tool and settings, it may be stored, reviewed or used for training' },
           { text: 'It\'s always deleted instantly', why: 'Not guaranteed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'The agency needs the list tomorrow. Can\'t Tolu just paste it into the AI to tidy it?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Not until we check: it\'s personal data. I\'m checking what we\'re allowed to share and which tools are approved. You\'ll hear by noon.' },
           { text: 'Sure, it\'s fast.', why: 'Personal data needs checks first.' },
           { text: 'We can never share anything.', why: 'Check what\'s allowed.' },
+          { text: 'Not until we check: it\'s personal data. I\'m checking what we\'re allowed to share and which tools are approved. You\'ll hear by noon.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -144,11 +144,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can free and work versions differ?',
         options: [
-          { text: 'Business agreements often set different rules for data use' },
           { text: 'They don\'t', why: 'They often do.' },
           { text: 'Free tools are always safer', why: 'Usually the opposite.' },
+          { text: 'Business agreements often set different rules for data use' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

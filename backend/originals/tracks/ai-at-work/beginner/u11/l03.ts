@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why keep "use only the document" as fixed text?',
         options: [
-          { text: 'It\'s a quality rule that should apply every time' },
           { text: 'It never changes because it\'s short', why: 'It\'s about quality.' },
+          { text: 'It\'s a quality rule that should apply every time' },
           { text: 'No reason', why: 'It prevents made-up content.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'I tried your template for a board report and it worked first time!',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Great! That\'s the test. If you change it, tell me what worked better and I\'ll update the shared version.' },
           { text: 'It only works for me.', why: 'It worked for her.' },
           { text: 'Lucky.', why: 'It\'s the template.' },
+          { text: 'Great! That\'s the test. If you change it, tell me what worked better and I\'ll update the shared version.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

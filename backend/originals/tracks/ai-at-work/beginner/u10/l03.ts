@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The shop owners joined a payments pilot. Can Ada give their details to a marketing agency?',
         options: [
-          { text: 'Not without checking they agreed to this use, and asking the data protection contact' },
           { text: 'Yes, they\'re our customers', why: 'Marketing is a new purpose.' },
+          { text: 'Not without checking they agreed to this use, and asking the data protection contact' },
           { text: 'Yes, if the agency promises to be careful', why: 'The purpose question comes first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'The agency says everyone shares contact lists. Why the fuss?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'The shops gave us their details for payments, not marketing. Let\'s ask them first, maybe with a short opt-in message. It protects them and us.' },
           { text: 'You\'re right, I\'ll send it.', why: 'New purpose needs agreement.' },
           { text: 'Marketing is illegal.', why: 'It needs a proper basis.' },
+          { text: 'The shops gave us their details for payments, not marketing. Let\'s ask them first, maybe with a short opt-in message. It protects them and us.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

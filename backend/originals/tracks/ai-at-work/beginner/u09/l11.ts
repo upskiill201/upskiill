@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'Will the bank pay for the refunds?',
         prompt: 'Before the call, best reply from Ada?',
         options: [
-          { text: 'I\'m asking today. Their contract may limit it, so I have a fallback: half the cost, or a fee waiver.' },
           { text: 'Definitely, they have to.', why: 'The contract may say otherwise.' },
+          { text: 'I\'m asking today. Their contract may limit it, so I have a fallback: half the cost, or a fee waiver.' },
           { text: 'No idea, I\'ll see.', why: 'She\'s prepared.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What can AI role-play not do?',
         options: [
-          { text: 'Know what the real Mr Boateng will say' },
           { text: 'Push back', why: 'It can.' },
           { text: 'Play a role', why: 'It can.' },
+          { text: 'Know what the real Mr Boateng will say' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

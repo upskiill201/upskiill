@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         message: 'What if they ask something you really don\'t know?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'I\'ll say "I don\'t know yet, I\'ll find out and send it by Friday", and then actually send it.' },
           { text: 'I\'ll make something up.', why: 'A guess can backfire badly.' },
+          { text: 'I\'ll say "I don\'t know yet, I\'ll find out and send it by Friday", and then actually send it.' },
           { text: 'I\'ll change the subject.', why: 'Answer honestly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why give a date with "I don\'t know yet"?',
         options: [
-          { text: 'It shows you\'ll follow through, which keeps trust' },
           { text: 'To sound busy', why: 'It\'s a commitment.' },
           { text: 'No reason', why: 'It keeps trust.' },
+          { text: 'It shows you\'ll follow through, which keeps trust' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

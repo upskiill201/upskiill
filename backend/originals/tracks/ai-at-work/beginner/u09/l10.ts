@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'People asking for help underestimate others\' willingness by about how much?',
         options: [
-          { text: 'About half' },
           { text: 'Not at all', why: 'They underestimate.' },
+          { text: 'About half' },
           { text: 'Ten times', why: 'About half.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'Is the review still Wednesday?',
         prompt: 'Ada needs until Friday. Best reply?',
         options: [
-          { text: 'Can we move it to Friday 3pm? The outage took two days.' },
           { text: 'Yes!', why: 'It won\'t be ready.' },
           { text: 'Not sure.', why: 'Give a date.' },
+          { text: 'Can we move it to Friday 3pm? The outage took two days.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -147,11 +147,11 @@ const lesson: OriginalLesson = {
         message: 'Carmen: "Our shops lost sales because of you."',
         prompt: 'Best first line from Ada?',
         options: [
-          { text: 'You\'re right that shops lost sales, and I\'m sorry.' },
           { text: 'Actually, it was the bank.', why: 'Defensive first.' },
           { text: 'Sorry for any inconvenience.', why: 'Vague.' },
+          { text: 'You\'re right that shops lost sales, and I\'m sorry.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

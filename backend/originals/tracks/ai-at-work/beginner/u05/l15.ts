@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When is research enough?',
         options: [
-          { text: 'When more of it wouldn\'t change the decision' },
           { text: 'When you\'ve read everything', why: 'Never happens.' },
+          { text: 'When more of it wouldn\'t change the decision' },
           { text: 'When you\'re tired', why: 'Decision-based, not energy-based.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         message: 'Can we drop the "What we don\'t know" part? Carmen likes confident briefs.',
         prompt: 'Best reply?',
         options: [
-          { text: 'It is confident: it shows what\'s solid and exactly what the pilot will answer. Hiding gaps would be riskier.' },
           { text: 'Sure, I\'ll delete it.', why: 'Hiding unknowns isn\'t confidence.' },
           { text: 'Let\'s make the unknowns sound certain.', why: 'That\'s misleading.' },
+          { text: 'It is confident: it shows what\'s solid and exactly what the pilot will answer. Hiding gaps would be riskier.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -151,11 +151,11 @@ const lesson: OriginalLesson = {
         message: 'Where does the 54% come from? Carmen\'s asking right now.',
         prompt: 'Best reply?',
         options: [
-          { text: 'Source [3]: the 2024 trader survey, Table 2. 300 traders in two Accra markets. Link\'s in the brief.' },
           { text: 'Somewhere online.', why: 'The citation answers it.' },
           { text: 'The AI.', why: 'Cite the survey.' },
+          { text: 'Source [3]: the 2024 trader survey, Table 2. 300 traders in two Accra markets. Link\'s in the brief.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Shouldn\'t you start with the results? They\'re impressive.',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'I\'ll put the headline on slide 1, then a quick situation and problem, so the results land harder. The ask is last.' },
           { text: 'No, results always go last.', why: 'A headline up front helps busy founders.' },
+          { text: 'I\'ll put the headline on slide 1, then a quick situation and problem, so the results land harder. The ask is last.' },
           { text: 'Results don\'t matter.', why: 'They\'re the heart of it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why read only the titles?',
         options: [
-          { text: 'If the titles alone tell the story, the talk will be easy to follow' },
           { text: 'To save time', why: 'It tests the structure.' },
           { text: 'Founders only read titles', why: 'It\'s a test of flow.' },
+          { text: 'If the titles alone tell the story, the talk will be easy to follow' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

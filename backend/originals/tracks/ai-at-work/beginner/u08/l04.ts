@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why bullets instead of full sentences in speaker notes?',
         options: [
-          { text: 'Full sentences turn into reading aloud' },
           { text: 'Bullets are shorter to type', why: 'It\'s about speaking naturally.' },
+          { text: 'Full sentences turn into reading aloud' },
           { text: 'Founders can see the notes', why: 'They can\'t; it\'s for you.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'Are you going to read your notes in the meeting?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'No: just a glance. They\'re three bullets per slide. I\'ve memorised only my first and last line.' },
           { text: 'Yes, word for word.', why: 'Reading sounds stiff.' },
           { text: 'I won\'t have notes.', why: 'Short notes help.' },
+          { text: 'No: just a glance. They\'re three bullets per slide. I\'ve memorised only my first and last line.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

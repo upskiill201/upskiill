@@ -36,21 +36,21 @@ const lesson: OriginalLesson = {
         message: 'Our legal team asks: did you use AI on our campaign work?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Yes, for first drafts and summaries, in our approved tool. No confidential data was entered, and I checked every fact and figure.' },
           { text: 'No.', why: 'Never pretend.' },
+          { text: 'Yes, for first drafts and summaries, in our approved tool. No confidential data was entered, and I checked every fact and figure.' },
           { text: 'Why do you ask?', why: 'Answer plainly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'What upsets clients most about AI use?',
         options: [
-          { text: 'Finding out later that it was hidden, or that their data went into an unapproved tool' },
           { text: 'Any AI use at all', why: 'Mostly hiding and data misuse.' },
           { text: 'Nothing', why: 'Hidden use and data leaks do.' },
+          { text: 'Finding out later that it was hidden, or that their data went into an unapproved tool' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

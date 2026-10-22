@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Ada do with her first angry reply?',
         options: [
-          { text: 'Not send it; give it to the AI to turn into a calm reply' },
           { text: 'Send it to clear the air', why: 'It will make things worse.' },
+          { text: 'Not send it; give it to the AI to turn into a calm reply' },
           { text: 'Send it to Tobi', why: 'Don\'t send it at all.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Carmen says: "This is unacceptable. Our shops lost sales because of you."',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'You\'re right that shops lost sales, and I\'m sorry. A bank update broke our connection; it\'s fixed and we\'ve added an alert. Let\'s go through what we\'ll do for shops at 11:30.' },
           { text: 'It was the bank, not us.', why: 'Defensive.' },
           { text: 'Sorry for any inconvenience.', why: 'Too vague; doesn\'t own it.' },
+          { text: 'You\'re right that shops lost sales, and I\'m sorry. A bank update broke our connection; it\'s fixed and we\'ve added an alert. Let\'s go through what we\'ll do for shops at 11:30.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

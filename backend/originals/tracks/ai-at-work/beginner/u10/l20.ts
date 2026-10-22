@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Monday 9:10. The owners joined a payments pilot. Can Ada send their details to the agency?',
         options: [
-          { text: 'Not without checking they agreed to marketing, and asking the data protection contact' },
           { text: 'Yes, they\'re our customers', why: 'New purpose.' },
+          { text: 'Not without checking they agreed to marketing, and asking the data protection contact' },
           { text: 'Yes, if the agency is careful', why: 'Purpose first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         message: 'Monday 11:00. Can I send you the confidential campaign budget to run through your AI?',
         prompt: 'Their contract bans AI on client data. Best reply?',
         options: [
-          { text: 'Your contract says no AI on your data, so I won\'t. I\'m happy to review it with you on a call instead.' },
           { text: 'Sure.', why: 'Breaks the client rule.' },
           { text: 'Only part of it.', why: 'Still breaks it.' },
+          { text: 'Your contract says no AI on your data, so I won\'t. I\'m happy to review it with you on a call instead.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -141,11 +141,11 @@ const lesson: OriginalLesson = {
         message: 'Friday. Legal asks: did you use AI on our campaign work?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Yes, for drafts and summaries in our approved tool, with no client data entered. I checked every figure.' },
           { text: 'No.', why: 'Never pretend.' },
           { text: 'Why?', why: 'Answer plainly.' },
+          { text: 'Yes, for drafts and summaries in our approved tool, with no client data entered. I checked every figure.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -160,11 +160,11 @@ const lesson: OriginalLesson = {
         message: 'Month 9. Your team keeps asking for your prompts and checklists. Carmen wants them for our team too. Can you share your "AI playbook"?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'I don\'t have a proper one yet, just notes. Give me a couple of weeks to turn my habits into a playbook people can actually use.' },
           { text: 'Just copy my chat history.', why: 'Next unit: a real playbook.' },
+          { text: 'I don\'t have a proper one yet, just notes. Give me a couple of weeks to turn my habits into a playbook people can actually use.' },
           { text: 'No, they\'re secret.', why: 'Sharing helps everyone.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

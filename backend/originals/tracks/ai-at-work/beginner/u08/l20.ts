@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Day 6. Ada likes a photo from a news site for slide 2. What now?',
         options: [
-          { text: 'Check the licence, or use a company or own photo instead' },
           { text: 'Use it with a credit', why: 'Credit isn\'t permission.' },
+          { text: 'Check the licence, or use a company or own photo instead' },
           { text: 'Use it; it\'s online', why: 'Online isn\'t free.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         message: 'Day 10. Tobi says the slot is now five minutes! Panic?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'No panic: I\'ll keep the four-slide spine and move costs and the flowchart to backup slides.' },
           { text: 'I\'ll squeeze all 7 slides in, smaller.', why: 'Cramming.' },
           { text: 'I\'ll cancel.', why: 'Cut instead.' },
+          { text: 'No panic: I\'ll keep the four-slide spine and move costs and the flowchart to backup slides.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -158,21 +158,21 @@ const lesson: OriginalLesson = {
         message: 'I heard the founders approved the second market! But Ada, urgent: the app had a bug this morning and our shops couldn\'t take payments for two hours. Carmen is furious. Call in an hour?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'I\'m so sorry. Yes, I\'ll call in an hour with what happened, what we\'ve fixed and what we\'ll do for affected shops.' },
           { text: 'It wasn\'t my fault.', why: 'Next unit: handling this well.' },
           { text: 'Can it wait until next week?', why: 'An upset client needs a quick response.' },
+          { text: 'I\'m so sorry. Yes, I\'ll call in an hour with what happened, what we\'ve fixed and what we\'ll do for affected shops.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'What\'s the one idea behind all of Unit 8?',
         options: [
-          { text: 'AI drafts, designs and challenges; you choose the story, check every visual and practise until you\'re ready' },
           { text: 'Let AI present for you', why: 'You present.' },
+          { text: 'AI drafts, designs and challenges; you choose the story, check every visual and practise until you\'re ready' },
           { text: 'More slides impress more', why: 'Fewer, clearer slides.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

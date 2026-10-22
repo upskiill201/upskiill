@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Payments: 400, 470, 530, 600. Trend or noise?',
         options: [
-          { text: 'A likely trend: four points, real size, same direction' },
           { text: 'Noise', why: 'It\'s a steady, sizeable rise.' },
+          { text: 'A likely trend: four points, real size, same direction' },
           { text: 'Can\'t tell from numbers', why: 'This pattern is clear.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'Can the bar chart start at 550 so Week 4 looks huge?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Let\'s start at zero and put "up 50% in four weeks" in the title. It\'s strong and honest.' },
           { text: 'Sure.', why: 'Misleading.' },
           { text: 'No charts then.', why: 'Use an honest one.' },
+          { text: 'Let\'s start at zero and put "up 50% in four weeks" in the title. It\'s strong and honest.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -147,11 +147,11 @@ const lesson: OriginalLesson = {
         message: 'The AI says the average payment is 1,274 GHS. Sound right?',
         prompt: 'Most payments are 50-200 GHS. Best reply?',
         options: [
-          { text: 'That looks about ten times too high. I\'ll recalculate it with a formula and send the real number.' },
           { text: 'Yes, the AI is precise.', why: 'The estimate says it\'s wrong.' },
           { text: 'Averages don\'t matter.', why: 'Check it.' },
+          { text: 'That looks about ten times too high. I\'ll recalculate it with a formula and send the real number.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why mention wins in a one-to-one?',
         options: [
-          { text: 'Managers often don\'t see them unless you say so' },
           { text: 'To show off', why: 'It\'s information they need.' },
+          { text: 'Managers often don\'t see them unless you say so' },
           { text: 'Wins don\'t matter', why: 'They do, for reviews and trust.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Do you prepare for meetings with your own manager?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Ten minutes every week: two wins, two problems with what I\'ve tried, one ask and one growth question.' },
           { text: 'No, we just chat.', why: 'She prepares now.' },
           { text: 'Tobi prepares it all.', why: 'It\'s her meeting.' },
+          { text: 'Ten minutes every week: two wins, two problems with what I\'ve tried, one ask and one growth question.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

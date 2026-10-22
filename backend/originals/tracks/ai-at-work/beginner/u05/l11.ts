@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What changed as the claim travelled?',
         options: [
-          { text: '"Prefer for bigger payments" became "refuse cash", and two markets became all of Accra' },
           { text: 'Nothing', why: 'The meaning changed a lot.' },
+          { text: '"Prefer for bigger payments" became "refuse cash", and two markets became all of Accra' },
           { text: 'Only the number', why: 'The meaning and scope changed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Great quote: "most traders refuse cash"! Can we put it on the slide?',
         prompt: 'Best reply?',
         options: [
-          { text: 'The original says 54% of 300 traders in two markets prefer mobile money for bigger payments. Let\'s use that: still a strong point, and true.' },
           { text: 'Yes, it\'s in a blog.', why: 'The blog exaggerated the original.' },
           { text: 'No, surveys are useless.', why: 'The real finding is useful.' },
+          { text: 'The original says 54% of 300 traders in two markets prefer mobile money for bigger payments. Let\'s use that: still a strong point, and true.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

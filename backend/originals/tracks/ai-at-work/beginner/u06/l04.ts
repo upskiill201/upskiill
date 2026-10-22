@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why approach 60 shops to sign up 50?',
         options: [
-          { text: 'Some will say no; plan for drop-off' },
           { text: 'To be extra busy', why: 'It\'s planning for drop-off.' },
+          { text: 'Some will say no; plan for drop-off' },
           { text: 'Typo', why: 'It\'s deliberate.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         message: 'Can Tolu start visiting shops tomorrow?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'Not yet: he needs the shop list and the printed flyer first. Earliest is next Monday.' },
           { text: 'Yes, why not.', why: 'Dependencies aren\'t ready.' },
           { text: 'Shops don\'t need flyers.', why: 'It\'s in the plan for a reason.' },
+          { text: 'Not yet: he needs the shop list and the printed flyer first. Earliest is next Monday.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

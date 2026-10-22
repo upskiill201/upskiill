@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why put the answer second, right after the question?',
         options: [
-          { text: 'Lucía sees the recommendation immediately' },
           { text: 'It\'s the shortest part', why: 'It\'s about what she needs first.' },
+          { text: 'Lucía sees the recommendation immediately' },
           { text: 'Tradition', why: 'Busy readers need the answer first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         message: 'Why is there a "What we don\'t know" section? It makes us look unsure.',
         prompt: 'Best reply?',
         options: [
-          { text: 'It shows we checked properly. Carmen can see exactly what\'s solid and what the pilot is for.' },
           { text: 'I\'ll delete it.', why: 'It\'s what makes the brief trustworthy.' },
           { text: 'Because the AI added it.', why: 'It\'s Ada\'s choice and a good one.' },
+          { text: 'It shows we checked properly. Carmen can see exactly what\'s solid and what the pilot is for.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

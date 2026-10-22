@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'The formula says 0 for Makola. Is the pilot dead?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'No: probably a spelling mismatch in the Market column. I\'m standardising it and will recheck.' },
           { text: 'Yes, zero sales.', why: 'Check the data first.' },
+          { text: 'No: probably a spelling mismatch in the Market column. I\'m standardising it and will recheck.' },
           { text: 'The formula is broken forever.', why: 'Likely a text mismatch.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How should Ada check a new formula?',
         options: [
-          { text: 'Compare it with a few rows she checked by hand' },
           { text: 'Ask the AI if it\'s right', why: 'Test it against real rows.' },
           { text: 'Trust it if it looks complex', why: 'Complex isn\'t correct.' },
+          { text: 'Compare it with a few rows she checked by hand' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

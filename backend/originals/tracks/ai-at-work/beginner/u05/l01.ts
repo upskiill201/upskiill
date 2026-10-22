@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is web search better at than an AI chat?',
         options: [
-          { text: 'Showing exactly where information comes from' },
           { text: 'Writing a tidy summary', why: 'That\'s the AI\'s strength.' },
+          { text: 'Showing exactly where information comes from' },
           { text: 'Never being wrong', why: 'Web pages can be wrong too.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         message: 'Can\'t you just ask the AI "Should we launch in Ghana?" and send me the answer?',
         prompt: 'Best reply?',
         options: [
-          { text: 'I\'ll use it to plan the research and explain things fast, then check the key facts in real sources before I recommend anything.' },
           { text: 'Sure, give me five minutes.', why: 'A big decision needs checked facts.' },
           { text: 'AI can\'t help with research at all.', why: 'It helps a lot with planning and understanding.' },
+          { text: 'I\'ll use it to plan the research and explain things fast, then check the key facts in real sources before I recommend anything.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s wrong with "Kenya is clearly best" in the AI table?',
         options: [
-          { text: 'It decided without Lucía\'s criteria or priorities' },
           { text: 'Kenya is a bad market', why: 'The problem is who decided, and how.' },
+          { text: 'It decided without Lucía\'s criteria or priorities' },
           { text: 'Nothing', why: 'The decision belongs to the team.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'Why does the table say "unknown" for partner banks? Looks unfinished.',
         prompt: 'Best reply?',
         options: [
-          { text: '"Unknown" is honest: it shows what we still need to find. Better than a guess that looks finished.' },
           { text: 'I\'ll fill it with a guess.', why: 'A guess hides the gap.' },
           { text: 'I\'ll delete that row.', why: 'It may matter for the decision.' },
+          { text: '"Unknown" is honest: it shows what we still need to find. Better than a guess that looks finished.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

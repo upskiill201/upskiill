@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Last week was green, this week amber. Should I be worried?',
         prompt: 'Best reply from Ada?',
         options: [
-          { text: 'No: amber means we spotted an issue early and we\'re on it. That\'s the system working.' },
           { text: 'Yes, panic.', why: 'Amber is early warning, not crisis.' },
+          { text: 'No: amber means we spotted an issue early and we\'re on it. That\'s the system working.' },
           { text: 'We\'ll switch it back to green.', why: 'Don\'t hide it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How should the starter guide be organised?',
         options: [
-          { text: 'By when the newcomer needs it' },
           { text: 'Alphabetically', why: 'By timing.' },
           { text: 'By how important Ada thinks it is', why: 'By when they need it.' },
+          { text: 'By when the newcomer needs it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
