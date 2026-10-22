@@ -52,8 +52,8 @@ export function screenText(root: Element): string {
   return root.textContent ?? '';
 }
 
-/** react-native-web renders Pressable, Touchable* and Button as focusable elements. */
-const PRESSABLE = '[role="button"], button, [tabindex="0"]';
+/** react-native-web renders Pressable, Touchable* and Button as focusable elements; disabled ones lose focus but keep aria-disabled. */
+const PRESSABLE = '[role="button"], button, [tabindex="0"], [aria-disabled="true"]';
 
 /** The innermost elements whose text contains `text`. */
 function innermost(root: Element, text: string): Element[] {
@@ -197,6 +197,8 @@ export async function act(root: Element, win: Win, t: ScreenTest): Promise<boole
   for (const label of t.tap ?? []) {
     const button = findButton(root, label);
     if (!button) return false;
+    // A disabled button is there but does nothing when tapped, as on a phone.
+    if (button.getAttribute('aria-disabled') === 'true' || button.closest('[aria-disabled="true"]')) continue;
     await press(button, win);
   }
   return true;
