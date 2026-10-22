@@ -125,9 +125,39 @@ const reactNative: Record<string, unknown> = {
   Alert: { alert: showAlert },
 };
 
+/**
+ * The learner's JSX, with one phone rule: lower-case tags like <div>, <h1> or
+ * <p> are HTML, which phones don't have. On a device they crash ("View config
+ * not found"), so here they do too, instead of quietly rendering in the
+ * browser. (react-native-web's own internals use React directly, not this.)
+ */
+function phoneOnly(type: unknown) {
+  if (typeof type === 'string') {
+    throw new Error(`<${type}> isn't a React Native component. Phones don't have HTML tags: use View for boxes and Text for words.`);
+  }
+}
+const jsxRuntime = {
+  Fragment: JsxRuntime.Fragment,
+  jsx: (type: React.ElementType, props: unknown, key?: React.Key) => {
+    phoneOnly(type);
+    return JsxRuntime.jsx(type, props, key);
+  },
+  jsxs: (type: React.ElementType, props: unknown, key?: React.Key) => {
+    phoneOnly(type);
+    return JsxRuntime.jsxs(type, props, key);
+  },
+};
+const phoneReact = {
+  ...React,
+  createElement: (type: React.ElementType, ...rest: unknown[]) => {
+    phoneOnly(type);
+    return (React.createElement as (...args: unknown[]) => unknown)(type, ...rest);
+  },
+};
+
 const MODULES: Record<string, unknown> = {
-  react: React,
-  'react/jsx-runtime': JsxRuntime,
+  react: phoneReact,
+  'react/jsx-runtime': jsxRuntime,
   'react-native': reactNative,
   'expo-status-bar': { StatusBar: () => null },
 };

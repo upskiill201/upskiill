@@ -71,6 +71,8 @@ export function PhonePad({
   const graded = Boolean(checks?.length);
   const onRunRef = useRef(onRun);
   onRunRef.current = onRun;
+  const gradedRef = useRef(graded);
+  gradedRef.current = graded;
 
   useEffect(() => warmTypeScript(), []);
 
@@ -118,7 +120,10 @@ export function PhonePad({
     if (phoneRef.current !== phone) return;
     setError(next);
     setRendering(false);
-    onRunRef.current?.(asRun(code, next));
+    // Try it live: showing the app counts as running it. A graded exercise
+    // only counts "Check my app", never the live preview (or every keystroke
+    // would be a failed attempt).
+    if (!gradedRef.current) onRunRef.current?.(asRun(code, next));
   }, []);
 
   // The phone follows the code, a moment after typing stops.
