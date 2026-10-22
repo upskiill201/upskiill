@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What was the biggest problem with the first answer?',
         options: [
-          { text: 'No proof, and it never mentioned the job' },
           { text: 'It mentioned Bamenda', why: 'Bamenda\'s fine. It lacked proof and relevance.' },
+          { text: 'No proof, and it never mentioned the job' },
           { text: 'It was too short', why: 'It was four minutes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'Should I include that I\'m top of my class?',
         options: [
-          { text: 'Yes, in the present part, if it\'s relevant to the role, then move on to proof from your placements.' },
           { text: 'No, never mention grades.', why: 'One relevant line is fine.' },
           { text: 'Make it the whole answer.', why: 'One line, then proof and the future.' },
+          { text: 'Yes, in the present part, if it\'s relevant to the role, then move on to proof from your placements.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

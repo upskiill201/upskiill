@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Clinton also applies to a company in Toronto. What changes?',
         options: [
-          { text: 'It\'s called a résumé there, and he leaves the photo off' },
           { text: 'Nothing at all', why: 'The core stays, but naming and photo norms differ.' },
+          { text: 'It\'s called a résumé there, and he leaves the photo off' },
           { text: 'He adds his date of birth', why: 'Usually avoided in Canada.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'A course says 75% of CVs get rejected by robots and I should pay to fix mine. Should I?',
         options: [
-          { text: 'That number came from a 2012 sales pitch. A clean layout and honest keywords are free.' },
           { text: 'Yes, pay now.', why: 'The claim has no study behind it.' },
           { text: 'Give up on online applications.', why: 'They work fine with a clear CV.' },
+          { text: 'That number came from a 2012 sales pitch. A clean layout and honest keywords are free.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         from: 'brenda',
         message: 'P.S. Send me your CV when applications open. Make sure it\'s the one with no typos.',
         options: [
-          { text: 'I will. Thank you for the tips, they changed my whole CV.' },
           { text: 'Can I send it now, unfinished?', why: 'She asked for it when applications open, and polished.' },
           { text: 'My CV never has typos.', why: 'David found two last week.' },
+          { text: 'I will. Thank you for the tips, they changed my whole CV.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

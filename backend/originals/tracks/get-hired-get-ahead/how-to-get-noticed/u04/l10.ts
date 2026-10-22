@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Ngum asks: her last line is "I know there are many better candidates." Too honest? What do I tell her?',
         options: [
-          { text: 'Cut it: it talks you down. End with "I\'d love to talk about how I could help Mbanga keep its 12 shops on budget."' },
           { text: 'Keep it, it\'s humble.', why: 'It plants doubt. Let them decide.' },
+          { text: 'Cut it: it talks you down. End with "I\'d love to talk about how I could help Mbanga keep its 12 shops on budget."' },
           { text: 'Say "I am the best candidate".', why: 'Too far the other way. Confident invitation instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ngum doesn\'t know the hiring manager\'s name. Which greeting?',
         options: [
-          { text: '"Dear Mbanga Bakeries team,"' },
           { text: '"Dear Sir,"', why: 'Assumes a man. A team greeting is better.' },
           { text: '"Yo,"', why: 'Too casual.' },
+          { text: '"Dear Mbanga Bakeries team,"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

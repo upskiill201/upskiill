@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which correction email should Clinton send?',
         options: [
-          { text: '"Apologies, my cover letter opened with the wrong company name. The corrected version is attached. Thank you."' },
           { text: '"I am so so sorry, I am an idiot, please don\'t reject me, here is what happened..."', why: 'Too long and too much. Keep it short and calm.' },
+          { text: '"Apologies, my cover letter opened with the wrong company name. The corrected version is attached. Thank you."' },
           { text: 'Nothing at all', why: 'A short correction shows care.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should I explain that I was practising with Miracle\'s company?',
         options: [
-          { text: 'No need. "Wrong company name, corrected version attached" is enough. Short is calm.' },
           { text: 'Yes, explain everything in detail.', why: 'They don\'t need the backstory. Short and calm.' },
           { text: 'Blame autocorrect.', why: 'Don\'t blame. Just fix.' },
+          { text: 'No need. "Wrong company name, corrected version attached" is enough. Short is calm.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Miracle say recruiters notice?',
         options: [
-          { text: 'How you handle the mistake' },
           { text: 'Only the mistake', why: 'They notice how you handle it too.' },
           { text: 'Nothing', why: 'They notice, which is why handling it well matters.' },
+          { text: 'How you handle the mistake' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

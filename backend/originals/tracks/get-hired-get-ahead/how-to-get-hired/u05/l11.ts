@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is inventing an offer risky, as well as wrong?',
         options: [
-          { text: 'They may check, call your bluff, or hear the truth through others' },
           { text: 'It\'s not risky', why: 'It\'s risky in small industries and can backfire.' },
+          { text: 'They may check, call your bluff, or hear the truth through others' },
           { text: 'It\'s only risky for CEOs', why: 'It\'s risky for anyone.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'Just say 380. Nobody will ever know.',
         options: [
-          { text: 'Douala fintech is tiny, and it\'s a lie. I\'ll ask for 330 with real reasons.' },
           { text: 'OK, 380 it is.', why: 'A lie that can easily backfire.' },
           { text: 'Let\'s say 500.', why: 'Even worse.' },
+          { text: 'Douala fintech is tiny, and it\'s a lie. I\'ll ask for 330 with real reasons.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -134,11 +134,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does Brenda say when Clinton is honest?',
         options: [
-          { text: '"Thanks for being straight with me."' },
           { text: '"Then take Kmer."', why: 'That\'s what happens in the lie version.' },
           { text: 'Nothing', why: 'She thanks him for his honesty.' },
+          { text: '"Thanks for being straight with me."' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

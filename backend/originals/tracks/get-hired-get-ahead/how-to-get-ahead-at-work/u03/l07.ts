@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "Let\'s revisit it in a few months" risky?',
         options: [
-          { text: 'It\'s vague, and can quietly become a year' },
           { text: 'It\'s rude', why: 'It\'s vague.' },
+          { text: 'It\'s vague, and can quietly become a year' },
           { text: 'It\'s not risky', why: 'Vague plans drift.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I ask for a clear plan without sounding pushy?',
         options: [
-          { text: '"To make sure I focus on the right things, could we agree what you\'d want to see, and when we\'ll look again?"' },
           { text: '"Promise me a promotion by March."', why: 'Ask for a plan, not a promise.' },
           { text: 'Say nothing.', why: 'Ask, framed as a plan.' },
+          { text: '"To make sure I focus on the right things, could we agree what you\'d want to see, and when we\'ll look again?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

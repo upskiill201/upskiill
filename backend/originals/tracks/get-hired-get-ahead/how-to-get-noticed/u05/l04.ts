@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the best free light for a profile photo?',
         options: [
-          { text: 'Daylight from a window, facing you' },
           { text: 'The phone\'s flash', why: 'Flash is harsh. Window light is softer.' },
+          { text: 'Daylight from a window, facing you' },
           { text: 'Light behind you', why: 'That turns your face into a shadow.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'You don\'t need a photographer. Got a window and a friend?',
         options: [
-          { text: 'Yes. I\'ll stand facing the window, plain wall behind, and you take it at eye level.' },
           { text: 'I\'ll just crop the wedding photo.', why: 'Half his face and a drink. A new photo is easy.' },
           { text: 'I\'ll use a cartoon avatar.', why: 'People want to recognise you at interviews. Use a real photo.' },
+          { text: 'Yes. I\'ll stand facing the window, plain wall behind, and you take it at eye level.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which banner fits Clinton best?',
         options: [
-          { text: 'A clean screenshot of the Njangi Tracker (with made-up data)' },
           { text: 'A photo of his football team celebrating', why: 'Fun, but not his professional story.' },
           { text: 'The default grey', why: 'Fine, but a work-related banner is better.' },
+          { text: 'A clean screenshot of the Njangi Tracker (with made-up data)' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

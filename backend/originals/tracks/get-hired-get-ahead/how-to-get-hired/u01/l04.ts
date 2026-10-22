@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write down people who aren\'t in your field?',
         options: [
-          { text: 'They might know someone who is' },
           { text: 'To make the list look longer', why: 'It\'s about second-step connections.' },
+          { text: 'They might know someone who is' },
           { text: 'They can give you a job anyway', why: 'Usually not, but they can introduce you.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'My aunt fixes phones. She can\'t help me get into fintech.',
         options: [
-          { text: 'Maybe not directly, but her customers might work in fintech. I\'ll ask who she knows.' },
           { text: 'True, cross her off.', why: 'She may know someone who knows someone.' },
           { text: 'Ask her for a fintech job.', why: 'She doesn\'t have one, but she might have a name.' },
+          { text: 'Maybe not directly, but her customers might work in fintech. I\'ll ask who she knows.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

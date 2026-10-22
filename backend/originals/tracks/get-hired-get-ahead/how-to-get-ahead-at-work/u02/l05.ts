@@ -26,11 +26,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did one line beat eleven tasks?',
         options: [
-          { text: 'It showed impact on a team goal, with a number' },
           { text: 'It was shorter', why: 'It showed impact.' },
+          { text: 'It showed impact on a team goal, with a number' },
           { text: 'Ngozi was in a good mood', why: 'It showed impact on a goal.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Which two kinds of value can you offer even as a new person?',
         options: [
-          { text: 'Reliability and making others better.' },
           { text: 'Only rare skills.', why: 'Those take time.' },
           { text: 'Long hours.', why: 'Not one of the four.' },
+          { text: 'Reliability and making others better.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the unlock question for team goals?',
         options: [
-          { text: '"What are we measured on this quarter?"' },
           { text: '"What\'s for lunch?"', why: 'Ask what you\'re measured on.' },
           { text: '"Who\'s the boss?"', why: 'Ask what you\'re measured on.' },
+          { text: '"What are we measured on this quarter?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

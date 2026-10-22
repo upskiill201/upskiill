@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do sponsors matter for promotions?',
         options: [
-          { text: 'Decisions are often discussed in rooms you\'re not in' },
           { text: 'They pay your salary', why: 'They speak up for you.' },
+          { text: 'Decisions are often discussed in rooms you\'re not in' },
           { text: 'They write your code', why: 'They speak up for you.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should I just ask Paul, "Will you sponsor me?"',
         options: [
-          { text: 'Probably not directly. I\'ll do excellent work he sees, like the design doc, and let him decide to back me.' },
           { text: 'Yes, demand it.', why: 'Sponsorship is earned through work.' },
           { text: 'Ignore Paul.', why: 'He could become a sponsor.' },
+          { text: 'Probably not directly. I\'ll do excellent work he sees, like the design doc, and let him decide to back me.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

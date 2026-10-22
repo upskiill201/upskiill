@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why pick two gaps, not five?',
         options: [
-          { text: 'Focus closes gaps; a long list spreads too thin' },
           { text: 'Five is unlucky', why: 'Focus beats a long list.' },
+          { text: 'Focus closes gaps; a long list spreads too thin' },
           { text: 'The ladder only has two', why: 'It has five lines; focus on two gaps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Can one project close both gaps?',
         options: [
-          { text: 'Yes: leading the retry rebuild with Kemi and writing its design doc covers both.' },
           { text: 'No, I need ten projects.', why: 'One well-chosen project can do both.' },
           { text: 'Only if Paul does it.', why: 'Clinton has to lead it.' },
+          { text: 'Yes: leading the retry rebuild with Kemi and writing its design doc covers both.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

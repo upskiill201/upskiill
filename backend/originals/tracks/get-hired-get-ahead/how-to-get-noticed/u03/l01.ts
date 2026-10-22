@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Miracle learn almost nothing in seven seconds?',
         options: [
-          { text: 'His best proof was on page two, under a photo and an objective' },
           { text: 'She reads slowly', why: 'She reads fast. The proof just wasn\'t where she looked.' },
+          { text: 'His best proof was on page two, under a photo and an objective' },
           { text: 'The CV was too short', why: 'It was three pages. The problem was order, not length.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'But if I cut to one page, I lose so much!',
         options: [
-          { text: 'I lose the parts nobody reads anyway. The best proof moves up to where it gets seen.' },
           { text: 'Then I\'ll use size 6 font to fit three pages on one.', why: 'Tiny text is harder to read in seven seconds, not easier.' },
           { text: 'Fine, I\'ll keep all three pages.', why: 'Then his best proof stays where nobody looks.' },
+          { text: 'I lose the parts nobody reads anyway. The best proof moves up to where it gets seen.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

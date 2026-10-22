@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is a public fight usually a bad idea?',
         options: [
-          { text: 'People remember the scene, not the idea' },
           { text: 'It\'s illegal', why: 'Not illegal, just usually counterproductive.' },
+          { text: 'People remember the scene, not the idea' },
           { text: 'Ideas don\'t matter', why: 'They matter. The scene overshadows them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What do I say to Nadia after the meeting?',
         options: [
-          { text: '"Can I check something? The text fallback was the idea I shared on Tuesday. Could we tell Mr Tamba we\'ll build it together?"' },
           { text: '"You stole my idea, thief."', why: 'Accusations start a fight. State the facts calmly.' },
           { text: 'Nothing, ever.', why: 'Silence breeds resentment.' },
+          { text: '"Can I check something? The text fallback was the idea I shared on Tuesday. Could we tell Mr Tamba we\'ll build it together?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

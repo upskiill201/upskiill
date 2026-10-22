@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did "Hi bro, any jobs? Pls send" get no reply?',
         options: [
-          { text: 'It asks for a big favour from someone who barely remembers him, and gives nothing' },
           { text: 'Tchami was offline', why: 'Maybe, but the message itself is easy to ignore.' },
+          { text: 'It asks for a big favour from someone who barely remembers him, and gives nothing' },
           { text: 'It was too long', why: 'It was short. It was the wrong ask.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'If I only ask for advice, won\'t I miss the chance to ask about jobs?',
         options: [
-          { text: 'Advice conversations often lead to openings. If there\'s a role, they usually mention it.' },
           { text: 'Yes, always ask for the job first.', why: 'That\'s the request people ignore.' },
           { text: 'Never mention jobs ever.', why: 'You can ask later, once there\'s a relationship.' },
+          { text: 'Advice conversations often lead to openings. If there\'s a role, they usually mention it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

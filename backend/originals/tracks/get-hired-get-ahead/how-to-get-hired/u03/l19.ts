@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What changes for each company?',
         options: [
-          { text: 'The "why us" answer' },
           { text: 'Your stories become different people\'s', why: 'Your stories stay yours.' },
+          { text: 'The "why us" answer' },
           { text: 'Nothing', why: '"Why us" must be specific each time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'A learner says they have no stories because they\'ve never had a job. What do you tell them?',
         options: [
-          { text: 'Use school, volunteering, family, sport or projects. Real situations count, not job titles.' },
           { text: 'Invent some.', why: 'Never. Real stories from any part of life work.' },
           { text: 'Skip the story bank.', why: 'Everyone has stories.' },
+          { text: 'Use school, volunteering, family, sport or projects. Real situations count, not job titles.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

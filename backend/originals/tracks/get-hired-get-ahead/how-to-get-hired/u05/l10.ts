@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What usually puts an offer at risk?',
         options: [
-          { text: 'Demands, ultimatums or lies' },
           { text: 'A polite, reasoned question', why: 'That rarely does.' },
+          { text: 'Demands, ultimatums or lies' },
           { text: 'Gratitude', why: 'Always fine.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: '(as Brenda) That\'s our standard offer.',
         options: [
-          { text: '"I understand. Is there any flexibility on other parts, like a review after probation?"' },
           { text: '"Then I\'m out."', why: 'Try an alternative first.' },
           { text: '"Oh. Sorry. Forget it."', why: 'Calmly try another option.' },
+          { text: '"I understand. Is there any flexibility on other parts, like a review after probation?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes Clinton\'s reason strong?',
         options: [
-          { text: 'It\'s tied to the role and to his research' },
           { text: 'It\'s about his rent', why: 'Tie it to value and the market.' },
           { text: 'It\'s emotional', why: 'Tie it to evidence.' },
+          { text: 'It\'s tied to the role and to his research' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

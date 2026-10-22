@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why about six stories, not one per question?',
         options: [
-          { text: 'Each story can answer several questions' },
           { text: 'Six is a lucky number', why: 'Each story covers several themes.' },
+          { text: 'Each story can answer several questions' },
           { text: 'Interviews only have six questions', why: 'They vary. Stories flex.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Can I use a story from fixing phones at my aunt\'s stall? It\'s not tech-company work.',
         options: [
-          { text: 'Yes: it shows dealing with upset customers and solving problems under pressure. Real counts.' },
           { text: 'No, only office work counts.', why: 'Any real experience can show the skill.' },
           { text: 'Only if I pretend it was a company.', why: 'Never pretend.' },
+          { text: 'Yes: it shows dealing with upset customers and solving problems under pressure. Real counts.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

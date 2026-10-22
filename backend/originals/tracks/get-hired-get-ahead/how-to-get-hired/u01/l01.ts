@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How did Miracle\'s team find its three graduate hires?',
         options: [
-          { text: 'Through people and conversations, not adverts' },
           { text: 'From job boards', why: 'None of those roles were ever posted.' },
+          { text: 'Through people and conversations, not adverts' },
           { text: 'By luck', why: 'Each came through a real connection: an event, a post, a recommendation.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'But I don\'t know anyone in fintech. The hidden market isn\'t for people like me.',
         options: [
-          { text: 'I know more people than I think: meet-up speakers, Mrs Ewane, Miracle. I\'ll start there.' },
           { text: 'True, I\'ll stick to job boards.', why: 'He knows more people than he thinks. This chapter shows how.' },
           { text: 'I\'ll pay someone to get me in.', why: 'Never pay for a job. Talk to people instead.' },
+          { text: 'I know more people than I think: meet-up speakers, Mrs Ewane, Miracle. I\'ll start there.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What\'s Clinton\'s best first step?',
         options: [
-          { text: 'List everyone he already knows who works in or near fintech' },
           { text: 'Message 500 strangers asking for a job', why: 'Spam. Start with people he knows.' },
           { text: 'Wait for a recruiter to find him', why: 'His profile helps, but he can act too.' },
+          { text: 'List everyone he already knows who works in or near fintech' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

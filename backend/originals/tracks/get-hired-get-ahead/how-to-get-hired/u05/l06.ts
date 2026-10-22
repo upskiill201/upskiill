@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "before tax and social contributions" mean?',
         options: [
-          { text: 'It\'s gross pay; take-home will be less' },
           { text: 'He gets extra money', why: 'The opposite: deductions come off.' },
+          { text: 'It\'s gross pay; take-home will be less' },
           { text: 'No tax at all', why: 'Tax and contributions are deducted.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What should I clarify before I negotiate?',
         options: [
-          { text: '"Could you tell me how probation works, and roughly what take-home would be?"' },
           { text: '"Why is it so low?"', why: 'Clarify first, calmly.' },
           { text: 'Nothing, just negotiate.', why: 'Understand the offer first.' },
+          { text: '"Could you tell me how probation works, and roughly what take-home would be?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

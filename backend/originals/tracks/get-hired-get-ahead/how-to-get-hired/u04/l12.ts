@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why didn\'t the Njangi Pay no leave Clinton with nothing?',
         options: [
-          { text: 'He had several doors open at once' },
           { text: 'Luck', why: 'He kept several doors open.' },
+          { text: 'He had several doors open at once' },
           { text: 'Njangi Pay changed its mind', why: 'He had other doors open.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'I\'ve applied to three places. If they all say no, I\'m done.',
         options: [
-          { text: 'Many searches take months. Keep a few doors open and count your actions, not just replies.' },
           { text: 'Yes, three is enough.', why: 'Searches often take longer.' },
           { text: 'Then apply to 300 at once.', why: 'Steady and good beats huge and generic.' },
+          { text: 'Many searches take months. Keep a few doors open and count your actions, not just replies.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

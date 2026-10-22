@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why review Paul\'s pull requests in days 31–60?',
         options: [
-          { text: 'To learn his standards before writing bigger code' },
           { text: 'To find his mistakes', why: 'To learn, not to catch him out.' },
+          { text: 'To learn his standards before writing bigger code' },
           { text: 'No reason', why: 'It teaches the team\'s standards.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I wrote the plan. Do I just keep it in a drawer now?',
         options: [
-          { text: 'No: I\'ll bring it to every Tuesday 1:1, tick things off and adjust it with Ngozi.' },
           { text: 'Yes, it\'s done.', why: 'A plan you don\'t look at isn\'t a plan.' },
           { text: 'Rewrite it daily.', why: 'Weekly check-ins are enough.' },
+          { text: 'No: I\'ll bring it to every Tuesday 1:1, tick things off and adjust it with Ngozi.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

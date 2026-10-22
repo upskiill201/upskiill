@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s wrong with "bigger number wins"?',
         options: [
-          { text: 'It ignores learning, contract, growth and daily life' },
           { text: 'Nothing, pay is all that matters', why: 'Pay is one row.' },
+          { text: 'It ignores learning, contract, growth and daily life' },
           { text: 'Numbers are confusing', why: 'It\'s about what\'s left out.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'Bro, just take the bigger number. Done.',
         options: [
-          { text: 'Pay matters, but so does who I learn from and the contract. Let me do the whole table.' },
           { text: 'You\'re right, done.', why: 'Compare the whole offer.' },
           { text: 'I\'ll take the smaller one to be humble.', why: 'Compare properly.' },
+          { text: 'Pay matters, but so does who I learn from and the contract. Let me do the whole table.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

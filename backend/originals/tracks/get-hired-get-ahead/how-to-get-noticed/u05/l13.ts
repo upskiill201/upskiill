@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes a post useful instead of just bragging?',
         options: [
-          { text: 'Sharing what you learned, so readers get something from it' },
           { text: 'Lots of hashtags', why: 'Hashtags don\'t make it useful. Lessons do.' },
+          { text: 'Sharing what you learned, so readers get something from it' },
           { text: 'Saying how amazing it is', why: 'That\'s the bragging part.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What picture should I use for the tracker post?',
         options: [
-          { text: 'A screenshot with made-up names, or the old exercise book it replaced.' },
           { text: 'A screenshot with everyone\'s real names and amounts.', why: 'Privacy. Use made-up data.' },
           { text: 'A selfie at my desk.', why: 'Fine for some posts, but show the work here.' },
+          { text: 'A screenshot with made-up names, or the old exercise book it replaced.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -121,11 +121,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which first line for Clinton\'s post is best?',
         options: [
-          { text: '"My mum\'s savings group argued every month about who had paid. So I built them something."' },
           { text: '"Big announcement!!!"', why: 'Says nothing. Start with the problem.' },
           { text: '"Please like and share."', why: 'Asks without giving. Start with the story.' },
+          { text: '"My mum\'s savings group argued every month about who had paid. So I built them something."' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

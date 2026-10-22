@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What usually puts an offer at risk?',
         options: [
-          { text: 'A demand, an ultimatum or a lie' },
           { text: 'A polite, reasoned question', why: 'That rarely loses an offer.' },
+          { text: 'A demand, an ultimatum or a lie' },
           { text: 'Saying thank you', why: 'Gratitude is always fine.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Mum says, "Don\'t ask anything, you\'ll lose it!" What do I tell her?',
         options: [
-          { text: '"I\'ll ask once, politely, with a reason. If they say no, I\'ll still be happy to accept."' },
           { text: '"I\'ll ask for double like Uncle said."', why: 'Grounded in research, not double.' },
           { text: '"You\'re right, I\'ll ask nothing."', why: 'A polite ask is reasonable.' },
+          { text: '"I\'ll ask once, politely, with a reason. If they say no, I\'ll still be happy to accept."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -126,11 +126,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Do some employers expect candidates to ask?',
         options: [
-          { text: 'Yes, many do, though norms vary by country and company' },
           { text: 'No, never', why: 'Many expect it.' },
           { text: 'Only for CEOs', why: 'Graduates can ask too.' },
+          { text: 'Yes, many do, though norms vary by country and company' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

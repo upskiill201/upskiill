@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s wrong with "I know there are many better candidates"?',
         options: [
-          { text: 'It plants doubt in the reader\'s mind about you' },
           { text: 'It\'s too humble to be polite', why: 'It\'s worse than impolite: it argues against him.' },
+          { text: 'It plants doubt in the reader\'s mind about you' },
           { text: 'Nothing, it\'s modest', why: 'Modest is fine. Talking yourself down isn\'t.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should I end with "Call me tomorrow at 9am to arrange an interview"?',
         options: [
-          { text: 'Too pushy. "I\'d love to talk about how I could help" invites without demanding.' },
           { text: 'Yes, be bold!', why: 'Bold is good, demanding isn\'t. Invite.' },
           { text: 'End with "Maybe?"', why: 'Too unsure. Confident and polite.' },
+          { text: 'Too pushy. "I\'d love to talk about how I could help" invites without demanding.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which close links back to Njangi Pay\'s mission?',
         options: [
-          { text: '"I\'d love to talk about how I could help Njangi Pay bring that same trust to more savings groups."' },
           { text: '"I need this job, please."', why: 'About him, not them.' },
           { text: '"Looking forward to your reply."', why: 'Fine, but no link to their mission.' },
+          { text: '"I\'d love to talk about how I could help Njangi Pay bring that same trust to more savings groups."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

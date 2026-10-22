@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What overlap did she find in her current job?',
         options: [
-          { text: 'The weekly cash report in a spreadsheet' },
           { text: 'None', why: 'The weekly report is data work.' },
+          { text: 'The weekly cash report in a spreadsheet' },
           { text: 'Answering phones', why: 'The weekly report.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'She has no data team at the bank. Where does she start?',
         options: [
-          { text: 'Ask her manager if she can automate the weekly cash report and add a chart. Overlap first.' },
           { text: 'Quit the bank tomorrow.', why: 'Start with overlap and evidence.' },
           { text: 'Give up; no team means no chance.', why: 'Change from outside is possible.' },
+          { text: 'Ask her manager if she can automate the weekly cash report and add a chart. Overlap first.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

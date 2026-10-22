@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which kind of move is usually easiest to undo?',
         options: [
-          { text: 'A move inside the same company or a nearby field' },
           { text: 'A big leap to a new country and field', why: 'Harder to undo.' },
+          { text: 'A move inside the same company or a nearby field' },
           { text: 'None are undoable', why: 'Many are reversible.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Week two: a meeting went badly. Should I go back to engineering now?',
         options: [
-          { text: 'Not yet. Everything is hard at the start. I\'ll note it and judge at the six-month review.' },
           { text: 'Yes, today.', why: 'Judge at the review, not on a bad day.' },
           { text: 'Hide it from Aïcha.', why: 'Talk about it; judge later.' },
+          { text: 'Not yet. Everything is hard at the start. I\'ll note it and judge at the six-month review.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

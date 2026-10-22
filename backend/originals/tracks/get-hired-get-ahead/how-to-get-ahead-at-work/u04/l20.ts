@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What makes Clinton\'s answer convincing?',
         options: [
-          { text: 'It\'s grounded in evidence: energy audit, feedback, experiments' },
           { text: 'It\'s impressive', why: 'It\'s grounded in evidence.' },
+          { text: 'It\'s grounded in evidence: energy audit, feedback, experiments' },
           { text: 'It\'s long', why: 'It\'s one page of evidence.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         from: 'paul',
         message: 'Aïcha needs an associate PM next quarter. I\'ll tell her you\'re worth talking to.',
         options: [
-          { text: '"Thank you, Paul. That means a lot. I\'ll talk to Ngozi first so there are no surprises."' },
           { text: '"Great, I\'m quitting engineering tomorrow."', why: 'Talk to Ngozi; plan the move.' },
           { text: '"No thanks."', why: 'It fits his plan; explore it.' },
+          { text: '"Thank you, Paul. That means a lot. I\'ll talk to Ngozi first so there are no surprises."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s Clinton\'s top work value?',
         options: [
-          { text: 'Building things real people rely on' },
           { text: 'An impressive title', why: 'That\'s ranked last.' },
           { text: 'The highest salary', why: '"Enough" money is third.' },
+          { text: 'Building things real people rely on' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -141,11 +141,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Three months ago you had no answer. What changed?',
         options: [
-          { text: 'I stopped guessing and gathered evidence about myself: energy, values, small experiments.' },
           { text: 'I found my passion overnight.', why: 'It came from doing, not overnight.' },
+          { text: 'I stopped guessing and gathered evidence about myself: energy, values, small experiments.' },
           { text: 'Paul told me what to do.', why: 'He asked; Clinton found the answer.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

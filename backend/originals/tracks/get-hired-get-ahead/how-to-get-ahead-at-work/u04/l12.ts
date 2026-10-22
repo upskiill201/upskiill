@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "70-20-10" remind you of?',
         options: [
-          { text: 'Most growth comes from experience, then people, then courses' },
           { text: 'An exact proven formula', why: 'It\'s a rule of thumb, not proven numbers.' },
+          { text: 'Most growth comes from experience, then people, then courses' },
           { text: 'A salary split', why: 'It\'s about how people learn.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I ask Ngozi for a stretch task?',
         options: [
-          { text: '"Could I lead the user research for the sync-service split? It fits my plan and helps the team."' },
           { text: '"Give me something hard."', why: 'Be specific and tie it to the plan.' },
           { text: 'Don\'t ask.', why: 'Ask for one stretch task.' },
+          { text: '"Could I lead the user research for the sync-service split? It fits my plan and helps the team."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

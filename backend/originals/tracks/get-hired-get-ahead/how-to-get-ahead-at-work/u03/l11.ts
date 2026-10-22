@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Is it wrong to take a recruiter\'s call?',
         options: [
-          { text: 'No: learning about outside interest is normal' },
           { text: 'Yes, it\'s disloyal', why: 'Learning is fine; honesty matters.' },
+          { text: 'No: learning about outside interest is normal' },
           { text: 'Only on weekdays', why: 'It\'s normal.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'After the call, what do I tell the recruiter?',
         options: [
-          { text: '"Thanks so much. It\'s not the right fit for me now, but I\'d love to stay in touch."' },
           { text: 'Nothing, ghost them.', why: 'A short thank-you keeps the door open.' },
           { text: '"Pay me double and I\'ll think about it."', why: 'If it\'s not right, say so kindly.' },
+          { text: '"Thanks so much. It\'s not the right fit for me now, but I\'d love to stay in touch."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

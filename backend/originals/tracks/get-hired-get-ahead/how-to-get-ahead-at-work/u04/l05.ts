@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s a career plan?',
         options: [
-          { text: 'A set of choices you update as you learn' },
           { text: 'A fixed prophecy', why: 'It changes as you learn.' },
+          { text: 'A set of choices you update as you learn' },
           { text: 'A list of titles', why: 'Choices, skills, steps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'What will you do with the audit?',
         options: [
-          { text: 'Try more user-facing work in small ways, and see if the pattern holds.' },
           { text: 'Switch to product tomorrow.', why: 'Test first.' },
           { text: 'Nothing.', why: 'It\'s useful data.' },
+          { text: 'Try more user-facing work in small ways, and see if the pattern holds.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How many skills should a plan focus on?',
         options: [
-          { text: 'Two or three' },
           { text: 'Ten', why: 'Too many.' },
           { text: 'None', why: 'Two or three.' },
+          { text: 'Two or three' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

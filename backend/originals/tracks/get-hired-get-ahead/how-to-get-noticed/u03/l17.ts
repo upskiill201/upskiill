@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can forty generic applications do worse than five tailored ones?',
         options: [
-          { text: 'Generic CVs match no advert in particular, so they sink to the bottom' },
           { text: 'Recruiters hate the number 40', why: 'Ha. It\'s about matching the role.' },
+          { text: 'Generic CVs match no advert in particular, so they sink to the bottom' },
           { text: 'Job sites block you after five', why: 'Usually not. The issue is quality of match.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'But if I only send five, I\'m putting all my eggs in five baskets!',
         options: [
-          { text: 'Five strong baskets this week, five more next week. Steady and tailored beats one huge generic night.' },
           { text: 'True, send forty.', why: 'Forty weak applications are forty weak baskets.' },
           { text: 'Send one only.', why: 'Too few. A steady handful each week works.' },
+          { text: 'Five strong baskets this week, five more next week. Steady and tailored beats one huge generic night.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What\'s a steady plan for Clinton\'s next month?',
         options: [
-          { text: 'Five tailored applications a week, all tracked, with follow-ups' },
           { text: 'One night of forty, then nothing', why: 'Burst then silence. Steady wins.' },
           { text: 'Wait until graduation', why: 'Many graduate roles close before graduation.' },
+          { text: 'Five tailored applications a week, all tracked, with follow-ups' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

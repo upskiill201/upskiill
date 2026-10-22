@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What went wrong with seventeen skills?',
         options: [
-          { text: 'None got real attention; six courses started, none finished' },
           { text: 'Nothing', why: 'Too many to focus on.' },
+          { text: 'None got real attention; six courses started, none finished' },
           { text: 'The skills were useless', why: 'They were useful; just too many.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should I drop courses completely?',
         options: [
-          { text: 'No: courses can help, but real work with a reviewer is where the skill gets built.' },
           { text: 'Yes, never learn anything new.', why: 'Courses help alongside real work.' },
           { text: 'Only do courses.', why: 'Real work builds the skill.' },
+          { text: 'No: courses can help, but real work with a reviewer is where the skill gets built.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

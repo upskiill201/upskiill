@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why meet people before you need them?',
         options: [
-          { text: 'When things go wrong, they already know and trust you' },
           { text: 'To ask for favours immediately', why: 'It\'s for later, when you need each other.' },
+          { text: 'When things go wrong, they already know and trust you' },
           { text: 'It\'s required', why: 'It\'s wise, not required.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What should I write to the support lead?',
         options: [
-          { text: '"Hi, I\'m Clinton, new on offline. I\'d love to understand what you hear from drivers. 15 minutes for coffee?"' },
           { text: '"Can you test my code?"', why: 'Start by learning about their work.' },
           { text: '"Why do drivers complain so much?"', why: 'Ask with curiosity, not blame.' },
+          { text: '"Hi, I\'m Clinton, new on offline. I\'d love to understand what you hear from drivers. 15 minutes for coffee?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

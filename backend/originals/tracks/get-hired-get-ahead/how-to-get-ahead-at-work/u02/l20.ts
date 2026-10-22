@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Why did Ngozi call Clinton\'s summary promotion material?',
         options: [
-          { text: 'Results tied to goals, value beyond his team, and a clear next step' },
           { text: 'It was long', why: 'It was one page.' },
+          { text: 'Results tied to goals, value beyond his team, and a clear next step' },
           { text: 'He worked late', why: 'Hours weren\'t in it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Another team asks for a "quick" feature not on our goals. What do I say?',
         options: [
-          { text: '"Sounds useful. We\'re focused on our Q3 goals, but I can show your team where the data is. Want 20 minutes?"' },
           { text: '"Sure!" (then works midnight)', why: 'Kind "not now" with an alternative.' },
           { text: '"No."', why: 'Kind and helpful.' },
+          { text: '"Sounds useful. We\'re focused on our Q3 goals, but I can show your team where the data is. Want 20 minutes?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -126,11 +126,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What always breaks a focus block?',
         options: [
-          { text: 'A real production problem' },
           { text: 'A meeting invite', why: 'Can wait.' },
           { text: 'A newsletter', why: 'Can wait.' },
+          { text: 'A real production problem' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -138,11 +138,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Five months in. What does "valuable" mean to you now?',
         options: [
-          { text: 'Moving the goals that matter, being reliable, making others better, and saying so clearly.' },
           { text: 'Being the busiest.', why: 'Busy isn\'t valuable.' },
+          { text: 'Moving the goals that matter, being reliable, making others better, and saying so clearly.' },
           { text: 'Never saying no.', why: 'A kind "not now" adds value.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

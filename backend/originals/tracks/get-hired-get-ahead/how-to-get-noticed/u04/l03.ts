@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the swap-the-name test check?',
         options: [
-          { text: 'Whether the letter is really about this company' },
           { text: 'Whether you spelled the name right', why: 'Spelling matters too, but this test is about being specific.' },
+          { text: 'Whether the letter is really about this company' },
           { text: 'Whether the letter is long enough', why: 'Length isn\'t the test.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'I\'ve covered the name. Which company is your letter for?',
         options: [
-          { text: 'Fair, you can\'t tell. I\'ll add what Njangi Pay actually does and why it matters to me.' },
           { text: 'Any of them, that\'s the beauty of it!', why: 'That\'s the problem, not the beauty.' },
           { text: 'It\'s for whoever hires me.', why: 'Then it\'s for no one in particular.' },
+          { text: 'Fair, you can\'t tell. I\'ll add what Njangi Pay actually does and why it matters to me.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

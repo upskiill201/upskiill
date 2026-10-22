@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which paragraph must always be written fresh?',
         options: [
-          { text: '"Why them"' },
           { text: 'The close', why: 'The close can be adapted. "Why them" must be new.' },
+          { text: '"Why them"' },
           { text: 'None', why: 'Without a fresh "why them", the letter fails the swap-the-name test.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Five letters this week. How long will each one take you now?',
         options: [
-          { text: 'About 15 minutes for assembly, plus 20 minutes of research for a fresh "why them".' },
           { text: 'Five minutes, I\'ll just change the name.', why: 'That\'s the generic letter again.' },
           { text: 'A whole day each.', why: 'With a master letter, much less.' },
+          { text: 'About 15 minutes for assembly, plus 20 minutes of research for a fresh "why them".' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Clinton applies to a telecom support role. Which proofs does he pick?',
         options: [
-          { text: 'Explaining repairs to customers, and staying calm when things break' },
           { text: 'His football captaincy and GPA', why: 'Not what a support role needs most.' },
           { text: 'All six', why: 'Two, matched to their must-haves.' },
+          { text: 'Explaining repairs to customers, and staying calm when things break' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

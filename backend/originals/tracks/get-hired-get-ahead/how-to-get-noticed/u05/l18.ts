@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did recruiters find Ngum before she applied?',
         options: [
-          { text: 'Her headline and About used the words they search for, like "junior accounting" and "Douala"' },
           { text: 'She paid for ads', why: 'A free profile with the right words did it.' },
+          { text: 'Her headline and About used the words they search for, like "junior accounting" and "Douala"' },
           { text: 'Luck', why: 'Searchable words and clear proof did it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Ngum\'s whole profile tells one story. What\'s mine?',
         options: [
-          { text: 'I build small, useful tools and explain them simply. Every section should say that.' },
           { text: 'I can do everything.', why: 'Too broad. One clear story works.' },
           { text: 'I don\'t have one.', why: 'He does: tools people use, explained simply.' },
+          { text: 'I build small, useful tools and explain them simply. Every section should say that.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does Tey say every part of Ngum\'s profile does?',
         options: [
-          { text: 'Tells the same clear story: organised, honest, good with money' },
           { text: 'Lists different random skills', why: 'The opposite: one consistent story.' },
           { text: 'Shows off as much as possible', why: 'It shows proof, consistently.' },
+          { text: 'Tells the same clear story: organised, honest, good with money' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

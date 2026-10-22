@@ -33,21 +33,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who wrote The First 90 Days, and when?',
         options: [
-          { text: 'Michael D. Watkins, 2003' },
           { text: 'Ngozi Bate, 2020', why: 'She\'s Clinton\'s manager. It was Michael D. Watkins, 2003.' },
+          { text: 'Michael D. Watkins, 2003' },
           { text: 'Nobody knows', why: 'Michael D. Watkins, 2003.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'What\'s the core idea?',
         options: [
-          { text: 'The first months set patterns that are hard to change, so be deliberate' },
           { text: 'You must be perfect for 90 days', why: 'Deliberate, not perfect.' },
           { text: 'After 90 days nothing matters', why: 'It\'s about early patterns.' },
+          { text: 'The first months set patterns that are hard to change, so be deliberate' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which is a good early win for Clinton?',
         options: [
-          { text: 'A small, finished fix that drivers notice' },
           { text: 'A huge redesign nobody asked for', why: 'Small, real and finished.' },
           { text: 'Nothing for three months', why: 'Early wins build trust.' },
+          { text: 'A small, finished fix that drivers notice' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the incident listed as a strength?',
         options: [
-          { text: 'Because of how he handled it: early, owned, clear write-up' },
           { text: 'Because breaking things is good', why: 'It\'s the handling that counted.' },
+          { text: 'Because of how he handled it: early, owned, clear write-up' },
           { text: 'It\'s a mistake in the notes', why: 'It\'s deliberate: he handled it well.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I respond to "speak up more in design meetings"?',
         options: [
-          { text: '"That\'s fair. I\'ll come to each design meeting with one idea or question prepared. Could you invite me to share it?"' },
           { text: '"But I\'m shy."', why: 'Acknowledge it and bring a plan.' },
           { text: '"I disagree."', why: 'It\'s fair and specific. Plan for it.' },
+          { text: '"That\'s fair. I\'ll come to each design meeting with one idea or question prepared. Could you invite me to share it?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

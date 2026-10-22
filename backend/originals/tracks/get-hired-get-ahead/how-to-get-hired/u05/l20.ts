@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         from: 'brenda',
         message: 'We\'d love to offer you the role at 300,000 francs a month. How does that sound?',
         options: [
-          { text: '"Thank you, I\'m really excited. Could you send it in writing, and I\'ll come back to you by Thursday?"' },
           { text: '"Yes!" (without seeing anything)', why: 'Ask for it in writing first.' },
+          { text: '"Thank you, I\'m really excited. Could you send it in writing, and I\'ll come back to you by Thursday?"' },
           { text: '"Too low."', why: 'Thank them and take time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Clinton accept 315,000 rather than push for 330,000?',
         options: [
-          { text: 'It was inside his range, above his walk-away, and Brenda had already moved' },
           { text: 'He was scared', why: 'He used his plan.' },
           { text: 'He forgot his target', why: 'He compared with his plan.' },
+          { text: 'It was inside his range, above his walk-away, and Brenda had already moved' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -132,21 +132,21 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Eight months ago you said you had no experience. What would you tell that Clinton now?',
         options: [
-          { text: 'You had more than you thought. Write it down, prove it, talk to people, and keep going after the noes.' },
           { text: 'You were right, I got lucky.', why: 'It was work, not luck.' },
           { text: 'Nothing, it was easy.', why: 'It wasn\'t easy, and that\'s the point.' },
+          { text: 'You had more than you thought. Write it down, prove it, talk to people, and keep going after the noes.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'What should Clinton do with his job-search kit now?',
         options: [
-          { text: 'Keep it: he\'ll update it for his next move, and help others with it' },
           { text: 'Delete it, he\'s done forever', why: 'Careers have more than one job search.' },
+          { text: 'Keep it: he\'ll update it for his next move, and help others with it' },
           { text: 'Sell it', why: 'Keep it and share what he learned.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Remi\'s opening work so well?',
         options: [
-          { text: 'It\'s a real problem he solved, with a result, bridged to what Synergix does' },
           { text: 'It\'s funny', why: 'It\'s engaging, but the key is problem, action, result and bridge.' },
+          { text: 'It\'s a real problem he solved, with a result, bridged to what Synergix does' },
           { text: 'It names the role first', why: 'The role comes last, after the story.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Remi\'s letter is amazing. Can I copy his structure?',
         options: [
-          { text: 'The structure, yes: hook, why them, why you, close. The words and stories have to be mine.' },
           { text: 'I\'ll copy his words and change the names.', why: 'That\'s his story. Borrow the shape, not the content.' },
           { text: 'No, every letter must be totally different.', why: 'The four-part shape works for everyone.' },
+          { text: 'The structure, yes: hook, why them, why you, close. The words and stories have to be mine.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What should Clinton borrow from Remi for his Njangi Pay letter?',
         options: [
-          { text: 'A real detail from Njangi Pay\'s news in "why them", and a proof with a clear result' },
           { text: 'The water-tank story', why: 'That\'s Remi\'s story. Clinton has the njangi book.' },
           { text: 'Swahili', why: 'Fit the language to your audience, not Remi\'s.' },
+          { text: 'A real detail from Njangi Pay\'s news in "why them", and a proof with a clear result' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

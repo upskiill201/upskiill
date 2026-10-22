@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which line of a goals doc tells you what to skip?',
         options: [
-          { text: 'The "not this quarter" line' },
           { text: 'Goal 1', why: 'That\'s what to work on.' },
+          { text: 'The "not this quarter" line' },
           { text: 'The owner', why: 'The "not this quarter" line.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         from: 'ngozi',
         message: 'Someone asks you for a dashboard that\'s not on our goals. What do you do?',
         options: [
-          { text: 'Thank them, explain our focus, offer a 20-minute walkthrough, and check with you if they push.' },
           { text: 'Say yes and work late.', why: 'A resentful yes hurts everyone.' },
           { text: 'Ignore them.', why: 'Kind "not now" with an alternative.' },
+          { text: 'Thank them, explain our focus, offer a 20-minute walkthrough, and check with you if they push.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who should decide when two priorities clash?',
         options: [
-          { text: 'The manager' },
           { text: 'Whoever asks last', why: 'The manager decides trade-offs.' },
           { text: 'Nobody', why: 'The manager.' },
+          { text: 'The manager' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "I deserve it" weak?',
         options: [
-          { text: 'It gives time and effort, not evidence against criteria' },
           { text: 'It\'s too polite', why: 'It lacks evidence.' },
+          { text: 'It gives time and effort, not evidence against criteria' },
           { text: 'It\'s too long', why: 'It lacks evidence.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should I admit a gap? Won\'t that weaken my case?',
         options: [
-          { text: 'It strengthens it. It shows I know the criteria, and invites Ngozi to help me close it.' },
           { text: 'Never admit gaps.', why: 'An honest gap builds trust.' },
           { text: 'Admit five gaps.', why: 'One honest gap is enough.' },
+          { text: 'It strengthens it. It shows I know the criteria, and invites Ngozi to help me close it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

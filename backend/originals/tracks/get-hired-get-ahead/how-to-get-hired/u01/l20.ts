@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What led to the Kmer offer?',
         options: [
-          { text: 'A weak tie, a good message, a useful follow-up' },
           { text: 'A job board advert', why: 'There was no advert.' },
+          { text: 'A weak tie, a good message, a useful follow-up' },
           { text: '200 template messages', why: 'One careful message did it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Mr Tamba just offered me three months part-time. What do I say?',
         options: [
-          { text: 'Thank him, say I\'m very interested, and ask for the details in writing.' },
           { text: 'Say yes to anything, right now, without details.', why: 'Get it in writing first, so you can plan.' },
           { text: 'Say I\'ll think about it for a month.', why: 'Too long. Ask for details and reply soon.' },
+          { text: 'Thank him, say I\'m very interested, and ask for the details in writing.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Should Clinton stop preparing for Njangi Pay now?',
         options: [
-          { text: 'No: Kmer is a door, not the end. He keeps preparing.' },
           { text: 'Yes, he has a job now', why: 'A part-time internship is a great start, not the finish.' },
           { text: 'Yes, cancel the interview', why: 'Keep every door open.' },
+          { text: 'No: Kmer is a door, not the end. He keeps preparing.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -141,11 +141,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Who should you thank today?',
         options: [
-          { text: 'Tchami, for the introduction. And I\'ll tell Arjun his webhooks tip helped.' },
           { text: 'Nobody, I did it myself.', why: 'Thank and report back. That\'s how relationships last.' },
+          { text: 'Tchami, for the introduction. And I\'ll tell Arjun his webhooks tip helped.' },
           { text: 'Only Mr Tamba.', why: 'Thank Tchami too: he made the introduction.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

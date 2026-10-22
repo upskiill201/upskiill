@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a speculative application?',
         options: [
-          { text: 'Writing to a company that hasn\'t advertised a role, offering to help' },
           { text: 'Guessing the answers on an application form', why: 'It\'s applying without an advert.' },
+          { text: 'Writing to a company that hasn\'t advertised a role, offering to help' },
           { text: 'Applying to every job on a board', why: 'That\'s mass applying. This is one targeted pitch.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should I send it to info@kmerlogistics.cm?',
         options: [
-          { text: 'Better to find the founder, Tchami\'s friend, and write to him directly.' },
           { text: 'Yes, general inboxes always get read.', why: 'They often don\'t. Find the decision-maker.' },
           { text: 'Send it to every email on their site.', why: 'Spammy. One right person.' },
+          { text: 'Better to find the founder, Tchami\'s friend, and write to him directly.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

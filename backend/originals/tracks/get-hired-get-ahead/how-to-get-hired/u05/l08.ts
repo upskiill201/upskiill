@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why start with enthusiasm?',
         options: [
-          { text: 'It shows he wants the job, so the ask feels like a detail, not a threat' },
           { text: 'To trick them', why: 'It\'s genuine, and it frames the ask.' },
+          { text: 'It shows he wants the job, so the ask feels like a detail, not a threat' },
           { text: 'It doesn\'t matter', why: 'It sets the tone.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What exactly do I say for the ask?',
         options: [
-          { text: '"Would 330,000 be possible? If not, a review after probation would also mean a lot."' },
           { text: '"Could you maybe, possibly, if it\'s OK, give a bit more?"', why: 'Be clear: one number.' },
           { text: '"I want 330,000. Final."', why: 'A question, not an ultimatum.' },
+          { text: '"Would 330,000 be possible? If not, a review after probation would also mean a lot."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

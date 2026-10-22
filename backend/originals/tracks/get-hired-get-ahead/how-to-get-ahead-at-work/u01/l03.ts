@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "Let me know if you need anything" weak here?',
         options: [
-          { text: 'It leaves Ngozi to work out what to tell him' },
           { text: 'It\'s rude', why: 'It\'s polite, just unhelpful.' },
+          { text: 'It leaves Ngozi to work out what to tell him' },
           { text: 'It\'s too specific', why: 'The opposite.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What should I send Ngozi after the chat?',
         options: [
-          { text: '"Thanks! My notes: day 30 learn sync, day 60 small fix, day 90 own a small feature. Tuesdays 1:1. Did I get that right?"' },
           { text: 'Nothing.', why: 'A short summary avoids misunderstandings.' },
           { text: 'A five-page plan by tonight.', why: 'Three lines is enough.' },
+          { text: '"Thanks! My notes: day 30 learn sync, day 60 small fix, day 90 own a small feature. Tuesdays 1:1. Did I get that right?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

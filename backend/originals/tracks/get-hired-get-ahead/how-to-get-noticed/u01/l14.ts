@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Why do you think I write my wins down every week?',
         options: [
-          { text: 'So when a CV, interview or review comes up, you have real stories ready instead of trying to remember.' },
           { text: 'To show off.', why: 'Nobody sees it but her. It\'s a memory, not a trophy cabinet.' },
+          { text: 'So when a CV, interview or review comes up, you have real stories ready instead of trying to remember.' },
           { text: 'Because your boss makes you.', why: 'She does it for herself. It saves her every review season.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why add a skill tag to each entry?',
         options: [
-          { text: 'So you can search for a skill and find every story about it in seconds' },
           { text: 'It looks professional', why: 'Nobody sees it. It\'s for finding stories fast.' },
           { text: 'Recruiters read your bank', why: 'They don\'t. It\'s your private source for applications.' },
+          { text: 'So you can search for a skill and find every story about it in seconds' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

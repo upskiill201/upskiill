@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Is "probably" allowed in your direction?',
         options: [
-          { text: 'Yes: honest uncertainty is fine' },
           { text: 'No, you must be certain', why: 'Honest uncertainty is fine.' },
+          { text: 'Yes: honest uncertainty is fine' },
           { text: 'Only for experts', why: 'For everyone.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'A learner is still at school. Can they write a career plan?',
         options: [
-          { text: 'Yes: energy audit from school and hobbies, values, a few conversations, and next-three-month steps.' },
           { text: 'No, too young.', why: 'It works at any stage.' },
           { text: 'Only if they know their job title.', why: 'A direction is enough.' },
+          { text: 'Yes: energy audit from school and hobbies, values, a few conversations, and next-three-month steps.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

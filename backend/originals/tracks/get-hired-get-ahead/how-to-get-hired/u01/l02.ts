@@ -30,21 +30,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who wrote "The Strength of Weak Ties" in 1973?',
         options: [
-          { text: 'Mark Granovetter' },
           { text: 'A LinkedIn engineer', why: 'LinkedIn didn\'t exist in 1973. It was sociologist Mark Granovetter.' },
+          { text: 'Mark Granovetter' },
           { text: 'Miracle', why: 'Ha. Mark Granovetter, a sociologist.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Why do acquaintances often help more with jobs than close friends?',
         options: [
-          { text: 'They move in different circles, so they hear different news' },
           { text: 'They\'re nicer', why: 'Not nicer: they just know different people.' },
           { text: 'Close friends don\'t want to help', why: 'Friends want to help, but they hear the same news as you.' },
+          { text: 'They move in different circles, so they hear different news' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'I\'d help you if I could, but I only know medical people!',
         options: [
-          { text: 'That\'s exactly why the research says to reach out to people I know a little too, in tech.' },
           { text: 'Then nobody can help me.', why: 'Weak ties in tech can.' },
           { text: 'Introduce me to all your doctors.', why: 'Kind, but not his field. Weak ties in fintech matter more.' },
+          { text: 'That\'s exactly why the research says to reach out to people I know a little too, in tech.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Who should Clinton message first?',
         options: [
-          { text: 'Tchami, the fintech developer who spoke at his meet-up last term' },
           { text: 'Only his best friends', why: 'They matter, but weak ties hear different news.' },
+          { text: 'Tchami, the fintech developer who spoke at his meet-up last term' },
           { text: 'A random CEO with no connection to him', why: 'Too weak. Start with people he has some link to.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

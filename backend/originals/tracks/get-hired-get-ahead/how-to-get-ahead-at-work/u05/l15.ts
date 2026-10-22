@@ -26,11 +26,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How did Clinton handle the pay dip?',
         options: [
-          { text: 'Asked to keep his pay, with a reason and a six-month review' },
           { text: 'Refused the role', why: 'He negotiated.' },
+          { text: 'Asked to keep his pay, with a reason and a six-month review' },
           { text: 'Accepted without asking', why: 'He negotiated.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Aïcha asks what success looks like at 30 days. What do I say?',
         options: [
-          { text: '"Day 30: I know the product goals, I\'ve met every team we depend on, and I\'ve shadowed you on five driver calls."' },
           { text: '"Ship a whole new product."', why: 'Learn first.' },
           { text: '"You tell me."', why: 'She asked him first; offer a draft.' },
+          { text: '"Day 30: I know the product goals, I\'ve met every team we depend on, and I\'ve shadowed you on five driver calls."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why stay connected to the engineering team?',
         options: [
-          { text: 'They\'re now his closest partners' },
           { text: 'To keep an exit', why: 'They\'re his partners.' },
           { text: 'No reason', why: 'They\'re his partners.' },
+          { text: 'They\'re now his closest partners' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

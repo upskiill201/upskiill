@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         from: 'brenda',
         message: 'So, Clinton. Tell me about yourself.',
         options: [
-          { text: 'Right now I\'m a final-year CS student building offline delivery confirmations at Kmer: eleven drivers use them. Before that, a savings tracker 60 people use. Next, payment tools people rely on, which is why I\'m here.' },
           { text: 'I was born in Bamenda and I like football...', why: 'Present, past, future, with proof.' },
+          { text: 'Right now I\'m a final-year CS student building offline delivery confirmations at Kmer: eleven drivers use them. Before that, a savings tracker 60 people use. Next, payment tools people rely on, which is why I\'m here.' },
           { text: 'I\'m a hard worker and a team player.', why: 'Claims, not proof.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         from: 'brenda',
         message: 'Our developer asks: how would you handle a payment provider being down for an hour?',
         options: [
-          { text: '"I haven\'t handled that exactly, but at Kmer I queued confirmations offline and retried later. I\'d think about queuing payments safely, with unique IDs so nothing is charged twice."' },
           { text: '"I\'ve done that loads." (he hasn\'t)', why: 'Never bluff.' },
           { text: '"No idea."', why: 'Reason from what you know.' },
+          { text: '"I haven\'t handled that exactly, but at Kmer I queued confirmations offline and retried later. I\'d think about queuing payments safely, with unique IDs so nothing is charged twice."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Brenda asks, "Any questions for us?" Which is best?',
         options: [
-          { text: '"What would success look like for a graduate developer in the first three months?"' },
           { text: '"No, you covered everything."', why: 'A missed chance.' },
           { text: '"When was Njangi Pay founded?"', why: 'It\'s on the website.' },
+          { text: '"What would success look like for a graduate developer in the first three months?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -142,11 +142,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'How do you feel it went?',
         options: [
-          { text: 'Good. I\'ll send the thank-you tonight and keep my other conversations going while I wait.' },
           { text: 'Perfect, I\'ll stop looking now.', why: 'Keep other doors open until there\'s an offer.' },
+          { text: 'Good. I\'ll send the thank-you tonight and keep my other conversations going while I wait.' },
           { text: 'Terrible, I\'m giving up.', why: 'He did well. Keep going either way.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

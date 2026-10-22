@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Clinton freeze?',
         options: [
-          { text: 'He hadn\'t prepared the shape of his answer' },
           { text: 'He has nothing to say', why: 'He has a lot. He hadn\'t organised it.' },
+          { text: 'He hadn\'t prepared the shape of his answer' },
           { text: 'David is scary', why: 'Funny, but no. He hadn\'t prepared.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I froze on the very first question. Maybe I\'m just bad at interviews.',
         options: [
-          { text: 'Almost everyone freezes once. I\'ll prepare a short answer and practise it out loud.' },
           { text: 'True, I\'ll cancel the interview.', why: 'Freezing is normal and fixable.' },
           { text: 'I\'ll memorise a perfect speech.', why: 'Plan the shape, not every word.' },
+          { text: 'Almost everyone freezes once. I\'ll prepare a short answer and practise it out loud.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which opening line is best for Njangi Pay?',
         options: [
-          { text: '"I\'m a final-year Computer Science student who builds tools for real users."' },
           { text: '"I was born in Bamenda in..."', why: 'Start with what\'s relevant now.' },
           { text: '"I\'m a hard worker."', why: 'Everyone says it. Show it instead.' },
+          { text: '"I\'m a final-year Computer Science student who builds tools for real users."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Clinton mention Arjun\'s post?',
         options: [
-          { text: 'It shows why he\'s writing to him specifically, and that he read his work' },
           { text: 'To flatter him into giving him a job', why: 'It\'s genuine thanks, not flattery. And he isn\'t asking for a job.' },
+          { text: 'It shows why he\'s writing to him specifically, and that he read his work' },
           { text: 'It\'s required on LinkedIn', why: 'It isn\'t required, it\'s just what makes the message worth answering.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should I send Arjun the same message I sent Tchami?',
         options: [
-          { text: 'No: Tchami knows me from the meet-up; Arjun needs a reason I\'m writing to him, like his post.' },
           { text: 'Yes, copy-paste saves time.', why: 'Each message needs its own reason.' },
           { text: 'Don\'t message Arjun at all.', why: 'A good message to a stranger can work.' },
+          { text: 'No: Tchami knows me from the meet-up; Arjun needs a reason I\'m writing to him, like his post.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

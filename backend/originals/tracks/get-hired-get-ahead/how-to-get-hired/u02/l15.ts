@@ -26,11 +26,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When can Miracle honestly refer Clinton?',
         options: [
-          { text: 'When she\'s seen his work' },
           { text: 'Whenever he asks', why: 'Referrals depend on seen work.' },
+          { text: 'When she\'s seen his work' },
           { text: 'If he pays her', why: 'Never.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'What will you write in your wins log for this week?',
         options: [
-          { text: 'Sync now works on all three test phones; confirmations reach the office when data returns.' },
           { text: 'Had a hard week.', why: 'Log what changed.' },
           { text: 'Miracle fixed my bug.', why: 'She pointed; he fixed it. Log the result.' },
+          { text: 'Sync now works on all three test phones; confirmations reach the office when data returns.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Clinton will miss a deadline. What does a standout graduate do?',
         options: [
-          { text: 'Says so as soon as he knows, with a new date' },
           { text: 'Hopes nobody notices', why: 'Early news is a plan.' },
           { text: 'Blames someone else', why: 'Own it.' },
+          { text: 'Says so as soon as he knows, with a new date' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

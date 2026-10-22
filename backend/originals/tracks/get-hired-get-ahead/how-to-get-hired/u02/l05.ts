@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What three things should an internship give you?',
         options: [
-          { text: 'Learning, proof for your CV, and a reference' },
           { text: 'A title, a laptop and lunch', why: 'Nice, but the lasting three are learning, proof and a reference.' },
+          { text: 'Learning, proof for your CV, and a reference' },
           { text: 'Only a job offer', why: 'An offer is a bonus.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'What will you tell Mr Tamba you\'ve learned this week?',
         options: [
-          { text: 'That drivers can\'t confirm deliveries without data, and my project can fix that.' },
           { text: 'That I stayed late every night.', why: 'Hours aren\'t results. Share what you learned.' },
           { text: 'Nothing, I\'ll wait for him to ask.', why: 'Come with something useful.' },
+          { text: 'That drivers can\'t confirm deliveries without data, and my project can fix that.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Samuel\'s hours are still unclear. What should he do?',
         options: [
-          { text: 'Ask politely to confirm days, hours and project in a short email' },
           { text: 'Shout at Mr Tamba', why: 'Ask calmly to confirm in writing.' },
           { text: 'Quit', why: 'It\'s easy to fix in writing.' },
+          { text: 'Ask politely to confirm days, hours and project in a short email' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

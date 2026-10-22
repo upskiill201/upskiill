@@ -23,8 +23,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Which skill helped Clinton spot the cause of the payout problem?',
-      options: ['Knowing the business and debugging', 'Typing speed', 'A new framework'],
-      answer: 0,
+      options: ['Typing speed', 'Knowing the business and debugging', 'A new framework'],
+      answer: 1,
       explanation: 'He knew how offline syncs feed payouts, and narrowed down the cause.',
     },
     {
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does "knowing the business" make Clinton more valuable?',
         options: [
-          { text: 'He can connect his work to money, customers and goals' },
           { text: 'He can replace finance', why: 'He can connect his work to what matters.' },
           { text: 'It doesn\'t', why: 'It helped him spot the payout cause.' },
+          { text: 'He can connect his work to money, customers and goals' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Where did Clinton first build "explaining simply"?',
         options: [
-          { text: 'At his aunt\'s phone stall' },
           { text: 'In a lecture hall', why: 'At his aunt\'s stall.' },
           { text: 'He never did', why: 'At his aunt\'s stall.' },
+          { text: 'At his aunt\'s phone stall' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

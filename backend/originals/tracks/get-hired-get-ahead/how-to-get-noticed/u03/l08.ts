@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a master CV?',
         options: [
-          { text: 'One longer document with everything, which you copy from but never send' },
           { text: 'Your best CV, sent to every job', why: 'You tailor copies. The master stays private.' },
+          { text: 'One longer document with everything, which you copy from but never send' },
           { text: 'A CV for senior jobs', why: 'It\'s your private source of every bullet.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'The data internship wants SQL. I\'ve never used it. Should I just add it?',
         options: [
-          { text: 'No. I\'ll lead with my data bullet and mention I\'m learning SQL, with a gap plan.' },
           { text: 'Yes, they\'ll never test it.', why: 'They often do. And it\'s a lie.' },
           { text: 'Don\'t apply.', why: 'Most must-haves fit. Apply honestly.' },
+          { text: 'No. I\'ll lead with my data bullet and mention I\'m learning SQL, with a gap plan.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'How long should tailoring take once the master CV exists?',
         options: [
-          { text: 'About 15 minutes: highlight, reorder, swap a few words' },
           { text: 'A whole week per job', why: 'With a master CV, it\'s quick.' },
           { text: 'No time: send the same CV everywhere', why: 'Generic CVs match nothing in particular. Lesson 17 shows why.' },
+          { text: 'About 15 minutes: highlight, reorder, swap a few words' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

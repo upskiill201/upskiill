@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why start with what worked?',
         options: [
-          { text: 'So you repeat it, and remember a no doesn\'t erase it' },
           { text: 'To avoid the bad parts', why: 'The bad parts come next, calmly.' },
+          { text: 'So you repeat it, and remember a no doesn\'t erase it' },
           { text: 'It doesn\'t matter', why: 'You\'ll want to repeat what worked.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should I write a note like this after every interview, even good ones?',
         options: [
-          { text: 'Yes: five lines after every process. Good ones teach me what to repeat.' },
           { text: 'Only after rejections.', why: 'Good ones teach you too.' },
           { text: 'Never, it\'s depressing.', why: 'It\'s about the process, not a verdict.' },
+          { text: 'Yes: five lines after every process. Good ones teach me what to repeat.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

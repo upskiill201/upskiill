@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Why did Brenda call Clinton?',
         options: [
-          { text: 'A new role fits his work, and his gracious reply and progress note stood out' },
           { text: 'Luck', why: 'His reply and his progress made the difference.' },
+          { text: 'A new role fits his work, and his gracious reply and progress note stood out' },
           { text: 'He messaged her every week', why: 'He sent one reply and one progress note.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I need more time from Mr Tamba. What do I write?',
         options: [
-          { text: '"Thank you again for the offer. I\'m in a final conversation with another company on Monday. Could I give you my answer by the end of next week?"' },
           { text: 'Say nothing and miss his deadline.', why: 'Be honest and ask for a short extension.' },
           { text: '"Another company wants me more, so wait."', why: 'Honest, but polite and specific.' },
+          { text: '"Thank you again for the offer. I\'m in a final conversation with another company on Monday. Could I give you my answer by the end of next week?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What turned "light on testing" into an advantage?',
         options: [
-          { text: 'A small project, made visible, then shared once' },
           { text: 'Arguing with Brenda', why: 'He acted on it instead.' },
           { text: 'Ignoring it', why: 'He acted on it.' },
+          { text: 'A small project, made visible, then shared once' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -141,11 +141,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Two possible offers in one week. How are you feeling?',
         options: [
-          { text: 'Excited and nervous. I\'ll prepare for Monday, ask Mr Tamba for a little time, and decide calmly.' },
           { text: 'I\'ll accept whoever pays most, today.', why: 'Weigh it calmly; next chapter shows how.' },
+          { text: 'Excited and nervous. I\'ll prepare for Monday, ask Mr Tamba for a little time, and decide calmly.' },
           { text: 'I\'ll reject Kmer now, just in case.', why: 'Keep both open until you decide.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

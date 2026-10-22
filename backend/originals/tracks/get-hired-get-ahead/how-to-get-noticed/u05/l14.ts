@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which connection note to Brenda is best?',
         options: [
-          { text: '"Hi Brenda, thanks for your talk at UB: your advice to show, not tell, changed my CV. I\'d love to stay in touch."' },
           { text: '(no note)', why: 'Blank requests are easy to ignore.' },
+          { text: '"Hi Brenda, thanks for your talk at UB: your advice to show, not tell, changed my CV. I\'d love to stay in touch."' },
           { text: '"Please give me a job at Njangi Pay."', why: 'A request is a hello, not an application.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should I send connection requests to 200 people tonight to grow fast?',
         options: [
-          { text: 'No: a few real connections with notes beat 200 strangers. Ten good ones this week.' },
           { text: 'Yes, more is better.', why: 'Mass requests look like spam and many get ignored.' },
           { text: 'Never connect with anyone.', why: 'Connections help him be found and stay in touch.' },
+          { text: 'No: a few real connections with notes beat 200 strangers. Ten good ones this week.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In many companies, when are people promoted?',
         options: [
-          { text: 'When they\'re already working at the next level most of the time' },
           { text: 'After a fixed number of years', why: 'Time alone rarely decides it.' },
+          { text: 'When they\'re already working at the next level most of the time' },
           { text: 'When they ask loudly enough', why: 'Evidence matters more.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'So should I wait for Ngozi to promote me when she thinks I\'m ready?',
         options: [
-          { text: 'No: I\'ll learn the criteria, work at that level, and make her case easy with evidence.' },
           { text: 'Yes, just wait.', why: 'Make her case easy.' },
           { text: 'Ask every week.', why: 'Build evidence instead.' },
+          { text: 'No: I\'ll learn the criteria, work at that level, and make her case easy with evidence.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What if your company has no career ladder?',
         options: [
-          { text: 'Ask directly what the next role looks like and what would show you\'re ready' },
           { text: 'Give up', why: 'Ask directly.' },
           { text: 'Invent your own title', why: 'Ask directly.' },
+          { text: 'Ask directly what the next role looks like and what would show you\'re ready' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

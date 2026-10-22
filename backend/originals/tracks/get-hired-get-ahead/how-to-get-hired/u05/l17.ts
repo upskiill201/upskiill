@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why call Mr Tamba rather than text?',
         options: [
-          { text: 'He gave Clinton his first chance; a call shows respect' },
           { text: 'Texts are illegal', why: 'A call is about respect here.' },
+          { text: 'He gave Clinton his first chance; a call shows respect' },
           { text: 'To change his mind', why: 'He\'s decided. It\'s about respect.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What\'s the first thing I say when he answers?',
         options: [
-          { text: '"Mr Tamba, first, thank you. You gave me my first real chance, and I learned so much at Kmer."' },
           { text: '"So, bad news..."', why: 'Start with genuine thanks.' },
           { text: '"Njangi paid more, bye."', why: 'Thank him first, explain briefly.' },
+          { text: '"Mr Tamba, first, thank you. You gave me my first real chance, and I learned so much at Kmer."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

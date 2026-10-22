@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is testing first usually less risky than a big leap?',
         options: [
-          { text: 'It costs less and teaches you more before you commit' },
           { text: 'It\'s always slower', why: 'It\'s cheaper and more informative.' },
+          { text: 'It costs less and teaches you more before you commit' },
           { text: 'Leaps never work', why: 'Sometimes they do; testing is safer.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'Bold moves, bro! Quit and do the bootcamp!',
         options: [
-          { text: 'Bold is fine, but I\'ve got a real chance here where people know my work. I\'ll test it first, then apply.' },
           { text: 'You\'re right, I quit tonight.', why: 'Test first; use his advantages.' },
           { text: 'Change is too scary.', why: 'Test it; don\'t freeze.' },
+          { text: 'Bold is fine, but I\'ve got a real chance here where people know my work. I\'ll test it first, then apply.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What\'s Clinton\'s best first step?',
         options: [
-          { text: 'More product work now, then apply for the internal role' },
           { text: 'Resign on Monday', why: 'Test first.' },
           { text: 'Do nothing', why: 'Take a small step.' },
+          { text: 'More product work now, then apply for the internal role' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

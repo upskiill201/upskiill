@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Clinton write "probably in product"?',
         options: [
-          { text: 'It\'s honest: the direction is clear, the title isn\'t fixed' },
           { text: 'He\'s unsure of everything', why: 'Direction is clear.' },
+          { text: 'It\'s honest: the direction is clear, the title isn\'t fixed' },
           { text: 'No reason', why: 'It shows honest uncertainty.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should I pin my plan above my desk or keep it private?',
         options: [
-          { text: 'Somewhere I\'ll see it often. Seeing it daily helps me choose well.' },
           { text: 'Hide it forever.', why: 'Keep it visible to you.' },
           { text: 'Post it on every wall in the office.', why: 'Visible to you is enough.' },
+          { text: 'Somewhere I\'ll see it often. Seeing it daily helps me choose well.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

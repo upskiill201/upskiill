@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is onboarding Kemi real value?',
         options: [
-          { text: 'It makes the whole team faster' },
           { text: 'It isn\'t', why: 'Multipliers are valuable.' },
+          { text: 'It makes the whole team faster' },
           { text: 'It only helps Kemi', why: 'It helps the whole team.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'What will you write in your impact record?',
         options: [
-          { text: '"Payout report fixed with finance: first unbroken Monday in five weeks. Drivers paid on time."' },
           { text: '"Did some report stuff."', why: 'What, who, a number.' },
           { text: '"Finance finally stopped complaining."', why: 'Focus on the result for drivers.' },
+          { text: '"Payout report fixed with finance: first unbroken Monday in five weeks. Drivers paid on time."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do unowned problems repeat?',
         options: [
-          { text: 'Nobody owns them' },
           { text: 'They can\'t be fixed', why: 'They can; nobody owns them.' },
           { text: 'Luck', why: 'Nobody owns them.' },
+          { text: 'Nobody owns them' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

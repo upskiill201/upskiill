@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Ngozi say is the biggest difference?',
         options: [
-          { text: '"Developers don\'t wait to be told what to do next."' },
           { text: '"Developers work longer hours."', why: 'Independence, not hours.' },
+          { text: '"Developers don\'t wait to be told what to do next."' },
           { text: '"Developers are older."', why: 'Independence, not age.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What do I ask Ngozi about the criteria?',
         options: [
-          { text: '"What\'s the biggest difference between Graduate Developer and Developer here, in practice?"' },
           { text: '"Why didn\'t you promote me?"', why: 'Ask about the criteria, forward-looking.' },
           { text: '"Can I see everyone\'s salary?"', why: 'Ask about criteria.' },
+          { text: '"What\'s the biggest difference between Graduate Developer and Developer here, in practice?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

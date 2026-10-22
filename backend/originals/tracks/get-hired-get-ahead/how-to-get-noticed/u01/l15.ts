@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Applicant B: "French: intermediate. Built 3 small projects. Currently learning testing (writing tests for my budget app)." Who\'s B?',
         options: [
-          { text: 'The most believable applicant, with honest levels, proof and a plan for the gap' },
           { text: 'Weak, because "intermediate" isn\'t fluent', why: 'Honest and improving beats an overclaim.' },
+          { text: 'The most believable applicant, with honest levels, proof and a plan for the gap' },
           { text: 'Lying about the projects', why: 'Nothing suggests that. They\'re specific and checkable.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'B has a gap: no work testing experience. Do I reject them?',
         options: [
-          { text: 'No. They\'re already writing tests for their app. That\'s a gap with a plan.' },
           { text: 'Yes, any gap means reject.', why: 'Every graduate has gaps. A plan shows they learn.' },
           { text: 'Only if A has no gaps.', why: 'A claims no gaps, which is exactly why Miracle doubts A.' },
+          { text: 'No. They\'re already writing tests for their app. That\'s a gap with a plan.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Last question. What would you tell Applicant C to fix?',
         options: [
-          { text: 'Cut the adjectives and lead with the treasurer story: it shows everything the adjectives claim.' },
           { text: 'Add more adjectives.', why: 'More of what isn\'t working.' },
           { text: 'Nothing, C is perfect.', why: 'C\'s best proof is buried under four empty words.' },
+          { text: 'Cut the adjectives and lead with the treasurer story: it shows everything the adjectives claim.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

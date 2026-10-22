@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "say yes and hope" risky?',
         options: [
-          { text: 'A broken commitment can make his growth look like a cost to the team' },
           { text: 'It isn\'t risky', why: 'The milestone slipped.' },
+          { text: 'A broken commitment can make his growth look like a cost to the team' },
           { text: 'Aïcha would be angry', why: 'The team and Ngozi pay the cost.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I bring both to Ngozi?',
         options: [
-          { text: '"Aïcha invited me to a two-day driver workshop next week. The sync milestone is Thursday. If Kemi takes one review, I can finish by Tuesday. Would that work?"' },
           { text: '"I\'m going to Bafoussam, bye."', why: 'Ask and propose a plan.' },
           { text: '"Should I go?" (no plan)', why: 'Bring a proposal.' },
+          { text: '"Aïcha invited me to a two-day driver workshop next week. The sync milestone is Thursday. If Kemi takes one review, I can finish by Tuesday. Would that work?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

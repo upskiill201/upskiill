@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is scope creep?',
         options: [
-          { text: 'A project that keeps growing with "small extras" until it never finishes' },
           { text: 'A scary bug', why: 'Not a bug: a project that keeps growing.' },
+          { text: 'A project that keeps growing with "small extras" until it never finishes' },
           { text: 'A project that finishes early', why: 'The opposite: it never finishes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Mrs Tanyi just asked for reminders too. How do I say not yet without sounding rude?',
         options: [
-          { text: '"Great idea! Let\'s get the tracker working for everyone first, then reminders can be step two."' },
           { text: '"No."', why: 'Too blunt. Say yes to the idea, and when.' },
           { text: '"Sure, I\'ll add it now."', why: 'That\'s how scope creep starts.' },
+          { text: '"Great idea! Let\'s get the tracker working for everyone first, then reminders can be step two."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

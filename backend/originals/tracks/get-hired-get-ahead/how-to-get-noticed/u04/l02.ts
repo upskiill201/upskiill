@@ -35,21 +35,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What two questions does a cover letter answer?',
         options: [
-          { text: 'Why them, and why you' },
           { text: 'Your age and your hobbies', why: 'Neither. Why them and why you.' },
+          { text: 'Why them, and why you' },
           { text: 'What salary and what holidays', why: 'Too early for that.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'About how long should a cover letter be?',
         options: [
-          { text: 'Around 250 to 400 words, under one page' },
           { text: 'Three pages', why: 'Too long for busy readers.' },
           { text: 'Two sentences', why: 'Too short to answer both questions.' },
+          { text: 'Around 250 to 400 words, under one page' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who often reads a cover letter?',
         options: [
-          { text: 'A recruiter first, then the hiring manager' },
           { text: 'Nobody, ever', why: 'Many read them, especially when they ask for them.' },
           { text: 'Only the CEO', why: 'Usually a recruiter and the hiring manager.' },
+          { text: 'A recruiter first, then the hiring manager' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'You don\'t know if they read letters. What\'s the safe bet?',
         options: [
-          { text: 'A short, specific letter' },
           { text: 'A long generic letter', why: 'Long and generic is never a safe bet.' },
+          { text: 'A short, specific letter' },
           { text: 'No letter, ever', why: 'Sometimes fine, but you lose a chance to stand out.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

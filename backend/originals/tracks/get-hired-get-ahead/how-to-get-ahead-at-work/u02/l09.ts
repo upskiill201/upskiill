@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does invisible good work hurt?',
         options: [
-          { text: 'Others can\'t benefit, and it\'s forgotten at review time' },
           { text: 'It doesn\'t', why: 'Support kept suggesting restarts.' },
+          { text: 'Others can\'t benefit, and it\'s forgotten at review time' },
           { text: 'It\'s illegal', why: 'It just doesn\'t help anyone else.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Sharing my work feels like showing off. Should I just stay quiet?',
         options: [
-          { text: 'If I share results, credit others and tell people what to do now, it\'s useful, not showing off.' },
           { text: 'Yes, stay quiet forever.', why: 'Then nobody benefits.' },
           { text: 'Post about every small thing daily.', why: 'Share results that matter.' },
+          { text: 'If I share results, credit others and tell people what to do now, it\'s useful, not showing off.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

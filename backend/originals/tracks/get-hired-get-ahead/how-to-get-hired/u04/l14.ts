@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why stay in touch with a company that said no?',
         options: [
-          { text: 'Companies often hire people they turned down before' },
           { text: 'To make them feel guilty', why: 'It\'s about future chances.' },
+          { text: 'Companies often hire people they turned down before' },
           { text: 'There\'s no reason', why: 'Many companies rehire past candidates.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What should my connection note to Brenda say?',
         options: [
-          { text: '"Thanks again for the interview and the feedback. I\'d love to stay in touch."' },
           { text: '"Still can\'t believe you said no."', why: 'Keep it warm and short.' },
           { text: 'No note.', why: 'A short note is friendlier.' },
+          { text: '"Thanks again for the interview and the feedback. I\'d love to stay in touch."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

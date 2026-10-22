@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Best way to prepare answers?',
         options: [
-          { text: 'Plan the shape, practise out loud, don\'t memorise every word' },
           { text: 'Memorise a script', why: 'It breaks when interrupted.' },
+          { text: 'Plan the shape, practise out loud, don\'t memorise every word' },
           { text: 'Wing it', why: 'Talking isn\'t answering.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'Tell me about a time you had to learn something fast.',
         options: [
-          { text: '"At Kmer, I had two weeks to learn offline storage. My task was..."' },
           { text: '"I\'m a very fast learner."', why: 'A claim, not a story. Start with the situation.' },
           { text: '"Hmm, never happened."', why: 'Everyone has one. Use STAR.' },
+          { text: '"At Kmer, I had two weeks to learn offline storage. My task was..."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do companies ask "Tell me about a time when..."?',
         options: [
-          { text: 'Past behaviour is good evidence of future behaviour' },
           { text: 'To trick you', why: 'It\'s evidence, not a trick.' },
           { text: 'They have no other questions', why: 'It\'s a deliberate method.' },
+          { text: 'Past behaviour is good evidence of future behaviour' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

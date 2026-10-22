@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the first line of the About matter so much?',
         options: [
-          { text: 'Only the first lines show before "see more", so they must earn the click' },
           { text: 'It\'s the only line anyone can read', why: 'They can read more, if the first lines are worth it.' },
+          { text: 'Only the first lines show before "see more", so they must earn the click' },
           { text: 'It doesn\'t matter', why: 'It decides whether they read the rest.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should my About be written like my CV, in third person?',
         options: [
-          { text: 'No: About is first person, like talking to someone. "I build small tools..."' },
           { text: 'Yes: "Clinton is a dynamic student..."', why: 'Third person sounds odd on your own profile.' },
           { text: 'Just paste the CV.', why: 'Different job: About tells your story in your voice.' },
+          { text: 'No: About is first person, like talking to someone. "I build small tools..."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

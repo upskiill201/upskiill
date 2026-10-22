@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the way Clinton replies matter so much?',
         options: [
-          { text: 'Public replies are part of his profile; recruiters can read them' },
           { text: 'It doesn\'t matter, comments are private', why: 'Public comments are public.' },
+          { text: 'Public replies are part of his profile; recruiters can read them' },
           { text: 'Because he must win every argument', why: 'Winning isn\'t the goal. Showing calm is.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: '"A spreadsheet could do this. Not impressive." What do I write?',
         options: [
-          { text: '"Fair! A spreadsheet was v1. The members didn\'t use it, so I built something simpler. Happy to share what I learned."' },
           { text: '"Did you build anything this year? Thought not."', why: 'It makes him look worse than the critic.' },
           { text: '"Delete your comment."', why: 'Demanding looks defensive.' },
+          { text: '"Fair! A spreadsheet was v1. The members didn\'t use it, so I built something simpler. Happy to share what I learned."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What did the calm reply turn the criticism into?',
         options: [
-          { text: 'A useful exchange that showed what Clinton learned' },
           { text: 'An argument', why: 'The calm reply avoided that.' },
           { text: 'Nothing', why: 'It led to three messages and a better impression.' },
+          { text: 'A useful exchange that showed what Clinton learned' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

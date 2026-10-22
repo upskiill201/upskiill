@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which box gets squeezed most often?',
         options: [
-          { text: 'Important, not urgent' },
           { text: 'Urgent and important', why: 'That one usually gets done.' },
+          { text: 'Important, not urgent' },
           { text: 'Neither', why: 'The important-not-urgent box gets squeezed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I tell the team about my focus block?',
         options: [
-          { text: '"I\'m focusing on Goal 1 from 9 to 11 each morning. I check messages at 11 and 3; call me for anything urgent."' },
           { text: 'Mute everything and say nothing.', why: 'Tell them when you\'ll reply.' },
           { text: '"Don\'t message me ever."', why: 'Be clear and reliable, not unreachable.' },
+          { text: '"I\'m focusing on Goal 1 from 9 to 11 each morning. I check messages at 11 and 3; call me for anything urgent."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

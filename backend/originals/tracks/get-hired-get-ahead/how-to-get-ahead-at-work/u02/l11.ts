@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do problems between teams repeat?',
         options: [
-          { text: 'Nobody owns them' },
           { text: 'They\'re impossible', why: 'They\'re usually fixable; nobody owns them.' },
+          { text: 'Nobody owns them' },
           { text: 'Everyone enjoys them', why: 'Nobody owns them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What do I say to Ngozi about the payout report?',
         options: [
-          { text: '"The payout report has broken four Mondays running. I think it\'s late offline syncs. Could I own a fix with finance for two weeks, alongside Goal 1?"' },
           { text: '"Finance is useless."', why: 'Describe the problem and offer to help.' },
           { text: 'Nothing, it\'s not ours.', why: 'He has the right knowledge to help.' },
+          { text: '"The payout report has broken four Mondays running. I think it\'s late offline syncs. Could I own a fix with finance for two weeks, alongside Goal 1?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

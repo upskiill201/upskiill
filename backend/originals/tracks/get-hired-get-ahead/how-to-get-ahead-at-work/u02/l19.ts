@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What two extra sections go in the record?',
         options: [
-          { text: 'Making others better, and problems nobody owned' },
           { text: 'Complaints and gossip', why: 'Never.' },
+          { text: 'Making others better, and problems nobody owned' },
           { text: 'Hours worked and meetings', why: 'Those aren\'t impact.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'A learner works in a shop with no written goals. Can they still do this?',
         options: [
-          { text: 'Yes: ask the manager what matters most (sales, waste, customer complaints) and use those as goals.' },
           { text: 'No, only offices have goals.', why: 'Every workplace has things it cares about.' },
           { text: 'Make up goals.', why: 'Ask the manager.' },
+          { text: 'Yes: ask the manager what matters most (sales, waste, customer complaints) and use those as goals.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "I am writing to apply for..." a weak opening?',
         options: [
-          { text: 'It tells them what they already know, in the most-read line' },
           { text: 'It\'s rude', why: 'It\'s polite, just empty.' },
+          { text: 'It tells them what they already know, in the most-read line' },
           { text: 'It\'s too short', why: 'Length isn\'t the issue. It says nothing new.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'It says optional. Is it worth my time?',
         options: [
-          { text: 'Yes: "optional, but we read them" means a good letter helps me stand out.' },
           { text: 'No, optional means pointless.', why: 'They said they read them. That\'s an invitation.' },
           { text: 'Only if I have nothing else to do.', why: 'It\'s one of the few places he gets to speak in his own voice.' },
+          { text: 'Yes: "optional, but we read them" means a good letter helps me stand out.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

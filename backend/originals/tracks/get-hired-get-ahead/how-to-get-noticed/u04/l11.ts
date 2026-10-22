@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the main problem with a fully AI-written cover letter?',
         options: [
-          { text: 'It doesn\'t contain your real story, and often adds claims you can\'t back up' },
           { text: 'It has too few words', why: 'The problem isn\'t length. It\'s that it isn\'t you.' },
+          { text: 'It doesn\'t contain your real story, and often adds claims you can\'t back up' },
           { text: 'Recruiters are not allowed to read it', why: 'They read it. It just doesn\'t stand out or tell your story.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'Everyone uses AI for cover letters now. Doesn\'t that make it fair?',
         options: [
-          { text: 'Using it to polish my own true letter, sure. Sending a letter that isn\'t about me is just a worse letter.' },
           { text: 'Yes, so send whatever it writes.', why: 'Then every letter sounds the same, and yours disappears.' },
           { text: 'No, AI is evil.', why: 'Tools aren\'t good or bad. How you use them matters.' },
+          { text: 'Using it to polish my own true letter, sure. Sending a letter that isn\'t about me is just a worse letter.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

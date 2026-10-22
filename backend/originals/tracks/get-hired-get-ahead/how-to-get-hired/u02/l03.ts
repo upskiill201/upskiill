@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Samuel\'s hours become a problem?',
         options: [
-          { text: 'Nothing was written down, so each remembered differently' },
           { text: 'Samuel lied', why: 'Nobody lied. Nothing was written down.' },
+          { text: 'Nothing was written down, so each remembered differently' },
           { text: 'Mr Tamba lied', why: 'Nobody lied. They just remembered differently.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Samuel asks how to fix it without annoying Mr Tamba. What should he write?',
         options: [
-          { text: '"Could we confirm my days, hours and project in a short email, so I plan it right?"' },
           { text: '"You never told me anything!"', why: 'Blame won\'t help. Ask to confirm.' },
           { text: 'Say nothing and guess.', why: 'Guessing caused the problem. Confirm it.' },
+          { text: '"Could we confirm my days, hours and project in a short email, so I plan it right?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where can Clinton check if a 50,000-franc allowance is normal or legal?',
         options: [
-          { text: 'His careers office or his country\'s rules' },
           { text: 'A random forum comment', why: 'Check reliable local sources.' },
           { text: 'Nowhere, it doesn\'t matter', why: 'It matters. Check locally.' },
+          { text: 'His careers office or his country\'s rules' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

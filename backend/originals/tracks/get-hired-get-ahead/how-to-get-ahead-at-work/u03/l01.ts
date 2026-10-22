@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "not yet" usually mean?',
         options: [
-          { text: 'There are specific things they need to see first' },
           { text: 'Never', why: '"Not yet" isn\'t "never".' },
+          { text: 'There are specific things they need to see first' },
           { text: 'They don\'t like you', why: 'It usually means specific gaps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'ngozi',
         message: 'Your record is strong. But not yet.',
         options: [
-          { text: '"Thank you for being straight with me. What would you need to see from me to say yes?"' },
           { text: '"That\'s unfair."', why: 'Ask what she needs to see.' },
           { text: '"OK." (then silence)', why: 'Turn it into a plan.' },
+          { text: '"Thank you for being straight with me. What would you need to see from me to say yes?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What did Ngozi open to explain her answer?',
         options: [
-          { text: 'The career ladder doc' },
           { text: 'Clinton\'s salary slip', why: 'The career ladder.' },
           { text: 'Nothing', why: 'The career ladder doc.' },
+          { text: 'The career ladder doc' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

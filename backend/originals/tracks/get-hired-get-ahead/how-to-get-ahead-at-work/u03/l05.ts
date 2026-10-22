@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the best reply to "not yet"?',
         options: [
-          { text: '"What would you need to see from me to say yes?"' },
           { text: '"That\'s unfair."', why: 'Ask what they\'d need to see.' },
+          { text: '"What would you need to see from me to say yes?"' },
           { text: 'Silence', why: 'Ask, then plan.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'What did Ngozi say the biggest difference was?',
         options: [
-          { text: 'Developers don\'t wait to be told what to do next.' },
           { text: 'Developers work later.', why: 'Independence.' },
           { text: 'Developers have better laptops.', why: 'Independence.' },
+          { text: 'Developers don\'t wait to be told what to do next.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What two gaps did Ngozi name?',
         options: [
-          { text: 'Leading work with others, and independent design decisions' },
           { text: 'Typing speed and punctuality', why: 'Leading others and independent design.' },
           { text: 'None', why: 'She named two.' },
+          { text: 'Leading work with others, and independent design decisions' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

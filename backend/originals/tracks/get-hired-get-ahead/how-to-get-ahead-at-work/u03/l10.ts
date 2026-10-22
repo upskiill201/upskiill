@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What turns "revisit later" into a plan?',
         options: [
-          { text: 'A date, specific evidence and check-ins' },
           { text: 'A guaranteed promotion', why: 'A plan, not a promise.' },
+          { text: 'A date, specific evidence and check-ins' },
           { text: 'Waiting', why: 'Date, evidence, check-ins.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'paul',
         message: 'Why do you want me to review the design doc first? I\'m harsh.',
         options: [
-          { text: 'Because your review will make it much better, and shows I can explain trade-offs to a tough reviewer.' },
           { text: 'I don\'t, actually.', why: 'Hard reviews help.' },
           { text: 'So you\'ll approve it quickly.', why: 'It\'s about improving it.' },
+          { text: 'Because your review will make it much better, and shows I can explain trade-offs to a tough reviewer.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How many gaps is Clinton focusing on?',
         options: [
-          { text: 'Two' },
           { text: 'Five', why: 'Two, for focus.' },
           { text: 'None', why: 'Two.' },
+          { text: 'Two' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

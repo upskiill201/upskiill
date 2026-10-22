@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What did Clinton bring to the day-90 check-in?',
         options: [
-          { text: 'Three wins, a plan for his growth area, and one question' },
           { text: 'Nothing', why: 'He came prepared.' },
+          { text: 'Three wins, a plan for his growth area, and one question' },
           { text: 'A request for a promotion', why: 'He asked what "great" looks like by month six.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         from: 'ngozi',
         message: 'In design meetings, I\'m going to call on you.',
         options: [
-          { text: '"Deal. I\'ll bring one idea or question to every design meeting."' },
           { text: '"Please don\'t, I\'m shy."', why: 'Accept it with a plan.' },
           { text: '"Paul talks enough for both of us."', why: 'Take the growth area seriously.' },
+          { text: '"Deal. I\'ll bring one idea or question to every design meeting."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -126,11 +126,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How did Clinton win Paul\'s trust?',
         options: [
-          { text: 'Homework first, small questions, using his answers, giving back' },
           { text: 'Compliments', why: 'By being easy to help.' },
           { text: 'Avoiding him', why: 'By being easy to help.' },
+          { text: 'Homework first, small questions, using his answers, giving back' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -138,11 +138,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Ninety days done. What\'s the biggest thing you learned?',
         options: [
-          { text: 'Ask what good looks like, learn on purpose, and when something breaks, say so fast.' },
           { text: 'Never make mistakes.', why: 'He made one, and handled it well.' },
+          { text: 'Ask what good looks like, learn on purpose, and when something breaks, say so fast.' },
           { text: 'Work until midnight.', why: 'Reliability beat hours.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

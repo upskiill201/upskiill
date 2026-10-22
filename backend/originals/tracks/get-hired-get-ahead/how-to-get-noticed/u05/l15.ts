@@ -35,11 +35,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A message offers "a remote job, no interview, just pay a registration fee". What is it?',
         options: [
-          { text: 'Almost certainly a scam' },
           { text: 'A lucky break', why: 'Paying to work and no interview are red flags.' },
+          { text: 'Almost certainly a scam' },
           { text: 'Normal for remote jobs', why: 'Real employers don\'t charge you.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: '(as a stranger) Hi! I saw your tracker post. Could you send me your bank details so I can pay you to build one?',
         options: [
-          { text: 'Thanks for your interest! I\'d be happy to talk about it on a call first. I don\'t share bank details over messages.' },
           { text: 'Sure, here are my bank details and a one-time code.', why: 'Never share these with someone unverified.' },
           { text: 'Go away.', why: 'Polite and safe beats rude, in case it\'s real.' },
+          { text: 'Thanks for your interest! I\'d be happy to talk about it on a call first. I don\'t share bank details over messages.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Result: passed. Except one thing: you posted a joke about your lecturer last year. Thoughts?',
         options: [
-          { text: 'I\'ll delete it. If I\'d be embarrassed for Brenda to read it, it shouldn\'t be there.' },
           { text: 'It was funny, it stays.', why: 'Funny to friends, risky to recruiters.' },
           { text: 'Nobody looks that far back.', why: 'Miracle just did.' },
+          { text: 'I\'ll delete it. If I\'d be embarrassed for Brenda to read it, it shouldn\'t be there.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

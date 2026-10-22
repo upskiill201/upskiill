@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the best question for finding unwritten rules?',
         options: [
-          { text: '"Anything people usually learn the hard way here?"' },
           { text: '"Are there rules?"', why: 'Too vague.' },
+          { text: '"Anything people usually learn the hard way here?"' },
           { text: '"Who\'s in charge?"', why: 'Ask what people learn the hard way.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         from: 'ngozi',
         message: 'Why did it matter that you flagged it at 7:15 instead of fixing it quietly?',
         options: [
-          { text: 'Support was already getting calls. Flagging it fast meant we rolled back in ten minutes and nobody hunted blind.' },
           { text: 'So I wouldn\'t get in trouble later.', why: 'The main reason is the problem was already spreading.' },
           { text: 'It didn\'t matter.', why: 'It mattered a lot.' },
+          { text: 'Support was already getting calls. Flagging it fast meant we rolled back in ten minutes and nobody hunted blind.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Whose meeting is a 1:1, mostly?',
         options: [
-          { text: 'Yours: bring the agenda' },
           { text: 'Only the manager\'s', why: 'Mostly yours.' },
           { text: 'Nobody\'s', why: 'Yours.' },
+          { text: 'Yours: bring the agenda' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

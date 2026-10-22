@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What three things can an internship give Clinton?',
         options: [
-          { text: 'Learning, proof for his CV, and a reference' },
           { text: 'Only money', why: 'Pay helps, but learning, proof and a reference last longer.' },
+          { text: 'Learning, proof for his CV, and a reference' },
           { text: 'Only a job offer', why: 'An offer is a bonus. The three lasting things are learning, proof and a reference.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'He can only keep one of five. Is there any point if it isn\'t me?',
         options: [
-          { text: 'Yes: I\'ll still leave with new skills, a project for my CV and a reference.' },
           { text: 'No, I should quit now.', why: 'There are three wins even without the job.' },
           { text: 'Only if I beat everyone else.', why: 'The other wins don\'t depend on beating anyone.' },
+          { text: 'Yes: I\'ll still leave with new skills, a project for my CV and a reference.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What\'s the best question for Mr Tamba in week one?',
         options: [
-          { text: '"What would make this project really useful for you?"' },
           { text: '"Which one of us will you keep?"', why: 'Too early, and he won\'t know yet.' },
           { text: '"Can I leave early on Fridays?"', why: 'Ask about the work first.' },
+          { text: '"What would make this project really useful for you?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

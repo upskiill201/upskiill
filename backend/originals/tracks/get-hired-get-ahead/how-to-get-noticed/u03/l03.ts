@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the test for whether a bullet is just a duty?',
         options: [
-          { text: 'Could a bad organiser have written the same line?' },
           { text: 'Is it longer than ten words?', why: 'Length doesn\'t matter. What changed does.' },
+          { text: 'Could a bad organiser have written the same line?' },
           { text: 'Does it use the word "I"?', why: 'CV bullets usually drop "I". The test is whether anything changed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'My hospital volunteering bullet says "Assisted nurses with patient care." Achievement?',
         options: [
-          { text: 'That\'s a duty. What changed? Maybe: "Ran the waiting-room sign-in, cutting average waits by 20 minutes."' },
           { text: 'Perfect as it is.', why: 'Every volunteer could write it. Say what changed.' },
           { text: 'Write "Saved lives".', why: 'Too big and not checkable. Keep it specific and true.' },
+          { text: 'That\'s a duty. What changed? Maybe: "Ran the waiting-room sign-in, cutting average waits by 20 minutes."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

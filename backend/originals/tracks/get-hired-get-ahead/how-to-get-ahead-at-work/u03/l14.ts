@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who is the promotion case mainly for?',
         options: [
-          { text: 'His manager, to argue for him in the promotion meeting' },
           { text: 'Only Clinton', why: 'It\'s Ngozi\'s tool in the meeting.' },
+          { text: 'His manager, to argue for him in the promotion meeting' },
           { text: 'HR\'s filing cabinet', why: 'It\'s for Ngozi to argue with.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What do I write for "what I\'ll do next"?',
         options: [
-          { text: '"Next, I\'d like to lead the sync-service split and mentor the next graduate hire."' },
           { text: '"Get promoted again."', why: 'Show how you\'d grow and help.' },
           { text: 'Leave it blank.', why: 'It shows you\'re thinking ahead.' },
+          { text: '"Next, I\'d like to lead the sync-service split and mentor the next graduate hire."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

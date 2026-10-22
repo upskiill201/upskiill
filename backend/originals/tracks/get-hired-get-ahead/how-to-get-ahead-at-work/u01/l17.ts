@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Is "I don\'t belong here" evidence that Clinton doesn\'t belong?',
         options: [
-          { text: 'No: it\'s a common feeling, not evidence' },
           { text: 'Yes, feelings are facts', why: 'Feelings aren\'t evidence.' },
+          { text: 'No: it\'s a common feeling, not evidence' },
           { text: 'Only on Mondays', why: 'It\'s a feeling, not a fact.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'You sound quiet. What\'s going on?',
         options: [
-          { text: 'I feel like everyone\'s smarter and I\'ll get found out. Did you ever feel like that?' },
           { text: 'Nothing, I\'m fine. (he isn\'t)', why: 'Saying it out loud helps.' },
           { text: 'I\'m quitting.', why: 'Talk it through first.' },
+          { text: 'I feel like everyone\'s smarter and I\'ll get found out. Did you ever feel like that?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

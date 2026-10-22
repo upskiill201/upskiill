@@ -27,11 +27,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the new message get a reply when the old one didn\'t?',
         options: [
-          { text: 'It reminded Tchami who Clinton was and asked for small, easy advice' },
           { text: 'It was sent at a better time', why: 'Timing helps a little. The ask made the difference.' },
+          { text: 'It reminded Tchami who Clinton was and asked for small, easy advice' },
           { text: 'It used more emojis', why: 'No. The connection and the small ask did it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Should Clinton stop applying to adverts now that he\'s networking?',
         options: [
-          { text: 'No: keep a few good applications going alongside conversations' },
           { text: 'Yes, networking only', why: 'Both work together.' },
           { text: 'Yes, adverts never work', why: 'They do. They\'re just not the whole market.' },
+          { text: 'No: keep a few good applications going alongside conversations' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which of Clinton\'s five should he contact next?',
         options: [
-          { text: 'Mrs Ewane\'s former student at a Douala start-up, mentioning Mrs Ewane' },
           { text: 'A CEO he\'s never met', why: 'Too weak a link. Start with people he has some connection to.' },
           { text: 'Nobody, Tchami is enough', why: 'More conversations, more chances.' },
+          { text: 'Mrs Ewane\'s former student at a Douala start-up, mentioning Mrs Ewane' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

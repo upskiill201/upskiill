@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do family members keep asking?',
         options: [
-          { text: 'Usually because they care' },
           { text: 'To embarrass you', why: 'Usually they care.' },
+          { text: 'Usually because they care' },
           { text: 'No reason', why: 'They usually care, even if it\'s awkward.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'My uncle says, "Still no job? Your cousin started at the bank last month." What do I say?',
         options: [
-          { text: '"Not yet. I was close with one company and I have an offer I\'m thinking about. I\'ll tell you when I decide."' },
           { text: '"Leave me alone!"', why: 'A short, calm answer works better.' },
           { text: '"Yes, I have a great job." (untrue)', why: 'Never lie. Say the true "not yet".' },
+          { text: '"Not yet. I was close with one company and I have an offer I\'m thinking about. I\'ll tell you when I decide."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

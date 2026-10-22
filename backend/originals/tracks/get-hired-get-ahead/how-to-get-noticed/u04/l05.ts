@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Question 2: what two questions does a cover letter answer?',
         options: [
-          { text: 'Why them, and why you' },
           { text: 'How old you are, and where you live', why: 'Not those. Why them and why you.' },
+          { text: 'Why them, and why you' },
           { text: 'What you earn, and what you want to earn', why: 'Too early for money.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Question 5: how long should a cover letter be?',
         options: [
-          { text: 'Around 250 to 400 words, under one page' },
           { text: 'At least two pages', why: 'Too long for busy readers.' },
           { text: 'One line', why: 'Too short to build the bridge.' },
+          { text: 'Around 250 to 400 words, under one page' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

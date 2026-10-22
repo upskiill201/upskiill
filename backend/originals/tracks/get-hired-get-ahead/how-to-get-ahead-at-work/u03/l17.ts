@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Is feeling a sting when a peer goes first normal?',
         options: [
-          { text: 'Yes; what matters is what you do with it' },
           { text: 'No, it means you\'re a bad person', why: 'It\'s human.' },
+          { text: 'Yes; what matters is what you do with it' },
           { text: 'Only for managers', why: 'It\'s human for anyone.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What do I send Amadou?',
         options: [
-          { text: '"Congratulations, well deserved! Coffee this week? I\'d love to hear what made the difference."' },
           { text: '"Lucky you."', why: 'Sincere congratulations.' },
           { text: 'Nothing.', why: 'Congratulate him.' },
+          { text: '"Congratulations, well deserved! Coffee this week? I\'d love to hear what made the difference."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

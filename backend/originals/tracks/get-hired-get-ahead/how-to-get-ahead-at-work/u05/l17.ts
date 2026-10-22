@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is saying no hard here?',
         options: [
-          { text: 'It\'s a good idea from someone he likes and owes' },
           { text: 'It\'s a bad idea', why: 'It\'s a good idea; that\'s why it\'s hard.' },
+          { text: 'It\'s a good idea from someone he likes and owes' },
           { text: 'It isn\'t hard', why: 'It\'s a friend.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What do I say to her?',
         options: [
-          { text: '"Thank you, this would really help. This quarter we\'re focused on failed confirmations. Could a one-tap \'sync failed\' message help now? And live chat goes to next planning."' },
           { text: '"Sure, we\'ll build it." (it\'s not the priority)', why: 'Kind no with an alternative.' },
           { text: '"No." (and walks off)', why: 'Explain and offer something.' },
+          { text: '"Thank you, this would really help. This quarter we\'re focused on failed confirmations. Could a one-tap \'sync failed\' message help now? And live chat goes to next planning."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

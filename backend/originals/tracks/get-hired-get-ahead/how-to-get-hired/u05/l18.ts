@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why confirm the agreed terms in writing?',
         options: [
-          { text: 'So nobody remembers the phone call differently' },
           { text: 'To show off', why: 'It\'s to avoid confusion.' },
+          { text: 'So nobody remembers the phone call differently' },
           { text: 'It\'s not needed', why: 'Phone agreements are easy to forget.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Brenda said yes on the phone. Do I still need to email?',
         options: [
-          { text: 'Yes: I\'ll accept in writing and confirm every agreed term.' },
           { text: 'No, a call is enough.', why: 'Write it down.' },
           { text: 'Only if she asks.', why: 'Do it anyway.' },
+          { text: 'Yes: I\'ll accept in writing and confirm every agreed term.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

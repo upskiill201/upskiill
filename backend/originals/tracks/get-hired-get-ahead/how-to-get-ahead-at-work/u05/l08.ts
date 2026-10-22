@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why tell Ngozi before applying?',
         options: [
-          { text: 'So she hears it from him, not from someone else' },
           { text: 'She has to approve every thought', why: 'It\'s about respect and trust.' },
+          { text: 'So she hears it from him, not from someone else' },
           { text: 'No reason', why: 'Surprises damage trust.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What do I say to Ngozi before applying?',
         options: [
-          { text: '"I\'m applying for Aïcha\'s APM role, and I wanted you to hear it from me first. I\'ll keep the split on track and plan a handover."' },
           { text: 'Nothing; she\'ll find out.', why: 'Tell her first.' },
           { text: '"I\'m leaving your team."', why: 'Be warm and specific about the plan.' },
+          { text: '"I\'m applying for Aïcha\'s APM role, and I wanted you to hear it from me first. I\'ll keep the split on track and plan a handover."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

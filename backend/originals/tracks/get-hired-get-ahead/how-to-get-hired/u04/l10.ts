@@ -27,11 +27,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What are the three things to look for in feedback?',
         options: [
-          { text: 'What went well, what\'s in your control, any open door' },
           { text: 'Who to blame, what to argue, what to ignore', why: 'None of these help.' },
+          { text: 'What went well, what\'s in your control, any open door' },
           { text: 'Only the bad parts', why: 'Look for all three.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         from: 'ewane',
         message: 'Tell me about a piece of feedback you received, as you would in an interview.',
         options: [
-          { text: 'A company said I was light on testing, so I added tests to my sync, and they caught two bugs before our drivers did.' },
           { text: 'I was rejected unfairly.', why: 'Turn it into growth.' },
           { text: 'I\'ve never had feedback.', why: 'Use the real story.' },
+          { text: 'A company said I was light on testing, so I added tests to my sync, and they caught two bugs before our drivers did.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should a feedback plan include?',
         options: [
-          { text: 'One small, real project you can show' },
           { text: 'A promise to be perfect', why: 'Small and real.' },
           { text: 'Nothing visible', why: 'Make it visible.' },
+          { text: 'One small, real project you can show' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

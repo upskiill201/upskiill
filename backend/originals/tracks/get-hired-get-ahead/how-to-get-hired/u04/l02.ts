@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a rejection usually about?',
         options: [
-          { text: 'One role, at one moment, among several people' },
           { text: 'Your worth as a person', why: 'It\'s about one role and moment.' },
+          { text: 'One role, at one moment, among several people' },
           { text: 'Nothing at all', why: 'There\'s a reason; it may not be about you.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'They said no, so I\'m clearly not good enough for fintech.',
         options: [
-          { text: 'That\'s one role at one moment. I\'ll ask what I can learn, then take my next step.' },
           { text: 'True, I\'ll change careers.', why: 'One no isn\'t a verdict.' },
           { text: 'They\'re just stupid.', why: 'Blame doesn\'t help you learn.' },
+          { text: 'That\'s one role at one moment. I\'ll ask what I can learn, then take my next step.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What are the two useful questions after a no?',
         options: [
-          { text: 'What can I learn? What\'s my next step?' },
           { text: 'Who\'s to blame? How do I get revenge?', why: 'Neither helps.' },
           { text: 'Why me? Why now?', why: 'Learn and act instead.' },
+          { text: 'What can I learn? What\'s my next step?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

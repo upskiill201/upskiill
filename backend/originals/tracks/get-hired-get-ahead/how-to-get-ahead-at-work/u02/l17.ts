@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the usual fix for overload?',
         options: [
-          { text: 'Deciding together what matters most, and letting the rest go openly' },
           { text: 'Working harder', why: 'That led to sloppy tests.' },
+          { text: 'Deciding together what matters most, and letting the rest go openly' },
           { text: 'Quitting', why: 'Renegotiate priorities first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I bring this up with Ngozi?',
         options: [
-          { text: '"Here\'s everything I\'m doing. I\'m stretched and my quality is slipping. Which two matter most, and what can I drop or hand off?"' },
           { text: '"I\'m fine!" (he isn\'t)', why: 'Be honest early.' },
           { text: '"Everyone gives me too much."', why: 'Bring the list and ask for priorities.' },
+          { text: '"Here\'s everything I\'m doing. I\'m stretched and my quality is slipping. Which two matter most, and what can I drop or hand off?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Clinton do when Mr Tamba offered the job?',
         options: [
-          { text: 'Thanked him, showed interest, asked for details and a few days' },
           { text: 'Said yes on the spot', why: 'He asked for time.' },
+          { text: 'Thanked him, showed interest, asked for details and a few days' },
           { text: 'Said no', why: 'He asked for time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Your uncle asks again on Sunday. What will you say?',
         options: [
-          { text: 'Not yet: I have an offer I\'m considering, and I\'ll decide by Friday next week.' },
           { text: 'Mind your business.', why: 'Short and calm works better.' },
           { text: 'I\'ve accepted (not true yet).', why: 'Say the truth.' },
+          { text: 'Not yet: I have an offer I\'m considering, and I\'ll decide by Friday next week.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A classmate posts a big job announcement. What helps Clinton most?',
         options: [
-          { text: 'Congratulate them, then mute announcements for a while' },
           { text: 'Read every post twice', why: 'Comparison drains energy.' },
           { text: 'Leave a jealous comment', why: 'Be kind, then protect your energy.' },
+          { text: 'Congratulate them, then mute announcements for a while' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

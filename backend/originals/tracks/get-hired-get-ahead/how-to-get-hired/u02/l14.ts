@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask "Would you be comfortable being a reference?"',
         options: [
-          { text: 'It lets them say no politely, better than a lukewarm reference' },
           { text: 'It sounds posh', why: 'It gives them an easy, honest way out.' },
+          { text: 'It lets them say no politely, better than a lukewarm reference' },
           { text: 'It forces them to say yes', why: 'The opposite: it lets them decline.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Mr Tamba agreed to write me a LinkedIn recommendation. Should I just wait?',
         options: [
-          { text: 'I\'ll send three short reminders: the project, the result, and one habit he noticed.' },
           { text: 'Yes, he\'ll remember everything.', why: 'He\'s busy. Jog his memory.' },
           { text: 'I\'ll write it for him and tell him to post it.', why: 'Reminders help; writing it yourself goes too far.' },
+          { text: 'I\'ll send three short reminders: the project, the result, and one habit he noticed.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

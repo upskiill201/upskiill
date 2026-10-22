@@ -27,11 +27,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did 40 of Brenda\'s letters "sound like the same AI"?',
         options: [
-          { text: 'They were AI-written without the applicants\' own stories, so they all used the same polished phrases' },
           { text: 'They were written by one person', why: 'Different people, same tool, no personal story.' },
+          { text: 'They were AI-written without the applicants\' own stories, so they all used the same polished phrases' },
           { text: 'They were too short', why: 'Length wasn\'t the issue. Sameness was.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which email subject line?',
         options: [
-          { text: 'Graduate Developer application: Clinton Ndi' },
           { text: '(no subject)', why: 'Easy to miss and looks careless.' },
           { text: 'Please read!!', why: 'Says nothing and looks desperate.' },
+          { text: 'Graduate Developer application: Clinton Ndi' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which paragraph of a master letter is always written new?',
         options: [
-          { text: 'Why them' },
           { text: 'The sign-off', why: 'The sign-off can be reused.' },
           { text: 'The proofs', why: 'Proofs are chosen and adapted. Why them is new.' },
+          { text: 'Why them' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -122,11 +122,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Last check: read your letter aloud. Does it sound like you?',
         options: [
-          { text: 'Yes: my stories, my words, and no apologies or big claims.' },
           { text: 'It sounds like a robot, but a smart one.', why: 'Then it\'s one of the 40. Rewrite in your own voice.' },
+          { text: 'Yes: my stories, my words, and no apologies or big claims.' },
           { text: 'I didn\'t read it, I trust the AI.', why: 'Always read it. Every word goes out with your name.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

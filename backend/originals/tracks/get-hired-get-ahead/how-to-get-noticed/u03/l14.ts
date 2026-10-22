@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why read it out loud?',
         options: [
-          { text: 'Your eyes fill in what you meant; your voice catches what\'s really there' },
           { text: 'To practise for the interview', why: 'Nice bonus, but the point is catching mistakes.' },
+          { text: 'Your eyes fill in what you meant; your voice catches what\'s really there' },
           { text: 'It\'s faster', why: 'It\'s slower, and that\'s why it works.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'Your CV says "Jan 2025" up here and "03/2024" down there. Why are they different?',
         options: [
-          { text: 'Good catch! I\'ll use the same date format everywhere.' },
           { text: 'It doesn\'t matter.', why: 'Mixed formats look careless. David noticed in seconds.' },
           { text: 'Dates are boring.', why: 'Boring and important. Make them consistent.' },
+          { text: 'Good catch! I\'ll use the same date format everywhere.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Who\'s the best second reader for Clinton\'s CV?',
         options: [
-          { text: 'Someone who didn\'t write it and will be honest, like Mrs Ewane or Miracle' },
           { text: 'Himself, again', why: 'He\'ll skip the same mistakes. Get fresh eyes.' },
           { text: 'Nobody, it\'s fine', why: 'David found two typos in one minute.' },
+          { text: 'Someone who didn\'t write it and will be honest, like Mrs Ewane or Miracle' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -26,11 +26,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the founder reply?',
         options: [
-          { text: 'A trusted name, his problem first, and real proof' },
           { text: 'Clinton sent 200 messages', why: 'He sent one careful one.' },
+          { text: 'A trusted name, his problem first, and real proof' },
           { text: 'He applied through a job board', why: 'There was no advert.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'Bro, my 200-message tool got three replies. Two said stop. Your way is slow!',
         options: [
-          { text: 'Slow, but one founder wants to meet me. Ten real messages beat 200 copies.' },
           { text: 'You\'re right, I\'ll switch to the tool.', why: 'His way is working.' },
           { text: 'Send it to 2,000 next time.', why: 'More spam isn\'t the answer.' },
+          { text: 'Slow, but one founder wants to meet me. Ten real messages beat 200 copies.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'At the event, what should Clinton do most?',
         options: [
-          { text: 'Listen and ask questions' },
           { text: 'Talk about his tracker non-stop', why: 'Listen more than you talk.' },
           { text: 'Hand out CVs', why: 'Have conversations; follow up after.' },
+          { text: 'Listen and ask questions' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -32,21 +32,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What are the two ways recruiters use profiles?',
         options: [
-          { text: 'Checking you after you apply, and finding you before you apply' },
           { text: 'Liking your posts and sending memes', why: 'Not really. Checking and finding.' },
+          { text: 'Checking you after you apply, and finding you before you apply' },
           { text: 'Only for senior people', why: 'Graduates get searched for too.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'What do recruiters see in search results, before they click?',
         options: [
-          { text: 'Photo, name and headline' },
           { text: 'Your whole profile', why: 'Only three things show before the click.' },
           { text: 'Your CV', why: 'Your CV isn\'t shown in search results.' },
+          { text: 'Photo, name and headline' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Once a recruiter clicks, what decides whether they keep reading?',
         options: [
-          { text: 'The About section and experience' },
           { text: 'Your number of connections', why: 'Less important than what you\'ve done.' },
           { text: 'Your background colour', why: 'Content matters more.' },
+          { text: 'The About section and experience' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which headline would show up in a search AND get a click?',
         options: [
-          { text: '"Final-year CS student · JavaScript & Python · Built a savings tracker used by 42 people"' },
           { text: '"Student"', why: 'Too vague to be searched for or clicked.' },
+          { text: '"Final-year CS student · JavaScript & Python · Built a savings tracker used by 42 people"' },
           { text: '"Future billionaire"', why: 'Fun, but nobody searches for it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

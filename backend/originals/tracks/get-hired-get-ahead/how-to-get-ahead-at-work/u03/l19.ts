@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where does the evidence come from?',
         options: [
-          { text: 'Your impact record' },
           { text: 'Memory on the day', why: 'Your impact record.' },
+          { text: 'Your impact record' },
           { text: 'Other people\'s work', why: 'Your own impact record.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'A learner says their company has no ladder and no promotions. Is this useless?',
         options: [
-          { text: 'No: the same case works for asking for more responsibility, a raise, or a role elsewhere.' },
           { text: 'Yes, skip it.', why: 'It works for many asks.' },
           { text: 'Invent a ladder.', why: 'Ask what the next step looks like.' },
+          { text: 'No: the same case works for asking for more responsibility, a raise, or a role elsewhere.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

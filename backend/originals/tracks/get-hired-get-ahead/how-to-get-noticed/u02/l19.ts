@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write the "before" number at the start?',
         options: [
-          { text: 'Without it, you can\'t show how much things changed' },
           { text: 'It looks professional', why: 'It\'s about proving change, not looks.' },
+          { text: 'Without it, you can\'t show how much things changed' },
           { text: 'You don\'t need it', why: 'Before and after is the strongest proof there is.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Who do you need permission from before you start?',
         options: [
-          { text: 'The people whose information or problem I\'m using, like the captain and members. I\'ll ask this week.' },
           { text: 'Nobody, it\'s my project.', why: 'It\'s their information and their story. Ask first.' },
           { text: 'I\'ll ask after it\'s finished.', why: 'Ask before. Afterwards might be too late.' },
+          { text: 'The people whose information or problem I\'m using, like the captain and members. I\'ll ask this week.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

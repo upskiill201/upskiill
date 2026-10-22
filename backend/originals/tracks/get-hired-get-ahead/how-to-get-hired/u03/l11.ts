@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do interviewers ask questions you can\'t fully answer?',
         options: [
-          { text: 'To see how you think when you don\'t know' },
           { text: 'To embarrass you', why: 'It\'s about how you reason.' },
+          { text: 'To see how you think when you don\'t know' },
           { text: 'By accident', why: 'Often on purpose.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'How would you stop a customer being charged twice?',
         options: [
-          { text: '"I haven\'t built that, but can I think it through out loud? At Kmer I had a similar duplicate problem..."' },
           { text: '"Easy, I\'ve done it loads." (he hasn\'t)', why: 'Never bluff.' },
           { text: '"Next question please."', why: 'Try reasoning first.' },
+          { text: '"I haven\'t built that, but can I think it through out loud? At Kmer I had a similar duplicate problem..."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

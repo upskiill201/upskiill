@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why didn\'t Ngozi notice the hints?',
         options: [
-          { text: 'Hints are easy to miss or sound like small talk or complaints' },
           { text: 'She ignores Clinton', why: 'Hints are just easy to miss.' },
+          { text: 'Hints are easy to miss or sound like small talk or complaints' },
           { text: 'She was on leave', why: 'Hints are easy to miss.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I bring up growth without hinting?',
         options: [
-          { text: '"In our next 1:1, could we spend ten minutes on my growth? I\'d like to work towards Developer."' },
           { text: '"Funny how some people get promoted fast..."', why: 'That\'s a hint.' },
           { text: 'Keep sighing until she asks.', why: 'Ask clearly.' },
+          { text: '"In our next 1:1, could we spend ten minutes on my growth? I\'d like to work towards Developer."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

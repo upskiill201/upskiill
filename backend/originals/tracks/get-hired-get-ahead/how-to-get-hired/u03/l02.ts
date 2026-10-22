@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "Tell me about a time when..." test?',
         options: [
-          { text: 'How you handled real situations, as evidence for the future' },
           { text: 'Your memory', why: 'It\'s about evidence, not memory.' },
+          { text: 'How you handled real situations, as evidence for the future' },
           { text: 'Whether you can lie well', why: 'Never lie. Real stories.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a structured interview?',
         options: [
-          { text: 'Every candidate gets the same job-related questions, scored the same way' },
           { text: 'An interview in a tall building', why: 'Ha. Same questions, same scoring.' },
           { text: 'A random chat', why: 'The opposite: planned and consistent.' },
+          { text: 'Every candidate gets the same job-related questions, scored the same way' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Why is predictability good news?',
         options: [
-          { text: 'You can prepare real stories for most questions' },
           { text: 'You can memorise exact answers', why: 'Not exact words: prepare stories.' },
           { text: 'You don\'t need to prepare', why: 'You can prepare well, so do.' },
+          { text: 'You can prepare real stories for most questions' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

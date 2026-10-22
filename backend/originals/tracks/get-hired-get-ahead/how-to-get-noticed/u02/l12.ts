@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Do I need permission to describe Mum\'s njangi in my case study?',
         options: [
-          { text: 'Yes, ask. And keep members anonymous: "a 12-member savings group", no names.' },
           { text: 'No, it\'s your mum.', why: 'It\'s also eleven other women. Ask, and keep them anonymous.' },
+          { text: 'Yes, ask. And keep members anonymous: "a 12-member savings group", no names.' },
           { text: 'Only if it\'s a secret.', why: 'Ask anyway. It\'s their story too.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How do you check a recruiter can see your link?',
         options: [
-          { text: 'Open it in a private window, logged out' },
           { text: 'Open it on your own logged-in phone', why: 'You\'re logged in, so you see things others can\'t.' },
           { text: 'Assume it works', why: 'Broken or private links are very common. Test it.' },
+          { text: 'Open it in a private window, logged out' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

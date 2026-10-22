@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What are imposter feelings?',
         options: [
-          { text: 'Feeling less capable than people think, and afraid of being "found out"' },
           { text: 'Actually being a fraud', why: 'It\'s a feeling, not a fact. Many very capable people have it.' },
+          { text: 'Feeling less capable than people think, and afraid of being "found out"' },
           { text: 'A rare condition only some people have', why: 'It\'s common, especially when starting something new.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Everyone on LinkedIn is ahead of me. I\'m a fraud.',
         options: [
-          { text: 'You\'re seeing their highlights. Compare yourself with a month ago: you\'ve found twelve skills with proof.' },
           { text: 'You\'re right, give up.', why: 'A 1am feeling isn\'t a fact. His list is real.' },
           { text: 'Lie on your profile to catch up.', why: 'That would make him an actual imposter. Keep it true.' },
+          { text: 'You\'re seeing their highlights. Compare yourself with a month ago: you\'ve found twelve skills with proof.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -135,11 +135,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'I feel like this before every exam. Is something wrong with me?',
         options: [
-          { text: 'No, it\'s really common when you\'re stretching yourself. And if it ever gets heavy, talking to someone helps.' },
           { text: 'Yes, you should quit medicine.', why: 'A common feeling isn\'t a reason to quit.' },
           { text: 'Ignore it forever.', why: 'Noticing it and talking about it works better than ignoring it.' },
+          { text: 'No, it\'s really common when you\'re stretching yourself. And if it ever gets heavy, talking to someone helps.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

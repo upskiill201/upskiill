@@ -27,11 +27,11 @@ const lesson: OriginalLesson = {
         from: 'brenda',
         message: 'Why the change from engineering to product?',
         options: [
-          { text: '"I\'ve always cared most about who uses what I build. This year\'s research and specs were what I looked forward to most, and engineering makes me a better PM."' },
           { text: '"I\'m tired of coding."', why: 'Towards, not away.' },
+          { text: '"I\'ve always cared most about who uses what I build. This year\'s research and specs were what I looked forward to most, and engineering makes me a better PM."' },
           { text: '"Product pays more."', why: 'Tell the towards story.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does Clinton uniquely bring to the APM role?',
         options: [
-          { text: 'Experience building for low-connectivity users' },
           { text: 'A business degree', why: 'His offline experience.' },
           { text: 'Nothing', why: 'His offline experience.' },
+          { text: 'Experience building for low-connectivity users' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How should Clinton mention his gap (saying no)?',
         options: [
-          { text: 'Name it, and say how he\'s practising' },
           { text: 'Hide it', why: 'Honest gap plus action.' },
           { text: 'Claim he\'s great at it', why: 'Overclaiming backfires.' },
+          { text: 'Name it, and say how he\'s practising' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

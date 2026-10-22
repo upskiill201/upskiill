@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why didn\'t Clinton invent a higher Kmer offer?',
         options: [
-          { text: 'It\'s a lie, and in a small industry it can easily backfire' },
           { text: 'He forgot', why: 'He chose honesty.' },
+          { text: 'It\'s a lie, and in a small industry it can easily backfire' },
           { text: 'Brenda told him not to', why: 'He chose honesty himself.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         from: 'ewane',
         message: 'Brenda offered 315,000 and a review. Why did you accept, rather than push for 330?',
         options: [
-          { text: 'It was inside my range, above my walk-away, and she\'d already moved. Pushing more would have cost goodwill.' },
           { text: 'I was scared.', why: 'He decided using his plan.' },
           { text: 'I didn\'t think about it.', why: 'He compared it with his plan.' },
+          { text: 'It was inside my range, above my walk-away, and she\'d already moved. Pushing more would have cost goodwill.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which call is harder today?',
         options: [
-          { text: 'Telling Mr Tamba no' },
           { text: 'Accepting Njangi Pay', why: 'That\'s the happy one.' },
           { text: 'Calling his mum', why: 'That\'s a happy one too.' },
+          { text: 'Telling Mr Tamba no' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When do people send the replies they regret most?',
         options: [
-          { text: 'In the first hour after the news' },
           { text: 'A week later', why: 'Usually straight away, while emotions are high.' },
+          { text: 'In the first hour after the news' },
           { text: 'Never', why: 'It happens a lot, usually in the first hour.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I want to tell them exactly what I think of their process. Right now.',
         options: [
-          { text: 'I\'ll write it in my notes, not to them. Tomorrow I\'ll reply calmly and ask for feedback.' },
           { text: 'Send it. They deserve it.', why: 'It will follow you in a small industry.' },
           { text: 'Block them forever.', why: 'You lose the feedback and the relationship.' },
+          { text: 'I\'ll write it in my notes, not to them. Tomorrow I\'ll reply calmly and ask for feedback.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What should Clinton do tonight?',
         options: [
-          { text: 'Enjoy the birthday with the people who came' },
           { text: 'Apply to 50 jobs at midnight', why: 'Rest first. Plan tomorrow.' },
           { text: 'Reread the email 40 times', why: 'Put the phone down tonight.' },
+          { text: 'Enjoy the birthday with the people who came' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is rounding 2.94 up to 3.0 a problem?',
         options: [
-          { text: 'It doesn\'t match his transcript, so it becomes a lie when checked' },
           { text: 'It isn\'t, rounding is fine on CVs', why: 'Rounding up to cross a threshold changes the meaning. It must match the transcript.' },
+          { text: 'It doesn\'t match his transcript, so it becomes a lie when checked' },
           { text: 'Because 3.0 looks too good', why: 'The issue isn\'t looks. It\'s accuracy.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         from: 'brenda',
         message: 'I noticed there\'s no GPA on your CV. What is it?',
         options: [
-          { text: '2.94. My strongest results are in my final-year modules, and the tracker shows what I can build.' },
           { text: 'About 3.0.', why: '"About" is a dodge. Give the exact number and your strengths.' },
           { text: 'I\'d rather not say.', why: 'She asked directly. Honest and confident beats evasive.' },
+          { text: '2.94. My strongest results are in my final-year modules, and the tracker shows what I can build.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When might Clinton choose to show his GPA?',
         options: [
-          { text: 'When the advert requires it, or when it\'s a strength' },
           { text: 'Never', why: 'Some roles require it, and a strong GPA helps.' },
           { text: 'Only when he can round it up', why: 'Never round to cross a line.' },
+          { text: 'When the advert requires it, or when it\'s a strength' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

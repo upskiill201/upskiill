@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Nadia\'s answer land badly?',
         options: [
-          { text: 'None of it touched the problem Mr Tamba worries about' },
           { text: 'She didn\'t work hard', why: 'She worked hard, on the wrong things.' },
+          { text: 'None of it touched the problem Mr Tamba worries about' },
           { text: 'Her logo was ugly', why: 'It\'s about what matters, not the logo.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Nadia says I\'m lazy because I don\'t look busy. Should I look busier?',
         options: [
-          { text: 'No: I\'ll keep focusing on what changes things for Mr Tamba, and show results.' },
           { text: 'Yes, open more tabs.', why: 'Looking busy doesn\'t change anything.' },
           { text: 'Tell Mr Tamba Nadia is wasting time.', why: 'Not his job. Focus on his own results.' },
+          { text: 'No: I\'ll keep focusing on what changes things for Mr Tamba, and show results.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes Clinton\'s answer strong?',
         options: [
-          { text: 'One change, with a number, tied to the main problem' },
           { text: 'It\'s long', why: 'It\'s short. It\'s specific.' },
           { text: 'It sounds confident', why: 'The substance matters: a real change.' },
+          { text: 'One change, with a number, tied to the main problem' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

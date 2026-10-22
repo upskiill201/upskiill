@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do real employers never ask you to do?',
         options: [
-          { text: 'Pay money to get the job' },
           { text: 'Come to an interview', why: 'Interviews are normal.' },
+          { text: 'Pay money to get the job' },
           { text: 'Send your CV', why: 'Normal.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'The message says "800,000 francs a month, no interview, just pay the training fee". Should I pay?',
         options: [
-          { text: 'No. Paying to work, no interview and a huge salary are three red flags. I\'ll report it and stop replying.' },
           { text: 'Yes, 25,000 is nothing compared to 800,000.', why: 'That\'s exactly how the scam works.' },
           { text: 'Send my ID first to show I\'m serious.', why: 'Never send ID to an unverified contact.' },
+          { text: 'No. Paying to work, no interview and a huge salary are three red flags. I\'ll report it and stop replying.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'After spotting a scam, what\'s the best next step?',
         options: [
-          { text: 'Report the profile on the platform and tell a careers adviser' },
           { text: 'Argue with the scammer', why: 'Waste of time. Report and move on.' },
           { text: 'Pay a little to see if it\'s real', why: 'Never pay.' },
+          { text: 'Report the profile on the platform and tell a careers adviser' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

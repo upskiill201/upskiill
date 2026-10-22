@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What turns a month of social posts into a portfolio piece?',
         options: [
-          { text: 'Tracking what changed: followers, messages, sales' },
           { text: 'Posting a lot', why: 'Volume isn\'t proof. The result is.' },
+          { text: 'Tracking what changed: followers, messages, sales' },
           { text: 'Using lots of filters', why: 'Looks don\'t prove impact. Numbers do.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'For my health leaflet, should I just write it myself and hand it out?',
         options: [
-          { text: 'Ask a supervisor or doctor to check it first. Health information has to be accurate.' },
           { text: 'Yes, nobody checks leaflets.', why: 'Wrong health information can hurt people. Get it checked.' },
           { text: 'Copy one from the internet.', why: 'Copying isn\'t your work, and it may not fit your patients.' },
+          { text: 'Ask a supervisor or doctor to check it first. Health information has to be accurate.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Ngum wants an accounting job. Which first piece should she pick?',
         options: [
-          { text: 'A budget and cash book for her netball club\'s season, with the result' },
           { text: 'A list of accounting words', why: 'Not proof of doing the work.' },
           { text: 'A photo of her calculator', why: 'Shows nothing she did.' },
+          { text: 'A budget and cash book for her netball club\'s season, with the result' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

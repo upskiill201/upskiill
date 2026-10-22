@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the difference between a profile and an "objective"?',
         options: [
-          { text: 'A profile says who you are and your best proof; an objective says what you want' },
           { text: 'None, they\'re the same', why: 'An objective is about your wishes. A profile is about your value.' },
+          { text: 'A profile says who you are and your best proof; an objective says what you want' },
           { text: 'An objective is longer and better', why: 'Recruiters skip objectives. A two-line profile works harder.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'My email is coolboy_clint99@... Is that okay?',
         options: [
-          { text: 'Make a simple one with your name, like clinton.ndi@... It\'s free and looks professional.' },
           { text: 'It\'s fine, it shows personality.', why: 'It\'s the first thing they see. Use your name.' },
           { text: 'Leave the email off.', why: 'Then they can\'t contact you.' },
+          { text: 'Make a simple one with your name, like clinton.ndi@... It\'s free and looks professional.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

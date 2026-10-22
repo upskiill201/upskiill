@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How often should you write in your wins log?',
         options: [
-          { text: 'Every week' },
           { text: 'Once a year', why: 'You\'ll forget. Weekly.' },
+          { text: 'Every week' },
           { text: 'Only when something huge happens', why: 'Small wins add up. Weekly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'A learner says they\'re already in a job, not an internship. Is this plan useless for them?',
         options: [
-          { text: 'No: the first-weeks habits, updates, wins log and feedback work in any new role.' },
           { text: 'Yes, skip it.', why: 'The habits work in any role.' },
           { text: 'Tell them to find an internship.', why: 'The plan works where they are.' },
+          { text: 'No: the first-weeks habits, updates, wins log and feedback work in any new role.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

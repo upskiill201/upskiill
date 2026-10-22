@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which news suggests a company might hire soon?',
         options: [
-          { text: 'It just raised money for a new product' },
           { text: 'It changed its logo colour', why: 'Not a hiring signal.' },
+          { text: 'It just raised money for a new product' },
           { text: 'Its CEO went on holiday', why: 'Not a hiring signal. Look for growth.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Kmer Logistics just won a contract with a big supermarket chain. Is that useful to know?',
         options: [
-          { text: 'Yes: a growing team might need help soon. I\'ll mention it when I message the founder.' },
           { text: 'No, it\'s just business news.', why: 'Growth is a hiring signal.' },
           { text: 'I\'ll demand a job because they\'re rich now.', why: 'Use it as a reason to talk, politely.' },
+          { text: 'Yes: a growing team might need help soon. I\'ll mention it when I message the founder.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -133,11 +133,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do small companies often skip adverts?',
         options: [
-          { text: 'They often have no HR team, so they ask around' },
           { text: 'Adverts are illegal for them', why: 'Not illegal. They just ask their network.' },
           { text: 'They never hire', why: 'They hire, often quietly.' },
+          { text: 'They often have no HR team, so they ask around' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

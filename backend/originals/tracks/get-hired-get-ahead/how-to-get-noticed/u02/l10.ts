@@ -72,21 +72,21 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Congrats! Now, what did you learn?',
         options: [
-          { text: 'I wasted a week on login and dark mode. Next time I\'ll build the useful part first and test with users sooner.' },
           { text: 'Nothing, it was perfect.', why: 'There\'s always something. Saying it shows you grow.' },
+          { text: 'I wasted a week on login and dark mode. Next time I\'ll build the useful part first and test with users sooner.' },
           { text: 'That I\'m a genius.', why: 'Fun, but not a lesson a recruiter can use.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Why does a health leaflet need a supervisor to check it?',
         options: [
-          { text: 'Health information must be accurate; mistakes can hurt people' },
           { text: 'To make it longer', why: 'It\'s about accuracy and safety.' },
           { text: 'It doesn\'t', why: 'Health information should always be checked by a qualified person.' },
+          { text: 'Health information must be accurate; mistakes can hurt people' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

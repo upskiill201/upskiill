@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Ibarra find most career changers did?',
         options: [
-          { text: 'Acted their way into new thinking through experiments' },
           { text: 'Planned perfectly, then switched in one day', why: 'Most tested first.' },
+          { text: 'Acted their way into new thinking through experiments' },
           { text: 'Never changed', why: 'She studied people who did change.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I tried one product task and it was hard. Does that mean it\'s wrong for me?',
         options: [
-          { text: 'Not necessarily: hard and energising is different from hard and draining. One experiment is one data point.' },
           { text: 'Yes, stop now.', why: 'False starts are normal.' },
           { text: 'It should feel easy if it\'s right.', why: 'New work is often hard.' },
+          { text: 'Not necessarily: hard and energising is different from hard and draining. One experiment is one data point.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What does "making sense" mean here?',
         options: [
-          { text: 'A story that connects your past to your future' },
           { text: 'Making money', why: 'A connecting story.' },
           { text: 'Common sense', why: 'A story connecting past and future.' },
+          { text: 'A story that connects your past to your future' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

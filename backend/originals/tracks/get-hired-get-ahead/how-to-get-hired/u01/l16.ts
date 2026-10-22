@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s wrong with "80% of jobs are hidden"?',
         options: [
-          { text: 'Nobody has found a solid study behind the exact number' },
           { text: 'The real number is 99%', why: 'No reliable study gives an exact number either way.' },
+          { text: 'Nobody has found a solid study behind the exact number' },
           { text: 'Nothing, it\'s proven', why: 'It\'s widely repeated, not proven.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'I\'m an introvert. Networking events make me want to hide in the toilet.',
         options: [
-          { text: 'Then start with one-to-one calls and written messages. Networking isn\'t only big parties.' },
           { text: 'Then you can\'t get a job.', why: 'False, and unkind. There are other styles.' },
           { text: 'Force yourself to talk to 50 people.', why: 'Start with what suits you.' },
+          { text: 'Then start with one-to-one calls and written messages. Networking isn\'t only big parties.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Someone says I should stop talking to Tchami now he\'s helped me. Fair?',
         options: [
-          { text: 'No: I\'ll keep in touch, report back and help him if I can. That\'s how it works.' },
           { text: 'Yes, I\'ve got what I needed.', why: 'Relationships last longer than one favour.' },
           { text: 'Ask him for a bigger favour next.', why: 'Give back, too.' },
+          { text: 'No: I\'ll keep in touch, report back and help him if I can. That\'s how it works.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

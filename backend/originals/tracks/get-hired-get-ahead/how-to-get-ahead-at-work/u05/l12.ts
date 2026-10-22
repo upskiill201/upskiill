@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why stay connected to the old team?',
         options: [
-          { text: 'They\'re now his closest partners in product' },
           { text: 'To spy on them', why: 'They\'re his partners now.' },
+          { text: 'They\'re now his closest partners in product' },
           { text: 'No reason', why: 'Product decisions land on their desks.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What do I send Kemi about the handover?',
         options: [
-          { text: '"Here\'s the sync-service doc: how it works, open issues, key decisions and why. Can we pair for an hour each day this week?"' },
           { text: '"Good luck!"', why: 'Give a real handover.' },
           { text: 'Nothing; she\'ll figure it out.', why: 'Hand over properly.' },
+          { text: '"Here\'s the sync-service doc: how it works, open issues, key decisions and why. Can we pair for an hour each day this week?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does "0 lost when data came back" matter?',
         options: [
-          { text: 'It answers Mr Tamba\'s biggest worry before he asks' },
           { text: 'Zero is a nice number', why: 'It answers the real worry: lost data.' },
+          { text: 'It answers Mr Tamba\'s biggest worry before he asks' },
           { text: 'It doesn\'t', why: 'Lost confirmations would be a disaster.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Nobody asked for a summary. Is it weird to send one?',
         options: [
-          { text: 'No: a short, unasked summary shows ownership. I\'ll keep it under 100 words.' },
           { text: 'Yes, wait until asked.', why: 'Sending one unasked is a standout habit.' },
           { text: 'Send a 10-page report.', why: 'Short. Under 100 words.' },
+          { text: 'No: a short, unasked summary shows ownership. I\'ll keep it under 100 words.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

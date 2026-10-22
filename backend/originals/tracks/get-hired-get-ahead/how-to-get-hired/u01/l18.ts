@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the subject line "An idea for Auntie Esi\'s online orders" strong?',
         options: [
-          { text: 'It\'s about her business, so she wants to open it' },
           { text: 'It\'s long', why: 'It\'s about her, that\'s why.' },
+          { text: 'It\'s about her business, so she wants to open it' },
           { text: 'It mentions money', why: 'It mentions her business.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'She said yes to the demo, then paid me to build it. Now three shops on her street want one.',
         options: [
-          { text: 'That\'s brilliant. So one small, specific message turned into four jobs.' },
           { text: 'Lucky.', why: 'Not luck. He noticed a problem and offered a fix.' },
           { text: 'You should have charged more.', why: 'Maybe, but the method is the lesson.' },
+          { text: 'That\'s brilliant. So one small, specific message turned into four jobs.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which part should take the most time?',
         options: [
-          { text: 'Action' },
           { text: 'Situation', why: 'Keep the setup short.' },
+          { text: 'Action' },
           { text: 'Task', why: 'One sentence is enough.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Nadia built the text fallback with me. Can I still say "I"?',
         options: [
-          { text: 'Yes, for my part: "I flagged the risk and built the sync; Nadia and I built the fallback together."' },
           { text: 'No, say "we" for everything.', why: 'Say what you did, credit others honestly.' },
           { text: 'Say I built all of it.', why: 'Never take her credit.' },
+          { text: 'Yes, for my part: "I flagged the risk and built the sync; Nadia and I built the fallback together."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

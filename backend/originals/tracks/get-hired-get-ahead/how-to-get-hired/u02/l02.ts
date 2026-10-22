@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the main point of an internship?',
         options: [
-          { text: 'Learning, through short, structured work' },
           { text: 'Free labour for the company', why: 'That\'s the warning sign, not the point.' },
+          { text: 'Learning, through short, structured work' },
           { text: 'Making coffee', why: 'A real internship has real learning.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'A company says I can intern if I pay them 50,000 francs for "placement". Good deal?',
         options: [
-          { text: 'No: never pay to get an internship. Ask Mrs Ewane about real placements.' },
           { text: 'Yes, it\'s an investment.', why: 'Paying for an internship is a red flag.' },
           { text: 'Pay half.', why: 'Don\'t pay at all.' },
+          { text: 'No: never pay to get an internship. Ask Mrs Ewane about real placements.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What should Clinton check about Kmer\'s internship first?',
         options: [
-          { text: 'The dates, hours, pay (if any), tasks and who supervises him, in writing' },
           { text: 'The office wallpaper', why: 'Check the real terms.' },
           { text: 'Nothing, just start', why: 'Always get the basics in writing.' },
+          { text: 'The dates, hours, pay (if any), tasks and who supervises him, in writing' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

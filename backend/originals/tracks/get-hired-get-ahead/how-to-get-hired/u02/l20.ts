@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What did Clinton bring to his review?',
         options: [
-          { text: 'His wins log: six lines, six numbers' },
           { text: 'A list of his working hours', why: 'Results, not hours.' },
+          { text: 'His wins log: six lines, six numbers' },
           { text: 'Nothing, he winged it', why: 'He brought proof.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Mr Tamba says he\'ll be my reference. What should I say?',
         options: [
-          { text: '"Thank you. I\'ll tell you before anyone calls, and what role it\'s for."' },
           { text: '"Great, write whatever you want."', why: 'Offer to keep him updated and remind him of the facts.' },
           { text: '"Can you exaggerate a bit?"', why: 'Never. Honest references only.' },
+          { text: '"Thank you. I\'ll tell you before anyone calls, and what role it\'s for."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which feedback question did Clinton learn to ask?',
         options: [
-          { text: '"What\'s one thing I could do better on the driver tests?"' },
           { text: '"Any feedback?"', why: 'Too open.' },
           { text: '"Am I the best?"', why: 'Not useful.' },
+          { text: '"What\'s one thing I could do better on the driver tests?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -139,11 +139,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Your interview is in two weeks. What from Kmer will help you most?',
         options: [
-          { text: 'Real stories with numbers: the offline confirmations, the risk I flagged, how I handled Nadia.' },
           { text: 'Nothing, it\'s a different company.', why: 'His Kmer stories are perfect interview material.' },
+          { text: 'Real stories with numbers: the offline confirmations, the risk I flagged, how I handled Nadia.' },
           { text: 'My working hours.', why: 'Stories with results.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who\'s easiest to approach at an event?',
         options: [
-          { text: 'Someone standing alone, or a pair with an open circle' },
           { text: 'A tight group of six laughing', why: 'Hard to join. Start with someone alone.' },
+          { text: 'Someone standing alone, or a pair with an open circle' },
           { text: 'The main speaker, surrounded by people', why: 'Hardest to reach. Start easier.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I\'ve been talking to Etienne for ten minutes. How do I leave without being rude?',
         options: [
-          { text: '"It\'s been great talking. I\'ll let you meet some more people. Can I connect with you on LinkedIn?"' },
           { text: 'Just walk away mid-sentence.', why: 'Rude. Close it warmly.' },
           { text: 'Stay with Etienne all night.', why: 'Kind, but you both came to meet people.' },
+          { text: '"It\'s been great talking. I\'ll let you meet some more people. Can I connect with you on LinkedIn?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

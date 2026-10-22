@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a fair referral?',
         options: [
-          { text: 'Someone vouching for work of yours they\'ve actually seen' },
           { text: 'A friend getting you in without seeing your work', why: 'That risks their reputation on the unknown.' },
+          { text: 'Someone vouching for work of yours they\'ve actually seen' },
           { text: 'Paying someone to recommend you', why: 'Never.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I deleted the "get me in" message. What should I send instead?',
         options: [
-          { text: '"Rough week: my sync keeps breaking. Could I show you the code for ten minutes?"' },
           { text: '"Never mind, I\'ll just quit."', why: 'Ask for help with the real problem.' },
           { text: 'Nothing, struggle alone.', why: 'Mentors are for exactly this.' },
+          { text: '"Rough week: my sync keeps breaking. Could I show you the code for ten minutes?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -134,11 +134,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Clinton want to send the message?',
         options: [
-          { text: 'A bad week made the shortcut feel tempting' },
           { text: 'Afiya had an advert for him', why: 'No: it was a bad week and a tempting shortcut.' },
           { text: 'Miracle offered', why: 'She didn\'t. He was tired and frustrated.' },
+          { text: 'A bad week made the shortcut feel tempting' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the biggest problem with "Can you reconsider?"',
         options: [
-          { text: 'It argues with a decision she usually can\'t reverse' },
           { text: 'It\'s too short', why: 'Length isn\'t the issue.' },
+          { text: 'It argues with a decision she usually can\'t reverse' },
           { text: 'Nothing', why: 'It puts her on the defensive.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Is it OK to say I\'m disappointed?',
         options: [
-          { text: 'Yes, briefly. "I\'m disappointed, but I enjoyed meeting the team" is honest and gracious.' },
           { text: 'No, pretend you don\'t care.', why: 'Brief honesty is fine.' },
           { text: 'Yes, a full paragraph about it.', why: 'One short phrase.' },
+          { text: 'Yes, briefly. "I\'m disappointed, but I enjoyed meeting the team" is honest and gracious.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

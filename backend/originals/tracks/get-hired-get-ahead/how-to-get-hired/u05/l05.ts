@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the problem with "bigger number wins"?',
         options: [
-          { text: 'It ignores everything except pay' },
           { text: 'Nothing', why: 'Pay is one row.' },
+          { text: 'It ignores everything except pay' },
           { text: 'It takes too long', why: 'It\'s fast, but incomplete.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'What\'s the difference between your target and your walk-away point?',
         options: [
-          { text: 'Target is what I\'ll ask for, with a reason. Walk-away is where I\'d choose Kmer instead.' },
           { text: 'They\'re the same.', why: 'Target is the ask; walk-away is the limit.' },
           { text: 'I don\'t need either.', why: 'Both help you stay calm.' },
+          { text: 'Target is what I\'ll ask for, with a reason. Walk-away is where I\'d choose Kmer instead.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask for a typical range instead of someone\'s salary?',
         options: [
-          { text: 'It\'s more comfortable and more useful' },
           { text: 'It\'s required by law', why: 'It\'s just more comfortable.' },
           { text: 'Salaries are secret everywhere', why: 'Norms vary; ranges are easier to share.' },
+          { text: 'It\'s more comfortable and more useful' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

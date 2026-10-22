@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should you do first when two values clash?',
         options: [
-          { text: 'Look for options that satisfy both' },
           { text: 'Pick one forever', why: 'Look for both first.' },
+          { text: 'Look for options that satisfy both' },
           { text: 'Ignore it', why: 'Name it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'What does Aïcha\'s comment tell you?',
         options: [
-          { text: 'That I might be good at the part of product I enjoy most. One data point; I\'ll keep testing.' },
           { text: 'That I should quit tomorrow.', why: 'Keep testing.' },
           { text: 'Nothing.', why: 'It\'s useful data.' },
+          { text: 'That I might be good at the part of product I enjoy most. One data point; I\'ll keep testing.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write down why you chose a trade-off?',
         options: [
-          { text: 'So later you can see it was reasonable' },
           { text: 'To show off', why: 'It\'s for you.' },
           { text: 'No reason', why: 'It helps later.' },
+          { text: 'So later you can see it was reasonable' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the difference between owning a problem and doing tasks?',
         options: [
-          { text: 'Owning means noticing what\'s missing and fixing or flagging it' },
           { text: 'There\'s no difference', why: 'Owners notice gaps; task-doers wait to be told.' },
+          { text: 'Owning means noticing what\'s missing and fixing or flagging it' },
           { text: 'Owning means doing everyone\'s work', why: 'It means owning your problem fully.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I\'m going to miss Friday\'s deadline by a day. Should I just stay quiet and rush?',
         options: [
-          { text: 'No: I\'ll tell Mr Tamba today, with a new date and what\'s causing it.' },
           { text: 'Yes, maybe he won\'t notice.', why: 'He will. Early news is a plan.' },
           { text: 'Blame Samuel.', why: 'Own it, explain, give a new date.' },
+          { text: 'No: I\'ll tell Mr Tamba today, with a new date and what\'s causing it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -133,11 +133,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write down answers to your questions?',
         options: [
-          { text: 'So you never have to ask the same thing twice' },
           { text: 'To look busy', why: 'It saves everyone\'s time.' },
           { text: 'It\'s required by law', why: 'It\'s just a good habit.' },
+          { text: 'So you never have to ask the same thing twice' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

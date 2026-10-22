@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is accepting on the spot risky this week?',
         options: [
-          { text: 'He\'d be deciding to escape a feeling, without the details' },
           { text: 'Kmer is a bad company', why: 'It\'s a good offer. He just needs the details.' },
+          { text: 'He\'d be deciding to escape a feeling, without the details' },
           { text: 'It\'s illegal', why: 'It\'s just unwise without details.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What do I actually say to him, right now?',
         options: [
-          { text: '"Thank you, that means a lot. I\'m very interested. Could you send me the details, and could I have a few days to think?"' },
           { text: '"YES! Whatever you\'re paying is fine."', why: 'Thank him, then get the details.' },
           { text: '"No thanks, I want a bigger company."', why: 'Don\'t decide while hurting.' },
+          { text: '"Thank you, that means a lot. I\'m very interested. Could you send me the details, and could I have a few days to think?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What does Mr Tamba ask in return?',
         options: [
-          { text: 'An answer by Friday next week' },
           { text: 'An answer in ten minutes', why: 'He gave him until Friday next week.' },
           { text: 'Nothing, ever', why: 'He asked for an answer by Friday next week.' },
+          { text: 'An answer by Friday next week' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

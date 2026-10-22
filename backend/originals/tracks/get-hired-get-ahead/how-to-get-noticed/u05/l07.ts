@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the Featured section for?',
         options: [
-          { text: 'Pinning your best proof, like a case study or post, near the top' },
           { text: 'Your hobbies', why: 'It\'s for your best work.' },
+          { text: 'Pinning your best proof, like a case study or post, near the top' },
           { text: 'Paying for ads', why: 'It\'s free. Pin your best proof.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I\'ve never had a real job, so I\'ll leave Experience empty. Right?',
         options: [
-          { text: 'No: I\'ll add the meet-up, the phone stall and the church tracker, with honest titles and dates.' },
           { text: 'Right, leave it empty.', why: 'Volunteer and leadership roles count.' },
           { text: 'I\'ll invent an internship.', why: 'Never invent. Use what\'s real.' },
+          { text: 'No: I\'ll add the meet-up, the phone stall and the church tracker, with honest titles and dates.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why keep profile entries short?',
         options: [
-          { text: 'People scan profiles on phones' },
           { text: 'LinkedIn deletes long entries', why: 'It doesn\'t. Short is just easier to read.' },
           { text: 'Long entries cost money', why: 'Free either way. Short reads better.' },
+          { text: 'People scan profiles on phones' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

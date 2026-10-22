@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why test before leaping?',
         options: [
-          { text: 'It costs less and teaches more' },
           { text: 'Leaps never work', why: 'They sometimes do; testing is safer.' },
+          { text: 'It costs less and teaches more' },
           { text: 'It\'s slower, so it\'s better', why: 'It\'s cheaper and more informative.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'What did Ibarra find about career changers?',
         options: [
-          { text: 'Most acted their way into new thinking with experiments, new networks and a story.' },
           { text: 'They planned perfectly first.', why: 'Most tested first.' },
           { text: 'They all failed.', why: 'She studied successful changes.' },
+          { text: 'Most acted their way into new thinking with experiments, new networks and a story.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Are false starts in a career change a sign of failure?',
         options: [
-          { text: 'No, they\'re a normal part of the process' },
           { text: 'Yes, always', why: 'They\'re normal.' },
           { text: 'Only for graduates', why: 'Normal for everyone.' },
+          { text: 'No, they\'re a normal part of the process' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

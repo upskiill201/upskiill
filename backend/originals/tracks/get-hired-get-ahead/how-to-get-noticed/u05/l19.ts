@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where does your profile content come from?',
         options: [
-          { text: 'Your CV, portfolio and evidence bank' },
           { text: 'Someone else\'s profile', why: 'Borrow structure, not content.' },
+          { text: 'Your CV, portfolio and evidence bank' },
           { text: 'Your imagination', why: 'Only what\'s real.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'How will you check your profile before you share it?',
         options: [
-          { text: 'Open it logged out, compare it to my CV, and see what I remember in five seconds.' },
           { text: 'I won\'t, it\'s fine.', why: 'Always check it as a stranger.' },
           { text: 'Ask the AI if it\'s good.', why: 'Check it yourself as a stranger first.' },
+          { text: 'Open it logged out, compare it to my CV, and see what I remember in five seconds.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

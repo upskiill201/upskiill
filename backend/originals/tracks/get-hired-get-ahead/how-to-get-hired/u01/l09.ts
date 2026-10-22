@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Arjun hasn\'t replied in four days. What does that usually mean?',
         options: [
-          { text: 'He\'s busy, or the message got buried' },
           { text: 'He hates him', why: 'Silence usually means busy.' },
+          { text: 'He\'s busy, or the message got buried' },
           { text: 'He should message again right now', why: 'Wait about a week.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Two weeks, two messages, still nothing from Arjun. Should I message his boss?',
         options: [
-          { text: 'No: I\'ll stop here and message the next person on my map. Maybe he\'ll reply one day.' },
           { text: 'Yes, complain to his boss.', why: 'He owed him nothing. Move on gracefully.' },
           { text: 'Message him five more times.', why: 'That\'s pestering. Stop after one or two.' },
+          { text: 'No: I\'ll stop here and message the next person on my map. Maybe he\'ll reply one day.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Step 4: Njangi Pay wants people who learn fast, stay calm when things break and explain tech simply. Which top three should Clinton star?',
         options: [
-          { text: 'Calm under pressure, explaining tech simply, and learning fast (he taught himself video editing and testing)' },
           { text: 'Football, music and films', why: 'Hobbies without the skills named. Match the advert.' },
+          { text: 'Calm under pressure, explaining tech simply, and learning fast (he taught himself video editing and testing)' },
           { text: 'Whatever sounds most impressive', why: 'Best proof that matches the role, not what sounds big.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Step 8: where will Clinton keep adding new wins each week?',
         options: [
-          { text: 'In his evidence bank' },
           { text: 'Nowhere, he\'ll remember them', why: 'He won\'t, and neither will anyone. Write them down.' },
           { text: 'In a public post every day', why: 'The bank is private and quick. Posting is optional.' },
+          { text: 'In his evidence bank' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

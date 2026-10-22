@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In Ladders\' 2018 study, about how long did the first screen of a CV last?',
         options: [
-          { text: 'About 7.4 seconds' },
           { text: 'About 7 minutes', why: 'Much shorter: about 7.4 seconds for the first look.' },
+          { text: 'About 7.4 seconds' },
           { text: 'About 1 second', why: 'A little longer than that: about 7.4 seconds.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'So I should make my CV more creative so it stands out?',
         options: [
-          { text: 'Make it stand out with proof, not decoration. Simple layouts were read more easily.' },
           { text: 'Yes, add more colours and icons.', why: 'Clutter did worse in the study.' },
           { text: 'Make it a video.', why: 'Some creative jobs accept that, but for most roles a clear page wins.' },
+          { text: 'Make it stand out with proof, not decoration. Simple layouts were read more easily.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which layout would do best on the first look?',
         options: [
-          { text: 'One column, clear headings, short bullets, dates on the right' },
           { text: 'Three columns, icons, a photo and a skills wheel', why: 'Cluttered layouts did worse.' },
           { text: 'One long paragraph in small font', why: 'Long text hides the important words.' },
+          { text: 'One column, clear headings, short bullets, dates on the right' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

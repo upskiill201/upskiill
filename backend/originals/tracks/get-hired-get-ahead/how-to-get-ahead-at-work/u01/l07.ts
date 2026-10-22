@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where should Clinton start learning?',
         options: [
-          { text: 'A one-page map of how the product and teams fit together' },
           { text: 'Every file, in alphabetical order', why: 'Map first, details later.' },
+          { text: 'A one-page map of how the product and teams fit together' },
           { text: 'Nowhere, wait for training', why: 'Start the map yourself.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I check I\'ve understood the sync flow?',
         options: [
-          { text: '"So the phone stores it and the sync service sends it when data returns. Is that right?"' },
           { text: 'Nod in meetings.', why: 'Explain it back instead.' },
           { text: 'Assume I get it.', why: 'Check by explaining it.' },
+          { text: '"So the phone stores it and the sync service sends it when data returns. Is that right?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When should you set up the kit?',
         options: [
-          { text: 'Before day one, then use it every week' },
           { text: 'After a year', why: 'It\'s most useful from day one.' },
+          { text: 'Before day one, then use it every week' },
           { text: 'Only if things go wrong', why: 'Weekly, from the start.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'A learner is starting a job in a shop, not tech. Does this kit still work?',
         options: [
-          { text: 'Yes: every job has a plan, words to learn, standards, people and a manager to meet.' },
           { text: 'No, only for developers.', why: 'It works in any job.' },
           { text: 'Only the glossary.', why: 'All five parts work.' },
+          { text: 'Yes: every job has a plan, words to learn, standards, people and a manager to meet.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

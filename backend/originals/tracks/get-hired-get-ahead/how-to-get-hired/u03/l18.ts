@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When should Clinton send it?',
         options: [
-          { text: 'Within a day' },
           { text: 'A month later', why: 'Too late. Within a day.' },
+          { text: 'Within a day' },
           { text: 'During the interview', why: 'After, within a day.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I forgot to mention three projects. Should I add them all to the thank-you?',
         options: [
-          { text: 'Just one, the most relevant, with a link. Keep it short.' },
           { text: 'All three, with long explanations.', why: 'One thing. Keep it short.' },
           { text: 'None, ever.', why: 'One useful addition is fine.' },
+          { text: 'Just one, the most relevant, with a link. Keep it short.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

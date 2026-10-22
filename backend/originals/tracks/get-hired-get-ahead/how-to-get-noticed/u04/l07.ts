@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should I say I\'ve used their app? I haven\'t, but it would sound good.',
         options: [
-          { text: 'No. I\'ll download it today, try it, and then say honestly what I noticed.' },
           { text: 'Yes, they\'ll never know.', why: 'They might ask what he thought of it. Honesty first.' },
+          { text: 'No. I\'ll download it today, try it, and then say honestly what I noticed.' },
           { text: 'Say I helped build it.', why: 'That\'s a lie.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What if nothing about the company connects to your life?',
         options: [
-          { text: 'Be honest about what draws you: the problem, the customers, the way they work' },
           { text: 'Invent a connection', why: 'Never. Small and true beats big and fake.' },
           { text: 'Don\'t apply', why: 'You can still have a genuine reason. Find it.' },
+          { text: 'Be honest about what draws you: the problem, the customers, the way they work' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which usually hurts a new intern more?',
         options: [
-          { text: 'Asking too little and staying stuck for days' },
           { text: 'Asking one good question', why: 'One good question is cheap. Silence is expensive.' },
+          { text: 'Asking too little and staying stuck for days' },
           { text: 'Writing notes', why: 'Notes help. Silence hurts.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I\'ve been stuck for two days but didn\'t want to bother Mr Tamba. Was that right?',
         options: [
-          { text: 'No: I should have asked after a set time. I\'ll ask now, with what I tried.' },
           { text: 'Yes, never bother your supervisor.', why: 'Two days stuck costs far more than one question.' },
           { text: 'I\'ll keep going alone for a week.', why: 'Ask now.' },
+          { text: 'No: I should have asked after a set time. I\'ll ask now, with what I tried.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

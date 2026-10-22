@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Clinton name the role at the end of the paragraph?',
         options: [
-          { text: 'By then the reader is curious, and the first line isn\'t wasted' },
           { text: 'He forgot it earlier', why: 'It\'s on purpose. The story earns the attention first.' },
+          { text: 'By then the reader is curious, and the first line isn\'t wasted' },
           { text: 'It\'s a rule', why: 'Not a rule, a smart choice.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I don\'t know the hiring manager\'s name. "Dear Sir/Madam"?',
         options: [
-          { text: '"Dear Njangi Pay team" or "Dear Hiring Team" works, and it\'s friendlier.' },
           { text: '"Dear Sir" is safest.', why: 'It assumes a man and sounds old. A team greeting is better.' },
           { text: 'Skip the greeting.', why: 'A greeting is still expected. Use the team.' },
+          { text: '"Dear Njangi Pay team" or "Dear Hiring Team" works, and it\'s friendlier.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why "a picture the reader can see"?',
         options: [
-          { text: 'Concrete details are remembered; abstract claims aren\'t' },
           { text: 'Recruiters like art', why: 'It\'s about memory, not art.' },
           { text: 'To make it longer', why: 'It\'s one short sentence.' },
+          { text: 'Concrete details are remembered; abstract claims aren\'t' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

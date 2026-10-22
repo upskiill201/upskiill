@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the "unlock question"?',
         options: [
-          { text: '"What are we measured on this quarter?"' },
           { text: '"When\'s lunch?"', why: 'Ask what you\'re measured on.' },
+          { text: '"What are we measured on this quarter?"' },
           { text: '"Am I doing well?"', why: 'Ask what the team is measured on.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I read the Q3 goals doc. What else should I ask Ngozi?',
         options: [
-          { text: '"Of these goals, which one number matters most to you this quarter?"' },
           { text: '"Why are there goals?"', why: 'Ask which matters most.' },
           { text: 'Nothing, I\'ve read the doc.', why: 'Ask which matters most.' },
+          { text: '"Of these goals, which one number matters most to you this quarter?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

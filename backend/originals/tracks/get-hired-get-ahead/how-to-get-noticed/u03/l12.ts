@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "CV" usually mean in the US and Canada?',
         options: [
-          { text: 'A long academic document' },
           { text: 'The same as a one-page résumé', why: 'There, a CV is usually long and academic.' },
+          { text: 'A long academic document' },
           { text: 'A video', why: 'No: a long academic document.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'My cousin says never use a photo. My aunt says always. Who\'s right?',
         options: [
-          { text: 'Both, for their countries. I\'ll follow the norm where I\'m applying, and leave it off when unsure.' },
           { text: 'My cousin, everywhere.', why: 'Only for some countries.' },
           { text: 'My aunt, everywhere.', why: 'Only for some countries.' },
+          { text: 'Both, for their countries. I\'ll follow the norm where I\'m applying, and leave it off when unsure.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -133,11 +133,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Best way to check norms for the Paris internship?',
         options: [
-          { text: 'Look at the company\'s careers page and ask someone who works in France' },
           { text: 'Guess', why: 'A quick check beats a guess.' },
           { text: 'Use his Toronto version', why: 'Norms differ. Check first.' },
+          { text: 'Look at the company\'s careers page and ask someone who works in France' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

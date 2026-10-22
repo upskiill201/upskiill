@@ -26,11 +26,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What was Paul\'s team-chat message an example of?',
         options: [
-          { text: 'Sponsorship: speaking up for Clinton' },
           { text: 'Mentoring', why: 'He spoke up publicly; that\'s sponsorship.' },
+          { text: 'Sponsorship: speaking up for Clinton' },
           { text: 'Nothing', why: 'It was sponsorship.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'What will you ask Ngozi about pay if you\'re promoted?',
         options: [
-          { text: 'What my pay would be in the Developer range, and when it would change.' },
           { text: 'What Paul earns.', why: 'Ask about your own level.' },
           { text: 'Nothing.', why: 'Asking is fair.' },
+          { text: 'What my pay would be in the Developer range, and when it would change.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Does a promotion always mean the top of the next pay band?',
         options: [
-          { text: 'No: usually you move into the band, not to the top' },
           { text: 'Yes, always', why: 'Usually into the band.' },
           { text: 'There are no bands', why: 'Many companies have them.' },
+          { text: 'No: usually you move into the band, not to the top' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

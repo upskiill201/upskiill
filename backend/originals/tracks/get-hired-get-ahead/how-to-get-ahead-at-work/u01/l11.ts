@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is hiding a bug risky?',
         options: [
-          { text: 'Others may already be affected, and nobody knows to look' },
           { text: 'It isn\'t risky', why: 'Hidden problems often grow.' },
+          { text: 'Others may already be affected, and nobody knows to look' },
           { text: 'Only because you might be fired', why: 'Mainly because the problem can spread unseen.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What exactly do I write to Ngozi at 7:15am?',
         options: [
-          { text: '"Some confirmations from last night are showing twice. I think it\'s my sync change. I\'m looking now. Should we roll it back?"' },
           { text: '"Small issue, sorted soon, don\'t worry." (vague)', why: 'Be specific and own it.' },
           { text: 'Nothing, fix it quietly.', why: 'Tell the right people fast.' },
+          { text: '"Some confirmations from last night are showing twice. I think it\'s my sync change. I\'m looking now. Should we roll it back?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

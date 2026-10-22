@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why use words people search for?',
         options: [
-          { text: 'So recruiters\' searches find you' },
           { text: 'To sound clever', why: 'Search words are plain, not clever.' },
+          { text: 'So recruiters\' searches find you' },
           { text: 'They\'re required', why: 'Not required, just useful.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'My headline is "Medical student". Enough?',
         options: [
-          { text: 'Add what you do and one proof: "3rd-year medical student · Anatomy tutor · Organised a 60-donor blood drive".' },
           { text: 'Yes, perfect.', why: 'True, but says nothing that makes someone click.' },
           { text: 'Say "Doctor".', why: 'He isn\'t one yet. Honest only.' },
+          { text: 'Add what you do and one proof: "3rd-year medical student · Anatomy tutor · Organised a 60-donor blood drive".' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

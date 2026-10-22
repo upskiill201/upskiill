@@ -74,21 +74,21 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'The advert says "lab experience". I\'ve only done university practicals. Should I write "lab experience"?',
         options: [
-          { text: 'Write exactly what it was: "lab practicals in biochemistry and physiology (year 1 to 3)". True and relevant.' },
           { text: 'Write "extensive lab experience".', why: 'Overclaiming. An interviewer will ask.' },
+          { text: 'Write exactly what it was: "lab practicals in biochemistry and physiology (year 1 to 3)". True and relevant.' },
           { text: 'Leave labs out completely.', why: 'Practicals are relevant. Name them honestly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'What should go in David\'s top third?',
         options: [
-          { text: 'His name big, one contact line, a link, and a two-line profile with proof' },
           { text: 'A big photo and his objective', why: 'Photo norms vary, but an objective wastes the best space.' },
           { text: 'His hobbies', why: 'Hobbies rarely belong at the top.' },
+          { text: 'His name big, one contact line, a link, and a two-line profile with proof' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

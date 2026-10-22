@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "done" mean for Clinton\'s project?',
         options: [
-          { text: 'Three drivers using it for a full week' },
           { text: 'The code compiles', why: 'Done means real use, not finished code.' },
+          { text: 'Three drivers using it for a full week' },
           { text: 'Mr Tamba likes the colours', why: 'Done is three drivers using it for a week.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'The brief doesn\'t say how drivers confirm. What should I ask Mr Tamba?',
         options: [
-          { text: '"Should drivers confirm with a photo, a signature or just a tap?"' },
           { text: '"Can you rewrite the whole brief?"', why: 'Ask one specific question.' },
           { text: 'Ask nothing and guess.', why: 'A one-line question saves a week of rework.' },
+          { text: '"Should drivers confirm with a photo, a signature or just a tap?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

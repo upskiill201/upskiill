@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why add an approximate number?',
         options: [
-          { text: 'Even a rough number makes the impact real and comparable' },
           { text: 'To look clever', why: 'To make impact real.' },
+          { text: 'Even a rough number makes the impact real and comparable' },
           { text: 'Numbers must be exact or nothing', why: 'Approximate is fine; say "about".' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I don\'t have an exact number for the calls. Should I leave it out?',
         options: [
-          { text: 'I\'ll use "about 40 to about 25" and say where it came from. Approximate and honest is fine.' },
           { text: 'Make up an exact number.', why: 'Never invent numbers.' },
           { text: 'Leave out the impact entirely.', why: 'Use an honest approximation.' },
+          { text: 'I\'ll use "about 40 to about 25" and say where it came from. Approximate and honest is fine.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

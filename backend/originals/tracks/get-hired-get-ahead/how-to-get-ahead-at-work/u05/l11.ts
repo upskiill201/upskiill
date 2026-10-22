@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might a career change mean a pay dip?',
         options: [
-          { text: 'You\'re newer in the new field' },
           { text: 'The company is unfair', why: 'It\'s because you\'re newer there.' },
+          { text: 'You\'re newer in the new field' },
           { text: 'It never does', why: 'It sometimes does.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I ask about the pay?',
         options: [
-          { text: '"I\'m really excited. Given my offline expertise, could we match my current pay within the band, with a review at six months?"' },
           { text: '"Then no."', why: 'Negotiate first.' },
           { text: '"Fine, whatever." (resentful)', why: 'Ask honestly with a reason.' },
+          { text: '"I\'m really excited. Given my offline expertise, could we match my current pay within the band, with a review at six months?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

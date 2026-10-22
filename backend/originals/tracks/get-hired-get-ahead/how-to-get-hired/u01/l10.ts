@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should you never ask in an informational interview?',
         options: [
-          { text: 'Something you could find on Google, or for a job outright' },
           { text: 'How they got into the field', why: 'That\'s a great question.' },
+          { text: 'Something you could find on Google, or for a job outright' },
           { text: 'Who else you should talk to', why: 'That\'s the best closing question.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         from: 'ewane',
         message: 'The call has ended. What are the four steps that follow?',
         options: [
-          { text: 'Write it down, thank them within a day, act on the advice, report back.' },
           { text: 'Wait for them to call with a job.', why: 'The follow-up is your job.' },
           { text: 'Ask for a job in the thank-you.', why: 'Keep the thank-you clean.' },
+          { text: 'Write it down, thank them within a day, act on the advice, report back.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Arjun hasn\'t replied after two kind follow-ups. What now?',
         options: [
-          { text: 'Move on to the next name on the map' },
           { text: 'Message his boss', why: 'He owed him nothing. Move on.' },
           { text: 'Keep messaging daily', why: 'That\'s pestering.' },
+          { text: 'Move on to the next name on the map' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

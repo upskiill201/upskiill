@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Miracle check candidates\' LinkedIn profiles?',
         options: [
-          { text: 'To check the person in the CV is real and see what else they\'ve done' },
           { text: 'To find reasons to reject them', why: 'Mostly to check and learn more, not to hunt for flaws.' },
+          { text: 'To check the person in the CV is real and see what else they\'ve done' },
           { text: 'To count their followers', why: 'Followers matter little for graduates.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should I just delete LinkedIn so there\'s nothing embarrassing?',
         options: [
-          { text: 'No: an empty search can look odd, and recruiters search there. I\'ll fix the basics tonight.' },
           { text: 'Yes, delete everything online.', why: 'He\'d lose a free place recruiters find people.' },
           { text: 'Make a fake account with a better name.', why: 'Never. Be findable as yourself.' },
+          { text: 'No: an empty search can look odd, and recruiters search there. I\'ll fix the basics tonight.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Brenda will look on Monday. What does Clinton fix tonight?',
         options: [
-          { text: 'Photo, headline and About' },
           { text: 'Nothing, Monday is far away', why: 'It\'s two days. Fix the basics now.' },
           { text: 'His follower count', why: 'Irrelevant for a graduate interview.' },
+          { text: 'Photo, headline and About' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

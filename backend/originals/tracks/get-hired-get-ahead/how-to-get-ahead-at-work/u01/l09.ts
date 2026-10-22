@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the bug fix a better early win than the dashboard?',
         options: [
-          { text: 'It solves a real problem people already have, and it can be finished' },
           { text: 'It\'s more impressive', why: 'The dashboard is more impressive; the fix matters more.' },
+          { text: 'It solves a real problem people already have, and it can be finished' },
           { text: 'It\'s harder', why: 'It\'s smaller, real and finishable.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I check my early-win idea with Ngozi?',
         options: [
-          { text: '"Drivers keep tapping Confirm three times. I think I can fix it in two days. Is that a good use of my time?"' },
           { text: '"I\'m building a dashboard, OK?"', why: 'Ask, with the problem and the size.' },
           { text: 'Don\'t check, just do it.', why: 'Check first.' },
+          { text: '"Drivers keep tapping Confirm three times. I think I can fix it in two days. Is that a good use of my time?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I don\'t have APIs, testing OR proper French. Should I even apply?',
         options: [
-          { text: 'Yes. Those are all "nice to have". You have proof for every "must have".' },
           { text: 'No, wait until you have everything.', why: 'Adverts are wish lists. He meets every must-have.' },
+          { text: 'Yes. Those are all "nice to have". You have proof for every "must have".' },
           { text: 'Apply and say you have them.', why: 'Never. Apply honestly and show your gap plans.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In Clinton\'s two-column table, which empty row is his top priority?',
         options: [
-          { text: 'An empty "must have" row' },
           { text: 'An empty "nice to have" row', why: 'Those are normal. Must-haves come first.' },
           { text: 'Neither, empty rows don\'t matter', why: 'An empty must-have could stop the application.' },
+          { text: 'An empty "must have" row' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

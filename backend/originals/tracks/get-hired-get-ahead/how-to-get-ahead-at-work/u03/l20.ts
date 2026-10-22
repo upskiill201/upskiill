@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What turned "not yet" into yes?',
         options: [
-          { text: 'Clear criteria, a dated gap plan, evidence, and sponsors who\'d seen his work' },
           { text: 'Waiting three months', why: 'He closed the gaps with evidence.' },
+          { text: 'Clear criteria, a dated gap plan, evidence, and sponsors who\'d seen his work' },
           { text: 'Threatening to leave', why: 'He never did.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'ngozi',
         message: 'Developer, effective 1 April. Congratulations.',
         options: [
-          { text: '"Thank you, really. Could I ask what my pay will be at the new level, and when it changes?"' },
           { text: '"Finally."', why: 'Thank her, then ask about pay calmly.' },
           { text: '"So when\'s the next promotion?"', why: 'Thank her and ask about this one first.' },
+          { text: '"Thank you, really. Could I ask what my pay will be at the new level, and when it changes?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does Ngozi want Clinton to lead next?',
         options: [
-          { text: 'The sync-service split' },
           { text: 'The app redesign', why: 'The sync-service split.' },
           { text: 'Finance', why: 'The sync-service split.' },
+          { text: 'The sync-service split' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -140,11 +140,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Developer! What would you tell yourself in month six, right after "not yet"?',
         options: [
-          { text: '"Ask what it takes, get a date, close two gaps, and let the evidence do the talking."' },
           { text: '"Threaten to leave."', why: 'He didn\'t, and didn\'t need to.' },
+          { text: '"Ask what it takes, get a date, close two gaps, and let the evidence do the talking."' },
           { text: '"Just wait."', why: 'He acted on a plan.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

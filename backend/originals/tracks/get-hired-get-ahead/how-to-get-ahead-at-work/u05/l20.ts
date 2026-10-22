@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What did Clinton do when the student said "I don\'t have much experience"?',
         options: [
-          { text: 'Pointed to her real experience and asked about it' },
           { text: 'Agreed and moved on', why: 'He showed her what she had.' },
+          { text: 'Pointed to her real experience and asked about it' },
           { text: 'Ended the interview', why: 'He asked about the traders.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What do I ask her next?',
         options: [
-          { text: '"Tell me about a time a trader asked for something you couldn\'t give them. What did you do?"' },
           { text: '"Why should we hire someone with no experience?"', why: 'She has experience; ask about it.' },
           { text: '"What\'s your greatest weakness?" (first question)', why: 'Start with her real story.' },
+          { text: '"Tell me about a time a trader asked for something you couldn\'t give them. What did you do?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -131,11 +131,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Clinton say at his very first careers fair?',
         options: [
-          { text: '"I don\'t have any experience yet."' },
           { text: '"I\'m the best developer in Cameroon."', why: 'He said he had no experience.' },
           { text: '"I want to be a PM."', why: 'He said he had no experience.' },
+          { text: '"I don\'t have any experience yet."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -143,11 +143,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'So, what would you tell everyone who\'s where you were two years ago?',
         options: [
-          { text: 'You have more than you think. Write it down, prove it, talk to people, and keep going after the noes.' },
           { text: 'Get lucky.', why: 'It was work, not luck.' },
+          { text: 'You have more than you think. Write it down, prove it, talk to people, and keep going after the noes.' },
           { text: 'Wait to be discovered.', why: 'Act, prove, talk, keep going.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

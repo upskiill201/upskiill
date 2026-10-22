@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does practising out loud help with nerves?',
         options: [
-          { text: 'Your brain has less to invent under pressure' },
           { text: 'It makes you memorise every word', why: 'It\'s familiarity, not memorising.' },
+          { text: 'Your brain has less to invent under pressure' },
           { text: 'It doesn\'t help', why: 'It\'s one of the most useful steps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'Halfway through my answer I lost my place completely. Is the interview over?',
         options: [
-          { text: 'No: say "Sorry, let me start that again," and start again. Recovering well often impresses.' },
           { text: 'Yes, leave.', why: 'One stumble rarely decides it.' },
           { text: 'Keep talking about anything.', why: 'Restart calmly instead.' },
+          { text: 'No: say "Sorry, let me start that again," and start again. Recovering well often impresses.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

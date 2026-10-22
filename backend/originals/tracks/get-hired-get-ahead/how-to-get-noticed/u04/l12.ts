@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should you always do first?',
         options: [
-          { text: 'Follow exactly what the advert asks for' },
           { text: 'Use your favourite format', why: 'Their instructions come first.' },
+          { text: 'Follow exactly what the advert asks for' },
           { text: 'Send it three ways to be safe', why: 'One way, the way they asked.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'The form box removed all my bold text and bullet points!',
         options: [
-          { text: 'Form boxes take plain text. I\'ll use four clear paragraphs with blank lines between them.' },
           { text: 'I\'ll type it all in capitals instead.', why: 'Capitals read as shouting. Plain paragraphs.' },
           { text: 'I\'ll paste a screenshot of my letter.', why: 'Most boxes take text only, and images can\'t be read.' },
+          { text: 'Form boxes take plain text. I\'ll use four clear paragraphs with blank lines between them.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -130,11 +130,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Brenda gave Clinton her email. What does he send?',
         options: [
-          { text: 'A short email that\'s the letter itself, with a clear subject line and his CV attached' },
           { text: 'An empty email with two attachments', why: 'Use the email body. Don\'t make her open files to find out who you are.' },
           { text: 'A voice note', why: 'Not for a formal application.' },
+          { text: 'A short email that\'s the letter itself, with a clear subject line and his CV attached' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

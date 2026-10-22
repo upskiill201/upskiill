@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Step 6: the profile says "Meet-up: 2023 to now"; the CV says 2024. Fix?',
         options: [
-          { text: 'Change the profile to 2024, so it matches the CV and the truth' },
           { text: 'Change the CV to 2023', why: 'Only if 2023 is true. It isn\'t.' },
+          { text: 'Change the profile to 2024, so it matches the CV and the truth' },
           { text: 'Leave both', why: 'Brenda compares them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: '"Congrats! Remote job, 900,000 francs a month, no interview. Pay the 30,000 registration fee today." Reply?',
         options: [
-          { text: 'No reply. Report the profile. Real employers don\'t charge you to work.' },
           { text: 'Pay quickly before it\'s gone.', why: 'Classic scam pressure.' },
           { text: 'Send my ID to prove I\'m serious.', why: 'Never.' },
+          { text: 'No reply. Report the profile. Real employers don\'t charge you to work.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

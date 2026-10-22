@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is passing off someone else\'s project so risky?',
         options: [
-          { text: 'Interviewers ask you to explain it, and history shows who really wrote it' },
           { text: 'It isn\'t risky if you change the colours', why: 'Colours don\'t change who built it.' },
+          { text: 'Interviewers ask you to explain it, and history shows who really wrote it' },
           { text: 'Only because it\'s slow', why: 'It\'s fast. That\'s the trap.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         from: 'brenda',
         message: 'Walk me through how you built the charts in this budgeting app.',
         options: [
-          { text: 'The charts came from the original project I built on. My part was the contribution tracking: here\'s how I added it.' },
           { text: 'I... can\'t remember.', why: 'That\'s what happens when it isn\'t your work.' },
           { text: 'I built everything myself.', why: 'One follow-up question and this falls apart.' },
+          { text: 'The charts came from the original project I built on. My part was the contribution tracking: here\'s how I added it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -136,11 +136,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'So you\'re deleting the cool budget app? It looked SO good.',
         options: [
-          { text: 'I\'m keeping it, credited, with my one honest feature. My own small thing beats someone else\'s big thing.' },
           { text: 'No, I\'ll keep calling it mine.', why: 'Not worth an offer or a reputation.' },
           { text: 'I\'ll delete my whole portfolio.', why: 'The Njangi Tracker is all his. Keep it.' },
+          { text: 'I\'m keeping it, credited, with my one honest feature. My own small thing beats someone else\'s big thing.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why doesn\'t Clinton write "Curriculum Vitae" at the top?',
         options: [
-          { text: 'Everyone knows what it is; his name should be the biggest thing' },
           { text: 'It\'s against the law', why: 'It\'s allowed, just wasted space.' },
+          { text: 'Everyone knows what it is; his name should be the biggest thing' },
           { text: 'It\'s too short', why: 'It\'s not about length. The space is better used for his name.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Your profile is five lines. Can you do it in two?',
         options: [
-          { text: 'Yes: who I am in one line, my best proof in the second.' },
           { text: 'No, everything in it matters.', why: 'Two lines get read. Five often don\'t.' },
           { text: 'I\'ll cut it to one word.', why: 'Too short to prove anything. Two lines.' },
+          { text: 'Yes: who I am in one line, my best proof in the second.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why put a number in the profile?',
         options: [
-          { text: 'If the recruiter stops reading there, they still remember a concrete result' },
           { text: 'Numbers look technical', why: 'It\'s about memory and proof, not looks.' },
           { text: 'It\'s required', why: 'Not required, just powerful.' },
+          { text: 'If the recruiter stops reading there, they still remember a concrete result' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

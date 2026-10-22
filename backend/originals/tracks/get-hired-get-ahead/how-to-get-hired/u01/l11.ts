@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did four out of five of Clinton\'s messages get replies?',
         options: [
-          { text: 'Each one was personal: a real reason, a small ask' },
           { text: 'He was lucky', why: 'Four out of five isn\'t luck. It\'s a good message.' },
+          { text: 'Each one was personal: a real reason, a small ask' },
           { text: 'He sent them at midnight', why: 'Timing isn\'t the reason. Personal messages are.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'Even if only 1% of 200 reply, that\'s two people. Isn\'t that worth it?',
         options: [
-          { text: 'My five careful messages got four replies. And spam can annoy people I want to impress.' },
           { text: 'True, let\'s send 2,000.', why: 'More spam, more damage.' },
           { text: 'I\'ll stop messaging anyone.', why: 'Keep going, just personally.' },
+          { text: 'My five careful messages got four replies. And spam can annoy people I want to impress.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -135,11 +135,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happened when Tchami got the template?',
         options: [
-          { text: 'He wondered why Clinton sent him "Dear Sir/Madam" after their call' },
           { text: 'He offered a job', why: 'The template hurt the relationship.' },
           { text: 'Nothing, he didn\'t notice', why: 'He noticed. People do.' },
+          { text: 'He wondered why Clinton sent him "Dear Sir/Madam" after their call' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

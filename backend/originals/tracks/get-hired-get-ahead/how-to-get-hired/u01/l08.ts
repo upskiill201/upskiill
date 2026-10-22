@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does a specific thank-you work better than "Thanks for your time"?',
         options: [
-          { text: 'It shows you actually listened' },
           { text: 'It\'s longer', why: 'Length isn\'t the point. Specifics are.' },
+          { text: 'It shows you actually listened' },
           { text: 'It asks for another favour', why: 'A thank-you shouldn\'t come with a new ask.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Can I tell Sandrine that Tchami sent me?',
         options: [
-          { text: 'Only if Tchami says it\'s OK. I\'ll ask him first.' },
           { text: 'Yes, use his name everywhere.', why: 'Ask first. It\'s his reputation.' },
           { text: 'No, never mention anyone.', why: 'A mutual name helps, with permission.' },
+          { text: 'Only if Tchami says it\'s OK. I\'ll ask him first.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

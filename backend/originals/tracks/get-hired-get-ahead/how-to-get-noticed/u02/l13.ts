@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Two members can\'t find their row. They\'ll get used to it, right?',
         options: [
-          { text: 'One in six people lost means it\'s the design. Sort the names and add a search, then ask them again.' },
           { text: 'Yes, ignore them.', why: 'Ignoring users is how tools stop being used.' },
+          { text: 'One in six people lost means it\'s the design. Sort the names and add a search, then ask them again.' },
           { text: 'Tell them to try harder.', why: 'If people struggle, the design should change.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is a fixed complaint good for a portfolio?',
         options: [
-          { text: 'It shows you listen to users and improve your work' },
           { text: 'It isn\'t, hide all complaints', why: 'Fixed complaints are some of the best proof there is.' },
           { text: 'It makes the case study longer', why: 'Length isn\'t the point. It shows a valuable habit.' },
+          { text: 'It shows you listen to users and improve your work' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the "I failed" story tend to come true?',
         options: [
-          { text: 'It stops him applying, so nothing changes' },
           { text: 'It\'s magic', why: 'It changes what he does next.' },
+          { text: 'It stops him applying, so nothing changes' },
           { text: 'It doesn\'t', why: 'It often stops people trying.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'My cousin asks, "So did you get the Njangi Pay job?" What do I say?',
         options: [
-          { text: '"Not this time. It was close; I\'m working on testing, and I\'ve got other things going."' },
           { text: '"No, I\'m a failure."', why: 'Same facts, better story.' },
           { text: '"Yes." (it\'s a lie)', why: 'Never lie. Tell the "not yet" version.' },
+          { text: '"Not this time. It was close; I\'m working on testing, and I\'ve got other things going."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

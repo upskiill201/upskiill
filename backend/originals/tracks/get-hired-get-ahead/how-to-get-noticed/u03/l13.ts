@@ -41,21 +41,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does an applicant tracking system mainly do?',
         options: [
-          { text: 'Stores applications so recruiters can sort, search and track them' },
           { text: 'Rejects 75% of CVs automatically', why: 'That claim has no study behind it.' },
+          { text: 'Stores applications so recruiters can sort, search and track them' },
           { text: 'Writes your CV for you', why: 'It reads and stores CVs. It doesn\'t write them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Where did the "75% rejected" number come from?',
         options: [
-          { text: 'A 2012 sales pitch by a company selling CV services' },
           { text: 'A large government study', why: 'No study found. It traces to a sales pitch.' },
           { text: 'Ladders\' eye-tracking study', why: 'That study measured the first look, not software rejections.' },
+          { text: 'A 2012 sales pitch by a company selling CV services' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -101,11 +101,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s a "knockout question"?',
         options: [
-          { text: 'A yes/no screening question like "Do you have the right to work here?"' },
           { text: 'A trick interview question', why: 'It\'s an application form question.' },
           { text: 'A boxing question', why: 'Ha. A screening question on the application.' },
+          { text: 'A yes/no screening question like "Do you have the right to work here?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'The video sells a course to "beat the ATS". What should Clinton do?',
         options: [
-          { text: 'Skip it; use a clean layout and honest keywords, which is free' },
           { text: 'Buy it immediately', why: 'It\'s selling a fix for a problem built on a myth.' },
+          { text: 'Skip it; use a clean layout and honest keywords, which is free' },
           { text: 'Stop applying online', why: 'Online applications work. Just keep the CV clean.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

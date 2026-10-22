@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a "multiplier"?',
         options: [
-          { text: 'Someone who makes the whole team faster' },
           { text: 'Someone who does maths', why: 'Someone who makes others better.' },
+          { text: 'Someone who makes the whole team faster' },
           { text: 'Someone who works twice the hours', why: 'Someone who makes others faster.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Kemi asks how sync works. What do I say first?',
         options: [
-          { text: '"Have a look at the notes doc first, then tell me what\'s still unclear and what you\'ve tried."' },
           { text: 'Explain everything for two hours.', why: 'Share the doc first; answer the hard parts.' },
           { text: '"Figure it out yourself."', why: 'Help, but make it reusable.' },
+          { text: '"Have a look at the notes doc first, then tell me what\'s still unclear and what you\'ve tried."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

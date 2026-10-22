@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is Ngum\'s education line stronger than "BSc Accounting"?',
         options: [
-          { text: 'It adds a real project: a cash-flow model for a family bakery' },
           { text: 'It\'s longer', why: 'The project is the proof, not the length.' },
+          { text: 'It adds a real project: a cash-flow model for a family bakery' },
           { text: 'It includes her grades', why: 'It doesn\'t list grades. It adds a project.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Ngum isn\'t in tech. Can I really copy her structure?',
         options: [
-          { text: 'Yes: the rules are the same in every field. Proof first, formula bullets, honest levels, clean layout.' },
           { text: 'No, tech CVs are totally different.', why: 'Same rules. Different proof.' },
           { text: 'I\'ll copy her words too.', why: 'Borrow the structure, not the words.' },
+          { text: 'Yes: the rules are the same in every field. Proof first, formula bullets, honest levels, clean layout.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does Tey say is left on the page once the clutter is gone?',
         options: [
-          { text: 'Only proof' },
           { text: 'Only adjectives', why: 'Adjectives were cut.' },
           { text: 'Mostly white space', why: 'Some space helps, but what\'s left is proof.' },
+          { text: 'Only proof' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

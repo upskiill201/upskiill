@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'According to Miracle, what do people who find hidden jobs have in common?',
         options: [
-          { text: 'They\'re consistent' },
           { text: 'They\'re the most confident', why: 'She says consistent, not confident.' },
+          { text: 'They\'re consistent' },
           { text: 'They know famous people', why: 'Consistency matters more.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Exams start next week. Should I stop networking until they\'re over?',
         options: [
-          { text: 'I\'ll shrink it, not stop: two messages and the tracker. Then back to normal after exams.' },
           { text: 'Yes, stop for two months.', why: 'Contacts go cold. Shrink it instead.' },
           { text: 'Skip the exams.', why: 'Never. Exams matter. Shrink networking.' },
+          { text: 'I\'ll shrink it, not stop: two messages and the tracker. Then back to normal after exams.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

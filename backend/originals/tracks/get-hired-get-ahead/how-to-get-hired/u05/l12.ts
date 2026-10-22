@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is an earlier review a good ask?',
         options: [
-          { text: 'It costs nothing now, and lets your work make the case' },
           { text: 'It guarantees a raise', why: 'It guarantees a review, not a raise.' },
+          { text: 'It costs nothing now, and lets your work make the case' },
           { text: 'Employers hate it', why: 'Many are happy to agree.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'If salary is fixed, which one or two things should I ask for?',
         options: [
-          { text: 'A review after probation, and a training budget to learn their payments stack.' },
           { text: 'All five, at once.', why: 'Pick the one or two that matter most.' },
           { text: 'Nothing.', why: 'One or two reasonable asks are fine.' },
+          { text: 'A review after probation, and a training budget to learn their payments stack.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How many proofs should "why you" contain?',
         options: [
-          { text: 'Two, done well' },
           { text: 'Everything you\'ve ever done', why: 'That\'s the CV\'s job.' },
+          { text: 'Two, done well' },
           { text: 'None, just adjectives', why: 'Proof, not adjectives.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Your "why you" has six examples. Which two matter most to Njangi Pay?',
         options: [
-          { text: 'Explaining tech simply and staying calm when things break, because their advert stresses both.' },
           { text: 'All six are important!', why: 'Pick the two that match their must-haves best.' },
           { text: 'Football and music.', why: 'Not on their advert.' },
+          { text: 'Explaining tech simply and staying calm when things break, because their advert stresses both.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

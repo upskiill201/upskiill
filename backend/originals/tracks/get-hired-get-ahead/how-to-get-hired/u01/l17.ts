@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the founder probably quiet?',
         options: [
-          { text: 'He\'s busy with the new contract' },
           { text: 'He hates Clinton', why: 'There\'s no sign of that. Busy is far more likely.' },
+          { text: 'He\'s busy with the new contract' },
           { text: 'The chat went badly', why: 'It went well. Silence usually means busy.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         from: 'arjun',
         message: 'Sorry for the slow reply! Learn how payment webhooks fail. Happy to look at your tracker if you want.',
         options: [
-          { text: 'No problem at all, and thank you! I\'d love that. Here\'s the link, whenever suits you.' },
           { text: 'Took you long enough.', why: 'He owed nothing. Be gracious.' },
           { text: 'Can you also get me a job?', why: 'Accept the kind offer first.' },
+          { text: 'No problem at all, and thank you! I\'d love that. Here\'s the link, whenever suits you.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

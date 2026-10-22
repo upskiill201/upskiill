@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Clinton write "I owned"?',
         options: [
-          { text: 'To show his part clearly without claiming the whole team\'s work' },
           { text: 'To take all the credit', why: 'It\'s precise about his part.' },
+          { text: 'To show his part clearly without claiming the whole team\'s work' },
           { text: 'No reason', why: 'It clarifies his contribution.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Is it pushy to end with what I want next?',
         options: [
-          { text: 'No: it helps Ngozi plan. Without it, she has to guess.' },
           { text: 'Yes, never say what you want.', why: 'Saying it helps your manager.' },
           { text: 'Demand a promotion instead.', why: 'State what you\'d like to own next.' },
+          { text: 'No: it helps Ngozi plan. Without it, she has to guess.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

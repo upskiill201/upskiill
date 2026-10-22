@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why include Paul\'s quote?',
         options: [
-          { text: 'Ngozi can repeat a respected senior\'s words in the meeting' },
           { text: 'To flatter Paul', why: 'It\'s evidence Ngozi can use.' },
+          { text: 'Ngozi can repeat a respected senior\'s words in the meeting' },
           { text: 'It\'s filler', why: 'It\'s strong evidence.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should I add a long paragraph about how hard I\'ve worked?',
         options: [
-          { text: 'No: the evidence shows it. Keep it to one page.' },
           { text: 'Yes, three paragraphs.', why: 'Evidence over effort.' },
           { text: 'Replace the evidence with it.', why: 'Evidence is the case.' },
+          { text: 'No: the evidence shows it. Keep it to one page.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

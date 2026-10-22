@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "No, you covered everything" a missed chance?',
         options: [
-          { text: 'It can sound uninterested, and wastes your turn to learn about them' },
           { text: 'It\'s rude', why: 'Not rude, just a missed chance.' },
+          { text: 'It can sound uninterested, and wastes your turn to learn about them' },
           { text: 'It\'s fine', why: 'It\'s a missed chance.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I\'ve asked two questions. What\'s a great last one?',
         options: [
-          { text: '"Is there anything about my background you\'d like me to say more about?"' },
           { text: '"Did I get the job?"', why: 'They won\'t know yet. Give yourself a chance to add something.' },
           { text: '"Can I go now?"', why: 'End on something useful.' },
+          { text: '"Is there anything about my background you\'d like me to say more about?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

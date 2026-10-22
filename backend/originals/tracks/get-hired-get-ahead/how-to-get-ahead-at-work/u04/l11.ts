@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where does family career advice usually come from?',
         options: [
-          { text: 'Love and real concerns like security and respect' },
           { text: 'A wish to control you', why: 'Usually love and real worries.' },
+          { text: 'Love and real concerns like security and respect' },
           { text: 'Nowhere', why: 'Love and concern.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Mum says the bank is "stable, a pension, respect". What do I say first?',
         options: [
-          { text: '"Thank you for thinking of me. What worries you most about where I am now?"' },
           { text: '"No."', why: 'Find the concern first.' },
           { text: '"Banks are boring."', why: 'Listen first.' },
+          { text: '"Thank you for thinking of me. What worries you most about where I am now?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

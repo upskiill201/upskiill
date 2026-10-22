@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is an informational interview?',
         options: [
-          { text: 'A short conversation to learn about someone\'s work, not a job application' },
           { text: 'A secret job interview', why: 'It\'s for learning, not applying.' },
+          { text: 'A short conversation to learn about someone\'s work, not a job application' },
           { text: 'A test the company sets', why: 'It\'s informal: you set it up.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Tchami just said "Anyway, that\'s how I ended up in payments!" and it\'s minute 15. What do I say?',
         options: [
-          { text: 'That\'s really helpful. I promised 15 minutes, so I\'ll let you go. Is there anyone else you think I should talk to?' },
           { text: 'Great. So, can you get me a job?', why: 'He agreed to advice. Ask for a name instead.' },
           { text: 'Cool, I have 20 more questions.', why: 'Keep to the time you promised.' },
+          { text: 'That\'s really helpful. I promised 15 minutes, so I\'ll let you go. Is there anyone else you think I should talk to?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -122,11 +122,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Tchami says, "Actually, a friend of mine needs a part-time developer. Interested?" What do I say?',
         options: [
-          { text: 'Yes, I\'d love to hear more. Could you tell me a bit about the role?' },
           { text: 'Finally! Send me the contract.', why: 'Stay calm and curious. Learn about it first.' },
           { text: 'No, I only want Njangi Pay.', why: 'A second door is worth opening.' },
+          { text: 'Yes, I\'d love to hear more. Could you tell me a bit about the role?' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

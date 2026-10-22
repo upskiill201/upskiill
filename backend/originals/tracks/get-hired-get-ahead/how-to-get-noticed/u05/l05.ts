@@ -28,11 +28,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What three things does a recruiter see in search results?',
         options: [
-          { text: 'Photo, name and headline' },
           { text: 'About, experience and skills', why: 'Those come after the click.' },
+          { text: 'Photo, name and headline' },
           { text: 'Your CV', why: 'Not shown in search.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         from: 'ewane',
         message: 'Why should a student bother? Recruiters only look at CVs.',
         options: [
-          { text: 'They look you up after you apply, and they search for people before you apply. A profile works even when I\'m not applying.' },
           { text: 'You\'re right, it\'s a waste of time.', why: 'She\'s testing him. Profiles get checked and searched.' },
           { text: 'For the followers.', why: 'Followers matter little. Being found and trusted matters.' },
+          { text: 'They look you up after you apply, and they search for people before you apply. A profile works even when I\'m not applying.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         from: 'ewane',
         message: 'Last question. Your LinkedIn says GPA 3.0 and your CV says nothing. Problem?',
         options: [
-          { text: 'Yes. It\'s 2.94, so I\'ll remove it from LinkedIn. Both must be honest and match.' },
           { text: 'No, LinkedIn doesn\'t count.', why: 'Everything public counts. Recruiters compare.' },
           { text: 'I\'ll add 3.0 to the CV too.', why: 'Then both are wrong.' },
+          { text: 'Yes. It\'s 2.94, so I\'ll remove it from LinkedIn. Both must be honest and match.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Clinton laugh at the first line?',
         options: [
-          { text: 'It\'s exactly what he said at his own careers fair' },
           { text: 'It\'s funny on purpose', why: 'It\'s his own old line.' },
+          { text: 'It\'s exactly what he said at his own careers fair' },
           { text: 'He\'s being unkind', why: 'He recognises himself.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What do I tell Aïcha about this candidate?',
         options: [
-          { text: '"Interview her. She built a price-sharing group 30 traders use, and runs a stall. She has product instincts; her CV just hides them."' },
           { text: '"Reject: no experience."', why: 'She has lots, hidden.' },
           { text: '"She said passionate, so yes."', why: 'Look at the evidence, not adjectives.' },
+          { text: '"Interview her. She built a price-sharing group 30 traders use, and runs a stall. She has product instincts; her CV just hides them."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

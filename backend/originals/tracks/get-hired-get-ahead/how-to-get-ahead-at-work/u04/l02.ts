@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is a career plan a "hypothesis, not a prophecy"?',
         options: [
-          { text: 'You\'ll learn things that change it, and that\'s expected' },
           { text: 'It must never change', why: 'It should change as you learn.' },
+          { text: 'You\'ll learn things that change it, and that\'s expected' },
           { text: 'It\'s a guess you ignore', why: 'You use it and update it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'My plan changed four times, Miracle says hers did too. So what\'s the point?',
         options: [
-          { text: 'It guides choices now, and changing it as I learn is how it\'s meant to work.' },
           { text: 'There\'s no point.', why: 'It guides choices; changing is expected.' },
           { text: 'Never change it.', why: 'Update it as you learn.' },
+          { text: 'It guides choices now, and changing it as I learn is how it\'s meant to work.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which is a good if-then plan?',
         options: [
-          { text: '"If it\'s the first Tuesday of the month, then I\'ll review my plan in my 1:1."' },
           { text: '"I\'ll review it sometime."', why: 'No trigger. Use if-then.' },
           { text: '"I hope to grow."', why: 'Not a plan.' },
+          { text: '"If it\'s the first Tuesday of the month, then I\'ll review my plan in my 1:1."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

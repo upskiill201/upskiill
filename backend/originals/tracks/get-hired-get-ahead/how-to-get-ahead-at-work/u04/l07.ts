@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Clinton do first when two values clash?',
         options: [
-          { text: 'Look for options that satisfy both' },
           { text: 'Pick one forever', why: 'Look for both first; choose for now if needed.' },
+          { text: 'Look for options that satisfy both' },
           { text: 'Ignore the clash', why: 'Name it and work with it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'If I can\'t find product work at home, what do I decide?',
         options: [
-          { text: '"For the next two years, staying near family leads. I\'ll build product skills here and review next year."' },
           { text: '"Values don\'t matter."', why: 'Choose which leads, for now.' },
           { text: '"I\'ll be miserable either way."', why: 'Choose and write down why.' },
+          { text: '"For the next two years, staying near family leads. I\'ll build product skills here and review next year."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

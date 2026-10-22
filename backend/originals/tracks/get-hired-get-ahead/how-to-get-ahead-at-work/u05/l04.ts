@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where did Clinton first learn to map skills?',
         options: [
-          { text: 'In his very first course, from the meet-up and phone stall to developer' },
           { text: 'At a bootcamp', why: 'In How to Get Noticed, Chapter 1.' },
+          { text: 'In his very first course, from the meet-up and phone stall to developer' },
           { text: 'Never', why: 'In his first course.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I ask Aïcha to help close my roadmap gap?',
         options: [
-          { text: '"Could I draft next quarter\'s offline priority list, and you review it?"' },
           { text: '"Give me the whole roadmap."', why: 'A small, reviewable experiment.' },
           { text: 'Don\'t ask; hope.', why: 'Ask for an experiment.' },
+          { text: '"Could I draft next quarter\'s offline priority list, and you review it?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why rank what actually matters, not what "should"?',
         options: [
-          { text: 'A plan built on fake values won\'t guide real choices' },
           { text: 'To look humble', why: 'Honesty makes the plan useful.' },
+          { text: 'A plan built on fake values won\'t guide real choices' },
           { text: 'No reason', why: 'Fake values mislead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Is it bad that "impressive title" is on my list at all?',
         options: [
-          { text: 'No: admitting it, and ranking it low, helps me notice when it tempts me.' },
           { text: 'Yes, delete it and pretend.', why: 'Honesty helps.' },
           { text: 'Make it number one.', why: 'Rank it where it really is.' },
+          { text: 'No: admitting it, and ranking it low, helps me notice when it tempts me.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

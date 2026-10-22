@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should you agree before you volunteer?',
         options: [
-          { text: 'What "done" looks like, so you get a result and not just hours' },
           { text: 'Nothing, just turn up', why: 'Then it can go on forever with nothing to show.' },
+          { text: 'What "done" looks like, so you get a result and not just hours' },
           { text: 'A big salary', why: 'It\'s volunteering. Agree the scope and finish instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'A start-up says I can "help them for free for a few months" and maybe they\'ll hire me. Good idea?',
         options: [
-          { text: 'Only with a clear, short scope and an end date, and something you can show. "Maybe" isn\'t a plan.' },
           { text: 'Yes, work for free as long as they want.', why: 'That\'s the trap: unpaid with no end.' },
           { text: 'Never help anyone.', why: 'Short, scoped help can be great proof. Just set limits.' },
+          { text: 'Only with a clear, short scope and an end date, and something you can show. "Maybe" isn\'t a plan.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Ngum has two free afternoons a week and wants accounting. Which is best?',
         options: [
-          { text: 'Volunteer to set up the netball club\'s accounts for one season, with a clear finish' },
           { text: 'Enter a coding hackathon', why: 'Fine, but it doesn\'t match accounting.' },
           { text: 'Wait until she graduates', why: 'She has time now. Use it for proof.' },
+          { text: 'Volunteer to set up the netball club\'s accounts for one season, with a clear finish' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

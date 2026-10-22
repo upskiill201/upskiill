@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the weakness question really test?',
         options: [
-          { text: 'Self-awareness, and whether you\'re working on it' },
           { text: 'Whether you have zero weaknesses', why: 'Everyone has some.' },
+          { text: 'Self-awareness, and whether you\'re working on it' },
           { text: 'Whether you can trick them', why: 'They\'ve heard every trick.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'My weakness is I freeze in interviews. Can I actually say that?',
         options: [
-          { text: 'Yes, if you add what you\'re doing: "so I practise out loud every week, and it\'s improving."' },
           { text: 'No, say you\'re a perfectionist.', why: 'A real one with action is stronger.' },
           { text: 'Say you have no weaknesses.', why: 'Nobody believes that.' },
+          { text: 'Yes, if you add what you\'re doing: "so I practise out loud every week, and it\'s improving."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

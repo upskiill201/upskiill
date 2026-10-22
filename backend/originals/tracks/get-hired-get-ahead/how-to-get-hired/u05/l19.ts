@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why prepare your numbers before an offer arrives?',
         options: [
-          { text: 'So you\'re calm and grounded when it does' },
           { text: 'To demand more', why: 'To be calm and grounded.' },
+          { text: 'So you\'re calm and grounded when it does' },
           { text: 'No reason', why: 'It stops you deciding in a rush.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'A learner says they\'re nowhere near an offer yet. Should they still do this?',
         options: [
-          { text: 'Yes: the research and priorities help you choose which jobs to apply for, too.' },
           { text: 'No, wait.', why: 'Preparing early helps everything.' },
           { text: 'Only after three offers.', why: 'Prepare now.' },
+          { text: 'Yes: the research and priorities help you choose which jobs to apply for, too.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does "or I\'ll go elsewhere" hurt?',
         options: [
-          { text: 'It\'s a threat, so Brenda has to defend the company' },
           { text: 'It\'s too polite', why: 'The opposite.' },
+          { text: 'It\'s a threat, so Brenda has to defend the company' },
           { text: 'It doesn\'t', why: 'Threats start the job badly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I give Brenda a way to say yes, even if salary is tight?',
         options: [
-          { text: '"Or is there another way we could get closer, like a review after probation?"' },
           { text: '"Just find the money."', why: 'Offer options instead.' },
           { text: '"Never mind then."', why: 'Offer an alternative.' },
+          { text: '"Or is there another way we could get closer, like a review after probation?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

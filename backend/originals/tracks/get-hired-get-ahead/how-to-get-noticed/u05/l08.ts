@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which recommendation request is best?',
         options: [
-          { text: '"Mrs Ewane, could you write two or three lines about how I ran the meet-up venue switch? It would help my graduate applications."' },
           { text: '"Write me a recommendation pls."', why: 'Too vague, and gives them nothing to write about.' },
+          { text: '"Mrs Ewane, could you write two or three lines about how I ran the meet-up venue switch? It would help my graduate applications."' },
           { text: '"Say I\'m the best student ever."', why: 'Asking for exaggeration. Ask for something specific and true.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'Let\'s write each other amazing recommendations! You say I\'m a genius, I say you are.',
         options: [
-          { text: 'Let\'s write honest, specific ones instead: what we\'ve actually seen each other do.' },
           { text: 'Deal, genius for genius.', why: 'Swapped flattery reads as fake. Honest and specific is stronger.' },
           { text: 'No recommendations ever.', why: 'Real ones are valuable. Just keep them honest.' },
+          { text: 'Let\'s write honest, specific ones instead: what we\'ve actually seen each other do.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write a recommendation for someone else first?',
         options: [
-          { text: 'It\'s generous, it helps them, and people often return the favour' },
           { text: 'So they owe you a fake one', why: 'Never trade fake praise.' },
           { text: 'It\'s required before asking', why: 'Not required, just kind and effective.' },
+          { text: 'It\'s generous, it helps them, and people often return the favour' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

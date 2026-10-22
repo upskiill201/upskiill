@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which isn\'t one of the four kinds of value?',
         options: [
-          { text: 'Working the most hours' },
           { text: 'Reliability', why: 'That\'s one of the four.' },
+          { text: 'Working the most hours' },
           { text: 'Making others better', why: 'That\'s one of the four.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I\'m only three months in. Can I really be valuable yet?',
         options: [
-          { text: 'Yes: reliability and making others better work from day one. Impact and rare skills grow.' },
           { text: 'No, wait five years.', why: 'Two kinds start on day one.' },
           { text: 'Only if I work 80 hours.', why: 'Hours aren\'t on the list.' },
+          { text: 'Yes: reliability and making others better work from day one. Impact and rare skills grow.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which two kinds of value can Clinton offer right now?',
         options: [
-          { text: 'Reliability and making others better' },
           { text: 'Only rare skills', why: 'Those take time.' },
           { text: 'None yet', why: 'Two work from day one.' },
+          { text: 'Reliability and making others better' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Timer\'s done. What do I remember? CS final year, a tracker 42 people use, and a meet-up he grew to 40. That\'s exactly what I needed. What\'s the file called?',
         options: [
-          { text: 'Clinton-Ndi-CV-Njangi-Pay.pdf' },
           { text: 'final_FINAL_v3.pdf', why: 'Brenda closes those.' },
+          { text: 'Clinton-Ndi-CV-Njangi-Pay.pdf' },
           { text: 'cv.pdf', why: 'Which of 900 cv.pdf files is his?' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Step 10: Clinton also sees a data internship. What does he do with this CV?',
         options: [
-          { text: 'Keep it as the master, and tailor a copy that leads with his data bullet' },
           { text: 'Send this exact CV to both', why: 'Tailor each. Fifteen minutes.' },
           { text: 'Add "SQL expert" for the data role', why: 'Never add what isn\'t true.' },
+          { text: 'Keep it as the master, and tailor a copy that leads with his data bullet' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

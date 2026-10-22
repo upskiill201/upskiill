@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do employers usually remember about a problem on the day?',
         options: [
-          { text: 'How you handled it' },
           { text: 'That it happened at all', why: 'Usually it\'s how you handled it.' },
+          { text: 'How you handled it' },
           { text: 'Nothing', why: 'They notice how you handle it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Brenda didn\'t answer the call. What do I text?',
         options: [
-          { text: '"Hi Brenda, my bus broke down outside Douala. I\'m on my way by moto-taxi and expect to arrive about 10:15. Very sorry."' },
           { text: '"Bus broke, idk when I\'ll come lol"', why: 'Clear, polite and with a time.' },
           { text: 'Nothing.', why: 'Always let them know.' },
+          { text: '"Hi Brenda, my bus broke down outside Douala. I\'m on my way by moto-taxi and expect to arrive about 10:15. Very sorry."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When should you reply to a rejection?',
         options: [
-          { text: 'After some time to calm down, often the next day' },
           { text: 'Within one minute', why: 'That\'s when regret happens.' },
+          { text: 'After some time to calm down, often the next day' },
           { text: 'Never', why: 'A gracious reply keeps the door open.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'What are the five steps for the first 48 hours?',
         options: [
-          { text: 'Let it hurt, talk to one person, no big decisions, one normal thing, then one small step.' },
           { text: 'Reply angrily, then sleep.', why: 'Wait first.' },
           { text: 'Pretend it never happened.', why: 'Feel it, then act.' },
+          { text: 'Let it hurt, talk to one person, no big decisions, one normal thing, then one small step.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Low feelings have lasted for weeks. What should Clinton do?',
         options: [
-          { text: 'Talk to someone he trusts or a health professional' },
           { text: 'Keep it secret', why: 'Talking to someone is a strong step.' },
           { text: 'Work harder and ignore it', why: 'Get support.' },
+          { text: 'Talk to someone he trusts or a health professional' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

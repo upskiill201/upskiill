@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the most common way projects die?',
         options: [
-          { text: 'Building the fun parts first and never finishing the useful part' },
           { text: 'Finishing too early', why: 'Finishing early and improving is how projects survive.' },
+          { text: 'Building the fun parts first and never finishing the useful part' },
           { text: 'Having too few features', why: 'The opposite. Too many features stop projects being finished.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'But without a login, anyone could see the payments!',
         options: [
-          { text: 'Good point. Smallest safe version: keep it on Mum\'s phone only for now, and add login later.' },
           { text: 'Then build the login for three more weeks.', why: 'There\'s a smaller safe option: keep it private to start.' },
           { text: 'Privacy doesn\'t matter.', why: 'It really does. Keep it simple AND private.' },
+          { text: 'Good point. Smallest safe version: keep it on Mum\'s phone only for now, and add login later.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which sentence is the best "smallest version" for David\'s study-group tracker?',
         options: [
-          { text: '"A shared list of topics, with a tick when the group has covered each one."' },
           { text: '"A full learning platform with quizzes, videos and leaderboards."', why: 'Far too big for a first version.' },
           { text: '"Something to help studying."', why: 'Too vague to build.' },
+          { text: '"A shared list of topics, with a tick when the group has covered each one."' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

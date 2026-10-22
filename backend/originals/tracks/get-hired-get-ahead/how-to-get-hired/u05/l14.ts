@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the gut check?',
         options: [
-          { text: 'Imagine accepting each offer, and notice relief or loss' },
           { text: 'Toss a coin', why: 'Imagine accepting each, and notice your reaction.' },
+          { text: 'Imagine accepting each offer, and notice relief or loss' },
           { text: 'Ask the internet', why: 'It\'s about your own reaction.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Would you regret not learning from a team in your first job?',
         options: [
-          { text: 'Yes, I think I would. That\'s my top priority right now.' },
           { text: 'Just tell me what to choose.', why: 'She helps him think; he decides.' },
           { text: 'I\'ll pick whichever is easier to say yes to.', why: 'Use your priorities.' },
+          { text: 'Yes, I think I would. That\'s my top priority right now.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

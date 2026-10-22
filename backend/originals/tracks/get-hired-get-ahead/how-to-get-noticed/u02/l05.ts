@@ -28,11 +28,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Kofi\'s website work better than saying "I make beats"?',
         options: [
-          { text: 'It was proof: the organiser could see and hear his work' },
           { text: 'It was expensive', why: 'He built it himself, for free. It worked because it was proof.' },
+          { text: 'It was proof: the organiser could see and hear his work' },
           { text: 'It had lots of adjectives', why: 'The opposite. It showed, it didn\'t claim.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'What three things make a project "real"?',
         options: [
-          { text: 'A real problem, real users, and a result.' },
           { text: 'Lots of code, lots of features, lots of time.', why: 'Size isn\'t what makes it real.' },
           { text: 'A famous client.', why: 'No famous client needed. Mum\'s njangi counts.' },
+          { text: 'A real problem, real users, and a result.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

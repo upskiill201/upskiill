@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write the plan while you\'re calm?',
         options: [
-          { text: 'So you don\'t have to think straight when you\'re upset' },
           { text: 'Calm people write longer plans', why: 'It\'s for the moment you\'re not calm.' },
+          { text: 'So you don\'t have to think straight when you\'re upset' },
           { text: 'No reason', why: 'You won\'t think clearly while hurting.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'A learner says they don\'t need a plan because they never get upset. What do you say?',
         options: [
-          { text: 'Great, but write it anyway. It takes ten minutes, and it\'s there if you ever need it.' },
           { text: 'Then skip it.', why: 'It\'s cheap insurance.' },
           { text: 'Everyone cries, admit it.', why: 'No need. Just write it anyway.' },
+          { text: 'Great, but write it anyway. It takes ten minutes, and it\'s there if you ever need it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

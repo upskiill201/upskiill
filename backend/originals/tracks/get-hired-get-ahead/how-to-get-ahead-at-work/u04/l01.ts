@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a career plan, according to Tey?',
         options: [
-          { text: 'A set of choices you can update' },
           { text: 'A prediction you must follow exactly', why: 'It\'s updatable choices.' },
+          { text: 'A set of choices you can update' },
           { text: 'A list of job titles', why: 'Choices, not just titles.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         from: 'paul',
         message: 'Where do you want to be in three years?',
         options: [
-          { text: '"Honestly, I don\'t know yet. I\'m going to spend a few weeks finding out what I enjoy most. Can I come back to you?"' },
           { text: '"CTO by 25."', why: 'Impressive, but nothing behind it.' },
           { text: '"Doesn\'t matter."', why: 'It does, eventually.' },
+          { text: '"Honestly, I don\'t know yet. I\'m going to spend a few weeks finding out what I enjoy most. Can I come back to you?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What should Clinton notice first?',
         options: [
-          { text: 'What gives him energy at work' },
           { text: 'Which title sounds best', why: 'Energy and values first.' },
           { text: 'What others want for him', why: 'Start with what he enjoys.' },
+          { text: 'What gives him energy at work' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

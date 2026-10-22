@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s wrong with "a leading, innovative company with growth opportunities"?',
         options: [
-          { text: 'It fits any company, and it\'s only about what he gets' },
           { text: 'It\'s rude', why: 'Not rude, just generic.' },
+          { text: 'It fits any company, and it\'s only about what he gets' },
           { text: 'It\'s too specific', why: 'The opposite.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I find something specific about Njangi Pay?',
         options: [
-          { text: 'Their app, blog, recent news, job advert and what Tchami told me about the team.' },
           { text: 'Make something up.', why: 'Never. Research it.' },
           { text: 'Just read the homepage slogan.', why: 'Go deeper: product, news, people.' },
+          { text: 'Their app, blog, recent news, job advert and what Tchami told me about the team.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

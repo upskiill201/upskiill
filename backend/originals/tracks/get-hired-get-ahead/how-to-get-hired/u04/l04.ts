@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why avoid big decisions in the first two days?',
         options: [
-          { text: 'Decisions made while hurting are often regretted' },
           { text: 'Weekends', why: 'It\'s about emotions, not days of the week.' },
+          { text: 'Decisions made while hurting are often regretted' },
           { text: 'You\'re not allowed', why: 'You\'re allowed. It\'s just wiser to wait.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'You sound terrible, bro. Do you want to talk, or do you want me to distract you?',
         options: [
-          { text: 'Talk for ten minutes, then distract me. Football tomorrow?' },
           { text: 'I\'m fine. (he isn\'t)', why: 'Saying it out loud helps.' },
           { text: 'Leave me alone forever.', why: 'Talking to one person helps.' },
+          { text: 'Talk for ten minutes, then distract me. Football tomorrow?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

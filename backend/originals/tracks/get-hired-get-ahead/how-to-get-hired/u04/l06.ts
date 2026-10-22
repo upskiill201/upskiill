@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which line is the most useful for Clinton to act on?',
         options: [
-          { text: '"Light on testing"' },
           { text: '"Experience with our payments stack"', why: 'Mostly outside his control for now.' },
+          { text: '"Light on testing"' },
           { text: '"Thank you"', why: 'Nice, but not something to act on.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should I reply to Brenda\'s feedback?',
         options: [
-          { text: 'Yes, two lines: thank her, and say I\'m working on testing and would love to hear about future roles.' },
           { text: 'No, never contact them again.', why: 'A short thank-you keeps the door open.' },
           { text: 'Argue that my testing was fine.', why: 'Thank her and act on it.' },
+          { text: 'Yes, two lines: thank her, and say I\'m working on testing and would love to hear about future roles.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

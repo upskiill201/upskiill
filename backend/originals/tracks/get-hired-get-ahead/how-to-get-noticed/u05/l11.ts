@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does "CEO" of a student meet-up backfire?',
         options: [
-          { text: 'It sets an expectation the description can\'t meet, so it looks like a stretch' },
           { text: 'CEO is a rude word', why: 'Not rude, just inaccurate here.' },
+          { text: 'It sets an expectation the description can\'t meet, so it looks like a stretch' },
           { text: 'Only men can be CEOs', why: 'Not true, and not the issue. Accuracy is.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'But if everyone else says CEO, won\'t "organiser" look small?',
         options: [
-          { text: 'Not with "40 members" next to it. True and specific beats big and vague.' },
           { text: 'Yes, switch to CEO.', why: 'Copying an exaggeration doesn\'t help.' },
           { text: 'Remove the meet-up entirely.', why: 'It\'s his best leadership proof. Keep it, titled honestly.' },
+          { text: 'Not with "40 members" next to it. True and specific beats big and vague.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Is shrinking your title ("member" instead of "founder") honest?',
         options: [
-          { text: 'No: honest titles don\'t inflate or shrink' },
           { text: 'Yes, modesty is always best', why: 'Underselling hides real proof.' },
           { text: 'Only for students', why: 'Accuracy applies to everyone.' },
+          { text: 'No: honest titles don\'t inflate or shrink' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

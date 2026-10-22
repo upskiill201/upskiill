@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did half of the fancy CV come out scrambled on the job site?',
         options: [
-          { text: 'Columns, shapes and images can confuse software that copies the text' },
           { text: 'The job site was broken', why: 'The site worked. The layout was hard for it to read.' },
+          { text: 'Columns, shapes and images can confuse software that copies the text' },
           { text: 'The font was too pretty', why: 'The structure, not the font, caused the scramble.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'But the fancy template shows I\'m creative!',
         options: [
-          { text: 'My portfolio shows creativity. The CV\'s job is to be read quickly and correctly.' },
           { text: 'True, keep it.', why: 'If it gets scrambled or skimmed, the creativity is wasted.' },
           { text: 'Add even more icons.', why: 'More clutter, more problems.' },
+          { text: 'My portfolio shows creativity. The CV\'s job is to be read quickly and correctly.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ngum is applying for graphic design. Should her CV be fancy?',
         options: [
-          { text: 'Keep the CV clean; show creativity in her portfolio link' },
           { text: 'Yes, as fancy as possible', why: 'Designers can add a little style, but clarity still wins. The portfolio shows the rest.' },
           { text: 'No CV at all', why: 'Most applications still need one.' },
+          { text: 'Keep the CV clean; show creativity in her portfolio link' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

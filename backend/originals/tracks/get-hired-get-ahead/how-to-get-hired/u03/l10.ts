@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the weakness question test?',
         options: [
-          { text: 'Self-awareness, and what you\'re doing about it' },
           { text: 'Whether you\'re perfect', why: 'Nobody is.' },
+          { text: 'Self-awareness, and what you\'re doing about it' },
           { text: 'Your favourite trick answer', why: 'Tricks backfire.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         from: 'ewane',
         message: 'Why do you want to work at Njangi Pay? And do not tell me they are "innovative".',
         options: [
-          { text: 'My mum\'s njangi ran on a notebook. Njangi Pay is solving that, and their offline mode is the problem I\'ve been solving at Kmer.' },
           { text: 'They\'re a leading company with growth opportunities.', why: 'She warned you.' },
           { text: 'The salary.', why: 'Say what you\'d bring.' },
+          { text: 'My mum\'s njangi ran on a notebook. Njangi Pay is solving that, and their offline mode is the problem I\'ve been solving at Kmer.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Mrs Ewane gives a question with no obvious story. What should Clinton do?',
         options: [
-          { text: 'Pause, pick the closest story from his bank, and tell it in STAR' },
           { text: 'Make one up', why: 'Never invent. Use a real one.' },
           { text: 'Say "pass"', why: 'Pause and pick the closest real story.' },
+          { text: 'Pause, pick the closest story from his bank, and tell it in STAR' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

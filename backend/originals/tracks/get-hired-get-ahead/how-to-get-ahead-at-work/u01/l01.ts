@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the main aim of the first weeks in a new job?',
         options: [
-          { text: 'Learn fast and understand what "good" looks like here' },
           { text: 'Impress everyone by Friday', why: 'Rushing to impress often backfires.' },
+          { text: 'Learn fast and understand what "good" looks like here' },
           { text: 'Stay invisible', why: 'Quiet is fine; invisible isn\'t.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Paul just said "The docs are there" and put his headphones on. Is he angry with me?',
         options: [
-          { text: 'Probably just busy. I\'ll read the docs properly, then bring him one specific question.' },
           { text: 'Yes, I\'ll avoid him.', why: 'Don\'t assume. Do your homework, then ask.' },
           { text: 'Tap his shoulder every ten minutes.', why: 'Read first, then ask one good question.' },
+          { text: 'Probably just busy. I\'ll read the docs properly, then bring him one specific question.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'How should Clinton use his 40 questions?',
         options: [
-          { text: 'Find answers in the docs, then bring the best few to Ngozi' },
           { text: 'Ask all 40 on Thursday', why: 'Narrow them first.' },
           { text: 'Throw them away', why: 'They\'re useful. Narrow them down.' },
+          { text: 'Find answers in the docs, then bring the best few to Ngozi' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

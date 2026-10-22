@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do most people want first after a no?',
         options: [
-          { text: 'To feel heard' },
           { text: 'A five-step plan', why: 'Advice too early can feel like a lecture.' },
+          { text: 'To feel heard' },
           { text: 'To be told it doesn\'t matter', why: 'It matters to them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'The lab said no. I really thought this one was it.',
         options: [
-          { text: 'I\'m sorry, bro. That\'s really hard. Do you want to tell me about it?' },
           { text: 'OK, step one: don\'t reply for 24 hours. Step two...', why: 'Listen first.' },
           { text: 'There are other labs.', why: 'True, but too soon.' },
+          { text: 'I\'m sorry, bro. That\'s really hard. Do you want to tell me about it?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Someone in the group says "soft skills are fluff, just learn to code". Reply?',
         options: [
-          { text: 'Employers rank problem-solving and teamwork at the top. Code AND people skills is the winning mix.' },
           { text: 'True, delete your clubs.', why: 'That throws away the skills employers rank highest.' },
+          { text: 'Employers rank problem-solving and teamwork at the top. Code AND people skills is the winning mix.' },
           { text: 'Coding is fluff.', why: 'Also wrong. Both matter.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do some people call soft skills "durable" skills?',
         options: [
-          { text: 'They last: they stay valuable as tools and jobs change' },
           { text: 'They\'re hard to learn', why: 'It\'s about lasting value, not difficulty.' },
           { text: 'They\'re made of strong material', why: 'Ha. They last across jobs and decades.' },
+          { text: 'They last: they stay valuable as tools and jobs change' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

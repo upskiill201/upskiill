@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s missing from the old headline?',
         options: [
-          { text: 'Any hint of the product work he\'s been doing' },
           { text: 'His real title', why: 'His title is there.' },
+          { text: 'Any hint of the product work he\'s been doing' },
           { text: 'Nothing', why: 'It misses the bridge.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What should I add to my About section?',
         options: [
-          { text: '"After a year building offline payments, I\'ve moved closer to users: research, specs, and deciding what we build next."' },
           { text: '"I\'m a product genius."', why: 'Show the bridge with facts.' },
           { text: 'Nothing.', why: 'Add the bridge story briefly.' },
+          { text: '"After a year building offline payments, I\'ve moved closer to users: research, specs, and deciding what we build next."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

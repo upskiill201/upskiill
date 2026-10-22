@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "explains trade-offs" mean?',
         options: [
-          { text: 'Saying "We could do A or B; I chose A because..."' },
           { text: 'Trading jobs with colleagues', why: 'Explaining choices between options.' },
+          { text: 'Saying "We could do A or B; I chose A because..."' },
           { text: 'Talking about salary', why: 'Explaining design choices.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'The ladder says "little guidance" but Ngozi checked my sync work daily. Does that count?',
         options: [
-          { text: 'Partly. Next time I\'ll agree the goal up front, then report weekly, to show more independence.' },
           { text: 'Yes, fully.', why: 'Daily checks suggest more guidance than the ladder means.' },
           { text: 'No, I\'m hopeless.', why: 'It\'s a gap to close, not a verdict.' },
+          { text: 'Partly. Next time I\'ll agree the goal up front, then report weekly, to show more independence.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

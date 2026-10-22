@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why paste evidence into the record?',
         options: [
-          { text: 'Chat history and memory disappear' },
           { text: 'To make it longer', why: 'Evidence vanishes otherwise.' },
+          { text: 'Chat history and memory disappear' },
           { text: 'It\'s required by HR', why: 'It\'s for you.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What should my three-line summary for Ngozi say?',
         options: [
-          { text: '"Payout report fix shipped with finance. Crashes on 2 GB phones down about 90%. Kemi onboarded."' },
           { text: '"Busy month, lots done."', why: 'Results with numbers.' },
           { text: 'A 10-page list.', why: 'Three lines.' },
+          { text: '"Payout report fix shipped with finance. Crashes on 2 GB phones down about 90%. Kemi onboarded."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

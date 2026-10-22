@@ -26,11 +26,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Ngozi offer?',
         options: [
-          { text: 'User research for the split, and monthly product planning' },
           { text: 'A product manager job now', why: 'A small experiment.' },
+          { text: 'User research for the split, and monthly product planning' },
           { text: 'Nothing', why: 'Two specific things.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Why do you think Ngozi said yes?',
         options: [
-          { text: 'I framed it as growth, committed to my current work, and asked for something small and specific.' },
           { text: 'Luck.', why: 'The framing and the ask helped.' },
           { text: 'I threatened to leave.', why: 'He didn\'t.' },
+          { text: 'I framed it as growth, committed to my current work, and asked for something small and specific.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why share your plan update with people?',
         options: [
-          { text: 'They can spot chances for you' },
           { text: 'To show off', why: 'So they can help.' },
           { text: 'No reason', why: 'So they can help.' },
+          { text: 'They can spot chances for you' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

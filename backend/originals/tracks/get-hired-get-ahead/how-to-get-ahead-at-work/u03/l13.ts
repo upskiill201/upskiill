@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a pay band?',
         options: [
-          { text: 'The pay range for a level' },
           { text: 'A music group', why: 'Ha. A pay range for a level.' },
+          { text: 'The pay range for a level' },
           { text: 'A bonus', why: 'A range for a level.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I ask about pay for the Developer level?',
         options: [
-          { text: '"If I move to Developer, what would my pay be in the new range, and when would it change?"' },
           { text: '"Show me everyone\'s salaries."', why: 'Ask about your own level.' },
           { text: 'Don\'t ask; hope.', why: 'Asking is fair.' },
+          { text: '"If I move to Developer, what would my pay be in the new range, and when would it change?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

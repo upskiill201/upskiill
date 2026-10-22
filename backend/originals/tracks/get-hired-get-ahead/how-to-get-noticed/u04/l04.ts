@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What goes in "Why you"?',
         options: [
-          { text: 'Two short proofs that match their must-haves' },
           { text: 'Your whole CV', why: 'Just the two things they care about most.' },
+          { text: 'Two short proofs that match their must-haves' },
           { text: 'A list of adjectives', why: 'Proof, not adjectives.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'My letter is two pages. Is that okay if it\'s all good stuff?',
         options: [
-          { text: 'No: four short paragraphs, around 300 words. I\'ll keep only the best two proofs.' },
           { text: 'Yes, more is better.', why: 'Busy readers skim long letters. Short and sharp wins.' },
           { text: 'Make it three pages.', why: 'Even longer, even less read.' },
+          { text: 'No: four short paragraphs, around 300 words. I\'ll keep only the best two proofs.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which close is best?',
         options: [
-          { text: '"I\'d love to talk about how I could help your team. Thank you for reading."' },
           { text: '"I hope to hear from you, if you have time, maybe."', why: 'Too unsure. Be polite and clear.' },
           { text: '"Call me tomorrow at 9am."', why: 'Too pushy. Invite, don\'t demand.' },
+          { text: '"I\'d love to talk about how I could help your team. Thank you for reading."' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What are the three fair review questions?',
         options: [
-          { text: 'Am I learning? Is my energy up? Are people I serve better off?' },
           { text: 'Am I rich? Am I famous? Am I the boss?', why: 'Learning, energy, impact.' },
+          { text: 'Am I learning? Is my energy up? Are people I serve better off?' },
           { text: 'Was today good?', why: 'Learning, energy, impact.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'A learner happily loves their job and doesn\'t want to change. Do they need this?',
         options: [
-          { text: 'Keep it for later. Most careers have turns, and it helps to know how to change well when one comes.' },
           { text: 'Yes, they must change now.', why: 'No need to change; keep it for later.' },
           { text: 'Delete it.', why: 'Keep it for when it\'s needed.' },
+          { text: 'Keep it for later. Most careers have turns, and it helps to know how to change well when one comes.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

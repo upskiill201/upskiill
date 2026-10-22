@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why mention the old-phones risk now?',
         options: [
-          { text: 'Early, it\'s a plan; late, it\'s a surprise' },
           { text: 'To make excuses', why: 'It\'s planning, not excuses.' },
+          { text: 'Early, it\'s a plan; late, it\'s a surprise' },
           { text: 'It doesn\'t matter', why: 'Two drivers might not be able to use it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What one question should I end my update with?',
         options: [
-          { text: '"Can I ride with Driver Ekane on Saturday to test it on the real route?"' },
           { text: '"Do you like me?"', why: 'Ask something about the work.' },
           { text: '"What should I do with my life?"', why: 'Too big for 90 seconds.' },
+          { text: '"Can I ride with Driver Ekane on Saturday to test it on the real route?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

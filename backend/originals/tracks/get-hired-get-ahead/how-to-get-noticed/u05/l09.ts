@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where should Clinton put his profile link?',
         options: [
-          { text: 'On his CV, email signature and cover letter' },
           { text: 'Nowhere, people should search', why: 'Make it one tap. Put it everywhere it helps.' },
+          { text: 'On his CV, email signature and cover letter' },
           { text: 'Only on WhatsApp', why: 'It belongs on his application documents.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: '"clintonndi" is taken! What now?',
         options: [
-          { text: 'Try a small variation, like "clinton-ndi" or "clintonndi-dev", and use it everywhere.' },
           { text: 'Use "clintonndi12345678".', why: 'Too messy. A short variation works.' },
           { text: 'Use "bestdeveloper".', why: 'Not his name, and overclaims. Use his name.' },
+          { text: 'Try a small variation, like "clinton-ndi" or "clintonndi-dev", and use it everywhere.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which email signature is best?',
         options: [
-          { text: '"Clinton Ndi · Final-year CS, University of Buea · linkedin.com/in/clintonndi"' },
           { text: '"Sent from my phone"', why: 'Misses the chance to share your link.' },
           { text: 'A long quote about success', why: 'Keep it professional and short.' },
+          { text: '"Clinton Ndi · Final-year CS, University of Buea · linkedin.com/in/clintonndi"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

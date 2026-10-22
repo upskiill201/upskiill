@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should David pin in Featured?',
         options: [
-          { text: 'A short write-up of the blood drive: 60 donors in one day' },
           { text: 'A photo of his textbooks', why: 'Shows nothing he did.' },
+          { text: 'A short write-up of the blood drive: 60 donors in one day' },
           { text: 'Nothing', why: 'Featured is free space for his best proof.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'Who should I ask for a recommendation?',
         options: [
-          { text: 'The clinic nurse who supervised you: ask for two lines about the sign-in system.' },
           { text: 'Your mum.', why: 'Family recommendations don\'t carry weight. Ask a supervisor.' },
           { text: 'Nobody, it\'s awkward.', why: 'A specific ask isn\'t awkward. It\'s normal.' },
+          { text: 'The clinic nurse who supervised you: ask for two lines about the sign-in system.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'It\'s done! Should I add my home address so they can find me?',
         options: [
-          { text: 'No: email and city are enough. Keep your address and personal number private.' },
           { text: 'Yes, and your phone number too.', why: 'Not on a public profile.' },
           { text: 'Add your ID number for trust.', why: 'Never.' },
+          { text: 'No: email and city are enough. Keep your address and personal number private.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -26,11 +26,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the aim of the first weeks?',
         options: [
-          { text: 'Learn fast and understand what "good" looks like' },
           { text: 'Ship something big', why: 'That often backfires.' },
+          { text: 'Learn fast and understand what "good" looks like' },
           { text: 'Stay invisible', why: 'Quiet, not invisible.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Paul said "good question". Why do you think he finally answered?',
         options: [
-          { text: 'I\'d read the docs first, so my question was specific and showed I\'d tried.' },
           { text: 'Luck.', why: 'Homework made it a good question.' },
           { text: 'I asked loudly.', why: 'It was specific, after reading the docs.' },
+          { text: 'I\'d read the docs first, so my question was specific and showed I\'d tried.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Clinton send after his first chat with Ngozi?',
         options: [
-          { text: 'A three-line summary to check he understood' },
           { text: 'Nothing', why: 'A summary avoids misunderstandings.' },
           { text: 'A complaint about Paul', why: 'A short summary of what was agreed.' },
+          { text: 'A three-line summary to check he understood' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

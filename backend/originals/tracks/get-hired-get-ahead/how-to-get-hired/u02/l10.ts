@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Clinton is stuck. When should he ask for help?',
         options: [
-          { text: 'After trying for a set time, with what he tried' },
           { text: 'Never', why: 'Silence costs more than a question.' },
+          { text: 'After trying for a set time, with what he tried' },
           { text: 'Every five minutes', why: 'Try first, then ask; batch small ones.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         from: 'ewane',
         message: 'Give me your Friday update in four parts.',
         options: [
-          { text: 'Done, next, stuck or at risk, and one question.' },
           { text: 'Everything I did, in order.', why: 'That\'s Samuel\'s ten-minute version.' },
           { text: 'Just "fine".', why: 'Too little. Four short parts.' },
+          { text: 'Done, next, stuck or at risk, and one question.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Nadia redesigned the logo instead of her project. What\'s the lesson?',
         options: [
-          { text: 'Do the main job well first; extra work comes after' },
           { text: 'Never do anything extra', why: 'Extra is fine later.' },
           { text: 'Logos matter most', why: 'The main problem matters most.' },
+          { text: 'Do the main job well first; extra work comes after' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

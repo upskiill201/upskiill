@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why make "light on testing" more specific?',
         options: [
-          { text: 'You can\'t act on something vague' },
           { text: 'To argue with it', why: 'To act on it.' },
+          { text: 'You can\'t act on something vague' },
           { text: 'It\'s already specific enough', why: 'Make it a concrete gap.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Next interview: "Tell me about feedback you received." What do I say?',
         options: [
-          { text: '"A company said I was light on testing, so I added tests to my sync, and they caught two bugs before our drivers did."' },
           { text: '"I\'ve never had feedback."', why: 'Use the real story.' },
           { text: '"A company rejected me unfairly."', why: 'Turn it into growth, not blame.' },
+          { text: '"A company said I was light on testing, so I added tests to my sync, and they caught two bugs before our drivers did."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

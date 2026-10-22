@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s a great final question to ask?',
         options: [
-          { text: '"Is there anything about my background you\'d like me to say more about?"' },
           { text: '"No questions."', why: 'A missed chance.' },
+          { text: '"Is there anything about my background you\'d like me to say more about?"' },
           { text: '"What does your company do?"', why: 'It\'s on the website.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Your hands are shaking in the waiting room. What do you do?',
         options: [
-          { text: 'Breathe out slowly a few times, and tell myself this is energy.' },
           { text: 'Leave before they call me.', why: 'Nerves are normal.' },
           { text: 'Drink three coffees.', why: 'Breathe instead.' },
+          { text: 'Breathe out slowly a few times, and tell myself this is energy.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'For a video interview, where should the light be?',
         options: [
-          { text: 'In front of you, on your face' },
           { text: 'Behind you', why: 'Your face would be in shadow.' },
           { text: 'Off', why: 'They need to see you.' },
+          { text: 'In front of you, on your face' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

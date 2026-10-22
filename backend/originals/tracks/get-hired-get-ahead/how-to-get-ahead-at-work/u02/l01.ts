@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What was wrong with Clinton\'s list of eleven things?',
         options: [
-          { text: 'It showed activity, not what changed' },
           { text: 'It was too short', why: 'Length wasn\'t the issue.' },
+          { text: 'It showed activity, not what changed' },
           { text: 'Nothing', why: 'It didn\'t show impact.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What should I ask Ngozi after her question?',
         options: [
-          { text: '"What are we trying to change this quarter, and where would my time help most?"' },
           { text: '"So should I do more things?"', why: 'Ask about goals instead.' },
           { text: '"Was my list bad?"', why: 'Ask what matters most.' },
+          { text: '"What are we trying to change this quarter, and where would my time help most?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Where should Clinton spend his best hours?',
         options: [
-          { text: 'On work tied to the team\'s goal' },
           { text: 'In meetings', why: 'On the goal.' },
           { text: 'On whatever\'s newest', why: 'On the goal.' },
+          { text: 'On work tied to the team\'s goal' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

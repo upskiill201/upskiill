@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is "Why the change?" really asking?',
         options: [
-          { text: 'Is this a considered move or an escape?' },
           { text: 'Do you hate your team?', why: 'It\'s about considered vs escape.' },
+          { text: 'Is this a considered move or an escape?' },
           { text: 'How much do you want to earn?', why: 'It\'s about the move.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Interviewer: "Why move from engineering to product?" What do I say?',
         options: [
-          { text: '"I\'ve always cared most about who uses what I build. This year\'s research and specs were the parts I looked forward to most, and I\'ll be a better PM because I\'ve built our system."' },
           { text: '"I like talking to people."', why: 'Add the thread, evidence and why here.' },
           { text: '"Coding is boring."', why: 'Towards, not away.' },
+          { text: '"I\'ve always cared most about who uses what I build. This year\'s research and specs were the parts I looked forward to most, and I\'ll be a better PM because I\'ve built our system."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

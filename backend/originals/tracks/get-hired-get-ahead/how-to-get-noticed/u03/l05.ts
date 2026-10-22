@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Circle 3: why does a "Python: 85%" bar get circled?',
         options: [
-          { text: 'It\'s a made-up measure that proves nothing; a project proves the skill' },
           { text: '85% is too low', why: 'Any number would be circled. There\'s no scale behind it.' },
+          { text: 'It\'s a made-up measure that proves nothing; a project proves the skill' },
           { text: 'Bars are the wrong colour', why: 'Colour isn\'t the problem. Made-up numbers are.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the first look at a CV decide?',
         options: [
-          { text: 'Whether to read it properly' },
           { text: 'Whether you get the job', why: 'That comes much later.' },
           { text: 'Nothing', why: 'It decides whether the CV gets a proper read.' },
+          { text: 'Whether to read it properly' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',

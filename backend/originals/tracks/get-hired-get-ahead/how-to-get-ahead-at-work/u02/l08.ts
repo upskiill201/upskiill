@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who should decide when two priorities clash?',
         options: [
-          { text: 'Clinton\'s manager, Ngozi' },
           { text: 'Clinton alone, by working nights', why: 'Escalate; don\'t absorb.' },
+          { text: 'Clinton\'s manager, Ngozi' },
           { text: 'Whoever shouts loudest', why: 'His manager.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'He says it\'s "just a few hours". What do I write?',
         options: [
-          { text: '"Sounds useful. I\'m focused on our failed-confirmation goal this quarter, but I can show you the data in 20 minutes so your team can build it. Would that help?"' },
           { text: '"Sure!" (then works until midnight)', why: 'A resentful yes hurts everyone.' },
           { text: '"No."', why: 'Be kind and offer an alternative.' },
+          { text: '"Sounds useful. I\'m focused on our failed-confirmation goal this quarter, but I can show you the data in 20 minutes so your team can build it. Would that help?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

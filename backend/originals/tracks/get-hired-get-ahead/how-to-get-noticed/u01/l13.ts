@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Clinton matches 7 of 10 things in an advert. Should he apply?',
         options: [
-          { text: 'Yes: adverts are wish lists, and 7 of 10 is a real application' },
           { text: 'No, only apply if you match all 10', why: 'Very few people match every line. Waiting for 10 of 10 means never applying.' },
+          { text: 'Yes: adverts are wish lists, and 7 of 10 is a real application' },
           { text: 'Only if he lies about the other 3', why: 'Never. Apply honestly and show a plan for the gaps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does an honest gap with a plan sound good to employers?',
         options: [
-          { text: 'It shows you learn and act, which is exactly what they want in a graduate' },
           { text: 'It doesn\'t, gaps always lose you the job', why: 'Most graduates have gaps. A plan shows curiosity and drive.' },
           { text: 'Because they feel sorry for you', why: 'It\'s about showing you can learn, not sympathy.' },
+          { text: 'It shows you learn and act, which is exactly what they want in a graduate' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Brenda offer back?',
         options: [
-          { text: '315,000 and a review after probation' },
           { text: '330,000', why: 'She couldn\'t do 330k. She offered 315k plus a review.' },
+          { text: '315,000 and a review after probation' },
           { text: 'Nothing', why: 'She moved: 315k plus a review.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         from: 'brenda',
         message: 'We can\'t do 330,000, but we can do 315,000 and a review after probation.',
         options: [
-          { text: '"Thank you, I really appreciate that. That works for me. Could you send the updated offer in writing?"' },
           { text: '"No. 330 or nothing."', why: 'It\'s inside his range. Don\'t push until goodwill runs out.' },
           { text: '"Er... I don\'t know... maybe?"', why: 'He has a plan. Use it and respond clearly.' },
+          { text: '"Thank you, I really appreciate that. That works for me. Could you send the updated offer in writing?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

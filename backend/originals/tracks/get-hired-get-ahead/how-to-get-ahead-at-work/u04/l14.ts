@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How often does Miracle review her plan?',
         options: [
-          { text: 'Every three months' },
           { text: 'Every ten years', why: 'Every three months.' },
+          { text: 'Every three months' },
           { text: 'Daily', why: 'Every three months.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What do I send Ngozi and Miracle after my review?',
         options: [
-          { text: '"Direction getting clearer: product. Next quarter: lead one small product decision. Any chances you see, I\'m keen."' },
           { text: 'Nothing, it\'s private.', why: 'Sharing lets people spot chances.' },
           { text: 'The whole 10-page plan.', why: 'Two lines.' },
+          { text: '"Direction getting clearer: product. Next quarter: lead one small product decision. Any chances you see, I\'m keen."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

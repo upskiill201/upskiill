@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is an offer call?',
         options: [
-          { text: 'The start of a conversation, not the end' },
           { text: 'A test you must answer instantly', why: 'You can take time.' },
+          { text: 'The start of a conversation, not the end' },
           { text: 'A contract you\'ve already signed', why: 'Nothing is signed on a call.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         from: 'brenda',
         message: 'The salary is 300,000 francs a month. How does that sound?',
         options: [
-          { text: '"Thank you, I\'m really excited. Could you send everything in writing, and I\'ll come back to you by Thursday?"' },
           { text: '"Too low."', why: 'Right question later, better words.' },
           { text: '"Perfect, yes!" (he hoped for more)', why: 'Take time to look first.' },
+          { text: '"Thank you, I\'m really excited. Could you send everything in writing, and I\'ll come back to you by Thursday?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which line tells Clinton what NOT to work on?',
         options: [
-          { text: '"Not this quarter: the new driver app design."' },
           { text: 'Goal 1', why: 'That\'s what to work on.' },
+          { text: '"Not this quarter: the new driver app design."' },
           { text: 'The owner line', why: 'The "not this quarter" line.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I had a great idea for the new app design. But it says "not this quarter". What now?',
         options: [
-          { text: 'I\'ll write it down for later and focus on the Q3 goals now.' },
           { text: 'Build it anyway, in secret.', why: 'Respect the priorities; save the idea.' },
           { text: 'Delete the idea.', why: 'Save it for later.' },
+          { text: 'I\'ll write it down for later and focus on the Q3 goals now.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

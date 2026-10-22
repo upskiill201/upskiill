@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the most useful question for finding unwritten rules?',
         options: [
-          { text: '"Is there anything people usually learn the hard way here?"' },
           { text: '"Are there any rules?"', why: 'Too vague. Ask what people learn the hard way.' },
+          { text: '"Is there anything people usually learn the hard way here?"' },
           { text: '"Who\'s the boss?"', why: 'Ask what people learn the hard way.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I accidentally cc\'d the whole team on a tiny question. Disaster?',
         options: [
-          { text: 'Not a disaster. I\'ll note the norm, ask a teammate how they handle it, and do better next time.' },
           { text: 'Yes, I should resign.', why: 'Small mistakes are how everyone learns norms.' },
           { text: 'Do it again to show I don\'t care.', why: 'Adapt to the norm.' },
+          { text: 'Not a disaster. I\'ll note the norm, ask a teammate how they handle it, and do better next time.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do interviewers most want to hear in a mistake story?',
         options: [
-          { text: 'That you owned it and told someone fast' },
           { text: 'That it wasn\'t your fault', why: 'Ownership matters more than blame.' },
+          { text: 'That you owned it and told someone fast' },
           { text: 'That you\'ve never made a mistake', why: 'Nobody believes that.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Which mistake should I use? I once pushed a broken sync to the test phones.',
         options: [
-          { text: 'That one: I\'ll say what broke, how fast I told Mr Tamba, the result, and what I test now.' },
           { text: 'None, I\'ll say I\'m a perfectionist.', why: 'A real mistake, well handled, is stronger.' },
           { text: 'The worst thing I\'ve ever done.', why: 'Pick a real, work-related one with a good ending.' },
+          { text: 'That one: I\'ll say what broke, how fast I told Mr Tamba, the result, and what I test now.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

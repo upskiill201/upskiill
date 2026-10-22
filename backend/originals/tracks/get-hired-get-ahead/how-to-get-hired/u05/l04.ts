@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask "What\'s a typical range?" rather than "What do you earn?"',
         options: [
-          { text: 'People answer it more comfortably, and it\'s more useful' },
           { text: 'It\'s sneakier', why: 'It\'s more comfortable and more useful.' },
+          { text: 'People answer it more comfortably, and it\'s more useful' },
           { text: 'No reason', why: 'Most people won\'t share their own pay.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What should I ask Tchami about salary?',
         options: [
-          { text: '"What\'s a typical range for a graduate developer at a Douala fintech?"' },
           { text: '"How much do YOU earn?"', why: 'Ask for a range instead.' },
           { text: 'Nothing, it\'s rude.', why: 'A range question is fine.' },
+          { text: '"What\'s a typical range for a graduate developer at a Douala fintech?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Aïcha say about product work?',
         options: [
-          { text: '"Half my time is saying no to good ideas."' },
           { text: '"It\'s all fun ideas."', why: 'Much of it is saying no.' },
+          { text: '"Half my time is saying no to good ideas."' },
           { text: '"It\'s just meetings."', why: 'It\'s saying no to good ideas.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I ask Aïcha for a small piece of product work?',
         options: [
-          { text: '"Could I write the user-research summary for the sync-service split? I\'d interview support and drivers, and you\'d review it."' },
           { text: '"Can I have your job?"', why: 'Offer a small piece.' },
           { text: '"Teach me everything."', why: 'Offer a specific task.' },
+          { text: '"Could I write the user-research summary for the sync-service split? I\'d interview support and drivers, and you\'d review it."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

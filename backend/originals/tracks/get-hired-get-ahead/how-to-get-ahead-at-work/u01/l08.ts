@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do senior people trust new people, according to Miracle?',
         options: [
-          { text: 'Because they\'re easy to help' },
           { text: 'Because they\'re very nice', why: 'Nice helps, but easy to help matters more.' },
+          { text: 'Because they\'re easy to help' },
           { text: 'Because they flatter them', why: 'Being easy to help matters more.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I read the logging docs. What do I ask Paul?',
         options: [
-          { text: '"I read the logging page. Is the request ID added in the middleware or in each handler?"' },
           { text: '"Logging is confusing, help?"', why: 'Say what you read; ask one thing.' },
           { text: 'Nothing, guess.', why: 'A specific question is welcome.' },
+          { text: '"I read the logging page. Is the request ID added in the middleware or in each handler?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

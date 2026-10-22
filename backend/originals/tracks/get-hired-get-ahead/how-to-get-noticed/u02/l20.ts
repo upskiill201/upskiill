@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Did you build every part yourself?',
         options: [
-          { text: 'Yes, the tracker is mine. The date picker is an open-source component, and I credit it in the README.' },
           { text: 'Every single line, from scratch.', why: 'Not true, and an interviewer could check. Credit what you used.' },
+          { text: 'Yes, the tracker is mine. The date picker is an open-source component, and I credit it in the README.' },
           { text: 'Does it matter?', why: 'It matters a lot. Only claim what you can explain.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Step 7: where do the tools go?',
         options: [
-          { text: 'One line at the bottom' },
           { text: 'In the title', why: 'The title says the benefit. Tools go last.' },
           { text: 'Nowhere', why: 'Technical readers want them. One line at the end.' },
+          { text: 'One line at the bottom' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

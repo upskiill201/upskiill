@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the "friend test"?',
         options: [
-          { text: 'Say to yourself what you\'d say to a friend in the same spot' },
           { text: 'Ask friends to agree you\'re bad', why: 'The opposite.' },
+          { text: 'Say to yourself what you\'d say to a friend in the same spot' },
           { text: 'Compare yourself to friends', why: 'That usually makes it worse.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Everyone in my class has a job except me.',
         options: [
-          { text: 'Is that a fact? Several haven\'t got one yet. And I have real proof and a reference.' },
           { text: 'True, I\'m the worst.', why: 'Check: fact or feeling?' },
           { text: 'They probably cheated.', why: 'Blame doesn\'t help.' },
+          { text: 'Is that a fact? Several haven\'t got one yet. And I have real proof and a reference.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

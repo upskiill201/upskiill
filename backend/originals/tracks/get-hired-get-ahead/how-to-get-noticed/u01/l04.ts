@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write verbs instead of titles in step 2?',
         options: [
-          { text: 'Verbs show what you actually do, which is where the skills are' },
           { text: 'Titles are rude', why: 'Not rude, just vague. "Helper" hides what you really did.' },
+          { text: 'Verbs show what you actually do, which is where the skills are' },
           { text: 'Verbs are shorter', why: 'Length isn\'t the point. Verbs reveal the skills.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I just help my aunt at her phone stall on Saturdays. That doesn\'t count, right?',
         options: [
-          { text: 'It counts. You deal with customers, diagnose problems and handle complaints. That\'s three skills.' },
           { text: 'Only if she pays you.', why: 'Paid or not, the skills are real.' },
           { text: 'Leave it out, it sounds small.', why: 'It sounds small until you name what you do there.' },
+          { text: 'It counts. You deal with customers, diagnose problems and handle complaints. That\'s three skills.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

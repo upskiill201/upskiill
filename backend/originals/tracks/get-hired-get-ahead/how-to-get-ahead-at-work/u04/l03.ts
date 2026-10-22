@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s wrong with "be successful in tech"?',
         options: [
-          { text: 'It doesn\'t help him choose what to do next' },
           { text: 'It\'s too ambitious', why: 'It\'s too vague to guide choices.' },
+          { text: 'It doesn\'t help him choose what to do next' },
           { text: 'Nothing', why: 'It\'s too vague.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Miracle asks: "Which parts of your job do you look forward to?" What do I say?',
         options: [
-          { text: 'Talking to support about what drivers need, and deciding what to build. More than the coding, honestly.' },
           { text: 'Lunch.', why: 'Ha. Think about the work.' },
           { text: 'Nothing.', why: 'Notice what gives energy.' },
+          { text: 'Talking to support about what drivers need, and deciding what to build. More than the coding, honestly.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

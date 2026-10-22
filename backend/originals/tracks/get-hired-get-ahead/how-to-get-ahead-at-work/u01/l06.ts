@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How should Clinton read the five comments?',
         options: [
-          { text: 'As a map of the team\'s standards' },
           { text: 'As proof Paul dislikes him', why: 'One comment is praise. They\'re standards.' },
+          { text: 'As a map of the team\'s standards' },
           { text: 'As optional suggestions to ignore', why: 'They\'re the team\'s standards.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I reply to his five comments?',
         options: [
-          { text: '"Thanks, Paul. All fixed, test added, and I\'ve noted the logging rule in our onboarding doc."' },
           { text: '"Why so many comments?"', why: 'Fix, note and thank.' },
           { text: 'Fix silently, never reply.', why: 'A short thanks shows you read them.' },
+          { text: '"Thanks, Paul. All fixed, test added, and I\'ve noted the logging rule in our onboarding doc."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

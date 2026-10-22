@@ -44,21 +44,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What tools did Halima use?',
         options: [
-          { text: 'Paper and a spreadsheet' },
           { text: 'A custom app', why: 'No app. Proof doesn\'t need fancy tools.' },
+          { text: 'Paper and a spreadsheet' },
           { text: 'AI', why: 'No AI either. Paper and a spreadsheet.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Why does "What I learned" help Halima so much?',
         options: [
-          { text: 'It shows she listens to colleagues and keeps improving' },
           { text: 'It admits she was bad at her job', why: 'It shows growth, not failure.' },
           { text: 'It makes it longer', why: 'It\'s one line. It shows character.' },
+          { text: 'It shows she listens to colleagues and keeps improving' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'What should Clinton borrow from Halima for his Njangi Tracker write-up?',
         options: [
-          { text: 'A clear before-and-after result, and asking users first' },
           { text: 'Her exact words', why: 'Borrow the structure, not the words.' },
           { text: 'Nothing, his is different', why: 'The structure works for any project.' },
+          { text: 'A clear before-and-after result, and asking users first' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

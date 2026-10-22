@@ -35,11 +35,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Rule two. A screenshot shows members\' real names. What should Clinton do?',
         options: [
-          { text: 'Swap them for made-up names before sharing' },
           { text: 'Keep them, it looks more real', why: 'Real people\'s details must stay private.' },
+          { text: 'Swap them for made-up names before sharing' },
           { text: 'Delete the whole project', why: 'Just anonymise the screenshot.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         from: 'ewane',
         message: 'Two members couldn\'t find their names. What did you do about it?',
         options: [
-          { text: 'I watched them use it, sorted the names alphabetically and added a search. Next meeting, everyone found theirs in seconds.' },
           { text: 'Nothing, they\'ll get used to it.', why: 'Mrs Ewane\'s pen is already moving. Feedback is a chance to improve.' },
           { text: 'I told them to try harder.', why: 'If users struggle, the design should change.' },
+          { text: 'I watched them use it, sorted the names alphabetically and added a search. Next meeting, everyone found theirs in seconds.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         from: 'ewane',
         message: 'Good. One piece is not a portfolio. What\'s your second?',
         options: [
-          { text: 'The fixtures sheet for the captains: no more double-booked pitches. And I\'ve entered next month\'s hackathon.' },
           { text: 'Budget Buddy, as mine.', why: 'Rule one, Clinton.' },
           { text: 'I don\'t need a second one.', why: 'Two or three strong pieces is the goal.' },
+          { text: 'The fixtures sheet for the captains: no more double-booked pitches. And I\'ve entered next month\'s hackathon.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

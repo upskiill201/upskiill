@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why should each bullet start with a strong verb?',
         options: [
-          { text: 'The eye reads the first word, so it should say what you did' },
           { text: 'Grammar rules require it', why: 'It\'s about attention, not grammar.' },
+          { text: 'The eye reads the first word, so it should say what you did' },
           { text: 'Verbs are shorter', why: 'Some are long. It\'s about what the first word tells the reader.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'My Njangi Tracker bullet is four lines long. Too much?',
         options: [
-          { text: 'Probably two bullets: one for what I built, one for the result and second group.' },
           { text: 'Four lines is perfect.', why: 'Long bullets get skimmed. One or two lines.' },
           { text: 'Cut it to "Built an app".', why: 'Too short: no what, no result.' },
+          { text: 'Probably two bullets: one for what I built, one for the result and second group.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

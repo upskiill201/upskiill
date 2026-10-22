@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'About how early should Clinton arrive at the building?',
         options: [
-          { text: '10–15 minutes early' },
           { text: 'Exactly on time', why: 'Leave a small buffer.' },
+          { text: '10–15 minutes early' },
           { text: 'Two hours early, at reception', why: 'Wait nearby; arrive at reception 10–15 minutes early.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I don\'t know what to wear for Njangi Pay. Suit? Jeans?',
         options: [
-          { text: 'I\'ll ask Brenda or Tchami what the team wears, and go a little smarter than that.' },
           { text: 'My party shirt.', why: 'A little smarter than the team.' },
           { text: 'Borrow an expensive suit I can\'t move in.', why: 'Clean and comfortable beats expensive.' },
+          { text: 'I\'ll ask Brenda or Tchami what the team wears, and go a little smarter than that.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

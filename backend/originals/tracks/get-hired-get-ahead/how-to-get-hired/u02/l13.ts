@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does "Any feedback?" usually get "All good!"?',
         options: [
-          { text: 'It\'s too open, and people avoid criticising on the spot' },
           { text: 'Clinton is perfect', why: 'Nobody is. The question is too open.' },
+          { text: 'It\'s too open, and people avoid criticising on the spot' },
           { text: 'Mr Tamba doesn\'t care', why: 'He cares. The question is hard to answer.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Mr Tamba says my test notes are hard to read. What do I say right now?',
         options: [
-          { text: '"Thanks, that\'s useful. Could you show me which part was hardest?"' },
           { text: '"They\'re fine, you just read them too fast."', why: 'Don\'t defend. Listen.' },
           { text: 'Say nothing and look upset.', why: 'Thank him and ask for an example.' },
+          { text: '"Thanks, that\'s useful. Could you show me which part was hardest?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

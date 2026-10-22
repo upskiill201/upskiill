@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How should you read review comments?',
         options: [
-          { text: 'As a map of the team\'s standards' },
           { text: 'As personal attacks', why: 'They\'re standards.' },
+          { text: 'As a map of the team\'s standards' },
           { text: 'As optional', why: 'They\'re how the team works.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         from: 'ngozi',
         message: 'What makes a senior colleague willing to help you?',
         options: [
-          { text: 'Doing homework first, asking small questions, using their answers visibly, and giving back.' },
           { text: 'Being very friendly.', why: 'Nice helps; being easy to help matters more.' },
           { text: 'Asking them everything.', why: 'Small, specific questions.' },
+          { text: 'Doing homework first, asking small questions, using their answers visibly, and giving back.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Clinton do with team habits he learns from reviews?',
         options: [
-          { text: 'Write them in the shared onboarding doc' },
           { text: 'Keep them secret', why: 'Share them for the next new person.' },
           { text: 'Forget them', why: 'Write them down.' },
+          { text: 'Write them in the shared onboarding doc' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

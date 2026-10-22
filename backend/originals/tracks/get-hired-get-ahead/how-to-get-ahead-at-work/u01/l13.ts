@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who usually brings the 1:1 agenda?',
         options: [
-          { text: 'You, the employee' },
           { text: 'Always the manager', why: 'Many managers expect you to bring it.' },
+          { text: 'You, the employee' },
           { text: 'Nobody', why: 'Without one, the time drifts.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What should my bigger topic be this week?',
         options: [
-          { text: '"What would I need to show to own a bigger feature next quarter?"' },
           { text: '"When will I be promoted?" (week seven)', why: 'Ask what to build toward first.' },
           { text: '"Nothing, I\'m fine."', why: 'Bring one topic.' },
+          { text: '"What would I need to show to own a bigger feature next quarter?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

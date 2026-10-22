@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "I am exactly what Njangi Pay needs" a problem?',
         options: [
-          { text: 'He can\'t know that yet; it sounds arrogant and unproven' },
           { text: 'It\'s too humble', why: 'The opposite: too big a claim.' },
+          { text: 'He can\'t know that yet; it sounds arrogant and unproven' },
           { text: 'It\'s grammatically wrong', why: 'The grammar is fine. The claim isn\'t.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'If I don\'t apologise for having no experience, won\'t I sound arrogant?',
         options: [
-          { text: 'No: stating what you did plainly isn\'t arrogant. "I organised a 60-donor blood drive" is just true.' },
           { text: 'Yes, keep apologising.', why: 'Apologising makes them doubt you.' },
           { text: 'Say you\'re the best student ever.', why: 'That would be arrogant. Plain facts aren\'t.' },
+          { text: 'No: stating what you did plainly isn\'t arrogant. "I organised a 60-donor blood drive" is just true.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

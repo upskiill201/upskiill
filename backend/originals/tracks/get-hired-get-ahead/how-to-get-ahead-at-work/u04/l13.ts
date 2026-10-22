@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is telling your manager usually smart?',
         options: [
-          { text: 'They can help with tasks, introductions and timing' },
           { text: 'They\'ll promote you instantly', why: 'They can help in practical ways.' },
+          { text: 'They can help with tasks, introductions and timing' },
           { text: 'It isn\'t smart', why: 'Hidden plans cause surprises.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'What do I say to Ngozi?',
         options: [
-          { text: '"I\'ve been exploring what I enjoy most, and I\'m drawn to product. I want to keep doing great work here and test it. Could you help?"' },
           { text: '"I\'m leaving engineering."', why: 'He hasn\'t decided; frame it as growth.' },
           { text: 'Say nothing for a year.', why: 'Hidden plans cause surprises.' },
+          { text: '"I\'ve been exploring what I enjoy most, and I\'m drawn to product. I want to keep doing great work here and test it. Could you help?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

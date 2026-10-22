@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which role should you write your first letter for?',
         options: [
-          { text: 'A real advert you\'d genuinely apply for' },
           { text: 'A made-up dream job', why: 'Real adverts have real must-haves to match. Use one.' },
+          { text: 'A real advert you\'d genuinely apply for' },
           { text: 'Any job, it doesn\'t matter', why: 'It matters: the letter is specific to one role.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'How will you know your "why them" is specific enough?',
         options: [
-          { text: 'I\'ll swap in another company\'s name. If it still works, I rewrite it.' },
           { text: 'If it sounds nice.', why: 'Nice isn\'t specific. Use the swap test.' },
           { text: 'If it\'s long.', why: 'Length doesn\'t make it specific.' },
+          { text: 'I\'ll swap in another company\'s name. If it still works, I rewrite it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

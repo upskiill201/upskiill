@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where do problems hide, according to Miracle?',
         options: [
-          { text: 'In complaints people repeat' },
           { text: 'In textbooks', why: 'Textbooks have exercises. Real problems hide in what people complain about.' },
+          { text: 'In complaints people repeat' },
           { text: 'In job adverts', why: 'Adverts show what employers want. Real problems are in everyday complaints.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'My study group never knows which topics we\'ve covered. Is that a project?',
         options: [
-          { text: 'Yes: it happens every week, it annoys everyone, and a shared topic tracker would help. Start small.' },
           { text: 'No, it\'s too boring.', why: 'Boring problems that happen every week make great projects.' },
           { text: 'Only if you build an app for every medical school.', why: 'Start with one group. Shrink it.' },
+          { text: 'Yes: it happens every week, it annoys everyone, and a shared topic tracker would help. Start small.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which version of the njangi project passes all four steps?',
         options: [
-          { text: '"A page showing who paid this month and who\'s next, for Mum\'s twelve members."' },
           { text: '"A national savings platform."', why: 'Fails step 4: far too big.' },
           { text: '"Something to do with money."', why: 'Too vague to build or finish.' },
+          { text: '"A page showing who paid this month and who\'s next, for Mum\'s twelve members."' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What surprised Clinton?',
         options: [
-          { text: 'His best moments were with users and deciding what to build, not coding' },
           { text: 'He hates everything', why: 'He found clear energy patterns.' },
+          { text: 'His best moments were with users and deciding what to build, not coding' },
           { text: 'Debugging was his favourite', why: 'Debugging drained him.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Writing code came out "mixed". Does that mean I\'m in the wrong job?',
         options: [
-          { text: 'Not necessarily. It means I should test more of the user-facing work and see if the pattern holds.' },
           { text: 'Yes, quit today.', why: 'Test first.' },
           { text: 'Ignore the audit.', why: 'It\'s useful data.' },
+          { text: 'Not necessarily. It means I should test more of the user-facing work and see if the pattern holds.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

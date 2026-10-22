@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where do your profile\'s proof and your bullets come from?',
         options: [
-          { text: 'Your skills inventory, evidence bank and portfolio piece' },
           { text: 'A CV template\'s example text', why: 'Templates have someone else\'s words. Use your own proof.' },
+          { text: 'Your skills inventory, evidence bank and portfolio piece' },
           { text: 'Your imagination', why: 'Only real proof. Your kit already has it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Is this the CV you\'ll send to every job?',
         options: [
-          { text: 'No, it\'s my master CV. I\'ll tailor a copy for each role in about 15 minutes.' },
           { text: 'Yes, same for all.', why: 'Generic CVs match nothing in particular. Tailor copies.' },
           { text: 'I\'ll make a totally new one each time.', why: 'No need. Copy and tailor from the master.' },
+          { text: 'No, it\'s my master CV. I\'ll tailor a copy for each role in about 15 minutes.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

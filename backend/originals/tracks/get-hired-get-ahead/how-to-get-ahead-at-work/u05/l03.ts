@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "starting from zero" untrue for Clinton?',
         options: [
-          { text: 'His engineering, research and relationships all carry over' },
           { text: 'It is true', why: 'Much carries over.' },
+          { text: 'His engineering, research and relationships all carry over' },
           { text: 'Because he\'ll be paid the same', why: 'His skills and experience carry over.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'How do I describe my move in one sentence?',
         options: [
-          { text: '"I\'ve built payments for drivers for a year; now I want to help decide what we build for them."' },
           { text: '"I\'m bored of coding."', why: 'Frame it as building on the past.' },
           { text: '"I want a new title."', why: 'Show the bridge.' },
+          { text: '"I\'ve built payments for drivers for a year; now I want to help decide what we build for them."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

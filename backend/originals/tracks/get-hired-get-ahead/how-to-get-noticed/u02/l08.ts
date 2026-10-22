@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why include "What I learned"?',
         options: [
-          { text: 'It shows you think about your work and keep growing' },
           { text: 'To make it longer', why: 'Keep it short. It\'s there to show reflection.' },
+          { text: 'It shows you think about your work and keep growing' },
           { text: 'To admit you failed', why: 'It\'s not failure. It\'s showing you improve.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'How long should this be?',
         options: [
-          { text: 'About 150 words and one screenshot: readable in a minute.' },
           { text: 'Ten pages, so they see how much work it was.', why: 'Nobody reads ten pages. Keep it to a minute.' },
           { text: 'One word: "Tracker".', why: 'Too short to show anything.' },
+          { text: 'About 150 words and one screenshot: readable in a minute.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which "What I did" line is strongest?',
         options: [
-          { text: '"I asked three members what confused them, then built only what they needed: who paid and whose turn it is."' },
           { text: '"I worked really hard on it."', why: 'Effort isn\'t a decision. Show what you chose to do.' },
           { text: '"It was built with technology."', why: 'Vague and passive. Say what YOU did.' },
+          { text: '"I asked three members what confused them, then built only what they needed: who paid and whose turn it is."' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

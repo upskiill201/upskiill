@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'My cousin says AI will do all graduate jobs, so skills are pointless. Is he right?',
         options: [
-          { text: 'Employers say the opposite: tech skills AND human skills like thinking, resilience and curiosity are rising in value.' },
           { text: 'Yes, give up.', why: 'The world\'s employers don\'t think so. They\'re hiring for exactly these skills.' },
+          { text: 'Employers say the opposite: tech skills AND human skills like thinking, resilience and curiosity are rising in value.' },
           { text: 'AI will never change anything.', why: 'It is changing jobs. The question is which skills grow in value, and the report answers it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What can people do that employers still need, even when AI writes a first draft?',
         options: [
-          { text: 'Judge it, explain it, lead others and keep learning' },
           { text: 'Nothing', why: 'Employers say they need people for exactly these things.' },
           { text: 'Type it out again by hand', why: 'That\'s not a skill employers are asking for.' },
+          { text: 'Judge it, explain it, lead others and keep learning' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

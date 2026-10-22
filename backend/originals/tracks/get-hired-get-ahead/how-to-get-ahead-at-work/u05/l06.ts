@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does "internal applicants welcome" matter?',
         options: [
-          { text: 'Internal candidates are welcome, and people already know his work' },
           { text: 'It means only externals', why: 'It welcomes internals.' },
+          { text: 'Internal candidates are welcome, and people already know his work' },
           { text: 'It doesn\'t', why: 'It\'s an open door.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Should I hide that I\'m weak at saying no?',
         options: [
-          { text: 'No: I\'ll name it, and say how I\'m practising with the feature-request reviews.' },
           { text: 'Yes, never mention it.', why: 'Honest gap plus action is stronger.' },
           { text: 'Say I\'m the best at it.', why: 'Overclaiming backfires.' },
+          { text: 'No: I\'ll name it, and say how I\'m practising with the feature-request reviews.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

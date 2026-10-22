@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why read every line, not just the salary?',
         options: [
-          { text: 'The rest (benefits, contract, growth) can matter as much' },
           { text: 'To look busy', why: 'The other parts change what the offer is worth.' },
+          { text: 'The rest (benefits, contract, growth) can matter as much' },
           { text: 'There\'s no reason', why: 'Probation, notice and growth all matter.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I don\'t understand what "probation: six months" means for me. Who do I ask?',
         options: [
-          { text: 'Brenda, and Mrs Ewane or someone in the industry who knows the local rules.' },
           { text: 'Nobody, just sign.', why: 'Ask. It matters.' },
           { text: 'Guess.', why: 'Ask someone who knows the local rules.' },
+          { text: 'Brenda, and Mrs Ewane or someone in the industry who knows the local rules.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which is better for a first job, all else equal?',
         options: [
-          { text: 'Slightly less pay, with real mentoring and an early review' },
           { text: 'Always the highest number, nothing else matters', why: 'Growth matters a lot early on.' },
           { text: 'The longest job title', why: 'Compare the whole offer.' },
+          { text: 'Slightly less pay, with real mentoring and an early review' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

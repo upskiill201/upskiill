@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why make a deadline calendar?',
         options: [
-          { text: 'Formal schemes often close months before they start' },
           { text: 'To look organised', why: 'The point is not missing deadlines.' },
+          { text: 'Formal schemes often close months before they start' },
           { text: 'Deadlines don\'t matter', why: 'Miss one and you wait a year.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'I\'ll just apply to the big formal schemes. People are too scary.',
         options: [
-          { text: 'Do both. Your professor might know a lab that never advertises, like the one in Yaoundé.' },
           { text: 'Good idea, ignore people.', why: 'Many internships come through people.' },
           { text: 'Only ask people, skip schemes.', why: 'Do both.' },
+          { text: 'Do both. Your professor might know a lab that never advertises, like the one in Yaoundé.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
