@@ -55,6 +55,22 @@ export type AuthoredCard =
     }
   | { kind: 'explore'; title?: string; text: string; hotspots: { phrase: string; note: string }[] }
   | { kind: 'myth'; statements: { text: string; isFact: boolean; explain: string }[] }
+  /**
+   * Prompt Lab: the learner adds `parts` to a `base` prompt and sends it to a
+   * practice AI. No real AI call (Phase One): the reply shown is the one whose
+   * `uses` is the largest set of the picked parts (ties: the first written).
+   * One reply must have `uses: []`. Done once the `goal` reply is reached.
+   */
+  | {
+      kind: 'promptLab';
+      title?: string;
+      /** What the learner is trying to get out of the AI. */
+      task: string;
+      base: string;
+      parts: { label: string; text: string }[];
+      replies: { uses: number[]; text: string; note: string }[];
+      goal: number;
+    }
   /** Try it live: runnable, editable Python. Done once it runs without an error. */
   | { kind: 'tryIt'; title?: string; code: string; caption?: string; challenge?: string; stdin?: string[]; /** The code is meant to fail (an errors lesson): done on any run. */ expectError?: boolean };
 

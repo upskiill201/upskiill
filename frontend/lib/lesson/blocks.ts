@@ -216,6 +216,21 @@ export type RichLearnCard =
   /** Quick-fire: is each statement a myth or a fact? */
   | (CardBase & { kind: 'myth'; statements: { text: string; isFact: boolean; explain: string }[] })
   /**
+   * Prompt Lab: add parts to a starting prompt and send it to a practice AI.
+   * No real AI call (Phase One): the reply is the authored one whose `uses`
+   * is the largest set of the picked parts (see promptLabReply). Done once
+   * the `goal` reply comes back.
+   */
+  | (CardBase & {
+      kind: 'promptLab';
+      title?: string;
+      task: string;
+      base: string;
+      parts: { label: string; text: string }[];
+      replies: { uses: number[]; text: string; note: string }[];
+      goal: number;
+    })
+  /**
    * Try it live: runnable, editable Python in the learner's browser
    * (lib/code). Done once it has run without an error. `stdin` feeds input();
    * `challenge` is a nudge to change the code and run it again.
@@ -232,7 +247,7 @@ export type RichLearnCard =
     });
 
 export type RichLearnCardKind = RichLearnCard['kind'];
-export const RICH_LEARN_KINDS: readonly RichLearnCardKind[] = ['reading', 'story', 'chat', 'steps', 'compare', 'explore', 'myth', 'tryIt'];
+export const RICH_LEARN_KINDS: readonly RichLearnCardKind[] = ['reading', 'story', 'chat', 'steps', 'compare', 'explore', 'myth', 'promptLab', 'tryIt'];
 
 export const RICH_LIMITS = {
   readingChars: 12000,
@@ -248,7 +263,24 @@ export const RICH_LIMITS = {
   stdin: 10,
   /** Hidden checks on a Write and run exercise. */
   checks: 8,
+  /** Prompt Lab parts and authored replies. */
+  labParts: 6,
+  labReplies: 8,
 } as const;
+
+/**
+ * The Prompt Lab reply for a set of picked parts: the most specific reply
+ * whose parts were all picked (ties: the first written). Falls back to the
+ * bare-prompt reply (uses: []).
+ */
+export function promptLabReply(replies: { uses: number[] }[], picked: ReadonlySet<number>): number {
+  let best = -1;
+  replies.forEach((r, i) => {
+    if (!r.uses.every((u) => picked.has(u))) return;
+    if (best < 0 || r.uses.length > replies[best].uses.length) best = i;
+  });
+  return Math.max(best, 0);
+}
 
 // ─── Exercises ─────────────────────────────────────────────────────────────
 
@@ -677,6 +709,15 @@ export function richLearnCardIssue(c: RichLearnCard): string | null {
     case 'myth':
       if (c.statements.length < 2 || c.statements.length > RICH_LIMITS.statements) return `Myth or Fact needs 2 to ${RICH_LIMITS.statements} statements.`;
       return c.statements.some((s) => blank(s.text) || blank(s.explain)) ? 'Every statement needs its text and the explanation.' : null;
+    case 'promptLab':
+      if (blank(c.task) || blank(c.base)) return 'A Prompt Lab needs its task and starting prompt.';
+      if (c.parts.length < 2 || c.parts.length > RICH_LIMITS.labParts) return `A Prompt Lab needs 2 to ${RICH_LIMITS.labParts} parts.`;
+      if (c.parts.some((p) => blank(p.label) || blank(p.text))) return 'Every Prompt Lab part needs a label and its text.';
+      if (c.replies.length < 2 || c.replies.length > RICH_LIMITS.labReplies) return `A Prompt Lab needs 2 to ${RICH_LIMITS.labReplies} replies.`;
+      if (c.replies.some((r) => blank(r.text) || blank(r.note))) return 'Every Prompt Lab reply needs its text and a note.';
+      if (c.replies.some((r) => r.uses.some((u) => !Number.isInteger(u) || u < 0 || u >= c.parts.length))) return 'A Prompt Lab reply uses a part that does not exist.';
+      if (!c.replies.some((r) => r.uses.length === 0)) return 'Add a reply for the bare prompt (no parts).';
+      return Number.isInteger(c.goal) && c.goal >= 0 && c.goal < c.replies.length ? null : 'Mark the goal reply.';
     case 'tryIt':
       if (blank(c.code)) return 'Try it live needs code to run.';
       return (c.stdin?.length ?? 0) > RICH_LIMITS.stdin ? `Up to ${RICH_LIMITS.stdin} lines of input.` : null;

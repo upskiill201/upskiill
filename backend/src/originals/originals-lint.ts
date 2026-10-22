@@ -89,6 +89,20 @@ function lintLesson(
   }
   for (const c of lesson.learn) {
     if (c.kind === 'check' && !c.options[c.answer]) push('error', `Quick check "${c.question}": answer index ${c.answer} has no option.`);
+    // Prompt Lab: picking exactly the goal reply's parts must bring the goal
+    // back (the player picks the most specific reply, ties to the first), and
+    // the bare prompt must not already finish it.
+    if (c.kind === 'promptLab' && c.replies[c.goal]) {
+      const replyFor = (picked: Set<number>) => {
+        let best = -1;
+        c.replies.forEach((r, i) => {
+          if (r.uses.every((u) => picked.has(u)) && (best < 0 || r.uses.length > c.replies[best].uses.length)) best = i;
+        });
+        return best;
+      };
+      if (replyFor(new Set(c.replies[c.goal].uses)) !== c.goal) push('error', `Prompt Lab "${c.task}": the goal reply can never come back.`);
+      if (c.replies[c.goal].uses.length === 0) push('error', `Prompt Lab "${c.task}": the bare prompt already reaches the goal.`);
+    }
   }
 
   // ── Structure ───────────────────────────────────────────────────────────

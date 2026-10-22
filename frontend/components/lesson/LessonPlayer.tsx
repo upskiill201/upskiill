@@ -1269,6 +1269,8 @@ export function LessonPlayer({
             ? 'Watch the video to the end to continue'
             : card.kind === 'tryIt'
               ? 'Run the code to continue'
+              : card.kind === 'promptLab'
+                ? 'Get the reply you need to continue'
               : 'Finish this card to continue'
         : undefined,
       onAction: nextCard,
