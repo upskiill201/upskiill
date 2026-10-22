@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'My new Merch page has no links to it from anywhere. Will search engines find it?',
         options: [
-          { text: 'Maybe not. Crawlers follow links, so I\'ll link to it from the nav and the home page.' },
           { text: 'Yes, they find everything instantly.', why: 'Crawlers mostly find pages through links.' },
           { text: 'Only if I pay.', why: 'Linking to it is free.' },
+          { text: 'Maybe not. Crawlers follow links, so I\'ll link to it from the nav and the home page.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         code: '<a href="beats.html">All beats</a>\n<a href="gigs.html">Upcoming gigs</a>',
         language: 'html',
         options: [
-          { text: 'beats.html and gigs.html' },
           { text: 'Every page on the site', why: 'Only the ones linked from here, and then from those.' },
+          { text: 'beats.html and gigs.html' },
           { text: 'None', why: 'It follows the links.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

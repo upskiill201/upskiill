@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         code: '.a, .b, .c { flex-grow: 1; }',
         language: 'css',
         options: [
-          { text: '40px each' },
           { text: '120px each', why: 'They share the 120px.' },
+          { text: '40px each' },
           { text: 'All to .a', why: 'Equal grow values share equally.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'One gig card should sit lower than the others in the row. Possible?',
         options: [
-          { text: 'Yes: align-self: flex-end on just that card.' },
           { text: 'Only by changing every card.', why: 'align-self changes one.' },
           { text: 'Use order.', why: 'order changes position along the row, not up and down.' },
+          { text: 'Yes: align-self: flex-end on just that card.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a form need to actually deliver its answers?',
         options: [
-          { text: 'Something on a server, or a form service, to receive them' },
           { text: 'Just a submit button', why: 'The button sends; something must receive.' },
+          { text: 'Something on a server, or a form service, to receive them' },
           { text: 'A placeholder', why: 'That\'s just a hint in a box.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I\'ll ask for everyone\'s home address and phone, just in case.',
         options: [
-          { text: 'Only ask what you need. "Just in case" data is a risk to look after and a reason people give up.' },
           { text: 'Good, more data is better.', why: 'Extra data is extra risk.' },
           { text: 'Ask for their passwords too.', why: 'Never.' },
+          { text: 'Only ask what you need. "Just in case" data is a risk to look after and a reason people give up.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the best way to check a form works for everyone?',
         options: [
-          { text: 'Fill it in with only a keyboard, on a phone, and ask others to try it' },
           { text: 'Look at it once', why: 'Try it the ways people actually use it.' },
           { text: 'Trust the design', why: 'Test it.' },
+          { text: 'Fill it in with only a keyboard, on a phone, and ask others to try it' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

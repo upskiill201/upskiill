@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         code: '.card { transition: transform 200ms ease-out; }\n.card:hover { transform: translateY(-4px); }',
         language: 'css',
         options: [
-          { text: 'It glides back down over 200ms' },
           { text: 'It snaps down', why: 'The transition is on the normal rule.' },
           { text: 'It stays up', why: ':hover ends when the pointer leaves.' },
+          { text: 'It glides back down over 200ms' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -83,21 +83,21 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Make the cards grow to double size on hover!',
         options: [
-          { text: 'They\'d cover the other cards and jump around. A tiny lift says "pick me" without the chaos.' },
           { text: 'Great, scale(2).', why: 'Far too big.' },
+          { text: 'They\'d cover the other cards and jump around. A tiny lift says "pick me" without the chaos.' },
           { text: 'Triple size.', why: 'Even bigger chaos.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'How long should a hover transition usually take?',
         options: [
-          { text: 'About 0.15 to 0.3 seconds' },
           { text: 'About 3 seconds', why: 'Far too slow for a reaction.' },
           { text: 'It doesn\'t matter', why: 'Too slow feels broken.' },
+          { text: 'About 0.15 to 0.3 seconds' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

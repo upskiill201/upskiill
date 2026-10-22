@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does grid-column: span 2 do?',
         options: [
-          { text: 'Makes the item two columns wide' },
           { text: 'Moves it to column 2', why: 'span means "stretch across", not "go to".' },
+          { text: 'Makes the item two columns wide' },
           { text: 'Adds two columns to the grid', why: 'It changes one item\'s size.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Next Friday a new beat comes out. How do I make IT the big one?',
         options: [
-          { text: 'Move class="feature" to its img. The CSS stays the same.' },
           { text: 'Rewrite the grid.', why: 'The span lives on a class you can move.' },
           { text: 'Make its image file bigger.', why: 'Grid decides its size, not the file.' },
+          { text: 'Move class="feature" to its img. The CSS stays the same.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

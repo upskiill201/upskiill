@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         code: 'header { display: flex; }\n\n<header>\n  <p>Mensah Beats</p>\n  <nav><ul><li>A</li><li>B</li><li>C</li></ul></nav>\n</header>',
         language: 'html',
         options: [
-          { text: 'Two: the p and the nav' },
           { text: 'Five', why: 'The li elements are grandchildren.' },
           { text: 'One', why: 'Both direct children are items.' },
+          { text: 'Two: the p and the nav' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -84,21 +84,21 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'The links have bullets and a gap on the left. Did Flexbox break?',
         options: [
-          { text: 'No, that\'s the ul\'s default bullets and padding. list-style: none and padding: 0 remove them.' },
           { text: 'Yes, remove Flexbox.', why: 'Flexbox is fine. The list has defaults.' },
+          { text: 'No, that\'s the ul\'s default bullets and padding. list-style: none and padding: 0 remove them.' },
           { text: 'Use a table.', why: 'Remove the list defaults instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Why keep the links in a ul inside a nav?',
         options: [
-          { text: 'It tells screen readers it\'s a set of navigation links, and how many' },
           { text: 'Flexbox needs a ul', why: 'Any parent works. The ul is for meaning.' },
           { text: 'It makes the links orange', why: 'That\'s CSS.' },
+          { text: 'It tells screen readers it\'s a set of navigation links, and how many' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

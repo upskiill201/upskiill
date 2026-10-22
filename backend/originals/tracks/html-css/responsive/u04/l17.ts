@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is placing the last figure top left with line numbers a problem?',
         options: [
-          { text: 'Keyboard and screen reader users still meet it last, so the screen and reading order disagree' },
           { text: 'Line numbers don\'t work', why: 'They work. That\'s why it\'s tempting.' },
           { text: 'It makes the picture blurry', why: 'It\'s about order, not image quality.' },
+          { text: 'Keyboard and screen reader users still meet it last, so the screen and reading order disagree' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'But adding new beats at the top of the HTML is more work!',
         options: [
-          { text: 'It\'s the same amount of typing, just in a different spot, and everyone meets the newest beat first.' },
           { text: 'Then use line numbers.', why: 'That splits screen and reading order.' },
+          { text: 'It\'s the same amount of typing, just in a different spot, and everyone meets the newest beat first.' },
           { text: 'Don\'t add new beats.', why: 'He\'s a producer. He will.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         code: 'grid-template-columns: repeat(4, 1fr);',
         language: 'css',
         options: [
-          { text: 'Five' },
           { text: 'Four', why: 'One more line than columns: both edges count.' },
           { text: 'Three', why: 'Count the outside edges too.' },
+          { text: 'Five' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

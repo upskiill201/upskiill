@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the form work on Kofi\'s computer but not online?',
         options: [
-          { text: 'His computer ignored the capital T; the server treats Thanks.html and thanks.html as different files' },
           { text: 'The internet was slow', why: 'It\'s the file name.' },
+          { text: 'His computer ignored the capital T; the server treats Thanks.html and thanks.html as different files' },
           { text: 'Forms never work online', why: 'They work when the names match.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'Is it fixed? Can I send my booking again?',
         options: [
-          { text: 'I just sent a test and it worked. Yes, send it again.' },
           { text: 'Probably, I didn\'t check.', why: 'Test before you say it\'s fixed.' },
           { text: 'Try tomorrow.', why: 'It\'s fixed and tested now.' },
+          { text: 'I just sent a test and it worked. Yes, send it again.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -140,11 +140,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What if Kofi couldn\'t fix it in time?',
         options: [
-          { text: 'Put the backup back, add an email address for bookings, and fix it calmly after the show' },
           { text: 'Leave it broken and say nothing', why: 'Give people a working way to book.' },
+          { text: 'Put the backup back, add an email address for bookings, and fix it calmly after the show' },
           { text: 'Delete the site', why: 'Use the backup.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

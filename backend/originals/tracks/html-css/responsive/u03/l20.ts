@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         code: '.beat-list { display: flex; flex-wrap: wrap; gap: 16px; }\n.beat-list .card { flex: 1 1 220px; }',
         language: 'css',
         options: [
-          { text: 'Four, each grown a little past 220px' },
           { text: 'Five', why: 'Five need 1164px.' },
+          { text: 'Four, each grown a little past 220px' },
           { text: 'One', why: 'That\'s a phone.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should the radio listeners on phones get fewer links?',
         options: [
-          { text: 'No: same links, they just wrap onto two lines. Phone visitors want to book me too.' },
           { text: 'Yes, hide most of them.', why: 'Phone visitors need the same links.' },
           { text: 'Make them tiny.', why: 'Then nobody can tap them.' },
+          { text: 'No: same links, they just wrap onto two lines. Phone visitors want to book me too.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

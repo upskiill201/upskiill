@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'What will you put in your three cards?',
         options: [
-          { text: 'Three things I\'m into, each with a short line and a picture I took myself.' },
           { text: 'Lorem ipsum for now.', why: 'Real content shows whether the layout works.' },
           { text: 'Nothing, empty cards look clean.', why: 'Cards are for content.' },
+          { text: 'Three things I\'m into, each with a short line and a picture I took myself.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         code: '.card-list { display: flex; flex-wrap: wrap; gap: 16px; }\n.card-list .card { flex: 1 1 220px; }',
         language: 'css',
         options: [
-          { text: 'One, full width' },
           { text: 'Two', why: 'Two need at least 456px.' },
+          { text: 'One, full width' },
           { text: 'Three, squashed', why: 'They wrap instead of squashing.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

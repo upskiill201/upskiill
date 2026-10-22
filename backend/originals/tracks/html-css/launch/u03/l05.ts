@@ -83,21 +83,21 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'If the page looks the same, why does Kwesi hear it so differently?',
         options: [
-          { text: 'He hears the elements, not the look. Landmarks and headings give him a map; divs don\'t.' },
           { text: 'His screen reader got updated.', why: 'The HTML changed.' },
+          { text: 'He hears the elements, not the look. Landmarks and headings give him a map; divs don\'t.' },
           { text: 'It\'s random.', why: 'It depends on the elements used.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'About how many people worldwide have a significant disability?',
         options: [
-          { text: 'About 1 in 6' },
           { text: 'About 1 in 1,000', why: 'Far more: about 1 in 6.' },
           { text: 'Nobody uses screen readers', why: 'Many people do.' },
+          { text: 'About 1 in 6' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

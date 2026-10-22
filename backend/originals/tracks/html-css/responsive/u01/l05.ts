@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         code: 'article { padding: 8px 24px 16px 4px; }',
         language: 'css',
         options: [
-          { text: '24px' },
           { text: '4px', why: 'That\'s the left: the last of four.' },
+          { text: '24px' },
           { text: '8px', why: 'That\'s the top.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which element wraps one self-contained beat card?',
         options: [
-          { text: '<article>' },
           { text: '<card>', why: 'There\'s no card element in HTML.' },
+          { text: '<article>' },
           { text: '<h2>', why: 'The h2 is the name, inside the card.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

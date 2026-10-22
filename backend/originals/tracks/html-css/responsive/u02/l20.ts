@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         code: 'article h2 { color: #FF9600; }\n.card h2 { color: #FFF6E5; }\n\n<article class="card"><h2>Jollof Bounce</h2></article>',
         language: 'html',
         options: [
-          { text: 'Cream: 0-1-1 beats 0-0-2' },
           { text: 'Orange: it\'s first', why: 'The class rule is more specific.' },
+          { text: 'Cream: 0-1-1 beats 0-0-2' },
           { text: 'Both', why: 'One wins.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'The featured card didn\'t turn gold. Bug?',
         options: [
-          { text: 'No, that\'s right: .featured comes after .card, so it still sets the pink.' },
           { text: 'Yes, add !important to .card.', why: 'Then featured could never be pink again.' },
           { text: 'Delete the featured class.', why: 'It\'s working as planned.' },
+          { text: 'No, that\'s right: .featured comes after .card, so it still sets the pink.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

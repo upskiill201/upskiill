@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happens to : number when the code runs?',
         options: [
-          { text: 'It\'s checked first, then removed: the running code has no labels' },
           { text: 'It\'s shown in the output', why: 'Labels are never shown. They\'re removed before the code runs.' },
           { text: 'It makes the code slower', why: 'Labels are gone by the time the code runs, so they cost nothing.' },
+          { text: 'It\'s checked first, then removed: the running code has no labels' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         from: 'jayden',
         message: 'Mum. If the types get deleted anyway, what\'s the point of writing them?',
         options: [
-          { text: 'They catch the mistakes BEFORE the code runs. By the time they\'re deleted, they\'ve done their job.' },
           { text: 'There isn\'t one, I\'ll stop writing them.', why: 'The point is the check before running. Skip it and the mistakes reach the people using your app.' },
+          { text: 'They catch the mistakes BEFORE the code runs. By the time they\'re deleted, they\'ve done their job.' },
           { text: 'They make the code look professional.', why: 'Looking tidy is a bonus. The real point is catching mistakes early.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

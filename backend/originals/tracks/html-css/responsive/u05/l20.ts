@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Ama wants a separate "kids version" of the site for her phone. Should I build one?',
         options: [
-          { text: 'No need: one responsive site already works on her phone, and I only update it once.' },
           { text: 'Yes, every device needs its own site.', why: 'One responsive site covers them all.' },
           { text: 'Hide half the site on her phone.', why: 'Phone users want the same content.' },
+          { text: 'No need: one responsive site already works on her phone, and I only update it once.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

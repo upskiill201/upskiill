@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why name a backup "mensah-beats-v2.0-2026-12-20"?',
         options: [
-          { text: 'You can tell exactly which version and day it is, months later' },
           { text: 'Backups need long names to work', why: 'It\'s so you can find the right one.' },
+          { text: 'You can tell exactly which version and day it is, months later' },
           { text: 'It makes the site faster', why: 'Backups aren\'t online.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         code: '<img src="Covers/Rain-On-Zinc.webp" alt="Rain on Zinc cover">',
         language: 'html',
         options: [
-          { text: 'Probably not online: many servers treat capitals as different letters' },
           { text: 'Always, capitals never matter', why: 'On many servers they do.' },
+          { text: 'Probably not online: many servers treat capitals as different letters' },
           { text: 'Only on phones', why: 'It\'s about the server.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

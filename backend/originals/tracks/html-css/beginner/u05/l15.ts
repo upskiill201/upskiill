@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'Does line-height actually matter? It\'s just spacing.',
         options: [
-          { text: 'Lines that aren\'t squashed are much easier to follow on a phone. 1.6 is comfortable.' },
           { text: 'No, delete it.', why: 'Squashed lines are harder to read.' },
+          { text: 'Lines that aren\'t squashed are much easier to follow on a phone. 1.6 is comfortable.' },
           { text: 'Set it to 5.', why: 'Too far apart to follow.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         code: 'h1 { font-family: Georgia, serif; }',
         language: 'css',
         options: [
-          { text: 'The device\'s own serif font' },
           { text: 'Invisible', why: 'It falls back to serif.' },
           { text: 'A script font', why: 'The fallback is serif.' },
+          { text: 'The device\'s own serif font' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

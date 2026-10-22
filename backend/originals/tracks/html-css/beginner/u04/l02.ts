@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'My way works too. Why change it?',
         options: [
-          { text: 'It works, but if Kofi wants pink tomorrow, my way means editing every heading. One rule is one edit.' },
           { text: 'Your way is broken.', why: 'It works. It\'s just harder to change.' },
           { text: 'No reason, just style.', why: 'There\'s a real reason: one place to change.' },
+          { text: 'It works, but if Kofi wants pink tomorrow, my way means editing every heading. One rule is one edit.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When is the style attribute okay?',
         options: [
-          { text: 'For a rare one-off, but even then CSS is usually better' },
           { text: 'On every element, always', why: 'That\'s Clinton\'s repetition problem.' },
+          { text: 'For a rare one-off, but even then CSS is usually better' },
           { text: 'Never, it\'s forbidden', why: 'It works; save it for rare cases.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

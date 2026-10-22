@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'With only columns set, how tall is each row?',
         options: [
-          { text: 'As tall as the tallest item in it' },
           { text: 'Always 100px', why: 'Rows fit their content by default.' },
           { text: 'Zero', why: 'They fit their content.' },
+          { text: 'As tall as the tallest item in it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         code: 'body { display: grid; grid-template-rows: auto 1fr auto; height: 600px; }\n\n<header>...</header><main>...</main><footer>...</footer>',
         language: 'html',
         options: [
-          { text: 'Whatever is left after the header and footer' },
           { text: 'Exactly 1px', why: '1fr takes the leftover space.' },
           { text: 'The same as the header', why: 'The header is auto: its content height.' },
+          { text: 'Whatever is left after the header and footer' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -136,11 +136,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does minmax(140px, auto) mean?',
         options: [
-          { text: 'At least 140px, and as big as the content needs' },
           { text: 'Exactly 140px', why: 'auto lets it grow.' },
+          { text: 'At least 140px, and as big as the content needs' },
           { text: 'At most 140px', why: '140px is the minimum.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

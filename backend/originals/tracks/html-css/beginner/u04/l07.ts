@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who proposed CSS, and when?',
         options: [
-          { text: 'Håkon Wium Lie, in October 1994' },
           { text: 'Tim Berners-Lee, in 1989', why: 'He made the web. CSS was proposed by Håkon Wium Lie in 1994.' },
+          { text: 'Håkon Wium Lie, in October 1994' },
           { text: 'A browser company, in 2010', why: 'It was 1994, at CERN.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'Why is it called "cascading"?',
         options: [
-          { text: 'Styles come from several places and flow together, with rules for which one wins.' },
           { text: 'Because it\'s about waterfalls.', why: 'Nice image, but it\'s about styles combining.' },
+          { text: 'Styles come from several places and flow together, with rules for which one wins.' },
           { text: 'No reason.', why: 'There\'s a reason: styles cascade and combine.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which sentence best sums up the idea behind CSS?',
         options: [
-          { text: 'HTML says what things are; CSS says how they look' },
           { text: 'CSS is a faster HTML', why: 'They do different jobs.' },
           { text: 'CSS is only for colours', why: 'Also fonts, spacing, layout and more.' },
+          { text: 'HTML says what things are; CSS says how they look' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

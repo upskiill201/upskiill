@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the cover image have alt="" inside the card link?',
         options: [
-          { text: 'The link text already says the beat name; the picture is decoration here' },
           { text: 'Alt text is never needed', why: 'It is; here the link text covers it.' },
+          { text: 'The link text already says the beat name; the picture is decoration here' },
           { text: 'To hide the image', why: 'It still shows; screen readers just skip repeating the name.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'When I press a card on my phone, it squishes a tiny bit. Why?',
         options: [
-          { text: 'That\'s :active: it shows you pressed it, even without a mouse.' },
           { text: 'Your phone is broken.', why: 'It\'s the press effect.' },
           { text: 'It\'s hover.', why: 'Phones don\'t hover; that\'s :active.' },
+          { text: 'That\'s :active: it shows you pressed it, even without a mouse.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

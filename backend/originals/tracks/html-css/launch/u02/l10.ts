@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         code: '.new { animation: pulse 1.5s ease-in-out 2; }',
         language: 'css',
         options: [
-          { text: '3 seconds' },
           { text: '1.5 seconds', why: 'It plays twice.' },
           { text: 'Forever', why: 'The count is 2.' },
+          { text: '3 seconds' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the difference between :hover and :focus-visible?',
         options: [
-          { text: ':hover is a mouse pointing; :focus-visible is reaching it with the keyboard' },
           { text: 'They\'re the same', why: 'Different people, different devices.' },
           { text: ':focus-visible is for phones', why: 'It\'s mainly for keyboard focus.' },
+          { text: ':hover is a mouse pointing; :focus-visible is reaching it with the keyboard' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Real developers know every CSS property by heart, right?',
         options: [
-          { text: 'No, they look things up all the time, often on MDN. Knowing where to look is the skill.' },
           { text: 'Yes, all 500 of them.', why: 'Nobody does. They look things up.' },
+          { text: 'No, they look things up all the time, often on MDN. Knowing where to look is the skill.' },
           { text: 'They use HTML instead.', why: 'They use CSS, and look things up.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "the browser quietly skips mistakes" tricky for you?',
         options: [
-          { text: 'Nothing warns you, so you have to look for what didn\'t change' },
           { text: 'It deletes your file', why: 'It just skips the line.' },
           { text: 'It isn\'t tricky', why: 'Silent failures are easy to miss.' },
+          { text: 'Nothing warns you, so you have to look for what didn\'t change' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

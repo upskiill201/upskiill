@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'I changed five things and now it works. Which one fixed it?',
         options: [
-          { text: 'No way to know. Next time, one change at a time, then run.' },
           { text: 'Probably all five.', why: 'Maybe one fixed it and another broke something.' },
           { text: 'Doesn\'t matter.', why: 'It matters next time it breaks.' },
+          { text: 'No way to know. Next time, one change at a time, then run.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

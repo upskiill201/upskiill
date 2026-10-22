@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who invented the World Wide Web?',
         options: [
-          { text: 'Tim Berners-Lee, at CERN' },
           { text: 'A team at Google', why: 'Google came along in 1998. The web was already nine years old.' },
+          { text: 'Tim Berners-Lee, at CERN' },
           { text: 'Mark Zuckerberg', why: 'Facebook came in 2004, built on top of the web. The web itself came from Tim Berners-Lee at CERN.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can Kofi build a website without paying anyone?',
         options: [
-          { text: 'Because CERN made the web free for everyone to use and build on' },
           { text: 'Because he is a student', why: 'Students get no special deal. The web is free for everyone.' },
           { text: 'Because websites are illegal to sell', why: 'People sell websites all the time. Building one yourself just costs nothing.' },
+          { text: 'Because CERN made the web free for everyone to use and build on' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',

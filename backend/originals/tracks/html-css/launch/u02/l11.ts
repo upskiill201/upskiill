@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is fast flashing dangerous?',
         options: [
-          { text: 'It can trigger seizures in people with photosensitive epilepsy' },
           { text: 'It uses too much battery', why: 'The real danger is to people.' },
+          { text: 'It can trigger seizures in people with photosensitive epilepsy' },
           { text: 'It isn\'t dangerous', why: 'Fast flashing can cause seizures.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -126,11 +126,11 @@ const lesson: OriginalLesson = {
         code: '@keyframes flash { 50% { opacity: 0; } }\n.banner { animation: flash 0.25s linear infinite; }',
         language: 'css',
         options: [
-          { text: 'Four times a second: too many' },
           { text: 'Once a second', why: 'Each flash takes 0.25s, so four per second.' },
+          { text: 'Four times a second: too many' },
           { text: 'Never', why: 'It flashes every 0.25s.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -149,11 +149,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does most of the work in making a banner noticeable?',
         options: [
-          { text: 'Contrast, size and position' },
           { text: 'Flashing', why: 'Dangerous, and not needed.' },
           { text: 'Constant movement', why: 'It distracts more than it helps.' },
+          { text: 'Contrast, size and position' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

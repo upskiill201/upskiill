@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A cover is shown at most 300 pixels wide. What size should the file be?',
         options: [
-          { text: 'About 600 pixels: twice the shown size for sharp screens' },
           { text: '4,000 pixels, to be safe', why: 'Far more than needed.' },
           { text: '100 pixels', why: 'Too small: it would look blurry.' },
+          { text: 'About 600 pixels: twice the shown size for sharp screens' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'The covers appear really fast now! What did you do?',
         options: [
-          { text: 'Made the files smaller, saved them as WebP, and the ones lower down only load when you scroll to them.' },
           { text: 'Bought you a faster phone.', why: 'The page got lighter.' },
+          { text: 'Made the files smaller, saved them as WebP, and the ones lower down only load when you scroll to them.' },
           { text: 'Deleted half of them.', why: 'They\'re all there, just smaller files.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

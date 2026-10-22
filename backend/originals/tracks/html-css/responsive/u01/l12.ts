@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why remove the h2\'s top margin inside the card?',
         options: [
-          { text: 'It adds to the padding, making a bigger gap at the top than the sides' },
           { text: 'Headings can\'t have margins', why: 'They have default ones. That\'s the point.' },
+          { text: 'It adds to the padding, making a bigger gap at the top than the sides' },
           { text: 'To make the heading bigger', why: 'Margin doesn\'t change text size.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         code: '* { box-sizing: border-box; }\narticle { max-width: 500px; padding: 16px; border: 2px solid #FF9600; }',
         language: 'css',
         options: [
-          { text: '500px, edges and all' },
           { text: '536px', why: 'border-box keeps padding and border inside.' },
+          { text: '500px, edges and all' },
           { text: '1200px', why: 'max-width stops it at 500px.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

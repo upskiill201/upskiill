@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'The boxes are tiny on my phone. I keep missing them.',
         options: [
-          { text: 'I\'ll make them full width with padding 12px, so they\'re big enough to tap.' },
           { text: 'Zoom in.', why: 'Fix the boxes instead.' },
           { text: 'Make the text smaller so it fits.', why: 'Smaller is harder to tap.' },
+          { text: 'I\'ll make them full width with padding 12px, so they\'re big enough to tap.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         code: 'label { display: block; }\n\n<label for="name">Name</label><input id="name">',
         language: 'html',
         options: [
-          { text: 'On their own line, above each box' },
           { text: 'Beside each box', why: 'display: block puts them on their own line.' },
+          { text: 'On their own line, above each box' },
           { text: 'Inside the box', why: 'That\'s a placeholder.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

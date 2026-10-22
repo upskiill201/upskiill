@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What usually costs money when you publish?',
         options: [
-          { text: 'A custom name like mensahbeats.com, and it\'s optional' },
           { text: 'Uploading every file', why: 'Free plans cover simple sites.' },
+          { text: 'A custom name like mensahbeats.com, and it\'s optional' },
           { text: 'Every visitor', why: 'Free plans have limits, but simple sites rarely hit them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'I want to add a bookings page and a gallery before I publish anything.',
         options: [
-          { text: 'Ship v1.0 now for the poster. Add those as v1.1 and v1.2 later.' },
           { text: 'Yes, wait until it\'s perfect.', why: 'The poster goes to print Friday.' },
           { text: 'Never add pages after publishing.', why: 'You can add pages any time.' },
+          { text: 'Ship v1.0 now for the poster. Add those as v1.1 and v1.2 later.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why say "check the current terms" about free hosts?',
         options: [
-          { text: 'Plans and limits change over time' },
           { text: 'Free hosts are illegal', why: 'They\'re normal services. Their terms just change.' },
           { text: 'It doesn\'t matter', why: 'Limits and rules do change.' },
+          { text: 'Plans and limits change over time' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

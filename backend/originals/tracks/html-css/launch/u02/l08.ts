@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the difference between a transition and an animation?',
         options: [
-          { text: 'A transition smooths a change you cause; an animation plays its own steps, even on its own' },
           { text: 'They\'re the same', why: 'Animations can run without a trigger.' },
           { text: 'Animations only work on hover', why: 'They can start when the page loads.' },
+          { text: 'A transition smooths a change you cause; an animation plays its own steps, even on its own' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         code: '.new { animation: pulse 1.2s ease-in-out 3; }',
         language: 'css',
         options: [
-          { text: 'It stops and the badge rests' },
           { text: 'It keeps going', why: '3 means three times.' },
           { text: 'The badge disappears', why: 'It just stops moving.' },
+          { text: 'It stops and the badge rests' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -138,11 +138,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'animation: pulse 2s ease-in-out 3; How long does it play in total?',
         options: [
-          { text: '6 seconds' },
           { text: '2 seconds', why: 'That\'s one play. It plays 3 times.' },
+          { text: '6 seconds' },
           { text: '3 seconds', why: '3 is the count; each is 2 seconds.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

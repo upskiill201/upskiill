@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why doesn\'t each card need its own max-width any more?',
         options: [
-          { text: 'They sit inside main, which already caps the width' },
           { text: 'Cards can\'t have a max-width', why: 'They can. The column does the job now.' },
           { text: 'Because of border-radius', why: 'It\'s main\'s max-width.' },
+          { text: 'They sit inside main, which already caps the width' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'If you wanted all the gaps a bit bigger, how many lines would you change?',
         options: [
-          { text: 'Just the few padding and margin values. Each one is in one place.' },
           { text: 'Every line in the file.', why: 'The spacing lives in a few clear places.' },
+          { text: 'Just the few padding and margin values. Each one is in one place.' },
           { text: 'I\'d add empty paragraphs.', why: 'Margin and padding do it in CSS.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

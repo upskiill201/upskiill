@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'I turned on VoiceOver and now I can\'t unlock my phone!',
         options: [
-          { text: 'The gestures change while it\'s on. Look up how to turn it off for your device (often a triple-click shortcut) before trying again.' },
           { text: 'Throw the phone away.', why: 'It just needs turning off properly.' },
           { text: 'Wait a week.', why: 'Turn it off with the right gesture or shortcut.' },
+          { text: 'The gestures change while it\'s on. Look up how to turn it off for your device (often a triple-click shortcut) before trying again.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         code: '<main>\n  <h1>Mensah Beats</h1>\n  <p>Beats from Accra.</p>\n  <h2>Gigs</h2>\n</main>',
         language: 'html',
         options: [
-          { text: 'On "Mensah Beats", then "Gigs" on the next jump' },
           { text: 'On the paragraph', why: 'Paragraphs aren\'t headings.' },
+          { text: 'On "Mensah Beats", then "Gigs" on the next jump' },
           { text: 'Nowhere', why: 'There are two headings.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

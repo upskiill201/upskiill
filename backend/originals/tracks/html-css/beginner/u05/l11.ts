@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where does a fancy script font belong?',
         options: [
-          { text: 'Big headings, like the name at the top' },
           { text: 'Every paragraph', why: 'Long text in script is hard to read.' },
+          { text: 'Big headings, like the name at the top' },
           { text: 'Small print', why: 'Hardest place of all to read it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         code: 'h1 { font-family: Georgia, serif; }',
         language: 'css',
         options: [
-          { text: 'The device\'s own serif font' },
           { text: 'No font, the text disappears', why: 'It falls back to the next in the list.' },
           { text: 'Georgia anyway', why: 'It can\'t use a font it doesn\'t have.' },
+          { text: 'The device\'s own serif font' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

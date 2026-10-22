@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Why didn\'t width: 33% work?',
         options: [
-          { text: 'The gaps take space too, so three 33% boxes plus gaps add up to more than the row.' },
           { text: '% doesn\'t work in Flexbox.', why: 'It works. The gaps push it over 100%.' },
           { text: 'It needs 34%.', why: 'Even more over 100%.' },
+          { text: 'The gaps take space too, so three 33% boxes plus gaps add up to more than the row.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         code: '.a { flex-grow: 1; }\n.b { flex-grow: 2; }',
         language: 'css',
         options: [
-          { text: 'a gets 100px, b gets 200px' },
           { text: 'Both get 150px', why: 'b asks for two shares, a for one.' },
+          { text: 'a gets 100px, b gets 200px' },
           { text: 'b gets it all', why: 'They share: 1 share and 2 shares.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

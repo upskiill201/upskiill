@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does transition: background-color 0.2s do?',
         options: [
-          { text: 'When the background colour changes, it changes gradually over 0.2 seconds' },
           { text: 'Changes the colour every 0.2 seconds', why: 'It smooths a change; it doesn\'t repeat.' },
+          { text: 'When the background colour changes, it changes gradually over 0.2 seconds' },
           { text: 'Delays the page by 0.2 seconds', why: 'It only affects that property\'s changes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         code: '.play-button { background-color: #FF9600; transition: background-color 0.2s; }\n.play-button:hover { background-color: #FFC83D; }',
         language: 'css',
         options: [
-          { text: 'It fades back to orange over 0.2s' },
           { text: 'It snaps back instantly', why: 'The transition is on the normal rule, so it works both ways.' },
+          { text: 'It fades back to orange over 0.2s' },
           { text: 'It stays gold', why: ':hover ends when the pointer leaves.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where should the transition go?',
         options: [
-          { text: 'On the normal rule, so it works both ways' },
           { text: 'On the :hover rule only', why: 'Then it only works on the way in.' },
           { text: 'On body', why: 'Put it on the element that changes.' },
+          { text: 'On the normal rule, so it works both ways' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

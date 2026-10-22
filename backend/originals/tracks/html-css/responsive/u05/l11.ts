@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does display: none do?',
         options: [
-          { text: 'Removes the element: not shown, no space, and screen readers skip it' },
           { text: 'Makes it see-through but still there', why: 'It\'s removed completely.' },
+          { text: 'Removes the element: not shown, no space, and screen readers skip it' },
           { text: 'Shrinks it', why: 'It disappears entirely.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         code: '@media (max-width: 699px) { .gigs { display: none; } }',
         language: 'css',
         options: [
-          { text: 'No: display: none hides it from screen readers too' },
           { text: 'Yes, screen readers ignore CSS', why: 'They respect display: none.' },
+          { text: 'No: display: none hides it from screen readers too' },
           { text: 'Only the first gig', why: 'The whole section is removed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -148,11 +148,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s a better fix for a very long phone page than hiding things?',
         options: [
-          { text: 'Jump links at the top, so people can skip to what they want' },
           { text: 'Tiny text', why: 'Unreadable.' },
           { text: 'Removing the footer', why: 'Make content easy to reach instead.' },
+          { text: 'Jump links at the top, so people can skip to what they want' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

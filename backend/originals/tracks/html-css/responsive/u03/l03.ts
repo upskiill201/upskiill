@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why didn\'t display: flex on the header spread out the links?',
         options: [
-          { text: 'The links are grandchildren. Only the header\'s direct children are items' },
           { text: 'Links can\'t be flex items', why: 'They can, inside a flex parent.' },
           { text: 'The header is too small', why: 'It\'s about which elements are direct children.' },
+          { text: 'The links are grandchildren. Only the header\'s direct children are items' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         code: 'section { display: flex; }\n\n<section>\n  <article><h2>A</h2><p>a</p></article>\n  <article><h2>B</h2><p>b</p></article>\n</section>',
         language: 'html',
         options: [
-          { text: 'Two: the articles' },
           { text: 'Four: every h2 and p', why: 'Those are grandchildren.' },
           { text: 'Six', why: 'Only direct children count.' },
+          { text: 'Two: the articles' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

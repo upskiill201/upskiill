@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does an HTML checker (validator) do?',
         options: [
-          { text: 'Reads your HTML and lists mistakes, like unclosed tags or duplicate ids' },
           { text: 'Makes your site rank first', why: 'It only checks the code.' },
+          { text: 'Reads your HTML and lists mistakes, like unclosed tags or duplicate ids' },
           { text: 'Fixes everything for you', why: 'It lists problems; you fix them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'I found a broken link. Should I fix it now, in the middle of the list?',
         options: [
-          { text: 'Write it down and keep going. We fix everything together after, then re-check.' },
           { text: 'Stop everything and redesign the page.', why: 'Finish the list first.' },
           { text: 'Ignore it.', why: 'Write it down so it gets fixed.' },
+          { text: 'Write it down and keep going. We fix everything together after, then re-check.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

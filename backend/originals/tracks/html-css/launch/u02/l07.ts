@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Flash disappear?',
         options: [
-          { text: 'It needed a plug-in, drained batteries, had security problems, and Adobe ended support in 2020' },
           { text: 'It was too simple', why: 'It was powerful, but had serious problems.' },
+          { text: 'It needed a plug-in, drained batteries, had security problems, and Adobe ended support in 2020' },
           { text: 'It never existed', why: 'It was hugely popular for years.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Bring back marquee! A scrolling banner of gig dates!',
         options: [
-          { text: 'Scrolling text is hard to read and never stops. A clear, still list of dates is easier for everyone.' },
           { text: 'Yes, marquee is the best.', why: 'It\'s hard to read and distracting.' },
           { text: 'Make it scroll faster.', why: 'Even harder to read.' },
+          { text: 'Scrolling text is hard to read and never stops. A clear, still list of dates is easier for everyone.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who proposed CSS transitions and animations?',
         options: [
-          { text: 'Apple\'s WebKit team, in 2007' },
           { text: 'Netscape, in 1995', why: 'Netscape made blink.' },
+          { text: 'Apple\'s WebKit team, in 2007' },
           { text: 'Adobe, with Flash', why: 'Flash was a separate plug-in.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

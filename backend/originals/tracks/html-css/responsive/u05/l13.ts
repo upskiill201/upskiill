@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How narrow should a page still work without sideways scrolling?',
         options: [
-          { text: '320px' },
           { text: '700px', why: 'That\'s Kofi\'s breakpoint. Pages should work down to 320px.' },
           { text: '1000px', why: 'That\'s a laptop.' },
+          { text: '320px' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Device mode looks perfect. Do I still need real phones?',
         options: [
-          { text: 'Yes: device mode is a good guess, but real screens, thumbs and text settings are the truth.' },
           { text: 'No, device mode is exactly the same.', why: 'It can\'t copy every real phone.' },
+          { text: 'Yes: device mode is a good guess, but real screens, thumbs and text settings are the truth.' },
           { text: 'Only if a fan complains.', why: 'Test before fans find the problem.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

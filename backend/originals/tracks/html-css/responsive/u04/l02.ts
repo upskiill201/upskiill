@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'Can the empty cell at the end be a problem?',
         options: [
-          { text: 'Not really: it looks like a record shop wall with a gap waiting for the next release.' },
           { text: 'Yes, Grid can\'t have empty cells.', why: 'It can. That\'s why it keeps sizes even.' },
+          { text: 'Not really: it looks like a record shop wall with a gap waiting for the next release.' },
           { text: 'Fill it with a blank image.', why: 'Empty is fine, and a blank image needs alt text.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         code: '.gallery { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; }',
         language: 'css',
         options: [
-          { text: 'Two: rows of 4, 4, then 2' },
           { text: 'None', why: 'The last row has 2 covers and 2 empty cells.' },
           { text: 'Six', why: 'Only the last row has gaps.' },
+          { text: 'Two: rows of 4, 4, then 2' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When should you choose Grid over Flexbox?',
         options: [
-          { text: 'When items should line up in rows and columns together' },
           { text: 'Always', why: 'Flexbox is still best for one-direction layouts.' },
+          { text: 'When items should line up in rows and columns together' },
           { text: 'Never on phones', why: 'Grid works on phones.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

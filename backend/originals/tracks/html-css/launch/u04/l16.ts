@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Someone guarantees "number 1 on Google in a week". What should Kofi think?',
         options: [
-          { text: 'It\'s a red flag: nobody outside the search engine can guarantee rankings' },
           { text: 'Great deal', why: 'Nobody can promise that.' },
           { text: 'It\'s possible if you pay more', why: 'Normal results can\'t be bought.' },
+          { text: 'It\'s a red flag: nobody outside the search engine can guarantee rankings' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         code: 'Sponsored · mensahbeats.example.app\nMensah Beats | Beat producer in Accra',
         language: 'html',
         options: [
-          { text: 'A paid ad, labelled as sponsored, separate from the normal results' },
           { text: 'The top normal result', why: 'It\'s labelled sponsored.' },
           { text: 'A virus', why: 'It\'s a labelled ad.' },
+          { text: 'A paid ad, labelled as sponsored, separate from the normal results' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What helps a small site most?',
         options: [
-          { text: 'Clear titles, useful content, working on phones, and real links from related sites' },
           { text: 'Buying a package of links', why: 'Bought links are spam.' },
+          { text: 'Clear titles, useful content, working on phones, and real links from related sites' },
           { text: 'Hiding keywords', why: 'An old trick that gets caught.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

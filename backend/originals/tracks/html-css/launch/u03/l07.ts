@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is WCAG?',
         options: [
-          { text: 'The Web Content Accessibility Guidelines, published by the W3C\'s WAI' },
           { text: 'A screen reader', why: 'It\'s a set of guidelines.' },
+          { text: 'The Web Content Accessibility Guidelines, published by the W3C\'s WAI' },
           { text: 'A law in one country', why: 'It\'s international guidelines that many laws point to.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can a well-built page be read aloud, enlarged or printed in braille?',
         options: [
-          { text: 'It\'s structured text, so any tool can present it in its own way' },
           { text: 'Because of its colours', why: 'Structure, not colour.' },
+          { text: 'It\'s structured text, so any tool can present it in its own way' },
           { text: 'Only pictures can be enlarged', why: 'Text can be presented many ways.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

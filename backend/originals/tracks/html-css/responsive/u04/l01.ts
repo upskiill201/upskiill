@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'So Grid replaces Flexbox?',
         options: [
-          { text: 'No, they work together: Flexbox for one row or column, Grid for rows and columns. The header stays Flexbox.' },
           { text: 'Yes, delete all the Flexbox.', why: 'The header is a one-direction job: Flexbox.' },
           { text: 'Grid only works for photos.', why: 'It works for any layout in rows and columns.' },
+          { text: 'No, they work together: Flexbox for one row or column, Grid for rows and columns. The header stays Flexbox.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         code: '.gallery { display: grid; grid-template-columns: 1fr 1fr 1fr; }',
         language: 'css',
         options: [
-          { text: 'Three: 3, 3, then 1' },
           { text: 'Two', why: 'Three per row, so seven needs three rows.' },
+          { text: 'Three: 3, 3, then 1' },
           { text: 'Seven', why: 'Three columns per row.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

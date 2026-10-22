@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The gigs page has og:url pointing to the home page. What happens when someone shares the gigs page?',
         options: [
-          { text: 'The preview may send people to the home page instead of the gigs' },
           { text: 'Nothing, og:url is ignored', why: 'Apps often use it as the link\'s address.' },
           { text: 'It shares both', why: 'It points to one address.' },
+          { text: 'The preview may send people to the home page instead of the gigs' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'What should the favicon be? My whole logo?',
         options: [
-          { text: 'Something simple that still reads when tiny, like just the orange sun. Long words disappear at that size.' },
           { text: 'A full photo of me.', why: 'It\'s too detailed to see when tiny.' },
+          { text: 'Something simple that still reads when tiny, like just the orange sun. Long words disappear at that size.' },
           { text: 'Nothing.', why: 'A blank square looks unfinished.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -130,11 +130,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should og:url be on book.html?',
         options: [
-          { text: 'The full address of book.html' },
           { text: 'The home page address', why: 'Each page points to itself.' },
+          { text: 'The full address of book.html' },
           { text: 'Left out', why: 'It helps previews link correctly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

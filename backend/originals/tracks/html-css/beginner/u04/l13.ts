@@ -137,11 +137,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why keep a stylesheet short?',
         options: [
-          { text: 'Fewer rules means fewer rules fighting each other' },
           { text: 'Browsers have a rule limit of ten', why: 'No such limit. Short is just easier to reason about.' },
           { text: 'Short CSS makes beats louder', why: 'It\'s about fewer conflicts.' },
+          { text: 'Fewer rules means fewer rules fighting each other' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

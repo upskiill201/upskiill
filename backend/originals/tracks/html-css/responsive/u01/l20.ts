@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         code: 'article { width: 300px; padding: 16px; border: 2px solid #FF9600; }',
         language: 'css',
         options: [
-          { text: '336px' },
           { text: '300px', why: 'Only with border-box.' },
+          { text: '336px' },
           { text: '318px', why: 'Padding and border count on both sides.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'There\'s a big gap above the name in every card. Why?',
         options: [
-          { text: 'The h2\'s default top margin adds to the padding. article h2 { margin-top: 0; } fixes it.' },
           { text: 'The border is too thick.', why: 'It\'s the h2\'s default margin.' },
           { text: 'The browser is broken.', why: 'It\'s a default margin you can change.' },
+          { text: 'The h2\'s default top margin adds to the padding. article h2 { margin-top: 0; } fixes it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

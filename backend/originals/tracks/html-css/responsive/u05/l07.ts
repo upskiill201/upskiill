@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who named the idea "responsive web design", and when?',
         options: [
-          { text: 'Ethan Marcotte, in 2010' },
           { text: 'Tim Berners-Lee, in 1991', why: 'He invented the web. Marcotte named responsive design.' },
           { text: 'Apple, in 2007', why: '2007 was the iPhone. The name came in 2010.' },
+          { text: 'Ethan Marcotte, in 2010' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Why did m-dot sites go out of fashion?',
         options: [
-          { text: 'Two sites meant double the work, and phone visitors often got less. One responsive site serves everyone.' },
           { text: 'Phones stopped working with them.', why: 'They still work. They\'re just more work.' },
+          { text: 'Two sites meant double the work, and phone visitors often got less. One responsive site serves everyone.' },
           { text: 'They were illegal.', why: 'They were just harder to keep up to date.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do phones pretend to be about 980px wide without a viewport tag?',
         options: [
-          { text: 'Early phone browsers showed full desktop sites zoomed out, and that stayed the default' },
           { text: 'Phones are 980px wide', why: 'They\'re much narrower. It\'s a leftover default.' },
           { text: 'It makes pages faster', why: 'It was about fitting old desktop sites.' },
+          { text: 'Early phone browsers showed full desktop sites zoomed out, and that stayed the default' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

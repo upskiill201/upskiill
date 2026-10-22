@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'v2.0 still isn\'t finished. There\'s so much more I want to add.',
         options: [
-          { text: 'It never will be. The first website was one page of links. Ship it, then make v2.1.' },
           { text: 'Then don\'t launch.', why: 'Ready beats perfect.' },
+          { text: 'It never will be. The first website was one page of links. Ship it, then make v2.1.' },
           { text: 'Add everything tonight.', why: 'That\'s how launches break.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the main idea of "release early, release often"?',
         options: [
-          { text: 'Put work out, learn from real people, improve in small steps' },
           { text: 'Never check anything', why: 'You still check what matters.' },
           { text: 'Release once and stop', why: 'Often means again and again.' },
+          { text: 'Put work out, learn from real people, improve in small steps' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         code: '<select name="kind">\n  <option value="wedding">Wedding</option>\n</select>',
         language: 'html',
         options: [
-          { text: 'kind = wedding' },
           { text: 'Wedding', why: 'name and value are sent.' },
+          { text: 'kind = wedding' },
           { text: 'Nothing', why: 'The chosen option\'s value is sent.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How should a form show which fields are required?',
         options: [
-          { text: 'In words in the label, like "(required)"' },
           { text: 'A red star only', why: 'Not everyone sees or understands it.' },
+          { text: 'In words in the label, like "(required)"' },
           { text: 'It doesn\'t need to', why: 'People need to know before they start.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

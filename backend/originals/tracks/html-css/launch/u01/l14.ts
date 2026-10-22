@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'The form feels long on my phone. Can anything go?',
         options: [
-          { text: 'Let\'s check each question: if I don\'t need it to reply with a price, it goes.' },
           { text: 'Make the text smaller.', why: 'Remove questions instead.' },
           { text: 'Split it over five pages.', why: 'Fewer questions is better.' },
+          { text: 'Let\'s check each question: if I don\'t need it to reply with a price, it goes.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         code: '<input type="date" id="date" name="date" required>',
         language: 'html',
         options: [
-          { text: 'The browser stops and points to the date box' },
           { text: 'It sends without a date', why: 'required blocks that.' },
+          { text: 'The browser stops and points to the date box' },
           { text: 'The date fills itself in', why: 'The browser asks for it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

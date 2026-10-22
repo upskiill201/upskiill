@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do the three radios need the same name?',
         options: [
-          { text: 'So they act as one group: picking one unticks the others' },
           { text: 'So they look the same', why: 'name makes them one group.' },
           { text: 'They don\'t; each needs a different name', why: 'Different names make separate groups.' },
+          { text: 'So they act as one group: picking one unticks the others' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Why the legend? There\'s already a heading above it.',
         options: [
-          { text: 'The legend belongs to the group, so screen readers say the question with each choice: "Is there a sound system? Yes".' },
           { text: 'It\'s only for styling.', why: 'It ties the question to the choices.' },
+          { text: 'The legend belongs to the group, so screen readers say the question with each choice: "Is there a sound system? Yes".' },
           { text: 'It\'s not needed.', why: 'Without it, "Yes" has no question attached.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         code: '<input type="radio" id="sound-no" name="sound" value="no">\n<label for="sound-no">No</label>',
         language: 'html',
         options: [
-          { text: 'sound = no' },
           { text: 'sound-no', why: 'name and value are sent, not the id.' },
           { text: 'No = sound', why: 'name, then value.' },
+          { text: 'sound = no' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

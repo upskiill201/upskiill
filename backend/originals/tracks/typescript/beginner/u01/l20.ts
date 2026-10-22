@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does TypeScript add to JavaScript?',
         options: [
-          { text: 'Labels for what things are, checked before the code runs' },
           { text: 'A faster browser', why: 'TypeScript checks your code. It doesn\'t change the browser.' },
           { text: 'Nothing, they\'re the same', why: 'Every JavaScript program is TypeScript, but TypeScript adds type labels and checks.' },
+          { text: 'Labels for what things are, checked before the code runs' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -150,11 +150,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'TypeScript shows three errors at once. What does Grace do?',
         options: [
-          { text: 'Fix the first one, run again, then look at what\'s left' },
           { text: 'Rewrite the whole file', why: 'Most of the file is fine. Fix what the messages point at, one at a time.' },
+          { text: 'Fix the first one, run again, then look at what\'s left' },
           { text: 'Ask an AI to rewrite it all', why: 'Grace uses AI to explain errors, not to write her code for her.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

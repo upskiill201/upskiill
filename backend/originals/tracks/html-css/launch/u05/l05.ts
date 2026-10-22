@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         code: '<a class="skip-link" href="#main">Skip to main content</a>\n<nav>\n  <a href="index.html">Home</a>\n</nav>',
         language: 'html',
         options: [
-          { text: 'The skip link' },
           { text: 'The Home link', why: 'The skip link comes first.' },
+          { text: 'The skip link' },
           { text: 'The footer', why: 'Tab goes in page order.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -86,21 +86,21 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'The site isn\'t perfect. Why not wait another month?',
         options: [
-          { text: 'Everything important works and is checked. Small improvements can come in v2.1.' },
           { text: 'You\'re right, never launch.', why: 'Ready beats perfect.' },
           { text: 'Launch with the broken form.', why: 'Important things must work.' },
+          { text: 'Everything important works and is checked. Small improvements can come in v2.1.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'Why write problems down instead of fixing each one straight away?',
         options: [
-          { text: 'You finish the whole check, see everything at once, and don\'t lose your place' },
           { text: 'Writing makes them fix themselves', why: 'You still fix them.' },
+          { text: 'You finish the whole check, see everything at once, and don\'t lose your place' },
           { text: 'So you can ignore them', why: 'You fix them after.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

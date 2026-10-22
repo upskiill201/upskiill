@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does main have id="main"?',
         options: [
-          { text: 'So the skip link href="#main" can jump to it' },
           { text: 'For styling only', why: 'It\'s the skip link\'s target.' },
+          { text: 'So the skip link href="#main" can jump to it' },
           { text: 'Every element needs an id', why: 'Only targets need ids.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Is the site "done" for accessibility now?',
         options: [
-          { text: 'It\'s in good shape, but every change can break something. I\'ll rerun the check and keep asking users.' },
           { text: 'Yes, forever.', why: 'Every change needs checking.' },
           { text: 'It can never be good.', why: 'It\'s good now; keep it that way.' },
+          { text: 'It\'s in good shape, but every change can break something. I\'ll rerun the check and keep asking users.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         code: '<a href="https://example.com/ig" aria-label="Mensah Beats on Instagram"><img src="ig.png" alt=""></a>',
         language: 'html',
         options: [
-          { text: '"Mensah Beats on Instagram, link"' },
           { text: '"Link"', why: 'aria-label names it.' },
+          { text: '"Mensah Beats on Instagram, link"' },
           { text: '"ig dot png"', why: 'The image is decoration; the label names the link.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

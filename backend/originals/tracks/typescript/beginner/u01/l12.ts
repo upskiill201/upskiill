@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         code: '// console.log("Room 1");\nconsole.log("Room 2");',
         language: 'typescript',
         options: [
-          { text: 'Room 2' },
           { text: 'Room 1 then Room 2', why: 'The first line starts with //, so it\'s a comment and doesn\'t run.' },
           { text: 'Nothing', why: 'The second line isn\'t a comment, so it runs.' },
+          { text: 'Room 2' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',

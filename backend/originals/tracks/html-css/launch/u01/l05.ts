@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why isn\'t a placeholder enough on its own?',
         options: [
-          { text: 'It disappears when you type, so people forget what the box was for' },
           { text: 'Placeholders can\'t be grey', why: 'They\'re usually grey, and faint.' },
+          { text: 'It disappears when you type, so people forget what the box was for' },
           { text: 'It\'s fine on its own', why: 'It vanishes when you type.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         code: '<label for="v">Venue</label>\n<input id="v" name="venue">',
         language: 'html',
         options: [
-          { text: 'venue, from the name attribute' },
           { text: 'v, from the id', why: 'Sent answers use name.' },
+          { text: 'venue, from the name attribute' },
           { text: 'Venue, from the label', why: 'The label is for people. name is for sending.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

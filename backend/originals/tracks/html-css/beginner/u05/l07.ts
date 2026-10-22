@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is WCAG?',
         options: [
-          { text: 'Guidelines for making websites accessible, published by the W3C' },
           { text: 'A colour-picking app', why: 'It\'s a set of accessibility guidelines.' },
+          { text: 'Guidelines for making websites accessible, published by the W3C' },
           { text: 'A font', why: 'It\'s the Web Content Accessibility Guidelines.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'I removed the underline from links so it looks cleaner. Only colour shows they\'re links now.',
         options: [
-          { text: 'Some people can\'t see that colour difference. Keep the underline so links are obvious.' },
           { text: 'Cleaner is always better.', why: 'Colour shouldn\'t be the only signal.' },
+          { text: 'Some people can\'t see that colour difference. Keep the underline so links are obvious.' },
           { text: 'Remove the colour too.', why: 'Then nobody can find the links.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which pair should Kofi use for small print?',
         options: [
-          { text: 'Cream on night blue' },
           { text: 'Pink on night blue', why: 'Just under 4.5 to 1: too faint for small text.' },
           { text: 'Night blue on night blue', why: 'Invisible.' },
+          { text: 'Cream on night blue' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

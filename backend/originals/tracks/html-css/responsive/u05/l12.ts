@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         code: '.gallery { grid-template-columns: repeat(2, 1fr); } h1 { font-size: 2.25rem; }\n@media (min-width: 700px) { .gallery { grid-template-columns: repeat(3, 1fr); } h1 { font-size: 4rem; } }\n@media (min-width: 1100px) { .gallery { grid-template-columns: repeat(5, 1fr); } }',
         language: 'css',
         options: [
-          { text: 'Three columns, 4rem heading' },
           { text: 'Five columns, 4rem heading', why: '800px is under 1100px.' },
+          { text: 'Three columns, 4rem heading' },
           { text: 'Two columns, 2.25rem heading', why: 'The 700px layer applies.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Why the max-width only at 1100px and up?',
         options: [
-          { text: 'On smaller screens the page should use the whole width. Only on huge screens would it stretch too far.' },
           { text: 'Phones need max-width too.', why: 'They\'re narrower than 1200px anyway.' },
           { text: 'No reason.', why: 'Huge monitors would stretch it.' },
+          { text: 'On smaller screens the page should use the whole width. Only on huge screens would it stretch too far.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

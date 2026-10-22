@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the cover have width and height?',
         options: [
-          { text: 'So the page doesn\'t jump while it loads' },
           { text: 'To make the file smaller', why: 'They change the display size only. The file stays the same.' },
+          { text: 'So the page doesn\'t jump while it loads' },
           { text: 'Covers need them to show', why: 'They\'d show without them, but the page would jump.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'So what are you borrowing from Tolu for v0.3?',
         options: [
-          { text: 'The jump menu, and packaging each beat as a figure with its cover and player.' },
           { text: 'His whole page.', why: 'Ideas, not the page. Kofi\'s site has to be his.' },
           { text: 'His photo.', why: 'That\'s Bisi\'s photo of Tolu. Kofi has David\'s.' },
+          { text: 'The jump menu, and packaging each beat as a figure with its cover and player.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

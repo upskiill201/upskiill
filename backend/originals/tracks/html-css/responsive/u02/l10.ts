@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         code: 'h2 { color: #FFF6E5; }\n.title { color: #F0438A; }\nh2 { color: #FF9600; }\n\n<h2 class="title">Beats</h2>',
         language: 'html',
         options: [
-          { text: 'Pink: the class is more specific' },
           { text: 'Orange: it\'s last', why: 'Specificity before order.' },
           { text: 'Cream: it\'s first', why: 'The class wins.' },
+          { text: 'Pink: the class is more specific' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -80,21 +80,21 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Why does the inline style="color: white" beat your class?',
         options: [
-          { text: 'A style attribute beats any selector in the stylesheet. That\'s why we moved styles into classes.' },
           { text: 'Because white is stronger.', why: 'Colours have no strength. The style attribute does.' },
+          { text: 'A style attribute beats any selector in the stylesheet. That\'s why we moved styles into classes.' },
           { text: 'It doesn\'t.', why: 'Style attributes beat stylesheet rules.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Two rules score 0-1-1 each. How is it decided?',
         options: [
-          { text: 'The later one wins' },
           { text: 'The shorter one wins', why: 'Length doesn\'t matter. Order breaks ties.' },
           { text: 'The browser mixes them', why: 'One value wins.' },
+          { text: 'The later one wins' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

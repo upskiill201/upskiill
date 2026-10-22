@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the whole page scroll sideways on Grandma\'s phone?',
         options: [
-          { text: 'The table is wider than the screen, and it stretches the page with it' },
           { text: 'Her phone is broken', why: 'Any narrow screen would do it.' },
+          { text: 'The table is wider than the screen, and it stretches the page with it' },
           { text: 'Tables can\'t be shown on phones', why: 'They can, inside a scrolling box.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -101,11 +101,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should I just remove the Price and City columns on phones?',
         options: [
-          { text: 'Phone fans want the price too. Keep all the columns and let the table scroll in its box.' },
           { text: 'Yes, hide them with display: none.', why: 'Hiding data from most visitors is a bad trade.' },
           { text: 'Remove the whole table.', why: 'The gigs are important.' },
+          { text: 'Phone fans want the price too. Keep all the columns and let the table scroll in its box.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -147,11 +147,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why keep the gig list as a table on phones?',
         options: [
-          { text: 'It\'s data: the headings and columns belong together for everyone' },
           { text: 'Tables are faster', why: 'It\'s about meaning.' },
           { text: 'Grids don\'t work on phones', why: 'They do. The gig list is data.' },
+          { text: 'It\'s data: the headings and columns belong together for everyone' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'This is slow. Can\'t I just do it all at once?',
         options: [
-          { text: 'Fans are using the site now. Small steps mean if anything breaks, I know exactly which step did it.' },
           { text: 'Yes, nothing ever breaks.', why: 'One card already did.' },
+          { text: 'Fans are using the site now. Small steps mean if anything breaks, I know exactly which step did it.' },
           { text: 'Take the site down first.', why: 'Small steps keep it working the whole time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         code: '.card { padding: 16px; }\n\n<article class="card">A</article>\n<article>B</article>\n<article class="card">C</article>',
         language: 'html',
         options: [
-          { text: 'A and C' },
           { text: 'All three', why: 'B has no class.' },
           { text: 'None', why: '.card still styles A and C.' },
+          { text: 'A and C' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

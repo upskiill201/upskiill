@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which element gets display: flex to put the links in a row?',
         options: [
-          { text: 'The ul: its li children become the items' },
           { text: 'Each li', why: 'The container is the parent, the ul.' },
+          { text: 'The ul: its li children become the items' },
           { text: 'Each a', why: 'The links are inside the items.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Why keep a list at all? Just put three links in a row.',
         options: [
-          { text: 'A list tells screen readers "list, 3 items", so people know how many links there are. CSS handles the row.' },
           { text: 'Flexbox only works on lists.', why: 'It works on any parent. The list is for meaning.' },
           { text: 'No reason.', why: 'The list gives the links structure.' },
+          { text: 'A list tells screen readers "list, 3 items", so people know how many links there are. CSS handles the row.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         code: 'ul { display: flex; gap: 16px; padding: 0; }',
         language: 'css',
         options: [
-          { text: 'No: gap only goes between items' },
           { text: 'Yes, on every side', why: 'gap is only between items.' },
+          { text: 'No: gap only goes between items' },
           { text: 'Only on the left', why: 'gap never touches the outside edges.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

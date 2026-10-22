@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'Why do you write the picture\'s size AND the file already knows its size?',
         options: [
-          { text: 'The browser only learns the file\'s size when it arrives. Writing it first saves the space, so nothing jumps.' },
           { text: 'No reason.', why: 'There\'s a very good reason: Ama tapped the wrong thing last lesson.' },
+          { text: 'The browser only learns the file\'s size when it arrives. Writing it first saves the space, so nothing jumps.' },
           { text: 'To make it bigger.', why: 'The point is saving space before it loads, not making it bigger.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

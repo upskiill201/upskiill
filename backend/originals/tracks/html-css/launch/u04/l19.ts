@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which line is the clickable heading in a search result, usually?',
         options: [
-          { text: '<title>' },
           { text: 'og:image', why: 'That\'s the share picture.' },
+          { text: '<title>' },
           { text: 'link rel="icon"', why: 'That\'s the tab icon.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         code: '<meta name="description" content="...">\n<meta property="og:title" content="...">',
         language: 'html',
         options: [
-          { text: 'Nothing visible on the page: they\'re for search and previews' },
           { text: 'The h1', why: 'Meta tags don\'t change the page.' },
+          { text: 'Nothing visible on the page: they\'re for search and previews' },
           { text: 'The colours', why: 'That\'s CSS.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

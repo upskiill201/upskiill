@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can\'t you just type < in your text?',
         options: [
-          { text: 'The browser reads it as the start of a tag' },
           { text: 'It\'s not on phone keyboards', why: 'It is. The problem is that HTML uses < to start tags.' },
           { text: 'It\'s a rude symbol', why: 'Not rude, just special: HTML uses it for tags.' },
+          { text: 'The browser reads it as the start of a tag' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

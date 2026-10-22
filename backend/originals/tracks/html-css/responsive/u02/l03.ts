@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'class="beat card" (with a space). What does the browser see?',
         options: [
-          { text: 'Two classes: beat and card' },
           { text: 'One class called "beat card"', why: 'A space separates classes.' },
           { text: 'An error', why: 'It\'s valid: two separate classes.' },
+          { text: 'Two classes: beat and card' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Why not keep styling article? It worked.',
         options: [
-          { text: 'When I add gig cards or news, they\'re articles too. A beat-card class styles only the beats.' },
           { text: 'article is banned in CSS.', why: 'It\'s fine. It\'s just too broad.' },
+          { text: 'When I add gig cards or news, they\'re articles too. A beat-card class styles only the beats.' },
           { text: 'Classes load faster.', why: 'It\'s about picking exactly the right elements.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         code: '.beat-card h2 { color: #FF9600; }\n\n<h2>Beats</h2>\n<article class="beat-card"><h2>Sunrise in Osu</h2></article>',
         language: 'html',
         options: [
-          { text: 'Only "Sunrise in Osu", inside the card' },
           { text: 'Both', why: '"Beats" isn\'t inside a beat card.' },
           { text: 'Only "Beats"', why: 'The rule picks h2s inside .beat-card.' },
+          { text: 'Only "Sunrise in Osu", inside the card' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

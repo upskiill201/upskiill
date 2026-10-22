@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Lighthouse gave me 100 for accessibility. So I\'m done?',
         options: [
-          { text: 'A great start, but tools catch only some problems. I still need the keyboard, zoom and screen reader steps.' },
           { text: 'Yes, 100 means perfect.', why: 'Tools can\'t judge everything.' },
+          { text: 'A great start, but tools catch only some problems. I still need the keyboard, zoom and screen reader steps.' },
           { text: 'Lighthouse is wrong.', why: 'It\'s useful, just not complete.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         code: '.bio { height: 40px; overflow: hidden; }',
         language: 'css',
         options: [
-          { text: 'Most of the text is cut off and can\'t be read' },
           { text: 'It grows to fit', why: 'A fixed height can\'t grow.' },
           { text: 'Nothing changes', why: 'Bigger text doesn\'t fit 40px.' },
+          { text: 'Most of the text is cut off and can\'t be read' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

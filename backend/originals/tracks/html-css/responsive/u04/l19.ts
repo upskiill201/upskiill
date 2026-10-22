@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The header has grid-area: head AND display: flex. How?',
         options: [
-          { text: 'It\'s an item in the page grid and a flex container for its own children' },
           { text: 'One of them is ignored', why: 'Both work: item outside, container inside.' },
+          { text: 'It\'s an item in the page grid and a flex container for its own children' },
           { text: 'It can\'t have both', why: 'Nesting is normal.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'On a phone the two page columns squeeze together. What will you do?',
         options: [
-          { text: 'Change the page grid to one column on small screens. That\'s next chapter: media queries.' },
           { text: 'Tell people to use laptops.', why: 'Most fans are on phones.' },
           { text: 'Make the text smaller.', why: 'The layout needs to change, not the text.' },
+          { text: 'Change the page grid to one column on small screens. That\'s next chapter: media queries.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         code: '.page { grid-template-columns: 2fr 1fr; grid-template-areas: "head head" "beats gigs"; }',
         language: 'css',
         options: [
-          { text: 'beats: it gets two shares' },
           { text: 'gigs', why: 'gigs is in the 1fr column.' },
+          { text: 'beats: it gets two shares' },
           { text: 'They\'re equal', why: '2fr vs 1fr.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

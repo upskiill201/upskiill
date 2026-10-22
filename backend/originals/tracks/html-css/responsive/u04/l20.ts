@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         code: 'grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));\ngap: 16px;',
         language: 'css',
         options: [
-          { text: '7: 7 × 150 + 6 × 16 = 1146px fits; 8 needs 1312px' },
           { text: '8', why: '8 × 150 + 7 × 16 = 1312px, just too wide.' },
           { text: '4', why: 'Many more fit at 150px.' },
+          { text: '7: 7 × 150 + 6 × 16 = 1146px fits; 8 needs 1312px' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',

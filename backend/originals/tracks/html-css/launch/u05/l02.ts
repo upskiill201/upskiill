@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         code: '<h1>Mensah Beats</h1>\n<p>I make beats.</p>',
         language: 'html',
         options: [
-          { text: 'A big heading and one line, in default black on white' },
           { text: 'A full music site', why: 'It\'s just two lines.' },
+          { text: 'A big heading and one line, in default black on white' },
           { text: 'Nothing', why: 'It shows a heading and a line.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -121,11 +121,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the main lesson of Kofi\'s twelve weeks?',
         options: [
-          { text: 'Big things are built in small versions, each one a bit better' },
           { text: 'You need to know everything before you start', why: 'He started with one line.' },
           { text: 'Websites are built in a day', why: 'It took twelve weeks.' },
+          { text: 'Big things are built in small versions, each one a bit better' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

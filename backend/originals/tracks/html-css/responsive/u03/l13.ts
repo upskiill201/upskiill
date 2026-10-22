@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does margin-left: auto do to a flex item?',
         options: [
-          { text: 'Takes all the leftover space on its left, pushing it to the far end' },
           { text: 'Centres it', why: 'Only auto on both sides centres.' },
           { text: 'Nothing in Flexbox', why: 'Auto margins are very useful in Flexbox.' },
+          { text: 'Takes all the leftover space on its left, pushing it to the far end' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         code: '.row { display: flex; align-items: flex-start; height: 300px; }\n.new { align-self: flex-end; }\n\n<section class="row"><article>A</article><article class="new">B</article><article>C</article></section>',
         language: 'html',
         options: [
-          { text: 'Only B' },
           { text: 'All three', why: 'align-self only changes B.' },
           { text: 'A and C', why: 'They follow align-items: flex-start.' },
+          { text: 'Only B' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -136,11 +136,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the safe way to change the order items appear in?',
         options: [
-          { text: 'Move them in the HTML' },
           { text: 'Use order on every item', why: 'That splits screen order from reading order.' },
+          { text: 'Move them in the HTML' },
           { text: 'Use margins', why: 'Margins move things apart, not reorder them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

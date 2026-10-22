@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How many accent colours should your first design use?',
         options: [
-          { text: 'One' },
           { text: 'One per heading', why: 'One accent, used everywhere, looks like a brand.' },
+          { text: 'One' },
           { text: 'As many as possible', why: 'Remember Kofi\'s rainbow page.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Your accent is pale yellow on an ivory page. What\'s the problem?',
         options: [
-          { text: 'It\'s hard to read: too little difference from the background' },
           { text: 'Yellow isn\'t allowed', why: 'It is. It just needs enough contrast.' },
+          { text: 'It\'s hard to read: too little difference from the background' },
           { text: 'Nothing', why: 'Pale on pale is hard to read. Chapter 5 shows how to check.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

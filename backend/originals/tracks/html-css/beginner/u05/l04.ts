@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What colour is #FFFFFF?',
         options: [
-          { text: 'White: full red, green and blue light' },
           { text: 'Black', why: 'That\'s #000000: no light at all.' },
           { text: 'Yellow', why: 'Yellow has no blue: #FFFF00.' },
+          { text: 'White: full red, green and blue light' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         code: 'h1 { color: #FF0000; }',
         language: 'css',
         options: [
-          { text: 'Red: full red, no green, no blue' },
           { text: 'Green', why: 'Green is the middle pair: #00FF00.' },
+          { text: 'Red: full red, no green, no blue' },
           { text: 'Black', why: 'Black has no light at all.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

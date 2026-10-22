@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Kofi\'s story paragraph is long. How should it be aligned?',
         options: [
-          { text: 'Left, so each line starts in the same place' },
           { text: 'Centred, like the heading', why: 'Long centred text is hard to read: every line starts somewhere new.' },
+          { text: 'Left, so each line starts in the same place' },
           { text: 'Right', why: 'In left-to-right languages, left is easiest.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I made "Book me" bigger by wrapping it in h1. Smart?',
         options: [
-          { text: 'Keep it as a p or link, and make it bigger with font-size. h1 is the page\'s main heading.' },
           { text: 'Smart.', why: 'That\'s HTML for looks again.' },
           { text: 'Use six h1s for extra size.', why: 'Size is CSS\'s job.' },
+          { text: 'Keep it as a p or link, and make it bigger with font-size. h1 is the page\'s main heading.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

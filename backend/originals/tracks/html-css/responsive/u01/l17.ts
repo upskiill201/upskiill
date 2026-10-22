@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Ama keep pressing the wrong button?',
         options: [
-          { text: 'The links are tiny and touching, smaller than her thumb' },
           { text: 'Her phone is slow', why: 'It\'s the size and spacing.' },
+          { text: 'The links are tiny and touching, smaller than her thumb' },
           { text: 'The links are broken', why: 'They work. They\'re just too small to hit.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         code: 'a { display: inline-block; padding: 14px 16px; font-size: 1rem; line-height: 1; }',
         language: 'css',
         options: [
-          { text: 'About 44px: 14 + 16 + 14' },
           { text: '16px', why: 'Padding adds to the top and bottom.' },
+          { text: 'About 44px: 14 + 16 + 14' },
           { text: '30px', why: 'Padding counts on both top and bottom.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -149,11 +149,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why use padding instead of just bigger words?',
         options: [
-          { text: 'The target gets bigger without the text getting huge' },
           { text: 'Padding is faster', why: 'It\'s about a big target with normal text.' },
           { text: 'Words can\'t be made bigger', why: 'They can, but padding makes the tappable area bigger.' },
+          { text: 'The target gets bigger without the text getting huge' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

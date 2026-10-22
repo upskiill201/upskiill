@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the wedding planner not find Mensah Beats?',
         options: [
-          { text: 'The site didn\'t clearly say what it is, so search engines couldn\'t match it to her search' },
           { text: 'Search engines only show big companies', why: 'Small sites appear when they clearly match the search.' },
           { text: 'Her phone was broken', why: 'The site itself needed clearer titles and words.' },
+          { text: 'The site didn\'t clearly say what it is, so search engines couldn\'t match it to her search' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'My site comes up when I search my name. Isn\'t that enough?',
         options: [
-          { text: 'It helps people who already know me. New fans search for things like "beat producer Accra", so the site needs those words, honestly.' },
           { text: 'Yes, that\'s all you need.', why: 'New fans don\'t know your name yet.' },
+          { text: 'It helps people who already know me. New fans search for things like "beat producer Accra", so the site needs those words, honestly.' },
           { text: 'Search engines can\'t read titles.', why: 'They use them a lot.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -153,11 +153,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Should every page on the site have the same title?',
         options: [
-          { text: 'No: each page gets its own, saying what it is' },
           { text: 'Yes, to look consistent', why: 'Identical titles make pages hard to tell apart.' },
+          { text: 'No: each page gets its own, saying what it is' },
           { text: 'Only the home page needs one', why: 'Every page does.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

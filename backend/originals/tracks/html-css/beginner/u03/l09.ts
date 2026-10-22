@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does a page jump while pictures load?',
         options: [
-          { text: 'The browser doesn\'t know a picture\'s size until it arrives, so it moves things when it does' },
           { text: 'Pictures are too colourful', why: 'Colour has nothing to do with it. Unknown size does.' },
           { text: 'The phone is shaking', why: 'Ama\'s phone is fine. The layout shifts when sizes arrive late.' },
+          { text: 'The browser doesn\'t know a picture\'s size until it arrives, so it moves things when it does' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'I tapped Book me and it turned into a picture! The page moved!',
         options: [
-          { text: 'Sorry! I\'ll give the pictures a width and height so nothing moves while they load.' },
           { text: 'Tap faster next time.', why: 'Ama shouldn\'t have to race the page. Size attributes fix it.' },
+          { text: 'Sorry! I\'ll give the pictures a width and height so nothing moves while they load.' },
           { text: 'Pictures always do that.', why: 'Not when they have width and height.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

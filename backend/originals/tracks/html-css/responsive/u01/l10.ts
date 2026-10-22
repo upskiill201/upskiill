@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         code: 'article {\n  width: 200px;\n  padding: 10px;\n  border: 5px solid #FF9600;\n}',
         language: 'css',
         options: [
-          { text: '230px: 200 + 10 + 10 + 5 + 5' },
           { text: '200px', why: 'Only with border-box.' },
+          { text: '230px: 200 + 10 + 10 + 5 + 5' },
           { text: '215px', why: 'Padding and border count on both sides.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'Why does the big cover picture fit now?',
         options: [
-          { text: 'It has max-width: 100%, so it\'s never wider than its card.' },
           { text: 'Because your phone got bigger.', why: 'The image shrinks to fit.' },
           { text: 'I deleted it.', why: 'It\'s still there, just shrunk to fit.' },
+          { text: 'It has max-width: 100%, so it\'s never wider than its card.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Two stacked cards: 20px bottom margin on the first, 12px top margin on the second. The gap?',
         options: [
-          { text: '20px' },
           { text: '32px', why: 'Stacked margins don\'t add.' },
+          { text: '20px' },
           { text: '12px', why: 'The bigger one wins.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

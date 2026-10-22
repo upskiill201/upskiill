@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should I make a separate featured-beat-card class with all the card styles copied in?',
         options: [
-          { text: 'No: keep beat-card for the base and add featured on top. Then the card styles live in one place.' },
           { text: 'Yes, copy them all.', why: 'Copies drift apart. Combine two classes.' },
           { text: 'Use an id instead.', why: 'Two classes do it cleanly.' },
+          { text: 'No: keep beat-card for the base and add featured on top. Then the card styles live in one place.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         code: '.beat-card { border: 2px solid #FF9600; }\n.featured { border-color: #F0438A; }\n\n<article class="beat-card featured">...</article>',
         language: 'html',
         options: [
-          { text: 'Pink: .featured comes later and changes only the colour' },
           { text: 'Orange', why: 'Both rules apply; the later one sets the colour.' },
+          { text: 'Pink: .featured comes later and changes only the colour' },
           { text: 'No border', why: '.beat-card gives it one.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

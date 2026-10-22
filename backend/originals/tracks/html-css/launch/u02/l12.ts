@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why add both to the animation?',
         options: [
-          { text: 'So covers stay invisible while waiting, and stay in place after, instead of flashing' },
           { text: 'So it plays twice', why: 'both is about the before and after looks.' },
+          { text: 'So covers stay invisible while waiting, and stay in place after, instead of flashing' },
           { text: 'It does nothing', why: 'Without it, delayed covers show before they arrive.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should all twelve covers deal in one by one?',
         options: [
-          { text: 'Twelve would take ages, and people want to see them now. Just the three newest is a nice touch.' },
           { text: 'Yes, all twelve, 500ms apart.', why: 'That\'s six seconds of waiting.' },
           { text: 'Deal them every time you scroll.', why: 'Repeated motion gets tiring.' },
+          { text: 'Twelve would take ages, and people want to see them now. Just the three newest is a nice touch.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -132,11 +132,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does :nth-child(2) pick?',
         options: [
-          { text: 'An element that is the second child of its parent' },
           { text: 'Every second element on the page', why: 'Just the second child of each parent.' },
           { text: 'Elements with class 2', why: 'It\'s about position, not class.' },
+          { text: 'An element that is the second child of its parent' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

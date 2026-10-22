@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         code: '.beat-card { padding: 16px; }\n\n<article class="beat-card featured">A</article>\n<article class="featured">B</article>\n<article class="beat-card">C</article>',
         language: 'html',
         options: [
-          { text: 'A and C' },
           { text: 'Only C', why: 'A has beat-card too.' },
+          { text: 'A and C' },
           { text: 'All three', why: 'B isn\'t a beat-card.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'Next month the poster picks three different beats. How much work is that?',
         options: [
-          { text: 'Move the word featured onto three other cards. The CSS doesn\'t change.' },
           { text: 'Rewrite the stylesheet.', why: 'The class keeps the look in one rule.' },
           { text: 'Change six style attributes.', why: 'No style attributes: just move the class.' },
+          { text: 'Move the word featured onto three other cards. The CSS doesn\'t change.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

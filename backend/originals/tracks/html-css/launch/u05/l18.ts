@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why include "What was hard"?',
         options: [
-          { text: 'It shows how you solve real problems, which people hiring care about' },
           { text: 'To complain', why: 'It shows how you think.' },
           { text: 'It\'s not needed', why: 'It\'s often the most useful part.' },
+          { text: 'It shows how you solve real problems, which people hiring care about' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         code: '<article>\n  <h1>How I built it</h1>\n  <h2>What it is</h2>\n  <h2>What I used</h2>\n  <h2>What\'s next</h2>\n</article>',
         language: 'html',
         options: [
-          { text: 'Three, under one main heading' },
           { text: 'Four', why: 'The h1 is the title.' },
           { text: 'One', why: 'Count the h2s.' },
+          { text: 'Three, under one main heading' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

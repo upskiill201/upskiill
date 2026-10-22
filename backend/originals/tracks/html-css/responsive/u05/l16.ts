@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do width media queries actually check?',
         options: [
-          { text: 'How wide the screen (viewport) is' },
           { text: 'The phone\'s brand', why: 'They don\'t know brands.' },
+          { text: 'How wide the screen (viewport) is' },
           { text: 'How fast the internet is', why: 'Width queries check width.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         code: '.menu { display: grid; }\n@media (min-width: 700px) { .menu { grid-template-columns: 1fr 1fr; } }',
         language: 'css',
         options: [
-          { text: 'Two' },
           { text: 'One', why: '750px is over 700px.' },
+          { text: 'Two' },
           { text: 'It depends on the brand', why: 'Only the width matters.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is responsive design really about?',
         options: [
-          { text: 'Using the space well on every screen, from phones to big monitors' },
           { text: 'Making everything smaller', why: 'Wider screens get more columns too.' },
           { text: 'Building one site per device', why: 'One site, every screen.' },
+          { text: 'Using the space well on every screen, from phones to big monitors' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

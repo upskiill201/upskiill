@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does autocomplete="email" do?',
         options: [
-          { text: 'Tells the browser it\'s an email box, so it can offer to fill in the person\'s own email' },
           { text: 'Sends an email automatically', why: 'It only helps fill in the box.' },
+          { text: 'Tells the browser it\'s an email box, so it can offer to fill in the person\'s own email' },
           { text: 'Checks the email is real', why: 'type="email" checks the format; autocomplete helps fill it in.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'My phone filled in my name and email by itself! How?',
         options: [
-          { text: 'The boxes have autocomplete, so your phone knew what they were for and offered your saved details.' },
           { text: 'Magic.', why: 'It\'s the autocomplete attribute.' },
           { text: 'The site already knew you.', why: 'Your phone filled it in, not the site.' },
+          { text: 'The boxes have autocomplete, so your phone knew what they were for and offered your saved details.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

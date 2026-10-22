@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why run a checklist before a big launch?',
         options: [
-          { text: 'Problems found before launch are fixed calmly; problems found by hundreds of visitors aren\'t' },
           { text: 'Checklists make the site faster', why: 'They catch problems.' },
           { text: 'Launches don\'t need checking', why: 'Hundreds of people arrive at once.' },
+          { text: 'Problems found before launch are fixed calmly; problems found by hundreds of visitors aren\'t' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         code: '<ol>\n  <li>Links work</li>\n  <li>Form works</li>\n  <li>Phones work</li>\n</ol>',
         language: 'html',
         options: [
-          { text: 'Three' },
           { text: 'One', why: 'Count the li elements.' },
           { text: 'Four', why: 'There are three items.' },
+          { text: 'Three' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -150,11 +150,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "ready, not perfect" mean?',
         options: [
-          { text: 'Everything important works and has been checked; small improvements can come later' },
           { text: 'Launch with known big bugs', why: 'Important things must work.' },
+          { text: 'Everything important works and has been checked; small improvements can come later' },
           { text: 'Never launch', why: 'Ready means you launch.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

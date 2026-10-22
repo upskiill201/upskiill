@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         code: '<img src="labadi-waves.webp" alt="Labadi Waves cover">',
         language: 'html',
         options: [
-          { text: 'A broken image: the browser looks in the wrong place' },
           { text: 'It finds it in covers/ anyway', why: 'Browsers don\'t search folders.' },
           { text: 'The page won\'t open', why: 'Only the image breaks.' },
+          { text: 'A broken image: the browser looks in the wrong place' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -80,21 +80,21 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Why bother with a 404 page? Nobody will see it.',
         options: [
-          { text: 'Anyone who types a typo or follows an old link will. A friendly one keeps them on the site.' },
           { text: 'You\'re right, skip it.', why: 'Typos are common.' },
+          { text: 'Anyone who types a typo or follows an old link will. A friendly one keeps them on the site.' },
           { text: 'Only search engines see it.', why: 'People do.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'What should you check before choosing a domain registrar?',
         options: [
-          { text: 'The renewal price, not just the first year' },
           { text: 'Only the logo colour', why: 'Check the renewal price.' },
           { text: 'Nothing, they\'re all free', why: 'They charge yearly.' },
+          { text: 'The renewal price, not just the first year' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

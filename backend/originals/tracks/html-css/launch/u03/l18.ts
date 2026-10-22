@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Your profile photo is next to your name in the h1. What alt should it have?',
         options: [
-          { text: 'A short description, like "Me at the school science fair", or alt="" if it adds nothing new' },
           { text: 'alt="photo"', why: 'Say what it shows, or leave it empty if decorative.' },
           { text: 'No alt at all', why: 'Every image needs an alt attribute, even an empty one.' },
+          { text: 'A short description, like "Me at the school science fair", or alt="" if it adds nothing new' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Who will you ask to test your site?',
         options: [
-          { text: 'Friends on different devices, someone who uses big text, and, if I can, someone who uses a screen reader every day.' },
           { text: 'Nobody, the tool passed.', why: 'Tools miss a lot.' },
+          { text: 'Friends on different devices, someone who uses big text, and, if I can, someone who uses a screen reader every day.' },
           { text: 'Only myself.', why: 'Others find what you miss.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

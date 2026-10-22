@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'The pink looks so good on night blue. Can the small "Free to listen" line be pink?',
         options: [
-          { text: 'It\'s just under 4.5 to 1, so too faint for small text. Keep pink for a big label; small print stays cream.' },
           { text: 'Sure, it looks good.', why: 'Small print needs 4.5 to 1.' },
+          { text: 'It\'s just under 4.5 to 1, so too faint for small text. Keep pink for a big label; small print stays cream.' },
           { text: 'Make it even smaller.', why: 'Smaller needs more contrast.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why shouldn\'t colour be the only thing that shows a link?',
         options: [
-          { text: 'Some people can\'t see the colour difference' },
           { text: 'Links can\'t have colours', why: 'They can. Just don\'t rely only on colour.' },
           { text: 'It makes pages slow', why: 'It\'s about people who can\'t see the difference.' },
+          { text: 'Some people can\'t see the colour difference' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

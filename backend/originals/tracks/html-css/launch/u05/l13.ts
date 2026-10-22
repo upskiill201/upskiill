@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do small, regular updates matter?',
         options: [
-          { text: 'Old dates and stale news make a site look abandoned' },
           { text: 'Sites stop working if you don\'t update them monthly', why: 'They keep working, but look stale.' },
           { text: 'They don\'t matter', why: 'People notice old content.' },
+          { text: 'Old dates and stale news make a site look abandoned' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         code: '<h1>What\'s changed</h1>\n<h2>v2.2</h2>\n<h2>v2.1</h2>\n<h2>v2.0</h2>',
         language: 'html',
         options: [
-          { text: 'v2.2, the newest' },
           { text: 'v2.0', why: 'It\'s at the bottom.' },
           { text: 'All at once', why: 'They read top to bottom.' },
+          { text: 'v2.2, the newest' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

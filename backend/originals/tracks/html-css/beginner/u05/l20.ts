@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'There\'s a typo in your bio on the live site.',
         options: [
-          { text: 'Thanks! I\'ll fix it in index.html and upload the folder again.' },
           { text: 'It\'s live now, it\'s stuck.', why: 'Re-upload and it updates.' },
+          { text: 'Thanks! I\'ll fix it in index.html and upload the folder again.' },
           { text: 'I\'ll make a whole new site.', why: 'One fix, one upload.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -132,11 +132,11 @@ const lesson: OriginalLesson = {
         prompt: 'A fan opens Kofi\'s web address. Which file does the host send?',
         code: 'mensah-beats/\n  index.html\n  style.css\n  sunrise-in-osu.jpg',
         options: [
-          { text: 'index.html, which then loads style.css and the image' },
           { text: 'style.css first', why: 'index.html comes first and loads it.' },
           { text: 'The image', why: 'The page loads the image.' },
+          { text: 'index.html, which then loads style.css and the image' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',

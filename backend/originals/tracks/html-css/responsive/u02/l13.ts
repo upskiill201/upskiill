@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the link orange inside the cream card?',
         options: [
-          { text: 'The a rule sets it directly, and a direct rule beats an inherited value' },
           { text: 'Links can\'t inherit', why: 'They can, with color: inherit.' },
           { text: 'The card\'s colour is too weak', why: 'Inheritance only fills in when nothing sets the property.' },
+          { text: 'The a rule sets it directly, and a direct rule beats an inherited value' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should I set font-family on every h2, p and li?',
         options: [
-          { text: 'No: set it once on body. It inherits into everything inside.' },
           { text: 'Yes, every element needs it.', why: 'font-family inherits.' },
           { text: 'Only on links.', why: 'body covers everything.' },
+          { text: 'No: set it once on body. It inherits into everything inside.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -134,11 +134,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The links in the card now look like the text. What keeps them recognisable as links?',
         options: [
-          { text: 'Their underline, which they keep by default' },
           { text: 'Nothing, so it\'s fine to lose it', why: 'Colour shouldn\'t be the only signal: keep the underline.' },
+          { text: 'Their underline, which they keep by default' },
           { text: 'Their padding', why: 'The underline does it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How is audio different from img?',
         options: [
-          { text: 'audio has a closing tag, img doesn\'t' },
           { text: 'audio doesn\'t need src', why: 'Both need to know which file: both use src.' },
           { text: 'They\'re the same', why: 'audio plays sound and has a closing tag; img shows a picture and is empty.' },
+          { text: 'audio has a closing tag, img doesn\'t' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'I pressed play on your page. That\'s actually Night Bus?! Right in the website?',
         options: [
-          { text: 'Right in the website. One audio tag.' },
           { text: 'No, it\'s opening Spotify.', why: 'It plays right on the page, no app needed.' },
+          { text: 'Right in the website. One audio tag.' },
           { text: 'It\'s a video.', why: 'It\'s sound only: the audio element.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',

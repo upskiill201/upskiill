@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is !important a trap?',
         options: [
-          { text: 'Only another !important can beat it, so they multiply' },
           { text: 'Browsers ignore it', why: 'They obey it. That\'s the problem.' },
           { text: 'It slows the page', why: 'It makes the CSS hard to change.' },
+          { text: 'Only another !important can beat it, so they multiply' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'My rule doesn\'t win. Should I add !important?',
         options: [
-          { text: 'First check which rule is winning and why. Usually a flatter selector or a better order fixes it.' },
           { text: 'Yes, always.', why: 'That\'s how the war started.' },
+          { text: 'First check which rule is winning and why. Usually a flatter selector or a better order fixes it.' },
           { text: 'Add an id.', why: 'Also escalation. Find the cause.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When is !important reasonable?',
         options: [
-          { text: 'Rarely, such as overriding styles you can\'t edit, like a third-party widget' },
           { text: 'On every rule, to be safe', why: 'Then nothing can be changed.' },
+          { text: 'Rarely, such as overriding styles you can\'t edit, like a third-party widget' },
           { text: 'Whenever a rule doesn\'t work', why: 'Find the cause first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'On my phone the big cover is two covers wide. Is that right?',
         options: [
-          { text: 'Yes, it spans two columns, so on your phone it fills the whole row. Nice and big.' },
           { text: 'No, it\'s broken.', why: 'Spanning two columns on a two-column phone fills the row.' },
+          { text: 'Yes, it spans two columns, so on your phone it fills the whole row. Nice and big.' },
           { text: 'It should be tiny on phones.', why: 'The feature should be the biggest.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         code: '.feature { grid-column: span 2; grid-row: span 2; }\n\n<figure class="feature">...</figure>\n<figure>...</figure>',
         language: 'html',
         options: [
-          { text: 'Below the feature, which fills the first two rows' },
           { text: 'Beside the feature', why: 'The feature takes both columns.' },
           { text: 'Nowhere', why: 'It fills the next free cell.' },
+          { text: 'Below the feature, which fills the first two rows' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

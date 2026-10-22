@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the skip link come first in the body?',
         options: [
-          { text: 'So it\'s the first thing a keyboard user reaches with Tab' },
           { text: 'So it looks nice at the top', why: 'It\'s hidden until focused.' },
           { text: 'Search engines need it first', why: 'It\'s for keyboard users.' },
+          { text: 'So it\'s the first thing a keyboard user reaches with Tab' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'Where\'s the skip link? I can\'t see it.',
         options: [
-          { text: 'It\'s hidden until you press Tab. Then it appears for keyboard users.' },
           { text: 'There isn\'t one.', why: 'It\'s there, just hidden.' },
+          { text: 'It\'s hidden until you press Tab. Then it appears for keyboard users.' },
           { text: 'It only works on phones.', why: 'It\'s for keyboards.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

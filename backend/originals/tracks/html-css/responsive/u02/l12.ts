@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why put shared styles in .card instead of in .beat-card and .gig-card?',
         options: [
-          { text: 'Then they live in one place, and one change updates every card' },
           { text: 'Extra classes can\'t hold borders', why: 'They can. It\'s about not repeating.' },
+          { text: 'Then they live in one place, and one change updates every card' },
           { text: 'Browsers prefer short names', why: 'It\'s about one place to change.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'How do I style just the words "Sold out" inside the heading?',
         options: [
-          { text: 'Wrap them in <span class="tag">Sold out</span> and style .tag.' },
           { text: 'Give the whole h2 a class.', why: 'That styles the whole heading.' },
           { text: 'Make a new h3.', why: 'That changes the meaning. span just wraps words.' },
+          { text: 'Wrap them in <span class="tag">Sold out</span> and style .tag.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         code: '.card { border-radius: 0; }\n\n<article class="card beat-card">...</article>\n<article class="card gig-card">...</article>',
         language: 'html',
         options: [
-          { text: 'Both cards get square corners' },
           { text: 'Only the beat card', why: 'Both have the card class.' },
+          { text: 'Both cards get square corners' },
           { text: 'Nothing', why: 'Both cards share .card.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

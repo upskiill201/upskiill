@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write the palette in a comment at the top of the CSS?',
         options: [
-          { text: 'So you copy exactly the same codes every time' },
           { text: 'Browsers need it to show colours', why: 'Comments are ignored by browsers. It\'s for you.' },
+          { text: 'So you copy exactly the same codes every time' },
           { text: 'To make the file longer', why: 'It keeps the codes consistent.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Why cream text instead of pure white?',
         options: [
-          { text: 'It\'s from my cover, and it\'s a little gentler on eyes at night, while still easy to read.' },
           { text: 'White isn\'t allowed.', why: 'It is. Cream is a softer choice.' },
           { text: 'No reason.', why: 'There is: it matches the art and is gentler.' },
+          { text: 'It\'s from my cover, and it\'s a little gentler on eyes at night, while still easy to read.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

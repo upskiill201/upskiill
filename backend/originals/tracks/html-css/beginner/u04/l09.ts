@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'My stylesheet has twelve rules that all say orange. Is that bad?',
         options: [
-          { text: 'Not wrong, just long. Group them with commas into one rule and it\'s one edit to change.' },
           { text: 'Yes, delete them all.', why: 'Group them instead.' },
           { text: 'Make it twenty.', why: 'Shorter is easier to change.' },
+          { text: 'Not wrong, just long. Group them with commas into one rule and it\'s one edit to change.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

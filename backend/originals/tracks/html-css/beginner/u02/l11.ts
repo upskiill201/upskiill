@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'Did the famous DJ REALLY say that about you?',
         options: [
-          { text: 'Not yet. I\'m taking it down and using real quotes from people who heard my beats.' },
           { text: 'Sort of.', why: 'Ama is ten and already sees through it. So will visitors.' },
           { text: 'He would have, if he\'d heard it.', why: 'That\'s still an invented quote. Real ones only.' },
+          { text: 'Not yet. I\'m taking it down and using real quotes from people who heard my beats.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does cite hold?',
         options: [
-          { text: 'The title of the work being quoted or talked about' },
           { text: 'The whole quote', why: 'The quote goes in blockquote. cite holds the title of the source.' },
+          { text: 'The title of the work being quoted or talked about' },
           { text: 'A link', why: 'Links are a different tag, coming in Chapter 3.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which layer does a background colour fill?',
         options: [
-          { text: 'Content and padding, up to the border' },
           { text: 'Margin too', why: 'Margin is always see-through.' },
+          { text: 'Content and padding, up to the border' },
           { text: 'Only behind the text', why: 'It fills the padding as well.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'A forum said padding: -10px will shrink a box. True?',
         options: [
-          { text: 'No, padding can\'t be negative. The browser ignores it. Margins can be negative, padding can\'t.' },
           { text: 'True, try it.', why: 'Negative padding isn\'t allowed.' },
           { text: 'Only on phones.', why: 'It\'s never allowed.' },
+          { text: 'No, padding can\'t be negative. The browser ignores it. Margins can be negative, padding can\'t.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the safest way to check a CSS claim from a forum?',
         options: [
-          { text: 'Try it in a small test page, and check MDN' },
           { text: 'Trust the post with the most likes', why: 'Popular isn\'t always right. Test it.' },
           { text: 'Copy it straight into your site', why: 'Test first, so nothing breaks.' },
+          { text: 'Try it in a small test page, and check MDN' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'You\'ve finished the whole HTML and CSS track. What now?',
         options: [
-          { text: 'Build my own site, ship v1.0, and keep a changelog.' },
           { text: 'Wait until I know everything.', why: 'Ship what you know.' },
           { text: 'Never touch HTML again.', why: 'Keep building.' },
+          { text: 'Build my own site, ship v1.0, and keep a changelog.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -130,11 +130,11 @@ const lesson: OriginalLesson = {
         code: '.skip-link { position: absolute; left: -999px; }\n.skip-link:focus { left: 16px; top: 16px; }',
         language: 'css',
         options: [
-          { text: 'The skip link slides into view at the top left' },
           { text: 'Nothing', why: 'Focus brings it on screen.' },
+          { text: 'The skip link slides into view at the top left' },
           { text: 'The footer', why: 'The skip link comes first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         code: 'grid-template-columns: 1fr 1fr 1fr;',
         language: 'css',
         options: [
-          { text: '300px' },
           { text: '900px', why: '1fr is one share, not all of it.' },
           { text: '1px', why: 'fr is a share of the space.' },
+          { text: '300px' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'So should Kofi rebuild his nav bar in Grid?',
         options: [
-          { text: 'No need: a nav bar is one row, which is exactly Flexbox\'s job. It\'s working.' },
           { text: 'Yes, Grid is always better.', why: 'One direction is Flexbox\'s job.' },
+          { text: 'No need: a nav bar is one row, which is exactly Flexbox\'s job. It\'s working.' },
           { text: 'Use a table.', why: 'Navigation isn\'t data.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What two-value gap does gap: 4px 16px set?',
         options: [
-          { text: '4px between rows, 16px between columns' },
           { text: '4px between columns, 16px between rows', why: 'Row gap comes first.' },
+          { text: '4px between rows, 16px between columns' },
           { text: '4px on top, 16px on the sides', why: 'gap is between cells, not around them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

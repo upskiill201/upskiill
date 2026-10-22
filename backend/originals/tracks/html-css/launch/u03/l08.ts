@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is an element\'s "name" to a screen reader?',
         options: [
-          { text: 'The words it says for it: link text, button text or alt' },
           { text: 'Its id', why: 'ids aren\'t read out.' },
           { text: 'Its class', why: 'Classes are for CSS.' },
+          { text: 'The words it says for it: link text, button text or alt' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should I add aria-label to every link, to be safe?',
         options: [
-          { text: 'No: a text link already has a name. aria-label is only for when there\'s no visible text, and it replaces what\'s visible.' },
           { text: 'Yes, more ARIA is better.', why: 'Unneeded ARIA can confuse.' },
+          { text: 'No: a text link already has a name. aria-label is only for when there\'s no visible text, and it replaces what\'s visible.' },
           { text: 'Put aria-label on the body.', why: 'It belongs on the unnamed element.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         code: '<a href="https://example.com/tiktok" aria-label="Mensah Beats on TikTok"><img src="tiktok.png" alt=""></a>',
         language: 'html',
         options: [
-          { text: '"Mensah Beats on TikTok, link"' },
           { text: '"Link"', why: 'aria-label gives it a name.' },
           { text: '"tiktok.png"', why: 'The image alt is empty; the label names the link.' },
+          { text: '"Mensah Beats on TikTok, link"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

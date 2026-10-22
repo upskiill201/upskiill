@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the text spill out when Grandma zooms?',
         options: [
-          { text: 'The card has a fixed height, so it can\'t grow with the text' },
           { text: 'Zoom is broken', why: 'Zoom works; the box is locked.' },
           { text: 'The font is too wide', why: 'It\'s the fixed height.' },
+          { text: 'The card has a fixed height, so it can\'t grow with the text' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'But I want all the gig cards exactly the same height.',
         options: [
-          { text: 'min-height keeps them equal at normal size. When text grows, they grow too, so nothing gets cut off.' },
           { text: 'Then use height and hope.', why: 'Text will spill for some people.' },
+          { text: 'min-height keeps them equal at normal size. When text grows, they grow too, so nothing gets cut off.' },
           { text: 'Make the text tiny so it fits.', why: 'Then nobody can read it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How should you test for this?',
         options: [
-          { text: 'Zoom to 200% and turn on big text, then check nothing spills or is cut off' },
           { text: 'Look once at normal size', why: 'The problem only shows when text grows.' },
+          { text: 'Zoom to 200% and turn on big text, then check nothing spills or is cut off' },
           { text: 'You can\'t test it', why: 'Zoom and text settings show it straight away.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

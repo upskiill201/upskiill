@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the page title matter for screen reader users?',
         options: [
-          { text: 'It\'s announced first, so they know which page they\'re on' },
           { text: 'It sets the colours', why: 'It names the page.' },
+          { text: 'It\'s announced first, so they know which page they\'re on' },
           { text: 'It doesn\'t', why: 'It\'s the first thing they hear.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Every page has the title "Mensah Beats". Is that fine?',
         options: [
-          { text: 'Add the page name first: "Gigs | Mensah Beats". Then people with many tabs open, or a screen reader, know where they are.' },
           { text: 'Yes, they\'re all the same site.', why: 'Each page should say which page it is.' },
           { text: 'Remove the titles.', why: 'Then the tab shows the file name.' },
+          { text: 'Add the page name first: "Gigs | Mensah Beats". Then people with many tabs open, or a screen reader, know where they are.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         code: '<title>Book me | Mensah Beats</title>',
         language: 'html',
         options: [
-          { text: '"Book me, Mensah Beats"' },
           { text: 'Nothing', why: 'The title is announced first.' },
+          { text: '"Book me, Mensah Beats"' },
           { text: 'The file name', why: 'There\'s a proper title.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write "Gigs | Mensah Beats" rather than "Mensah Beats | Gigs"?',
         options: [
-          { text: 'The part that changes comes first, so it\'s heard and seen first' },
           { text: 'It\'s alphabetical', why: 'It\'s about what\'s most useful first.' },
           { text: 'It doesn\'t matter at all', why: 'Putting the specific page first is clearer.' },
+          { text: 'The part that changes comes first, so it\'s heard and seen first' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

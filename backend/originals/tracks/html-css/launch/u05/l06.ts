@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a registrar?',
         options: [
-          { text: 'A company you rent a domain name from' },
           { text: 'The program that shows web pages', why: 'That\'s a browser.' },
           { text: 'The place your files are stored', why: 'That\'s your host.' },
+          { text: 'A company you rent a domain name from' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         code: 'Folder:\n  index.html\n  gigs.html\n  book.html',
         language: 'html',
         options: [
-          { text: 'gigs.html opens at https://mensahbeats.example.app/gigs.html' },
           { text: 'gigs.html has no address', why: 'Every uploaded file gets one.' },
           { text: 'Only index.html is online', why: 'All uploaded files are.' },
+          { text: 'gigs.html opens at https://mensahbeats.example.app/gigs.html' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -134,11 +134,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might Kofi want his own domain rather than the free address?',
         options: [
-          { text: 'It\'s easier to say on stage, and keeps working if he moves host' },
           { text: 'Free addresses don\'t work', why: 'They work fine.' },
+          { text: 'It\'s easier to say on stage, and keeps working if he moves host' },
           { text: 'It makes the site rank first', why: 'A domain alone doesn\'t do that.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does flex-direction: column do?',
         options: [
-          { text: 'Lines the items up top to bottom' },
           { text: 'Makes the container a column of the page', why: 'It changes how its items flow.' },
+          { text: 'Lines the items up top to bottom' },
           { text: 'Nothing, blocks already stack', why: 'A flex column adds gap and alignment.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'My Play button stretches across the whole card. Why?',
         options: [
-          { text: 'In a column, items stretch across by default. align-items: flex-start lets it be its own width.' },
           { text: 'Links are always full width.', why: 'It\'s the column\'s stretch.' },
           { text: 'Add more padding.', why: 'That makes it bigger, not narrower.' },
+          { text: 'In a column, items stretch across by default. align-items: flex-start lets it be its own width.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

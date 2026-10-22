@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why add fallback fonts?',
         options: [
-          { text: 'The visitor\'s device might not have your first choice' },
           { text: 'To make the page load slower', why: 'Fallbacks cost nothing. They\'re a safety net.' },
+          { text: 'The visitor\'s device might not have your first choice' },
           { text: 'Browsers need at least three fonts', why: 'They don\'t; it\'s a safety net.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

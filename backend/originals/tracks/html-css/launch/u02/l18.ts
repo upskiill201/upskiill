@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In Chapter 2 of the last course you learned to avoid !important. Why is it reasonable here?',
         options: [
-          { text: 'It\'s a deliberate safety net that must beat every other rule for people who asked for less motion' },
           { text: 'It never matters', why: 'It usually causes trouble; here it\'s on purpose.' },
+          { text: 'It\'s a deliberate safety net that must beat every other rule for people who asked for less motion' },
           { text: 'It makes animations faster', why: 'It turns them off.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'What\'s the one thing on your page that deserves to move?',
         options: [
-          { text: 'My newest project, a gentle pulse twice. Everything else just reacts when you use it.' },
           { text: 'Everything.', why: 'Too much motion gets in the way.' },
           { text: 'The background, forever.', why: 'Endless motion is tiring.' },
+          { text: 'My newest project, a gentle pulse twice. Everything else just reacts when you use it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         code: '.new { animation: pulse 1.2s ease-in-out 2; }\n@media (prefers-reduced-motion: reduce) { * { animation: none !important; } }',
         language: 'css',
         options: [
-          { text: 'No: the safety net turns every animation off' },
           { text: 'Yes, .new is more specific', why: '!important wins here.' },
+          { text: 'No: the safety net turns every animation off' },
           { text: 'Only once', why: 'It\'s turned off completely.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

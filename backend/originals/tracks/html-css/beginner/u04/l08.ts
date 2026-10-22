@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why isn\'t the link white, even though body has color: white?',
         options: [
-          { text: 'Browsers give links their own default colour' },
           { text: 'Links can\'t change colour', why: 'They can, with an a rule.' },
+          { text: 'Browsers give links their own default colour' },
           { text: 'White is not a CSS colour', why: 'It is. Links just have their own default.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'There are 140 colour names. Can I use, like, 20 of them?',
         options: [
-          { text: 'Start with three: a background, a text colour and one accent. It\'ll look like a brand.' },
           { text: 'Use all 140.', why: 'Sweet shop, not brand.' },
           { text: 'Use only black and white.', why: 'Three colours, used everywhere, works well.' },
+          { text: 'Start with three: a background, a text colour and one accent. It\'ll look like a brand.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

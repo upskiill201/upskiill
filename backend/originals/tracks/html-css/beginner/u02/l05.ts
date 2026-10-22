@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why would a six-minute voice note make a bad web page?',
         options: [
-          { text: 'People scan pages; a long block with no structure gets skipped' },
           { text: 'Voice notes are illegal on websites', why: 'They aren\'t. But a long unstructured block, spoken or written, loses people.' },
           { text: 'It wouldn\'t, it\'s perfect', why: 'Efua would close the tab in five seconds.' },
+          { text: 'People scan pages; a long block with no structure gets skipped' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'You changed my voice note into a LIST? Where\'s the passion?',
         options: [
-          { text: 'The passion is in the ranking. Now people can actually read it.' },
           { text: 'There was no passion.', why: 'There was a lot of passion. Kofi kept it, just in a shape people read.' },
+          { text: 'The passion is in the ranking. Now people can actually read it.' },
           { text: 'I\'ll put the voice note back.', why: 'Six minutes of audio is how fans get lost. The list works.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',

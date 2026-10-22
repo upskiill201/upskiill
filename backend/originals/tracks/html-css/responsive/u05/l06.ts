@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why are breakpoints named after devices a bad plan?',
         options: [
-          { text: 'There are thousands of sizes and new devices every year, so the list goes out of date' },
           { text: 'Media queries can\'t use device widths', why: 'They can. The widths keep changing.' },
+          { text: 'There are thousands of sizes and new devices every year, so the list goes out of date' },
           { text: 'Phones don\'t have widths', why: 'They do; they just vary.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'About how many characters per line are easiest to read?',
         options: [
-          { text: 'Roughly 45 to 75' },
           { text: '10 to 20', why: 'That\'s very short and choppy.' },
+          { text: 'Roughly 45 to 75' },
           { text: '200 or more', why: 'Very long lines are hard to follow.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

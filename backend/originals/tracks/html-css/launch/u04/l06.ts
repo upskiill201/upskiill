@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should I write "beat producer Accra" in every paragraph?',
         options: [
-          { text: 'Once or twice where it fits naturally is enough. Repeating it everywhere reads badly and can count as spam.' },
           { text: 'Yes, every paragraph.', why: 'That\'s keyword stuffing.' },
+          { text: 'Once or twice where it fits naturally is enough. Repeating it everywhere reads badly and can count as spam.' },
           { text: 'Never use it.', why: 'Use it naturally where it fits.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         code: 'A: <h2>Let\'s vibe!</h2>\nB: <h2>Book a producer for your wedding or party</h2> <p>...weddings in Accra...</p>',
         language: 'html',
         options: [
-          { text: 'B: it uses the words people search, naturally' },
           { text: 'A', why: 'A says nothing about weddings.' },
           { text: 'They\'re equal', why: 'B is much clearer.' },
+          { text: 'B: it uses the words people search, naturally' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -133,11 +133,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who should you write for first?',
         options: [
-          { text: 'The person reading' },
           { text: 'The search engine only', why: 'Search engines reward pages people find useful.' },
+          { text: 'The person reading' },
           { text: 'Other producers', why: 'Write for your visitors.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

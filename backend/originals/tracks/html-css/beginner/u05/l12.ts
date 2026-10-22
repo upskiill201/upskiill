@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does line-height: 1.6 do?',
         options: [
-          { text: 'Puts space between lines, 1.6 times the text size' },
           { text: 'Makes the text 1.6 times bigger', why: 'That would be font-size.' },
           { text: 'Sets how many lines fit', why: 'It\'s the spacing between lines.' },
+          { text: 'Puts space between lines, 1.6 times the text size' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Why is font-family on body and not on p, li and every other tag?',
         options: [
-          { text: 'Everything inside body takes it from there. One line instead of ten.' },
           { text: 'It\'s a mistake.', why: 'It\'s on purpose: it flows into everything inside.' },
+          { text: 'Everything inside body takes it from there. One line instead of ten.' },
           { text: 'Body is the only tag CSS can style.', why: 'You can style any element.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

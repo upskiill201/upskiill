@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         code: 'article h2 { color: #FF9600; }\n.beat-card h2 { color: #F0438A; }\narticle h2 { color: #FFF6E5; }\n\n<article class="beat-card"><h2>Jollof Bounce</h2></article>',
         language: 'html',
         options: [
-          { text: 'Pink: 0-1-1 beats 0-0-2' },
           { text: 'Cream: it\'s last', why: 'The class rule is more specific.' },
           { text: 'Orange: it\'s first', why: 'Neither first nor last matters here.' },
+          { text: 'Pink: 0-1-1 beats 0-0-2' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -100,21 +100,21 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'If I write body main article section h2, with five elements, does that beat one class?',
         options: [
-          { text: 'No: 0-0-5 loses to 0-1-0. Classes are compared before elements.' },
           { text: 'Yes, five beats one.', why: 'Columns are compared left to right.' },
+          { text: 'No: 0-0-5 loses to 0-1-0. Classes are compared before elements.' },
           { text: 'It\'s a tie.', why: 'The classes column decides it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Two rules both score 0-1-1. Which wins?',
         options: [
-          { text: 'The one written later' },
           { text: 'The one written first', why: 'On a tie, later wins.' },
           { text: 'Neither applies', why: 'The later one wins the tie.' },
+          { text: 'The one written later' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

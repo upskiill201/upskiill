@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The photo at the top was taken by David. What does the page need?',
         options: [
-          { text: 'A credit to David, with his permission' },
           { text: 'Nothing, Kofi is in the photo', why: 'Being in the photo doesn\'t make Kofi its owner. David took it.' },
+          { text: 'A credit to David, with his permission' },
           { text: '"Photo: the internet"', why: 'David took it. Credit David.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',

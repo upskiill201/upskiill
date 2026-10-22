@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         code: 'console.log("Session at 10:00");',
         language: 'typescript',
         options: [
-          { text: 'Session at 10:00' },
           { text: '"Session at 10:00"', why: 'The quotes mark where the text starts and ends. They are not shown.' },
+          { text: 'Session at 10:00' },
           { text: 'console.log', why: 'console.log is the instruction. It shows what is inside the brackets.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         from: 'femi',
         message: 'Honest question before we start: why do you want to learn this?',
         options: [
-          { text: 'I\'m tired of fixing the same spreadsheet mistakes. I want to build something that stops them.' },
           { text: 'Everyone says I should.', why: 'That\'s a start, but Femi is asking what YOU want from it. A real reason keeps you going on hard days.' },
           { text: 'I don\'t really know.', why: 'Grace does know: she wants the booking mistakes to stop. A clear reason makes learning stick.' },
+          { text: 'I\'m tired of fixing the same spreadsheet mistakes. I want to build something that stops them.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',

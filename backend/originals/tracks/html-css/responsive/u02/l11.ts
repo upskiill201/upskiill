@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'What should I call the class for the orange Play links?',
         options: [
-          { text: '.play-button: it says what it is, whatever colour it ends up.' },
           { text: '.orange-link', why: 'That breaks when it turns pink.' },
           { text: '.thing3', why: 'Nobody will know what it is.' },
+          { text: '.play-button: it says what it is, whatever colour it ends up.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which is the best name for the "Sold out" label on a gig?',
         options: [
-          { text: '.sold-out' },
           { text: '.red-text', why: 'Describes looks, not meaning.' },
+          { text: '.sold-out' },
           { text: '.label7', why: 'Says nothing.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

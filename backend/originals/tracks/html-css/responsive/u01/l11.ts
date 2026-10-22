@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s wrong with the neon borders?',
         options: [
-          { text: 'They\'re the loudest thing on the page, so the beats get lost' },
           { text: 'Browsers can\'t show dashed borders', why: 'They can. It\'s about what people notice.' },
           { text: 'Nothing, more is better', why: 'Nobody noticed the play buttons.' },
+          { text: 'They\'re the loudest thing on the page, so the beats get lost' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         code: 'img { width: 120px; height: 120px; border-radius: 50%; }',
         language: 'css',
         options: [
-          { text: 'A circle' },
           { text: 'A square with slightly soft corners', why: '50% rounds it all the way into a circle.' },
           { text: 'It disappears', why: 'It\'s still there, just round.' },
+          { text: 'A circle' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

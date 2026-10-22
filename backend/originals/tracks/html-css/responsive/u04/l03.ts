@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         code: 'grid-template-columns: 2fr 1fr;',
         language: 'css',
         options: [
-          { text: '400px and 200px' },
           { text: '300px each', why: '2fr gets twice the share of 1fr.' },
           { text: '2px and 1px', why: 'fr is a share, not a pixel.' },
+          { text: '400px and 200px' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',

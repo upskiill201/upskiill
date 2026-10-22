@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can\'t an add-on widget make a site fully accessible?',
         options: [
-          { text: 'Accessibility depends on the page\'s own structure, names and labels, which a widget can\'t truly fix' },
           { text: 'Widgets are too expensive', why: 'The problem is what they can\'t do.' },
           { text: 'It can, instantly', why: 'Missing structure can\'t be bolted on.' },
+          { text: 'Accessibility depends on the page\'s own structure, names and labels, which a widget can\'t truly fix' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'The ad says it guarantees legal compliance.',
         options: [
-          { text: 'No widget can guarantee that. What counts is whether the site actually works for disabled people.' },
           { text: 'Then buy it.', why: 'The guarantee doesn\'t make the site work.' },
+          { text: 'No widget can guarantee that. What counts is whether the site actually works for disabled people.' },
           { text: 'Ignore laws completely.', why: 'Build it right instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -122,11 +122,11 @@ const lesson: OriginalLesson = {
         code: '<img src="IMG_2041.jpg">',
         language: 'html',
         options: [
-          { text: 'Probably the file name, or nothing useful' },
           { text: 'A perfect description', why: 'Only the author knows what the picture means.' },
           { text: 'A song', why: 'He hears what\'s in the HTML.' },
+          { text: 'Probably the file name, or nothing useful' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'You change .card\'s border colour, and one card stays orange. Why?',
         options: [
-          { text: 'That card is missing class="card", or styled by a stronger rule' },
           { text: 'Browsers only update two cards at a time', why: 'Every card with the class updates.' },
           { text: 'Orange can\'t be changed', why: 'It can. Check its class.' },
+          { text: 'That card is missing class="card", or styled by a stronger rule' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'What should the extra class on your favourite card be called?',
         options: [
-          { text: '.favourite: it says what it is, whatever it looks like.' },
           { text: '.dark-blue', why: 'That lies once the colour changes.' },
+          { text: '.favourite: it says what it is, whatever it looks like.' },
           { text: '.card2', why: 'Says nothing.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Why align-items: flex-start inside the cards?',
         options: [
-          { text: 'In a column, items stretch across by default. flex-start keeps the Play button its own width.' },
           { text: 'To push items to the top.', why: 'In a column, align-items works left to right.' },
+          { text: 'In a column, items stretch across by default. flex-start keeps the Play button its own width.' },
           { text: 'No reason.', why: 'Without it the button would stretch.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         code: '.site-header, .nav-links, .beat-list, and each .card',
         language: 'css',
         options: [
-          { text: 'Three, plus one per card' },
           { text: 'One', why: 'Each of these has display: flex.' },
           { text: 'None', why: 'They all use display: flex.' },
+          { text: 'Three, plus one per card' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

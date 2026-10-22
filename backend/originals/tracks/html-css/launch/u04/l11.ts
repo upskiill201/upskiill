@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the small square cover a weak share image?',
         options: [
-          { text: 'Many apps show wide cards, so it gets cropped or blurry' },
           { text: 'Squares aren\'t allowed', why: 'They\'re allowed but often cropped.' },
           { text: 'It\'s too colourful', why: 'It\'s the shape and size.' },
+          { text: 'Many apps show wide cards, so it gets cropped or blurry' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'But the rapper photo would get way more taps!',
         options: [
-          { text: 'It\'s not Kofi\'s photo to use, and it tricks people. The taps would come from people expecting someone else.' },
           { text: 'True, use it.', why: 'It\'s misleading and not his to use.' },
+          { text: 'It\'s not Kofi\'s photo to use, and it tricks people. The taps would come from people expecting someone else.' },
           { text: 'Use it but make it small.', why: 'Still misleading.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         code: '<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">',
         language: 'html',
         options: [
-          { text: 'Wide: about twice as wide as it is tall' },
           { text: 'Square', why: '1200 is almost double 630.' },
           { text: 'Tall', why: 'It\'s wider than tall.' },
+          { text: 'Wide: about twice as wide as it is tall' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

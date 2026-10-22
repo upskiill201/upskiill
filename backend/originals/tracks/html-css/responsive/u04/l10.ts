@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         code: '.gallery { grid-template-columns: repeat(4, 1fr); }\n.feature { grid-column: span 2; }',
         language: 'css',
         options: [
-          { text: 'Two' },
           { text: 'Three', why: 'The feature takes two of four columns.' },
           { text: 'None', why: 'Two columns are still free.' },
+          { text: 'Two' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -81,21 +81,21 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'When did browsers get Grid again? My uncle says it\'s brand new.',
         options: [
-          { text: '2017: Chrome, Firefox and Safari within weeks of each other, Edge later that year.' },
           { text: 'Last month.', why: 'It shipped in 2017.' },
+          { text: '2017: Chrome, Firefox and Safari within weeks of each other, Edge later that year.' },
           { text: 'It was in the first web browser.', why: 'The web had no grid tool until 2017.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'With only columns set, what decides each row\'s height?',
         options: [
-          { text: 'The tallest item in that row' },
           { text: 'The first item', why: 'The tallest item decides.' },
           { text: 'Always 100px', why: 'Rows fit their content.' },
+          { text: 'The tallest item in that row' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

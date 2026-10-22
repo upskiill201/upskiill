@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the class name .featured make the browser do on its own?',
         options: [
-          { text: 'Nothing, until you write CSS for it' },
           { text: 'Highlight the element', why: 'Names mean nothing to the browser.' },
           { text: 'Move it to the top', why: 'Only CSS changes how it looks.' },
+          { text: 'Nothing, until you write CSS for it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Can I use class="tag" on a p and on a span?',
         options: [
-          { text: 'Yes, a class works on any element. Both get the .tag styles.' },
           { text: 'No, only one kind of element per class.', why: 'Any element can share it.' },
+          { text: 'Yes, a class works on any element. Both get the .tag styles.' },
           { text: 'Only on spans.', why: 'Any element can have it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the easiest way to never get bitten by case-sensitivity?',
         options: [
-          { text: 'Always write class names in lowercase' },
           { text: 'Always use capitals', why: 'Mixing is the trap. Lowercase everywhere is simplest.' },
+          { text: 'Always write class names in lowercase' },
           { text: 'Avoid classes', why: 'Just keep names lowercase.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did links from other sites become important?',
         options: [
-          { text: 'Trustworthy pages linking to yours are a sign it\'s useful, and that\'s hard to fake' },
           { text: 'Links make pages load faster', why: 'They\'re a signal of usefulness.' },
           { text: 'They don\'t matter', why: 'They became a major signal.' },
+          { text: 'Trustworthy pages linking to yours are a sign it\'s useful, and that\'s hard to fake' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the lesson from thirty years of search?',
         options: [
-          { text: 'Tricks get caught; clear, useful, honest pages last' },
           { text: 'Find the newest trick', why: 'Tricks keep getting caught.' },
           { text: 'Search is random', why: 'It rewards useful pages.' },
+          { text: 'Tricks get caught; clear, useful, honest pages last' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

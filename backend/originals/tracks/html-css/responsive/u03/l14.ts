@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'I keep tapping Beats when I want Gigs.',
         options: [
-          { text: 'I\'ll give each link more padding so it\'s a bigger target, and keep a gap between them.' },
           { text: 'Tap more carefully.', why: 'Fix the targets.' },
+          { text: 'I\'ll give each link more padding so it\'s a bigger target, and keep a gap between them.' },
           { text: 'I\'ll remove the gap.', why: 'That makes it worse.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         code: '.site-header { display: flex; justify-content: space-between; }\n\n<header class="site-header">\n  <a class="logo">Mensah Beats</a>\n  <nav>...</nav>\n</header>',
         language: 'html',
         options: [
-          { text: 'The name on the left, the nav on the right' },
           { text: 'Both on the left', why: 'space-between sends them to opposite ends.' },
           { text: 'The name above the nav', why: 'They\'re in a flex row.' },
+          { text: 'The name on the left, the nav on the right' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

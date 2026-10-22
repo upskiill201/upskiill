@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does margin: 0 auto do?',
         options: [
-          { text: 'No top/bottom margin; the left and right share the leftover space, centring the box' },
           { text: 'Removes all margins', why: 'auto on the sides centres the box.' },
+          { text: 'No top/bottom margin; the left and right share the leftover space, centring the box' },
           { text: 'Makes the box full width', why: 'It centres a box that has a max-width.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Why not just make the column 640px wide?',
         options: [
-          { text: 'On Ama\'s phone, 640px would stick out. max-width stops at 640px on laptops and shrinks on phones.' },
           { text: 'Good idea.', why: 'A fixed width breaks on phones.' },
           { text: 'Use 6400px.', why: 'Far too wide everywhere.' },
+          { text: 'On Ama\'s phone, 640px would stick out. max-width stops at 640px on laptops and shrinks on phones.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

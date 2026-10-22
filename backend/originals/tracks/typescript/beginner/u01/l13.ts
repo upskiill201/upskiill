@@ -31,8 +31,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'What is Node.js for?',
-      options: ['Running JavaScript on servers, outside the browser', 'Drawing web pages', 'Checking spelling'],
-      answer: 0,
+      options: ['Drawing web pages', 'Checking spelling', 'Running JavaScript on servers, outside the browser'],
+      answer: 2,
       explanation: 'Node.js lets JavaScript (and so TypeScript, once turned into JavaScript) run on servers and computers, not just in browsers.',
     },
     {
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does Node.js let you do?',
         options: [
-          { text: 'Run JavaScript on servers and computers, outside a browser' },
           { text: 'Check TypeScript for mistakes', why: 'Checking is TypeScript\'s job. Node.js is a runner.' },
+          { text: 'Run JavaScript on servers and computers, outside a browser' },
           { text: 'Design web pages', why: 'Node.js runs code. It doesn\'t design anything.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

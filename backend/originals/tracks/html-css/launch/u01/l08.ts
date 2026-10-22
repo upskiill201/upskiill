@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When an option is chosen, what gets sent?',
         options: [
-          { text: 'Its value attribute' },
           { text: 'The words on screen', why: 'The value is sent, if there is one.' },
+          { text: 'Its value attribute' },
           { text: 'The select\'s id', why: 'The select\'s name plus the option\'s value.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should "City" be a select with every city in Ghana?',
         options: [
-          { text: 'That\'s a huge list. A text box is quicker for people to type into.' },
           { text: 'Yes, list them all.', why: 'Long lists are slow to scroll.' },
           { text: 'Use a textarea.', why: 'A city is one short line.' },
+          { text: 'That\'s a huge list. A text box is quicker for people to type into.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         code: '<select name="kind">\n  <option value="party">Party</option>\n  <option value="club">Club night</option>\n</select>',
         language: 'html',
         options: [
-          { text: 'kind = club' },
           { text: 'kind = Club night', why: 'The value is sent.' },
+          { text: 'kind = club' },
           { text: 'club = kind', why: 'name, then the value.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

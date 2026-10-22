@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is a form better than "email me with all the details"?',
         options: [
-          { text: 'It asks the same questions every time, so every booking has the details' },
           { text: 'Forms are faster to build than links', why: 'It\'s about getting complete bookings.' },
+          { text: 'It asks the same questions every time, so every booking has the details' },
           { text: 'Emails can\'t hold dates', why: 'They can. People just forget to include them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Why does the label need for="name"? It\'s right next to the box.',
         options: [
-          { text: 'Being next to it isn\'t enough for a screen reader. for and id connect them, and tapping the label then focuses the box.' },
           { text: 'It doesn\'t, it\'s optional.', why: 'Without it, the label and box aren\'t connected.' },
           { text: 'It makes the box bigger.', why: 'It connects the label to the box.' },
+          { text: 'Being next to it isn\'t enough for a screen reader. for and id connect them, and tapping the label then focuses the box.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

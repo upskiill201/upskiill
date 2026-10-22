@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What goes wrong with placeholder-only boxes?',
         options: [
-          { text: 'The words vanish when you type, so people forget what the box was for' },
           { text: 'Placeholders are too big', why: 'They vanish, and they\'re often too faint.' },
           { text: 'Nothing, they look cleaner', why: 'Clean, but confusing halfway through.' },
+          { text: 'The words vanish when you type, so people forget what the box was for' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'But the placeholder design looks so clean!',
         options: [
-          { text: 'It looks clean until you type. A small label above each box stays useful the whole time.' },
           { text: 'Then keep it.', why: 'Grandma forgot what each box was for.' },
+          { text: 'It looks clean until you type. A small label above each box stays useful the whole time.' },
           { text: 'Make the placeholder bold.', why: 'It still vanishes when you type.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why use example.com in a placeholder?',
         options: [
-          { text: 'It\'s reserved for examples, so it never points to a real person' },
           { text: 'It\'s Kofi\'s email', why: 'It\'s a reserved example domain.' },
+          { text: 'It\'s reserved for examples, so it never points to a real person' },
           { text: 'Placeholders need a .com', why: 'It\'s about not using a real address.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

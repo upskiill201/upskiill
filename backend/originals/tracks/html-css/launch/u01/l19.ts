@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the CSS say input[type="checkbox"] { width: auto; }?',
         options: [
-          { text: 'The box rule makes inputs full width; checkboxes and radios should stay small' },
           { text: 'To hide them', why: 'It keeps them at normal size.' },
           { text: 'To make them required', why: 'That\'s an HTML attribute.' },
+          { text: 'The box rule makes inputs full width; checkboxes and radios should stay small' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Can someone fill this in without a mouse?',
         options: [
-          { text: 'Yes: Tab moves between boxes, arrows pick radios, Space ticks boxes, Enter sends. I tested it.' },
           { text: 'Probably.', why: 'Test it with the keyboard.' },
+          { text: 'Yes: Tab moves between boxes, arrows pick radios, Space ticks boxes, Enter sends. I tested it.' },
           { text: 'Forms need a mouse.', why: 'Real form elements all work by keyboard.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

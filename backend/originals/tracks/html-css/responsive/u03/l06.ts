@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'I set align-items: center but nothing moved up or down.',
         options: [
-          { text: 'The container needs room to centre in. Give it a height, like 200px.' },
           { text: 'align-items is broken.', why: 'Without extra height, there\'s nowhere to move.' },
           { text: 'Use justify-content twice.', why: 'That\'s the other direction.' },
+          { text: 'The container needs room to centre in. Give it a height, like 200px.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         code: 'section { display: flex; justify-content: center; height: 200px; }\n\n<section><h2>New beat Friday</h2></section>',
         language: 'html',
         options: [
-          { text: 'In the middle left to right, but at the top' },
           { text: 'Dead centre', why: 'align-items isn\'t set.' },
+          { text: 'In the middle left to right, but at the top' },
           { text: 'Top left', why: 'justify-content centres it left to right.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

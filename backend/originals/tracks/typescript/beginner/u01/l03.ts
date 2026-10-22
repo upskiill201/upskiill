@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         from: 'grace',
         message: 'So the red line is TypeScript telling me off?',
         options: [
-          { text: 'It\'s TypeScript catching a mistake early, while it\'s cheap to fix. It\'s on your side.' },
           { text: 'Yes, it means you\'re bad at this.', why: 'Every programmer sees red lines all day. They mean the safety net worked, not that you failed.' },
+          { text: 'It\'s TypeScript catching a mistake early, while it\'s cheap to fix. It\'s on your side.' },
           { text: 'Ignore it, the code runs anyway.', why: 'The code might run, but the mistake is still there. Fixing it now is the whole point.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

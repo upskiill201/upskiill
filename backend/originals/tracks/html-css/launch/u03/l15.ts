@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         code: '<html lang="en">\n<head><title>Gigs | Mensah Beats</title></head>',
         language: 'html',
         options: [
-          { text: '"Gigs, Mensah Beats", in an English voice' },
           { text: 'Nothing', why: 'The title is announced.' },
+          { text: '"Gigs, Mensah Beats", in an English voice' },
           { text: '"Mensah Beats" only', why: 'The whole title is read.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Why test with a real screen reader if the tool already passed?',
         options: [
-          { text: 'Tools check rules; a screen reader shows how it actually sounds, like a confusing heading outline or bad link names.' },
           { text: 'You don\'t need to.', why: 'Tools miss a lot.' },
           { text: 'Only for big sites.', why: 'Every site benefits.' },
+          { text: 'Tools check rules; a screen reader shows how it actually sounds, like a confusing heading outline or bad link names.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

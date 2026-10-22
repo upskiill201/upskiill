@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might the boxes use a different font from the rest of the page?',
         options: [
-          { text: 'Browsers often give form controls their own font instead of inheriting it' },
           { text: 'The font is broken', why: 'Form controls just don\'t always inherit.' },
           { text: 'Boxes can only use one font', why: 'font: inherit lets them use the page\'s.' },
+          { text: 'Browsers often give form controls their own font instead of inheriting it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         code: 'button { padding: 12px 24px; background-color: #FF9600; color: #14213D; border: none; border-radius: 8px; }',
         language: 'css',
         options: [
-          { text: 'A big orange button with dark text and soft corners' },
           { text: 'A tiny grey rectangle', why: 'That\'s the default before styling.' },
           { text: 'Invisible', why: 'It has an orange background.' },
+          { text: 'A big orange button with dark text and soft corners' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

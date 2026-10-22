@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a smoke test?',
         options: [
-          { text: 'A quick check that the most important things work' },
           { text: 'A full test of every single page', why: 'That\'s the pre-launch check.' },
+          { text: 'A quick check that the most important things work' },
           { text: 'A test for fire alarms', why: 'It just means "is anything obviously broken?"' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         code: '<img src="covers/rain-on-zinc.webp" alt="Rain on Zinc cover">',
         language: 'html',
         options: [
-          { text: 'It breaks: there\'s no covers folder online' },
           { text: 'It works: the browser finds it anyway', why: 'Browsers don\'t search.' },
+          { text: 'It breaks: there\'s no covers folder online' },
           { text: 'The whole page goes blank', why: 'Only the image breaks.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

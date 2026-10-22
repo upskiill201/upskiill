@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why use #FF9600 instead of orange for Kofi\'s brand?',
         options: [
-          { text: 'It\'s the exact shade from his album art' },
           { text: 'Names don\'t work in CSS', why: 'They work. Codes are just exact.' },
+          { text: 'It\'s the exact shade from his album art' },
           { text: 'Codes load faster', why: 'It\'s about the exact colour.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Codes look like random letters. How is anyone supposed to remember them?',
         options: [
-          { text: 'You don\'t remember them. You copy them once from your art and reuse them.' },
           { text: 'Memorise all sixteen million.', why: 'Nobody does. Copy and reuse.' },
           { text: 'Stick to names forever.', why: 'Names can\'t match your exact brand.' },
+          { text: 'You don\'t remember them. You copy them once from your art and reuse them.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

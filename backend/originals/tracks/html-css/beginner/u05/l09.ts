@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Do I need a size rule for every single element?',
         options: [
-          { text: 'No: set body once, then only the things that need a different size.' },
           { text: 'Yes, all of them.', why: 'Most text takes body\'s size.' },
           { text: 'Only for links.', why: 'Body first, then headings and small print.' },
+          { text: 'No: set body once, then only the things that need a different size.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         code: 'body { font-size: 1rem; }\nh1 { font-size: 2.5rem; }\n\n<ul><li>Jollof Bounce</li></ul>',
         language: 'html',
         options: [
-          { text: '1rem, from body' },
           { text: '2.5rem', why: 'That\'s only for h1.' },
+          { text: '1rem, from body' },
           { text: 'No size at all', why: 'They inherit 1rem from body.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

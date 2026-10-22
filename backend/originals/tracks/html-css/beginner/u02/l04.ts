@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Why don\'t you just type 1. 2. 3. in front of each track?',
         options: [
-          { text: 'Because ol counts for me. If I reorder the tracks, the numbers fix themselves.' },
           { text: 'Good idea, I\'ll do that.', why: 'Then every time Kofi changes the order, he has to fix every number by hand.' },
+          { text: 'Because ol counts for me. If I reorder the tracks, the numbers fix themselves.' },
           { text: 'Numbers aren\'t allowed in HTML.', why: 'They are. But ol does the counting for you, which is better.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

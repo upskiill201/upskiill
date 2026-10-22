@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'An h3 looks too big. What\'s the right fix?',
         options: [
-          { text: 'Change its font-size in CSS' },
           { text: 'Change it to an h5', why: 'Levels are for meaning; CSS handles size.' },
+          { text: 'Change its font-size in CSS' },
           { text: 'Make it a paragraph', why: 'It\'s still a heading.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'I used h1 for every section so they all look big. Is that okay?',
         options: [
-          { text: 'Use h2 for sections and make them big with CSS. One h1 tells everyone what the page is.' },
           { text: 'Yes, more h1s are better.', why: 'The outline becomes flat and confusing.' },
           { text: 'Use h6 so they\'re small.', why: 'Levels are for meaning.' },
+          { text: 'Use h2 for sections and make them big with CSS. One h1 tells everyone what the page is.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         code: '<h1>Mensah Beats</h1>\n<h2>Beats</h2>\n<h3>Rain on Zinc</h3>\n<h2>Gigs</h2>\n<h2>Book me</h2>',
         language: 'html',
         options: [
-          { text: 'Beats, Gigs, Book me' },
           { text: 'Mensah Beats, Rain on Zinc', why: 'Those are h1 and h3.' },
+          { text: 'Beats, Gigs, Book me' },
           { text: 'Everything', why: 'Only the h2s.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

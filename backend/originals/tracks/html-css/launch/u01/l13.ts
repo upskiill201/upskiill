@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why didn\'t Kofi\'s test booking arrive anywhere?',
         options: [
-          { text: 'Nothing on a server was set up to receive the answers' },
           { text: 'The button was the wrong colour', why: 'Colour doesn\'t send anything.' },
+          { text: 'Nothing on a server was set up to receive the answers' },
           { text: 'Forms only work offline', why: 'They need a receiver online.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Until I set up a receiver, should I leave the form up?',
         options: [
-          { text: 'Add a clear "or email bookings@example.com" line, so nobody\'s booking disappears, and set up a receiver soon.' },
           { text: 'Yes, people will figure it out.', why: 'Their answers would vanish.' },
           { text: 'Delete the form forever.', why: 'Just give a fallback until it\'s connected.' },
+          { text: 'Add a clear "or email bookings@example.com" line, so nobody\'s booking disappears, and set up a receiver soon.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         code: '<form action="/thanks" method="post">\n  <input id="n" name="name">\n  <button type="submit">Send</button>\n</form>',
         language: 'html',
         options: [
-          { text: 'name = Ama, to /thanks' },
           { text: 'n = Ama', why: 'Answers are sent by name, not id.' },
+          { text: 'name = Ama, to /thanks' },
           { text: 'Nothing, a button can\'t send', why: 'type="submit" sends the form.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -138,11 +138,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is action="mailto:..." a weak way to send a form?',
         options: [
-          { text: 'It relies on the visitor\'s email app, which often isn\'t set up or confuses people' },
           { text: 'It sends too fast', why: 'It depends on the visitor\'s email app.' },
           { text: 'It\'s the best way', why: 'It often fails silently.' },
+          { text: 'It relies on the visitor\'s email app, which often isn\'t set up or confuses people' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Why not use pink for all the paragraphs? It\'s in the palette.',
         options: [
-          { text: 'Pink\'s job is one or two big labels. Paragraphs are cream, so they\'re calm and readable.' },
           { text: 'Great idea.', why: 'Each colour has one job.' },
+          { text: 'Pink\'s job is one or two big labels. Paragraphs are cream, so they\'re calm and readable.' },
           { text: 'Pink is broken.', why: 'It\'s fine, for its job.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         code: 'h1 { color: rgb(255, 150, 0); }',
         language: 'css',
         options: [
-          { text: 'The same orange as #FF9600' },
           { text: 'A blue', why: 'Blue is 0 here.' },
           { text: 'Grey', why: 'Grey has equal red, green and blue.' },
+          { text: 'The same orange as #FF9600' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

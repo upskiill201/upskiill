@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why didn\'t Mensah Beats grow when Grandma made her text bigger?',
         options: [
-          { text: 'Its sizes were in px, which stay fixed' },
           { text: 'Her phone is too old', why: 'Other sites grew. px sizes don\'t.' },
+          { text: 'Its sizes were in px, which stay fixed' },
           { text: 'Text can\'t change size', why: 'rem sizes follow her setting.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Can I make the body text 0.6rem so more fits on the screen?',
         options: [
-          { text: 'Too small to read on a phone. Keep body text around 1rem and let people scroll.' },
           { text: 'Yes, smaller is better.', why: 'Tiny text is hard to read.' },
           { text: 'Use 6px instead.', why: 'Even smaller, and fixed.' },
+          { text: 'Too small to read on a phone. Keep body text around 1rem and let people scroll.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

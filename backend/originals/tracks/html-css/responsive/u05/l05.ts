@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Without the viewport tag, why does the live site look tiny on a phone?',
         options: [
-          { text: 'The browser draws it as if the screen were about 980px wide, then shrinks it' },
           { text: 'The images are too big', why: 'The whole page is drawn at a pretend width.' },
           { text: 'Phones can\'t show websites properly', why: 'They can, with the viewport tag.' },
+          { text: 'The browser draws it as if the screen were about 980px wide, then shrinks it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Why not a separate phone version of the site?',
         options: [
-          { text: 'Then every change has to be made twice. One page with media queries works everywhere.' },
           { text: 'Good idea.', why: 'Two sites drift apart.' },
           { text: 'Phones can\'t open normal sites.', why: 'They can, with the viewport tag and media queries.' },
+          { text: 'Then every change has to be made twice. One page with media queries works everywhere.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

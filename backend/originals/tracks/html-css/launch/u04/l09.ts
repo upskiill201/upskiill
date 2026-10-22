@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What are Open Graph tags for?',
         options: [
-          { text: 'Telling chat and social apps what title, text and image to show when the link is shared' },
           { text: 'Ranking higher in search', why: 'They\'re mainly for share previews.' },
+          { text: 'Telling chat and social apps what title, text and image to show when the link is shared' },
           { text: 'Showing a picture on the page', why: 'They don\'t change the page itself.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'Why didn\'t the image show when I put og:image="share.jpg"?',
         options: [
-          { text: 'Apps fetch the image from outside your site, so they need the full address: https://mensahbeats.example.app/share.jpg.' },
           { text: 'Chats can\'t show images.', why: 'They can, with a full address.' },
           { text: 'Use a bigger file.', why: 'The address is the problem.' },
+          { text: 'Apps fetch the image from outside your site, so they need the full address: https://mensahbeats.example.app/share.jpg.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -130,11 +130,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should the preview title and description match?',
         options: [
-          { text: 'What the page really is, like its title and description' },
           { text: 'Something more exciting than the page', why: 'Mismatched previews feel like a trick.' },
           { text: 'Nothing in particular', why: 'They should match the page.' },
+          { text: 'What the page really is, like its title and description' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

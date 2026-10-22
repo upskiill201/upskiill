@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which line is the most important for keyboard users?',
         options: [
-          { text: ':focus-visible { outline: 3px solid #FFC83D; }' },
           { text: '.countdown { animation: ... }', why: 'That\'s a nudge for everyone.' },
           { text: '@keyframes nudge', why: 'The focus outline matters most for keyboard users.' },
+          { text: ':focus-visible { outline: 3px solid #FFC83D; }' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         code: '.countdown { animation: nudge 1.5s ease-in-out 2; }',
         language: 'css',
         options: [
-          { text: 'Twice, then it stays still' },
           { text: 'Forever', why: 'The count is 2.' },
           { text: 'Once', why: 'The count is 2.' },
+          { text: 'Twice, then it stays still' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

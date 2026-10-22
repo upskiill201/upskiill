@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why rename page2.html to gigs.html?',
         options: [
-          { text: 'The address then says what\'s on the page, to people and search engines' },
           { text: 'Shorter names load faster', why: 'It\'s about meaning.' },
+          { text: 'The address then says what\'s on the page, to people and search engines' },
           { text: 'page2 isn\'t allowed', why: 'It\'s allowed, just unhelpful.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         code: 'https://mensahbeats.example.app/book.html',
         language: 'html',
         options: [
-          { text: 'A page about booking Kofi' },
           { text: 'A page of books', why: 'In context, book means booking.' },
+          { text: 'A page about booking Kofi' },
           { text: 'They can\'t tell', why: 'The name says it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -135,11 +135,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'An offer: "1,000 links to your site for GHS 100". Good idea?',
         options: [
-          { text: 'No: paid link schemes are treated as spam and can hurt the site' },
           { text: 'Yes, more links is always better', why: 'Bought links break the rules.' },
           { text: 'Only if they\'re cheap', why: 'Price doesn\'t matter; it\'s the scheme.' },
+          { text: 'No: paid link schemes are treated as spam and can hurt the site' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

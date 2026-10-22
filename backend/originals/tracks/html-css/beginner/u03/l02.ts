@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'My phone just said "link, click here. Link, click here. Link, click here." Which one do I tap?',
         options: [
-          { text: 'Good question. I\'ll make each link say where it goes.' },
           { text: 'Tap the middle one.', why: 'Ama can\'t see which is which from "click here". Fix the text.' },
           { text: 'Turn your phone off.', why: 'The phone is doing its job. The links need better words.' },
+          { text: 'Good question. I\'ll make each link say where it goes.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

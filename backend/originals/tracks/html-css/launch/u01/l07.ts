@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did forms change about the web?',
         options: [
-          { text: 'Pages could ask questions and receive answers, not just be read' },
           { text: 'Pages got colours', why: 'That\'s CSS. Forms made the web two-way.' },
           { text: 'Pages could play music', why: 'Forms are about sending answers.' },
+          { text: 'Pages could ask questions and receive answers, not just be read' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'If forms are from 1995, why does Kofi\'s form still need somewhere to send?',
         options: [
-          { text: 'A form only collects answers. Something has to receive them: a server or a form service.' },
           { text: 'It doesn\'t, forms email themselves.', why: 'They need somewhere to send.' },
+          { text: 'A form only collects answers. Something has to receive them: a server or a form service.' },
           { text: 'Because it\'s old.', why: 'It\'s how forms have always worked.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

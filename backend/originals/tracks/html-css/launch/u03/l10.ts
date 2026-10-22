@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         code: '<a href="https://example.com/youtube"><img src="yt.png" alt=""></a>',
         language: 'html',
         options: [
-          { text: 'Nothing useful: it has no name' },
           { text: '"YouTube"', why: 'There\'s no text, no alt and no aria-label.' },
           { text: '"Image"', why: 'The image is marked as decoration.' },
+          { text: 'Nothing useful: it has no name' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -81,21 +81,21 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should I put tabindex="1" on Book me so it comes first?',
         options: [
-          { text: 'No: move Book me earlier in the HTML. Positive tabindex scrambles the order.' },
           { text: 'Yes.', why: 'It confuses keyboard users.' },
+          { text: 'No: move Book me earlier in the HTML. Positive tabindex scrambles the order.' },
           { text: 'Use tabindex="-5".', why: 'Negative removes it from Tab altogether.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'When should you use aria-label?',
         options: [
-          { text: 'When something has no visible text, like an icon-only link' },
           { text: 'On every element', why: 'Only where a name is missing.' },
           { text: 'Instead of labels on form fields', why: 'Use a real label for fields.' },
+          { text: 'When something has no visible text, like an icon-only link' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

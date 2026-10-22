@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         code: '.gallery { display: grid; grid-template-columns: repeat(4, 1fr); }',
         language: 'css',
         options: [
-          { text: 'The first cell of the second row' },
           { text: 'A fifth column', why: 'There are four columns. It starts a new row.' },
           { text: 'Nowhere, the grid is full', why: 'Rows are added as needed.' },
+          { text: 'The first cell of the second row' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Do I need to say how many rows there are?',
         options: [
-          { text: 'No: set the columns, and Grid adds rows as the covers need them.' },
           { text: 'Yes, or the covers disappear.', why: 'Rows are created automatically.' },
+          { text: 'No: set the columns, and Grid adds rows as the covers need them.' },
           { text: 'Only for an even number of covers.', why: 'Rows are always automatic unless you set them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

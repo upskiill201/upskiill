@@ -82,21 +82,21 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'li a { color: gold; } and a { color: orange; }. Which wins for links in my gig list?',
         options: [
-          { text: 'li a, because it\'s more specific, even though it comes first.' },
           { text: 'a, because it\'s later.', why: 'Order only decides between equally specific rules.' },
+          { text: 'li a, because it\'s more specific, even though it comes first.' },
           { text: 'Neither.', why: 'The more specific rule wins.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Why end a font stack with sans-serif or serif?',
         options: [
-          { text: 'Every device has one, so there\'s always a font of the right style' },
           { text: 'It\'s the fanciest font', why: 'It\'s a safety net, not a style.' },
           { text: 'It\'s required for the page to load', why: 'It\'s a safety net.' },
+          { text: 'Every device has one, so there\'s always a font of the right style' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

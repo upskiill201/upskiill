@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did article { } turn all six cards pink?',
         options: [
-          { text: 'An element selector picks every element of that type' },
           { text: 'Pink spreads to nearby cards', why: 'It picks every article.' },
+          { text: 'An element selector picks every element of that type' },
           { text: 'The browser made a mistake', why: 'It did exactly what article means.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'In CSS I wrote featured { border-color: #F0438A; } and nothing happened.',
         options: [
-          { text: 'It needs a dot: .featured. Without it, CSS looks for a featured element, and there isn\'t one.' },
           { text: 'Classes only work in HTML.', why: 'You style them in CSS with a dot.' },
           { text: 'Try FEATURED in capitals.', why: 'The missing dot is the problem.' },
+          { text: 'It needs a dot: .featured. Without it, CSS looks for a featured element, and there isn\'t one.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'Your caption says the same thing as your alt text. Why say it twice?',
         options: [
-          { text: 'Good point. The alt describes the picture; the caption labels it with the name and year.' },
           { text: 'To be safe.', why: 'Screen readers would read it twice. Let each one do its own job.' },
           { text: 'I\'ll delete the alt then.', why: 'Keep the alt: it describes what the picture looks like. Change the caption to label it.' },
+          { text: 'Good point. The alt describes the picture; the caption labels it with the name and year.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

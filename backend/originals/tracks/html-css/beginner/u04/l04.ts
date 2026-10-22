@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why style body instead of every element?',
         options: [
-          { text: 'body holds everything, so one rule styles the whole page' },
           { text: 'body is the only element CSS can reach', why: 'CSS can reach any element.' },
+          { text: 'body holds everything, so one rule styles the whole page' },
           { text: 'It makes beats louder', why: 'It\'s about the whole page\'s look.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'Why is the heading orange but the rest white?',
         options: [
-          { text: 'The page rule makes text white, and a separate h1 rule makes the heading orange.' },
           { text: 'It\'s a bug.', why: 'It\'s on purpose: two rules.' },
           { text: 'Orange is the default.', why: 'The default is black. Kofi\'s rules changed it.' },
+          { text: 'The page rule makes text white, and a separate h1 rule makes the heading orange.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

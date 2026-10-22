@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Merch and Book me disappear off the edge?',
         options: [
-          { text: 'A flex row stays on one line by default, and the links couldn\'t shrink any smaller' },
           { text: 'Phones only show four links', why: 'There\'s no limit. The row didn\'t wrap.' },
           { text: 'The links were deleted', why: 'They\'re there, off the edge.' },
+          { text: 'A flex row stays on one line by default, and the links couldn\'t shrink any smaller' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should I hide the less important links on phones?',
         options: [
-          { text: 'Most visitors are on phones, so they need the same links. Wrapping keeps them all reachable.' },
           { text: 'Yes, phones don\'t need everything.', why: 'Phone users want the same things.' },
+          { text: 'Most visitors are on phones, so they need the same links. Wrapping keeps them all reachable.' },
           { text: 'Hide all of them.', why: 'Then nobody can get around the site.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         code: '.site-header { display: flex; flex-wrap: wrap; justify-content: space-between; }\n\n<header class="site-header"><a class="logo">Mensah Beats</a><nav>...</nav></header>',
         language: 'html',
         options: [
-          { text: 'Onto a second line under the name' },
           { text: 'Off the right edge', why: 'flex-wrap lets it drop to a new line.' },
           { text: 'On top of the name', why: 'It moves to its own line.' },
+          { text: 'Onto a second line under the name' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

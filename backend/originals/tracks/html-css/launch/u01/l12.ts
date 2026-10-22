@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         code: '<input type="checkbox" name="styles" value="highlife">\n<input type="checkbox" name="styles" value="amapiano">',
         language: 'html',
         options: [
-          { text: 'styles = highlife and styles = amapiano' },
           { text: 'Only the last one ticked', why: 'Every ticked checkbox is sent.' },
           { text: 'Nothing, checkboxes aren\'t sent', why: 'Ticked ones are sent.' },
+          { text: 'styles = highlife and styles = amapiano' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Kofi should add a checkbox "Sign me up for the newsletter" that\'s already ticked. More sign-ups!',
         options: [
-          { text: 'Sneaking in a pre-ticked yes isn\'t honest, and in many places consent must be opt-in. Leave it unticked.' },
           { text: 'Great idea.', why: 'Pre-ticked consent isn\'t real consent.' },
+          { text: 'Sneaking in a pre-ticked yes isn\'t honest, and in many places consent must be opt-in. Leave it unticked.' },
           { text: 'Hide the checkbox and tick it.', why: 'That\'s even worse.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

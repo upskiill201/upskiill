@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Why bother with a separate file? The <style> block worked fine.',
         options: [
-          { text: 'When I add a bookings page, both pages share one style.css. Change it once, both update.' },
           { text: 'Hosts reject <style> blocks.', why: 'They don\'t. It\'s about sharing styles across pages.' },
           { text: 'It makes the page load colours faster for sure.', why: 'The real win is one file for every page.' },
+          { text: 'When I add a bookings page, both pages share one style.css. Change it once, both update.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which file name is best for a cover image?',
         options: [
-          { text: 'sunrise-in-osu.jpg' },
           { text: 'Sunrise In Osu FINAL.jpg', why: 'Spaces and capitals make links fiddly.' },
+          { text: 'sunrise-in-osu.jpg' },
           { text: 'IMG_20261003_2214.jpg', why: 'Works, but tells you nothing.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does a real button matter more than something styled to look like one?',
         options: [
-          { text: 'It\'s announced as a button and works with the keyboard; a styled box isn\'t and doesn\'t' },
           { text: 'It looks nicer', why: 'They can look identical.' },
           { text: 'It doesn\'t matter', why: 'Screen readers read the element, not the look.' },
+          { text: 'It\'s announced as a button and works with the keyboard; a styled box isn\'t and doesn\'t' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         code: '<nav><ul><li><a href="#beats">Beats</a></li><li><a href="#gigs">Gigs</a></li></ul></nav>',
         language: 'html',
         options: [
-          { text: '"Navigation. List, 2 items. Beats, link. Gigs, link."' },
           { text: '"Beats Gigs"', why: 'It also announces the landmark, list and links.' },
           { text: 'Nothing', why: 'It reads every part.' },
+          { text: '"Navigation. List, 2 items. Beats, link. Gigs, link."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -131,11 +131,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does wrapping links in a ul help?',
         options: [
-          { text: 'The screen reader says how many links there are before you start' },
           { text: 'It makes them bigger', why: 'It adds structure, not size.' },
+          { text: 'The screen reader says how many links there are before you start' },
           { text: 'It doesn\'t', why: 'Lists announce their size.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s wrong with hiding the gigs on phones?',
         options: [
-          { text: 'Most visitors are on phones, so most of them lose the gigs' },
           { text: 'display: none doesn\'t work on phones', why: 'It works. That\'s the problem.' },
           { text: 'Nothing', why: 'Phone users want the gigs too.' },
+          { text: 'Most visitors are on phones, so most of them lose the gigs' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'You changed the layout. Do you need to run the whole test again?',
         options: [
-          { text: 'Yes, every layout change. It only takes ten minutes.' },
           { text: 'No, once is enough forever.', why: 'Changes can break things.' },
           { text: 'Only if a fan complains.', why: 'Find problems before fans do.' },
+          { text: 'Yes, every layout change. It only takes ten minutes.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

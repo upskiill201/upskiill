@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Add a lime footer and a purple gig section. More energy!',
         options: [
-          { text: 'One accent keeps the play buttons and Book me easy to find. Energy comes from the music.' },
           { text: 'Okay, lime and purple.', why: 'Remember the rainbow page.' },
           { text: 'Remove all colour.', why: 'Keep the night blue and orange.' },
+          { text: 'One accent keeps the play buttons and Book me easy to find. Energy comes from the music.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who is web accessibility for?',
         options: [
-          { text: 'Everyone, including disabled people and anyone in a tough situation like sunlight or a broken arm' },
           { text: 'Only blind people', why: 'It helps many disabilities and situations.' },
+          { text: 'Everyone, including disabled people and anyone in a tough situation like sunlight or a broken arm' },
           { text: 'Only older people', why: 'People of every age benefit.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'How does Kwesi use a website if he can\'t see it?',
         options: [
-          { text: 'A screen reader reads the page aloud and lets him jump between headings, links and landmarks with the keyboard or gestures.' },
           { text: 'He can\'t.', why: 'Screen readers make it possible, if the page is built well.' },
           { text: 'Someone reads it to him.', why: 'Software does, if the structure is there.' },
+          { text: 'A screen reader reads the page aloud and lets him jump between headings, links and landmarks with the keyboard or gestures.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         code: '<header>Mensah Beats</header>\n<main>\n  <h1>Beats from Accra</h1>\n</main>',
         language: 'html',
         options: [
-          { text: 'At the start of main, on "Beats from Accra"' },
           { text: 'On "Mensah Beats" in the header', why: 'The header isn\'t main.' },
+          { text: 'At the start of main, on "Beats from Accra"' },
           { text: 'Nowhere, there\'s nothing to jump to', why: 'main is a landmark they can jump to.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -152,11 +152,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How many main elements should a page have?',
         options: [
-          { text: 'One' },
           { text: 'One per section', why: 'Only one main per page.' },
           { text: 'As many as you like', why: 'One main, for the main content.' },
+          { text: 'One' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Can I use px for the media query sizes, since it\'s only for laptops?',
         options: [
-          { text: 'Keep rem everywhere, so the heading still grows with Grandma\'s text setting on any screen.' },
           { text: 'Yes, laptops don\'t have text settings.', why: 'They do. Stay in rem.' },
+          { text: 'Keep rem everywhere, so the heading still grows with Grandma\'s text setting on any screen.' },
           { text: 'Use both at once.', why: 'One value wins. Make it rem.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         code: 'h1 { font-size: 2.25rem; }\n@media (min-width: 700px) {\n  h1 { font-size: 4rem; }\n}',
         language: 'css',
         options: [
-          { text: '2.25rem' },
           { text: '4rem', why: '360px is under 700px.' },
           { text: '6.25rem', why: 'One value applies, not both added.' },
+          { text: '2.25rem' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Phones-first applies to what?',
         options: [
-          { text: 'Layout, text sizes, images: everything starts simple for phones' },
           { text: 'Only columns', why: 'Text and images too.' },
+          { text: 'Layout, text sizes, images: everything starts simple for phones' },
           { text: 'Only colours', why: 'Colours usually stay the same everywhere.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

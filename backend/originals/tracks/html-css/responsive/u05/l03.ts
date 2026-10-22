@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Without the viewport tag, how wide do most phone browsers pretend the screen is?',
         options: [
-          { text: 'About 980px, then they shrink the page to fit' },
           { text: 'Exactly the phone\'s width', why: 'That\'s what the tag asks for.' },
           { text: '100px', why: 'They pretend it\'s a laptop-sized 980px.' },
+          { text: 'About 980px, then they shrink the page to fit' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should I add user-scalable=no so the layout can\'t be messed up by zooming?',
         options: [
-          { text: 'No: people with low vision need to zoom. Keep it to width=device-width, initial-scale=1.' },
           { text: 'Yes, zooming is bad.', why: 'Blocking zoom shuts people out.' },
+          { text: 'No: people with low vision need to zoom. Keep it to width=device-width, initial-scale=1.' },
           { text: 'Add maximum-scale=1 too.', why: 'That also blocks zoom.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'So I\'ve been designing on grids for years and the web only just caught up?',
         options: [
-          { text: 'Pretty much. Print designers used grids for decades; CSS got a real grid tool in 2017.' },
           { text: 'No, the web had grids from the start.', why: 'It had tables, which are for data.' },
+          { text: 'Pretty much. Print designers used grids for decades; CSS got a real grid tool in 2017.' },
           { text: 'Grids are only for websites.', why: 'They came from print.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did it matter that browsers shipped Grid at almost the same time?',
         options: [
-          { text: 'Developers could use it almost straight away, for almost every visitor' },
           { text: 'It made Grid faster', why: 'It was about being usable everywhere.' },
           { text: 'It didn\'t matter', why: 'Usually features take years to be usable everywhere.' },
+          { text: 'Developers could use it almost straight away, for almost every visitor' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

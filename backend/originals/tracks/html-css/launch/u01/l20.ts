@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         code: '<select id="kind" name="kind">\n  <option value="party">Party</option>\n  <option value="wedding">Wedding</option>\n</select>',
         language: 'html',
         options: [
-          { text: 'kind = wedding' },
           { text: 'Wedding', why: 'name and value are sent.' },
+          { text: 'kind = wedding' },
           { text: 'kind = Wedding', why: 'The value is lowercase wedding.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'My form isn\'t connected to a form service yet. What do I put under it?',
         options: [
-          { text: 'A clear "Or email bookings@example.com" line, so no booking is ever lost.' },
           { text: 'Nothing, it\'s fine.', why: 'Answers would vanish.' },
           { text: 'My personal phone number.', why: 'Keep personal details off the site.' },
+          { text: 'A clear "Or email bookings@example.com" line, so no booking is ever lost.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

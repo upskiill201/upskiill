@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'So I don\'t need different CSS for phones and laptops?',
         options: [
-          { text: 'For a card row like this, no: the cards work out how many fit. For bigger changes, Chapter 5 has media queries.' },
           { text: 'You never need anything else.', why: 'Some layouts change more than this. That\'s Chapter 5.' },
+          { text: 'For a card row like this, no: the cards work out how many fit. For bigger changes, Chapter 5 has media queries.' },
           { text: 'You need a separate phone site.', why: 'One flexible layout does it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         code: '.beat-list .card { flex: 1 1 220px; }',
         language: 'css',
         options: [
-          { text: 'It grows to fill its whole row' },
           { text: 'Exactly 220px', why: 'Grow 1 lets it fill the row.' },
           { text: 'The same width as the others', why: 'It\'s alone, so it takes all the leftover space.' },
+          { text: 'It grows to fill its whole row' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why allow shrinking (the second 1)?',
         options: [
-          { text: 'So a card can get narrower than 220px on a tiny screen instead of sticking out' },
           { text: 'So cards can shrink to nothing', why: 'They only shrink as needed to fit.' },
+          { text: 'So a card can get narrower than 220px on a tiny screen instead of sticking out' },
           { text: 'It doesn\'t matter', why: 'Without it, a 220px card could stick out on a very small screen.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

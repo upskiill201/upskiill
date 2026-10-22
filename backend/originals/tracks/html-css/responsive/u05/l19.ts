@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the header Flexbox inside a Grid page?',
         options: [
-          { text: 'The page needs rows and columns (Grid); the header is one row (Flexbox)' },
           { text: 'It was left over by mistake', why: 'Each tool fits its job.' },
           { text: 'Grid can\'t hold Flexbox', why: 'A grid item can be a flex container.' },
+          { text: 'The page needs rows and columns (Grid); the header is one row (Flexbox)' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'If I gave you a brand-new screen size tomorrow, would the site break?',
         options: [
-          { text: 'Probably not: the layout stretches, the gallery counts its columns, and the breakpoint follows the content.' },
           { text: 'Yes, I\'d need a new media query.', why: 'Fluid layouts handle new sizes.' },
+          { text: 'Probably not: the layout stretches, the gallery counts its columns, and the breakpoint follows the content.' },
           { text: 'Only if it\'s a phone.', why: 'The phone base handles small screens.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         code: '.table-scroll { overflow-x: auto; }',
         language: 'css',
         options: [
-          { text: 'It scrolls sideways inside its box; the page fits the screen' },
           { text: 'The whole page scrolls sideways', why: 'The wrapper contains it.' },
           { text: 'The table disappears', why: 'It scrolls in its box.' },
+          { text: 'It scrolls sideways inside its box; the page fits the screen' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

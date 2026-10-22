@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the browser draw every element as?',
         options: [
-          { text: 'A rectangle: a box' },
           { text: 'A circle', why: 'Even round-looking things are boxes underneath.' },
           { text: 'Nothing, only text has a shape', why: 'Every element gets a box, visible or not.' },
+          { text: 'A rectangle: a box' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         code: 'h1 { border: 2px solid #F0438A; }\n\n<h1>Mensah Beats</h1>',
         language: 'html',
         options: [
-          { text: 'As wide as the page' },
           { text: 'Exactly as wide as the words', why: 'Headings and paragraphs stretch across the page.' },
           { text: '2px wide', why: '2px is the border\'s thickness.' },
+          { text: 'As wide as the page' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

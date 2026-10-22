@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does transform not push the cards below it down?',
         options: [
-          { text: 'It moves how the element is drawn, not its place in the layout' },
           { text: 'It does push them', why: 'Transforms don\'t affect layout.' },
           { text: 'Because of the grid', why: 'Transforms never move neighbours.' },
+          { text: 'It moves how the element is drawn, not its place in the layout' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'Should the cards lift 40px?',
         options: [
-          { text: 'A few pixels is enough to feel like lifting. 40px would jump around and cover other cards.' },
           { text: 'Yes, the more the better.', why: 'Big moves are distracting.' },
+          { text: 'A few pixels is enough to feel like lifting. 40px would jump around and cover other cards.' },
           { text: 'Lift them 400px.', why: 'Way too far.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -130,11 +130,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In translateY(-4px), what does the minus mean?',
         options: [
-          { text: 'Up' },
           { text: 'Down', why: 'Positive Y is down; negative is up.' },
+          { text: 'Up' },
           { text: 'Smaller', why: 'It\'s a direction.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

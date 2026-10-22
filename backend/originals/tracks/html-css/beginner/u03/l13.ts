@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is autoplay sound a bad idea?',
         options: [
-          { text: 'It surprises people, drowns out screen readers, and is often blocked anyway' },
           { text: 'It makes the page slower', why: 'Speed isn\'t the main problem. Surprise sound drives people away.' },
           { text: 'It isn\'t; it\'s the best way to get listeners', why: 'Most people close a tab that blasts sound at them.' },
+          { text: 'It surprises people, drowns out screen readers, and is often blocked anyway' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',

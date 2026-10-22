@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Where do I put the style tag on a full page?',
         options: [
-          { text: 'In the head, so the browser has the looks before it shows the body.' },
           { text: 'At the end, after html.', why: 'That\'s outside the page. Put it in the head.' },
+          { text: 'In the head, so the browser has the looks before it shows the body.' },
           { text: 'In every paragraph.', why: 'That\'s the style attribute.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a meta description do?',
         options: [
-          { text: 'Sums up the page, and may be shown under the title in search results' },
           { text: 'Shows a big heading on the page', why: 'It doesn\'t appear on the page.' },
           { text: 'Guarantees a top ranking', why: 'Nothing guarantees ranking.' },
+          { text: 'Sums up the page, and may be shown under the title in search results' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Can the description say "The best producer in Ghana"?',
         options: [
-          { text: 'Better to say what\'s true and specific: what I make, where, and what people can do on the page.' },
           { text: 'Yes, bigger claims get more clicks.', why: 'Untrue claims break trust.' },
+          { text: 'Better to say what\'s true and specific: what I make, where, and what people can do on the page.' },
           { text: 'Leave it empty.', why: 'Then the search engine guesses.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         code: '<head>\n  <meta name="description" content="Beats from Accra.">\n</head>',
         language: 'html',
         options: [
-          { text: 'Nowhere visible: it\'s for search engines and previews' },
           { text: 'At the top of the page', why: 'meta tags in the head aren\'t shown.' },
           { text: 'In the footer', why: 'It isn\'t shown on the page.' },
+          { text: 'Nowhere visible: it\'s for search engines and previews' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

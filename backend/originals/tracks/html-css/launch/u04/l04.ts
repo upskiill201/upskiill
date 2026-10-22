@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the viewport tag matter for search?',
         options: [
-          { text: 'Search engines mostly look at the phone version of pages, so it needs to work well on phones' },
           { text: 'It doesn\'t', why: 'Phone-friendliness matters to search.' },
+          { text: 'Search engines mostly look at the phone version of pages, so it needs to work well on phones' },
           { text: 'It sets the page title', why: 'It sets the phone layout width.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should every page\'s description be the same, to save time?',
         options: [
-          { text: 'Each page is different, so each description should say what that page offers.' },
           { text: 'Yes, copy it everywhere.', why: 'Identical descriptions don\'t help people choose.' },
           { text: 'Only the home page needs one.', why: 'Every important page benefits.' },
+          { text: 'Each page is different, so each description should say what that page offers.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         code: 'A: <title>Home | Mensah Beats</title>\nB: <title>Upcoming gigs | Mensah Beats</title> with Kumasi dates on the page',
         language: 'html',
         options: [
-          { text: 'B: its title and content match the search' },
           { text: 'A', why: 'B is about gigs and mentions Kumasi.' },
+          { text: 'B: its title and content match the search' },
           { text: 'Neither', why: 'B matches well.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which version of a page do search engines mostly look at now?',
         options: [
-          { text: 'The phone version' },
           { text: 'The printed version', why: 'They mostly use the mobile version.' },
           { text: 'Only the desktop version', why: 'Mobile-first indexing is now the default.' },
+          { text: 'The phone version' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

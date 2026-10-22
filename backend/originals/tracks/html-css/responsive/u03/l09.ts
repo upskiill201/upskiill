@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the cards turn into skinny strips?',
         options: [
-          { text: 'Flex items stay on one line by default and shrink to fit' },
           { text: 'width: 200px is broken', why: 'It\'s fine. The items shrink to stay on one line.' },
           { text: 'Phones can\'t show cards', why: 'They can, once the cards wrap.' },
+          { text: 'Flex items stay on one line by default and shrink to fit' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'Every word is on its own line in the cards. It looks like a list of spaghetti.',
         options: [
-          { text: 'The cards are squashed into one row. flex-wrap: wrap lets them move down instead.' },
           { text: 'Make the text smaller.', why: 'The cards are the problem: they need to wrap.' },
+          { text: 'The cards are squashed into one row. flex-wrap: wrap lets them move down instead.' },
           { text: 'Rotate your phone.', why: 'Fix the page, not the reader.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Does gap also space out the rows after wrapping?',
         options: [
-          { text: 'Yes, gap works between rows too' },
           { text: 'No, only between items in a row', why: 'gap spaces both.' },
+          { text: 'Yes, gap works between rows too' },
           { text: 'Only with Grid', why: 'Flexbox gap works between rows too.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

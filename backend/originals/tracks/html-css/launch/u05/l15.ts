@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         code: '<h1>What\'s changed</h1>\n<h2>v2.1</h2>\n<p>Two new beats.</p>\n<h2>v2.0</h2>\n<p>The relaunch.</p>',
         language: 'html',
         options: [
-          { text: 'v2.1, at the top' },
           { text: 'v2.0', why: 'Newest goes first.' },
           { text: 'They\'re the same', why: 'v2.1 is newer.' },
+          { text: 'v2.1, at the top' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -86,21 +86,21 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Send the launch post now! Why wait for the smoke test?',
         options: [
-          { text: 'If something\'s broken, 300 people find it. Five minutes of testing first, then I send it.' },
           { text: 'You\'re right, send it.', why: 'Test first.' },
+          { text: 'If something\'s broken, 300 people find it. Five minutes of testing first, then I send it.' },
           { text: 'Never send it.', why: 'Send it after the test passes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Why keep the folder structure the same when uploading?',
         options: [
-          { text: 'So every src and href still points to the right file' },
           { text: 'Hosts reject new folders', why: 'It\'s about your links.' },
           { text: 'It makes the site rank higher', why: 'It keeps links working.' },
+          { text: 'So every src and href still points to the right file' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

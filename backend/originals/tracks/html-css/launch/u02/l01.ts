@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should motion on a website do?',
         options: [
-          { text: 'Tell people something, like "this can be pressed"' },
           { text: 'Move as much as possible', why: 'Too much motion makes pages hard to read.' },
+          { text: 'Tell people something, like "this can be pressed"' },
           { text: 'Nothing, motion is always bad', why: 'Small, purposeful motion helps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'But spinning covers would look so cool!',
         options: [
-          { text: 'For a few seconds. Then they\'re hard to look at. Motion should help people use the site.' },
           { text: 'Yes, spin everything.', why: 'Grandma felt seasick.' },
           { text: 'Spin them faster.', why: 'Even harder to look at.' },
+          { text: 'For a few seconds. Then they\'re hard to look at. Motion should help people use the site.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -153,11 +153,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "no motion at all" not the best answer either?',
         options: [
-          { text: 'Small reactions help people see what they can press' },
           { text: 'Browsers require motion', why: 'They don\'t. It just helps.' },
           { text: 'It is the best answer', why: 'Purposeful motion helps.' },
+          { text: 'Small reactions help people see what they can press' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

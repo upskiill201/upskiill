@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'But divs look exactly the same!',
         options: [
-          { text: 'They look the same, but they don\'t mean the same. Landmarks let screen reader users jump around.' },
           { text: 'Then keep the divs.', why: 'Kwesi can\'t navigate them.' },
           { text: 'Landmarks are only for big sites.', why: 'Every site benefits.' },
+          { text: 'They look the same, but they don\'t mean the same. Landmarks let screen reader users jump around.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         code: '<header>...</header>\n<div class="content">...</div>\n<footer>...</footer>',
         language: 'html',
         options: [
-          { text: 'Banner (header) and content info (footer), but no main' },
           { text: 'Header, main and footer', why: 'The div isn\'t a main.' },
+          { text: 'Banner (header) and content info (footer), but no main' },
           { text: 'Nothing', why: 'header and footer are landmarks.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

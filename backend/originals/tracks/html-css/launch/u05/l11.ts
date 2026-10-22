@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Just say it\'s the best. Everyone says that.',
         options: [
-          { text: 'That\'s why nobody believes it. I\'ll say what\'s true and new, and let people decide.' },
           { text: 'Fine, the best in the world.', why: 'Even harder to believe.' },
           { text: 'I won\'t post anything.', why: 'Post, honestly.' },
+          { text: 'That\'s why nobody believes it. I\'ll say what\'s true and new, and let people decide.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         code: '<aside class="news" aria-label="What\'s new">\n  <h2>New: Mensah Beats v2.0</h2>\n</aside>',
         language: 'html',
         options: [
-          { text: 'As a "What\'s new" section, with its heading' },
           { text: 'It skips it', why: 'aside with a label is announced.' },
+          { text: 'As a "What\'s new" section, with its heading' },
           { text: 'As a button', why: 'It\'s a section, not a button.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

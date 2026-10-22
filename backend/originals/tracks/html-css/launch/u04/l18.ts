@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is sitemap.xml for?',
         options: [
-          { text: 'Listing every page\'s address so search engines can find them all' },
           { text: 'Drawing a map on the page', why: 'It\'s a list for search engines.' },
           { text: 'Making the site faster', why: 'It helps discovery, not speed.' },
+          { text: 'Listing every page\'s address so search engines can find them all' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         code: '<urlset>\n  <url><loc>https://yourname.example.app/</loc></url>\n  <url><loc>https://yourname.example.app/projects.html</loc></url>\n  <url><loc>https://yourname.example.app/contact.html</loc></url>\n</urlset>',
         language: 'html',
         options: [
-          { text: 'Three' },
           { text: 'One', why: 'Count the url entries.' },
           { text: 'It depends on the search engine', why: 'It lists three.' },
+          { text: 'Three' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

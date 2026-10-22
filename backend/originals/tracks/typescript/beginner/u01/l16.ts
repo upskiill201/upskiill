@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         from: 'grace',
         message: 'It feels slow to write a plan before the code. Should I skip it?',
         options: [
-          { text: 'For tiny programs, maybe. But a plan stops you getting lost on bigger ones, and it\'s quicker than fixing a muddle.' },
           { text: 'Always skip planning, real programmers just type.', why: 'Experienced programmers plan all the time, often on paper or in comments.' },
+          { text: 'For tiny programs, maybe. But a plan stops you getting lost on bigger ones, and it\'s quicker than fixing a muddle.' },
           { text: 'Plan for an hour before every line.', why: 'A plan should be quick: a few short steps, then start.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

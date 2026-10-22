@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the rainbow page hide the play buttons?',
         options: [
-          { text: 'Everything was shouting, so nothing stood out' },
           { text: 'The players were broken', why: 'They worked. They just didn\'t stand out.' },
+          { text: 'Everything was shouting, so nothing stood out' },
           { text: 'Purple can\'t show buttons', why: 'Too many colours competed for attention.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'But it\'s MY site. Shouldn\'t it look how I like?',
         options: [
-          { text: 'Yes, and it\'s also for fans. Keep your colours, just use fewer, so they can find the beats.' },
           { text: 'No, do what Efua says.', why: 'It\'s his style, used with purpose.' },
           { text: 'Add even more colours.', why: 'More colours, less noticed.' },
+          { text: 'Yes, and it\'s also for fans. Keep your colours, just use fewer, so they can find the beats.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

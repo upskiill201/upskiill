@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'If I add a gigs page later, do I copy all my CSS onto it?',
         options: [
-          { text: 'Better: put the CSS in style.css and link it from both pages. One file, one change.' },
           { text: 'Yes, copy it every time.', why: 'Then every change means editing every page.' },
           { text: 'Pages can\'t share CSS.', why: 'They can, with a linked stylesheet.' },
+          { text: 'Better: put the CSS in style.css and link it from both pages. One file, one change.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

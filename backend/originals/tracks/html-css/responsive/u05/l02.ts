@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is Clinton\'s desktop-first version longer?',
         options: [
-          { text: 'It sets the laptop layout, then has to undo it for phones' },
           { text: 'max-width is a longer word', why: 'It\'s the undoing that adds up.' },
           { text: 'It isn\'t longer', why: 'Every laptop rule needs a phone undo.' },
+          { text: 'It sets the laptop layout, then has to undo it for phones' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Is max-width wrong, then?',
         options: [
-          { text: 'Not wrong, just usually longer. Mobile-first with min-width means phones get the simplest CSS.' },
           { text: 'Yes, never use it.', why: 'It has uses; mobile-first is just tidier.' },
+          { text: 'Not wrong, just usually longer. Mobile-first with min-width means phones get the simplest CSS.' },
           { text: 'It only works on laptops.', why: 'It works anywhere.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         code: '.page { grid-template-areas: "head" "beats" "gigs"; }\n@media (min-width: 700px) {\n  .page { grid-template-areas: "head head" "beats gigs"; }\n}',
         language: 'css',
         options: [
-          { text: 'The two-column one: the media query applies and comes later' },
           { text: 'The stacked one', why: 'At 1000px the min-width query applies and wins.' },
           { text: 'Neither', why: 'The media query\'s map applies.' },
+          { text: 'The two-column one: the media query applies and comes later' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the gallery slow on Ama\'s phone?',
         options: [
-          { text: 'The images are far bigger than they\'re ever shown, so the phone downloads too much' },
           { text: 'Her phone can\'t show images', why: 'It can; there\'s just too much to download.' },
           { text: 'The CSS is too long', why: 'Images are usually the biggest cost.' },
+          { text: 'The images are far bigger than they\'re ever shown, so the phone downloads too much' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'Can\'t we just keep my full-size files? They look so sharp.',
         options: [
-          { text: 'Resized to about twice the shown size they\'ll still look sharp on phones, and load in a fraction of the time.' },
           { text: 'Yes, quality first.', why: 'Visitors leave before they see it.' },
+          { text: 'Resized to about twice the shown size they\'ll still look sharp on phones, and load in a fraction of the time.' },
           { text: 'Make them even bigger.', why: 'Slower still.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         code: '<img src="cover-full.jpg" width="300"> <!-- file is 4000 px wide -->',
         language: 'html',
         options: [
-          { text: 'Most of it: the phone downloads far more than it shows' },
           { text: 'None', why: 'The full file is downloaded either way.' },
           { text: 'Exactly half', why: 'It\'s far more than half.' },
+          { text: 'Most of it: the phone downloads far more than it shows' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does type="email" change on a phone?',
         options: [
-          { text: 'A keyboard with an @ key, and a check that it looks like an email' },
           { text: 'It sends an email', why: 'It only changes the keyboard and checking.' },
           { text: 'Nothing on phones', why: 'Phones show an email keyboard.' },
+          { text: 'A keyboard with an @ key, and a check that it looks like an email' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         code: '<input type="email" id="email" name="email">',
         language: 'html',
         options: [
-          { text: 'The browser says it isn\'t a valid email address' },
           { text: 'It\'s sent as it is', why: 'type="email" checks for an @.' },
           { text: 'The box deletes it', why: 'It shows a message instead.' },
+          { text: 'The browser says it isn\'t a valid email address' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

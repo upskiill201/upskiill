@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write changelog entries newest first?',
         options: [
-          { text: 'Visitors usually want to know what\'s new' },
           { text: 'Browsers require it', why: 'It\'s for readers.' },
+          { text: 'Visitors usually want to know what\'s new' },
           { text: 'It\'s random', why: 'Newest first helps readers.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         code: 'h1 { color: #FF9600; }\nh2 { color: #FFC83D; }',
         language: 'css',
         options: [
-          { text: 'Gold (#FFC83D)' },
           { text: 'Orange (#FF9600)', why: 'That\'s the h1.' },
+          { text: 'Gold (#FFC83D)' },
           { text: 'Cream', why: 'The h2 rule sets gold.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

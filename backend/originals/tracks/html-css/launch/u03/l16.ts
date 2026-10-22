@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is it cheaper to build accessibility in from the start?',
         options: [
-          { text: 'Choosing the right elements first costs almost nothing; fixing later means rework' },
           { text: 'It isn\'t', why: 'Retrofitting is much more work.' },
           { text: 'Because tools are free', why: 'It\'s about doing it right first time.' },
+          { text: 'Choosing the right elements first costs almost nothing; fixing later means rework' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'My uncle says disabled people don\'t shop online.',
         options: [
-          { text: 'Lots do, and they leave sites that don\'t work for them. That\'s customers he\'s losing without knowing.' },
           { text: 'He\'s right.', why: 'Disabled people shop online like everyone.' },
+          { text: 'Lots do, and they leave sites that don\'t work for them. That\'s customers he\'s losing without knowing.' },
           { text: 'It doesn\'t matter.', why: 'It matters to them, and to his shop.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who benefits from captions on a video?',
         options: [
-          { text: 'Deaf people, and anyone watching without sound or in a noisy place' },
           { text: 'Only deaf people', why: 'Many others use them too.' },
+          { text: 'Deaf people, and anyone watching without sound or in a noisy place' },
           { text: 'Nobody', why: 'Many people rely on them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

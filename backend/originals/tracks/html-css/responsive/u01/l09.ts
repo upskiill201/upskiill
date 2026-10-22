@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         code: '* { box-sizing: border-box; }',
         language: 'css',
         options: [
-          { text: 'Every element on the page' },
           { text: 'Only elements with a star', why: '* is the universal selector: everything.' },
           { text: 'Only the body', why: 'It matches every element.' },
+          { text: 'Every element on the page' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Is it bad to put a rule on EVERY element?',
         options: [
-          { text: 'For box-sizing it\'s normal: lots of sites do exactly this so sizes are predictable.' },
           { text: 'Yes, never use *.', why: 'For box-sizing it\'s a common, safe habit.' },
+          { text: 'For box-sizing it\'s normal: lots of sites do exactly this so sizes are predictable.' },
           { text: 'Only if you have one element.', why: 'It\'s fine on any page.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

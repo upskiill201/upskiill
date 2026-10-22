@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why are the covers tiny on Grandma\'s phone?',
         options: [
-          { text: 'repeat(4, 1fr) always makes four columns, however narrow the screen' },
           { text: 'Her phone shrinks pictures', why: 'The grid forces four columns.' },
           { text: 'The images are low quality', why: 'It\'s the number of columns.' },
+          { text: 'repeat(4, 1fr) always makes four columns, however narrow the screen' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Do I need separate CSS for phones, tablets and laptops for the gallery?',
         options: [
-          { text: 'Not for this: auto-fill with minmax works out the columns on every screen.' },
           { text: 'Yes, three stylesheets.', why: 'One line handles the gallery.' },
+          { text: 'Not for this: auto-fill with minmax works out the columns on every screen.' },
           { text: 'Only for tablets.', why: 'It adapts to all of them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happens if the minimum is too big, like minmax(600px, 1fr)?',
         options: [
-          { text: 'Phones narrower than 600px get one column that sticks out' },
           { text: 'Nothing, it\'s always fine', why: '600px is wider than most phones.' },
+          { text: 'Phones narrower than 600px get one column that sticks out' },
           { text: 'The grid hides the covers', why: 'They stick out instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

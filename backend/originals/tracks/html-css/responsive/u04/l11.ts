@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Wait, tables were bad in Chapter 3!',
         options: [
-          { text: 'Tables for LAYOUT were bad. Tables for DATA are exactly right.' },
           { text: 'Yes, never use tables.', why: 'They\'re right for data.' },
           { text: 'Only use tables on laptops.', why: 'It\'s about data vs layout, not screens.' },
+          { text: 'Tables for LAYOUT were bad. Tables for DATA are exactly right.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -126,11 +126,11 @@ const lesson: OriginalLesson = {
         code: '<table>\n  <tr><th>Date</th><th>City</th></tr>\n  <tr><td>18 Oct</td><td>Accra</td></tr>\n  <tr><td>25 Oct</td><td>Accra</td></tr>\n  <tr><td>1 Nov</td><td>Kumasi</td></tr>\n</table>',
         language: 'html',
         options: [
-          { text: 'Three' },
           { text: 'Four', why: 'The first tr is the heading row.' },
+          { text: 'Three' },
           { text: 'Six', why: 'Count the tr elements with td cells.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

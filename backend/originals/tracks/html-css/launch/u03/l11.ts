@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Why not hide the skip link with display: none?',
         options: [
-          { text: 'display: none removes it for everyone, keyboard users too. It must be off-screen, then appear on focus.' },
           { text: 'display: none is fine.', why: 'Then nobody can reach it.' },
           { text: 'Make it the same colour as the background.', why: 'Keyboard users couldn\'t see it when it\'s focused.' },
+          { text: 'display: none removes it for everyone, keyboard users too. It must be off-screen, then appear on focus.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         code: '.skip-link { position: absolute; top: -100px; }\n.skip-link:focus { top: 8px; }\n\n<a class="skip-link" href="#main">Skip to main content</a>',
         language: 'html',
         options: [
-          { text: 'The skip link slides into view at the top' },
           { text: 'Nothing, it stays hidden', why: ':focus brings it back on screen.' },
+          { text: 'The skip link slides into view at the top' },
           { text: 'The first nav link', why: 'The skip link comes first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

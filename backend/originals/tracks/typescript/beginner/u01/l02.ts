@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What was JavaScript first made for?',
         options: [
-          { text: 'Making web pages do things, not just sit there' },
           { text: 'Booking hospital appointments', why: 'Kinwell uses it for that now, but in 1995 it was made so web pages could react to people.' },
           { text: 'Making Java faster', why: 'JavaScript and Java are different languages. The name was mostly marketing.' },
+          { text: 'Making web pages do things, not just sit there' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         from: 'grace',
         message: 'Wait. If JavaScript was rushed in ten days, is that why the spreadsheet tool our old supplier built kept breaking?',
         options: [
-          { text: 'Partly: JavaScript lets a lot of mistakes through until the code runs. That\'s the problem TypeScript was made to fix.' },
           { text: 'No, JavaScript never has mistakes.', why: 'Every language lets some mistakes through. JavaScript lets through more than most, which is why TypeScript exists.' },
+          { text: 'Partly: JavaScript lets a lot of mistakes through until the code runs. That\'s the problem TypeScript was made to fix.' },
           { text: 'Yes, nobody should use JavaScript.', why: 'JavaScript runs most of the web, including Kinwell. The fix isn\'t avoiding it, it\'s checking it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

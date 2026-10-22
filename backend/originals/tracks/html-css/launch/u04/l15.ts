@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         code: '<meta property="og:url" content="https://mensahbeats.example.app/gigs.html">',
         language: 'html',
         options: [
-          { text: 'The gigs page' },
           { text: 'The home page', why: 'og:url is the gigs page.' },
+          { text: 'The gigs page' },
           { text: 'Nowhere', why: 'It links to og:url.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -80,21 +80,21 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should I make every image lazy, to be extra fast?',
         options: [
-          { text: 'Not the ones at the top: they\'re needed straight away. Only the ones further down.' },
           { text: 'Yes, all of them.', why: 'Lazy top images can slow what people see first.' },
           { text: 'None of them.', why: 'Lower images benefit.' },
+          { text: 'Not the ones at the top: they\'re needed straight away. Only the ones further down.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'What usually makes a page slow?',
         options: [
-          { text: 'Images that are much bigger than they need to be' },
           { text: 'Too many headings', why: 'Text is tiny compared with images.' },
+          { text: 'Images that are much bigger than they need to be' },
           { text: 'The favicon', why: 'It\'s tiny.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

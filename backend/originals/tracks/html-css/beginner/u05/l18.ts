@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The live page has text but no images. What\'s the likely cause?',
         options: [
-          { text: 'Only index.html was uploaded, not the whole folder' },
           { text: 'Hosts don\'t show images', why: 'They do, if the image files are uploaded.' },
           { text: 'Phones can\'t show jpg', why: 'They can. The files are missing.' },
+          { text: 'Only index.html was uploaded, not the whole folder' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'The Sunrise cover is missing on my phone!',
         options: [
-          { text: 'I\'ll check the file name matches the src exactly, fix it, and upload again.' },
           { text: 'It shows on my laptop, so it\'s fine.', why: 'Efua\'s phone is the real test.' },
+          { text: 'I\'ll check the file name matches the src exactly, fix it, and upload again.' },
           { text: 'Delete the whole site.', why: 'Fix one file and re-upload.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Why test with Wi-Fi off?',
         options: [
-          { text: 'It\'s how many fans will open it: on mobile data, away from home' },
           { text: 'Pages only work offline', why: 'They need a connection. Mobile data is the real-world test.' },
           { text: 'It deletes old versions', why: 'It just tests like a fan would.' },
+          { text: 'It\'s how many fans will open it: on mobile data, away from home' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Is pausing on hover enough?',
         options: [
-          { text: 'It helps mouse and keyboard users, but phones can\'t hover. A still gallery works for everyone.' },
           { text: 'Yes, hover works everywhere.', why: 'Phones don\'t hover.' },
           { text: 'Add more hover effects.', why: 'Phone users still can\'t pause it.' },
+          { text: 'It helps mouse and keyboard users, but phones can\'t hover. A still gallery works for everyone.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         code: '.strip { animation: slide 20s linear infinite; }\n.strip:focus-within { animation-play-state: paused; }',
         language: 'css',
         options: [
-          { text: 'The strip freezes while focus is inside it' },
           { text: 'It keeps sliding', why: ':focus-within pauses it.' },
+          { text: 'The strip freezes while focus is inside it' },
           { text: 'It restarts from the beginning', why: 'paused freezes it where it is.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

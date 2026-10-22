@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What went wrong with Clinton\'s pasted styles?',
         options: [
-          { text: 'One copy had a typo, so the cards didn\'t match, and every change means editing each copy' },
           { text: 'style attributes don\'t work', why: 'They work. They\'re just hard to keep in sync.' },
           { text: 'Nothing', why: 'Efua noticed the mismatched pink straight away.' },
+          { text: 'One copy had a typo, so the cards didn\'t match, and every change means editing each copy' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'But my way worked! Why change it?',
         options: [
-          { text: 'It works today. A class means the next change is one edit instead of hunting through every card.' },
           { text: 'Style attributes are banned.', why: 'They\'re allowed. They just don\'t scale.' },
+          { text: 'It works today. A class means the next change is one edit instead of hunting through every card.' },
           { text: 'It didn\'t work.', why: 'It did, until the colours had to change.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In the HTML, do you write the dot? class=".featured" or class="featured"?',
         options: [
-          { text: 'class="featured", no dot. The dot is only in CSS.' },
           { text: 'class=".featured"', why: 'The dot belongs in the CSS selector only.' },
+          { text: 'class="featured", no dot. The dot is only in CSS.' },
           { text: 'Either is the same', why: 'With a dot, the class name includes the dot and won\'t match .featured.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'Someone told me there\'s a typo on your gigs page. Embarrassing!',
         options: [
-          { text: 'Thanks for telling me. That\'s normal after a launch. I\'ll fix it and add it to the changelog.' },
           { text: 'There can\'t be, I checked.', why: 'Real users always find things.' },
           { text: 'Take the site down.', why: 'Fix the typo; keep the site up.' },
+          { text: 'Thanks for telling me. That\'s normal after a launch. I\'ll fix it and add it to the changelog.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         code: '<a href="mailto:kofi@mensahbeats.example.app">Tell Kofi</a>',
         language: 'html',
         options: [
-          { text: 'Their email app opens with Kofi\'s address filled in' },
           { text: 'It opens a web page', why: 'mailto opens email.' },
+          { text: 'Their email app opens with Kofi\'s address filled in' },
           { text: 'Nothing', why: 'It opens an email.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

@@ -83,21 +83,21 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'The form still doesn\'t send anywhere real. Is it okay to publish?',
         options: [
-          { text: 'Yes, with a clear "or email bookings@example.com" line under it, until I connect a form service.' },
           { text: 'Yes, nobody will notice.', why: 'Their bookings would vanish.' },
+          { text: 'Yes, with a clear "or email bookings@example.com" line under it, until I connect a form service.' },
           { text: 'Never publish forms.', why: 'Just add a fallback for now.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Which button text is clearest?',
         options: [
-          { text: 'Send booking request' },
           { text: 'Submit', why: 'Says what it is, not what happens.' },
           { text: 'Go', why: 'Go where?' },
+          { text: 'Send booking request' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

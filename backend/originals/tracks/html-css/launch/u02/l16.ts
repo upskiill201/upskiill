@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes motion look professional?',
         options: [
-          { text: 'Being small, short and purposeful' },
           { text: 'Being everywhere', why: 'Too much looks busy.' },
+          { text: 'Being small, short and purposeful' },
           { text: 'Being as fast as possible', why: 'Short, not frantic.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'The video had a whole page that spins on load. Can Kofi have that?',
         options: [
-          { text: 'It\'d be disorienting and could make people feel sick. A small arrival animation does the job.' },
           { text: 'Yes, spin it twice.', why: 'Big spins are disorienting.' },
           { text: 'Spin only on phones.', why: 'Not kind on any screen.' },
+          { text: 'It\'d be disorienting and could make people feel sick. A small arrival animation does the job.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         code: '.card:hover { transform: translateY(-4px); }\n@media (prefers-reduced-motion: reduce) { .card:hover { transform: none; } }',
         language: 'css',
         options: [
-          { text: 'It doesn\'t move' },
           { text: 'It lifts 4px', why: 'The media query cancels it.' },
+          { text: 'It doesn\'t move' },
           { text: 'It disappears', why: 'Only the movement is cancelled.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why test motion on an older phone?',
         options: [
-          { text: 'Heavy animations judder there first' },
           { text: 'Old phones can\'t show CSS', why: 'They can; heavy motion just struggles.' },
           { text: 'No reason', why: 'Many fans use older phones.' },
+          { text: 'Heavy animations judder there first' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

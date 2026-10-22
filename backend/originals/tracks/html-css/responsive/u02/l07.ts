@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         code: '.title { color: #F0438A; }\nh2 { color: #FF9600; }\n\n<h2 class="title">Gigs</h2>',
         language: 'html',
         options: [
-          { text: 'Pink: the class is more specific' },
           { text: 'Orange: h2 comes later', why: 'Order only decides ties. The class is more specific.' },
+          { text: 'Pink: the class is more specific' },
           { text: 'Both, mixed', why: 'One value wins.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'body sets color: cream. No rule targets the paragraph. What colour is the paragraph?',
         options: [
-          { text: 'Cream, inherited from body' },
           { text: 'Black, the browser default', why: 'color is inherited from body.' },
+          { text: 'Cream, inherited from body' },
           { text: 'No colour', why: 'It inherits cream.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

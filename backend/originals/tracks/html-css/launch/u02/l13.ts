@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do some people turn on "Reduce motion"?',
         options: [
-          { text: 'Movement on screen can make them dizzy, sick or give them headaches' },
           { text: 'To save battery only', why: 'For many it\'s about feeling unwell.' },
+          { text: 'Movement on screen can make them dizzy, sick or give them headaches' },
           { text: 'They don\'t like colours', why: 'It\'s about motion.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         code: '.new { animation: pulse 1.2s ease-in-out 3; }\n@media (prefers-reduced-motion: reduce) { .new { animation: none; } }',
         language: 'css',
         options: [
-          { text: 'Stays still, but is still shown' },
           { text: 'Pulses three times', why: 'The media query turns it off for her.' },
+          { text: 'Stays still, but is still shown' },
           { text: 'Disappears', why: 'Only the animation is removed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -139,11 +139,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should never depend on motion?',
         options: [
-          { text: 'Important information, like the gig date' },
           { text: 'Decoration', why: 'Decoration is exactly what motion is for.' },
           { text: 'Nothing; motion can carry anything', why: 'Some people turn it off.' },
+          { text: 'Important information, like the gig date' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         code: 'grid-template-columns: 1fr 2fr;',
         language: 'css',
         options: [
-          { text: '300px' },
           { text: '450px', why: '1fr of 3 shares: 300px.' },
+          { text: '300px' },
           { text: '600px', why: 'That\'s the second column.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -82,21 +82,21 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Eleven covers and four columns leaves a hole. Should Kofi make another cover just to fill it?',
         options: [
-          { text: 'No need: an empty cell at the end is normal in a grid, and nothing else changes size.' },
           { text: 'Yes, grids must be full.', why: 'Grids can end with empty cells.' },
           { text: 'Switch to Flexbox.', why: 'Then the last row stretches.' },
+          { text: 'No need: an empty cell at the end is normal in a grid, and nothing else changes size.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'What does 200px 1fr give you?',
         options: [
-          { text: 'A fixed 200px column, then one that takes the rest' },
           { text: 'Two 200px columns', why: '1fr takes whatever is left.' },
+          { text: 'A fixed 200px column, then one that takes the rest' },
           { text: 'An error: you can\'t mix units', why: 'Mixing px and fr is normal.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

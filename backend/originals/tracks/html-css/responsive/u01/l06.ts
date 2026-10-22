@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where does the thin gap around Kofi\'s page come from?',
         options: [
-          { text: 'The body\'s default margin, usually 8px' },
           { text: 'A bug in his CSS', why: 'The browser adds it before any CSS.' },
           { text: 'The phone screen', why: 'It\'s the body\'s margin.' },
+          { text: 'The body\'s default margin, usually 8px' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         code: 'article { margin-top: 16px; margin-bottom: 24px; }\n\n<article>One</article>\n<article>Two</article>',
         language: 'html',
         options: [
-          { text: '24px: the bigger margin wins' },
           { text: '40px', why: 'Stacked margins don\'t add up.' },
+          { text: '24px: the bigger margin wins' },
           { text: '16px', why: 'The bigger one wins.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'My h2 inside the card has a big gap above it, even with padding 16px.',
         options: [
-          { text: 'That\'s the h2\'s own default margin on top of the padding. Set h2 { margin-top: 0; }.' },
           { text: 'Add more padding.', why: 'That makes the gap even bigger.' },
           { text: 'You can\'t change default margins.', why: 'You can change any margin.' },
+          { text: 'That\'s the h2\'s own default margin on top of the padding. Set h2 { margin-top: 0; }.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

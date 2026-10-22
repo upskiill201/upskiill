@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In grid-template-areas, what is each quoted string?',
         options: [
-          { text: 'One row of the layout' },
           { text: 'One column', why: 'Each string is a row; each word in it is a cell.' },
           { text: 'One item\'s colour', why: 'It\'s a row of area names.' },
+          { text: 'One row of the layout' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         code: 'grid-template-areas: "head head" "gigs beats";',
         language: 'css',
         options: [
-          { text: 'Left, in the second row' },
           { text: 'Right, in the second row', why: 'gigs is the first word in the second row: left.' },
           { text: 'Across the top', why: 'head is the top row.' },
+          { text: 'Left, in the second row' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -136,11 +136,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'You swap areas so gigs shows first on screen. What should you check?',
         options: [
-          { text: 'That the HTML order still makes sense for keyboard and screen reader users' },
           { text: 'Nothing, areas fix the reading order', why: 'Areas move things on screen only.' },
+          { text: 'That the HTML order still makes sense for keyboard and screen reader users' },
           { text: 'That gigs has an id', why: 'The reading order is the issue.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         code: '<html lang="en">\n<title>Gigs | Mensah Beats</title>',
         language: 'html',
         options: [
-          { text: '"Gigs, Mensah Beats", in an English voice' },
           { text: 'The footer', why: 'The title comes first.' },
           { text: 'Nothing', why: 'The title is announced.' },
+          { text: '"Gigs, Mensah Beats", in an English voice' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

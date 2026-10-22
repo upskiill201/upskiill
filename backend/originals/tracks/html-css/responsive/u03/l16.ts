@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In a column, what does justify-content: center do?',
         options: [
-          { text: 'Centres items top to bottom' },
           { text: 'Centres items left to right', why: 'In a column, that\'s align-items.' },
           { text: 'Nothing in a column', why: 'It works along the column.' },
+          { text: 'Centres items top to bottom' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'So should Kofi use Flexbox for his gallery of twelve covers in neat rows AND columns?',
         options: [
-          { text: 'Flexbox can wrap them, but for rows and columns that line up both ways, Grid is the better tool. Next chapter.' },
           { text: 'Flexbox is the only layout tool.', why: 'Grid exists for exactly this.' },
+          { text: 'Flexbox can wrap them, but for rows and columns that line up both ways, Grid is the better tool. Next chapter.' },
           { text: 'Use a table.', why: 'Tables are for data.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Is "order changes what screen readers hear" a myth or a fact?',
         options: [
-          { text: 'Myth: screen readers follow the HTML order' },
           { text: 'Fact', why: 'order only changes the screen.' },
+          { text: 'Myth: screen readers follow the HTML order' },
           { text: 'Only on phones', why: 'It never changes reading order.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

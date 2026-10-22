@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         code: '<meta property="og:image" content="/share.jpg">',
         language: 'html',
         options: [
-          { text: 'It needs the full address, starting with https://' },
           { text: 'og:image doesn\'t exist', why: 'It does; it needs a full address.' },
+          { text: 'It needs the full address, starting with https://' },
           { text: 'The file is too small', why: 'The address is the problem.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which sentence uses search words naturally?',
         options: [
-          { text: '"Kofi Mensah is a beat producer in Accra who plays weddings and parties."' },
           { text: '"Beat producer Accra producer beats Accra."', why: 'That\'s stuffing.' },
+          { text: '"Kofi Mensah is a beat producer in Accra who plays weddings and parties."' },
           { text: '"Sonic architect crafting vibes."', why: 'Nobody searches those words.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

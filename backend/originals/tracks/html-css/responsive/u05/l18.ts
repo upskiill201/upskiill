@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where should your first breakpoint go?',
         options: [
-          { text: 'Where your content starts to look stretched as you widen the preview' },
           { text: 'At the width of your own phone', why: 'Follow the content, not a device.' },
+          { text: 'Where your content starts to look stretched as you widen the preview' },
           { text: 'At 100px', why: 'Far too narrow to need a change.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         code: 'main { display: grid; }\n@media (min-width: 700px) { main { grid-template-columns: 2fr 1fr; } }',
         language: 'css',
         options: [
-          { text: 'One' },
           { text: 'Two', why: 'Phones are under 700px.' },
+          { text: 'One' },
           { text: 'Three', why: 'There are at most two.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

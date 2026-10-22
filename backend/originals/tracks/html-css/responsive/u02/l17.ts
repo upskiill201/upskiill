@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can\'t .play-button win against the pasted rule?',
         options: [
-          { text: 'The pasted rule uses !important, which beats normal rules whatever their specificity' },
           { text: 'Classes are weaker than elements', why: 'Classes are stronger, but !important comes first.' },
           { text: 'Purple is a stronger colour', why: 'Colours have no strength.' },
+          { text: 'The pasted rule uses !important, which beats normal rules whatever their specificity' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Sorry! How do I check a snippet before pasting it next time?',
         options: [
-          { text: 'Read every line. Look for !important and rules on a, p, body or *. Try it in a test page first.' },
           { text: 'Check it has lots of stars.', why: 'Popularity doesn\'t tell you what it overrides.' },
+          { text: 'Read every line. Look for !important and rules on a, p, body or *. Try it in a test page first.' },
           { text: 'Paste it at the very top, then it can\'t win.', why: '!important wins wherever it is.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         code: 'a { color: purple !important; }\n.play-button { color: #14213D; }\n\n<a class="play-button">Play</a>',
         language: 'html',
         options: [
-          { text: 'Purple: !important beats the more specific class' },
           { text: 'Night blue: the class is more specific', why: 'Importance is checked before specificity.' },
           { text: 'Mixed', why: 'One value wins.' },
+          { text: 'Purple: !important beats the more specific class' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

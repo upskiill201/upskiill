@@ -86,21 +86,21 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'My cousin says to put "best producer" in every title.',
         options: [
-          { text: 'Titles should say what the page really is. Empty boasts don\'t help people choose, and can look spammy.' },
           { text: 'Good idea.', why: 'Be specific and true instead.' },
           { text: 'Put it twice.', why: 'Even more spammy.' },
+          { text: 'Titles should say what the page really is. Empty boasts don\'t help people choose, and can look spammy.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'How do crawlers usually find a new page?',
         options: [
-          { text: 'By following links to it from other pages' },
           { text: 'By reading your mind', why: 'They follow links.' },
+          { text: 'By following links to it from other pages' },
           { text: 'Only if you pay', why: 'Links are free.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a 404 code mean?',
         options: [
-          { text: 'The page wasn\'t found' },
           { text: 'The site is very popular', why: 'It means not found.' },
+          { text: 'The page wasn\'t found' },
           { text: 'The form was sent', why: 'It means not found.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'I typed gig.html instead of gigs.html and got a scary grey page.',
         options: [
-          { text: 'Kofi\'s adding a friendly 404 page, so typos land somewhere with links back.' },
           { text: 'That\'s your fault.', why: 'Typos happen; help people back.' },
           { text: 'Grey pages are fine.', why: 'People often leave.' },
+          { text: 'Kofi\'s adding a friendly 404 page, so typos land somewhere with links back.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -133,11 +133,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why keep the normal header on the 404 page?',
         options: [
-          { text: 'So people know they\'re still on Mensah Beats, and can use the menu' },
           { text: 'Search engines need it', why: 'It\'s for people.' },
           { text: 'It hides the error', why: 'It helps people carry on.' },
+          { text: 'So people know they\'re still on Mensah Beats, and can use the menu' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

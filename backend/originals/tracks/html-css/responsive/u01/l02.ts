@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where does padding go?',
         options: [
-          { text: 'Inside the border, around the content' },
           { text: 'Outside the border', why: 'That\'s margin, coming soon.' },
+          { text: 'Inside the border, around the content' },
           { text: 'In the text itself', why: 'It\'s space in the box, not in the words.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         code: 'article { padding: 8px; padding-left: 32px; }',
         language: 'css',
         options: [
-          { text: 'The left: 32px, the others 8px' },
           { text: 'All sides 32px', why: 'Only padding-left changes, after the shorthand.' },
+          { text: 'The left: 32px, the others 8px' },
           { text: 'All sides 8px', why: 'The later padding-left wins for the left side.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

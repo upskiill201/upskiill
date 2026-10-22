@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A card has width: 300px, padding: 20px and a 2px border. By default, how wide is it?',
         options: [
-          { text: '344px: 300 + 20 + 20 + 2 + 2' },
           { text: '300px', why: 'That\'s with border-box. By default padding and border are added.' },
           { text: '322px', why: 'Padding and border count on both sides.' },
+          { text: '344px: 300 + 20 + 20 + 2 + 2' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Why would the default make my card bigger than I asked?',
         options: [
-          { text: 'The original standard measured only the content. box-sizing: border-box lets me measure the whole card instead.' },
           { text: 'It\'s a bug in my phone.', why: 'It\'s how content-box is meant to work.' },
+          { text: 'The original standard measured only the content. box-sizing: border-box lets me measure the whole card instead.' },
           { text: 'Width doesn\'t work in CSS.', why: 'It works. It just measures the content by default.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do many developers switch every box to border-box?',
         options: [
-          { text: '"300px wide" then means the whole card, which is easier to plan' },
           { text: 'It makes pages load faster', why: 'It\'s about predictable sizes.' },
+          { text: '"300px wide" then means the whole card, which is easier to plan' },
           { text: 'Browsers require it', why: 'It\'s a choice, not a rule.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How many elements on a page may share one id?',
         options: [
-          { text: 'Only one' },
           { text: 'As many as you like', why: 'That\'s a class.' },
+          { text: 'Only one' },
           { text: 'Two', why: 'An id is unique on the page.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         code: '#book { color: #FF9600; }\n.title { color: #F0438A; }\n\n<h2 id="book" class="title">Book me</h2>',
         language: 'html',
         options: [
-          { text: 'Orange: the id rule is stronger' },
           { text: 'Pink: the class comes later', why: 'Strength is checked before order. The id wins.' },
           { text: 'Cream', why: 'Both rules match; the id wins.' },
+          { text: 'Orange: the id rule is stronger' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -136,11 +136,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is it hard to override an id rule?',
         options: [
-          { text: 'It\'s stronger than any number of class rules, wherever they are' },
           { text: 'Ids are read-only', why: 'They\'re just very strong selectors.' },
           { text: 'Browsers lock ids', why: 'It\'s about how strong the selector is.' },
+          { text: 'It\'s stronger than any number of class rules, wherever they are' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

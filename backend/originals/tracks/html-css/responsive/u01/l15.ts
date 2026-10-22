@@ -83,21 +83,21 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'There\'s a gap above the footer and I don\'t know where it\'s from.',
         options: [
-          { text: 'Add * { outline: 1px solid red; } for a minute, see which box owns the gap, fix that one property, then delete the outline.' },
           { text: 'Delete the footer.', why: 'Find the gap\'s owner instead.' },
+          { text: 'Add * { outline: 1px solid red; } for a minute, see which box owns the gap, fix that one property, then delete the outline.' },
           { text: 'Add a negative padding.', why: 'Padding can\'t be negative. Find the owner first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'What does border-radius: 50% do to a square image?',
         options: [
-          { text: 'Makes it a circle' },
           { text: 'Halves its size', why: 'It rounds the corners, all the way.' },
           { text: 'Adds a border', why: 'It only rounds the corners.' },
+          { text: 'Makes it a circle' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

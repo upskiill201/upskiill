@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the padding on Kofi\'s plain link overlap the lines above and below?',
         options: [
-          { text: 'Links are inline, and top and bottom padding on inline boxes doesn\'t push lines away' },
           { text: 'He used too much padding', why: 'Any amount overlaps on an inline box.' },
           { text: 'Links can\'t have padding', why: 'They can. Inline boxes just don\'t push other lines.' },
+          { text: 'Links are inline, and top and bottom padding on inline boxes doesn\'t push lines away' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'I set width: 200px on my link and nothing happened.',
         options: [
-          { text: 'Inline boxes ignore width. Make it inline-block and the width works.' },
           { text: 'Try 2000px.', why: 'Any width is ignored on inline boxes.' },
+          { text: 'Inline boxes ignore width. Make it inline-block and the width works.' },
           { text: 'Links can never be resized.', why: 'With inline-block they can.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         code: 'a { display: block; }\n\n<p>Listen now: <a href="#play">Play</a></p>',
         language: 'html',
         options: [
-          { text: 'On its own line, stretching the full width' },
           { text: 'Next to "Listen now:"', why: 'block starts a new line.' },
           { text: 'Nowhere', why: 'It\'s still shown, just as a block.' },
+          { text: 'On its own line, stretching the full width' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why use a separate email just for bookings?',
         options: [
-          { text: 'If it gets spam or strangers, his personal accounts stay private' },
           { text: 'Hosts only allow one email', why: 'It\'s about keeping his own email private.' },
+          { text: 'If it gets spam or strangers, his personal accounts stay private' },
           { text: 'Emails are faster than calls', why: 'It\'s about privacy.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -121,11 +121,11 @@ const lesson: OriginalLesson = {
         code: '<a href="mailto:bookings@example.com">Email me</a>',
         language: 'html',
         options: [
-          { text: 'Their email app opens with the address filled in' },
           { text: 'It calls Kofi', why: 'tel: calls. mailto: emails.' },
+          { text: 'Their email app opens with the address filled in' },
           { text: 'Nothing, it\'s not a link', why: 'mailto: links open an email.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

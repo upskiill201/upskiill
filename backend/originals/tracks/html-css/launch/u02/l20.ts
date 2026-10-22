@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         code: '.countdown { animation: nudge 1.5s ease-in-out 2; }',
         language: 'css',
         options: [
-          { text: '3 seconds, then it\'s still' },
           { text: '1.5 seconds', why: 'It plays twice.' },
+          { text: '3 seconds, then it\'s still' },
           { text: 'Forever', why: 'The count is 2.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

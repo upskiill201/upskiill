@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         code: 'A: repeat(auto-fill, minmax(150px, 1fr))\nB: repeat(auto-fit, minmax(150px, 1fr))',
         language: 'css',
         options: [
-          { text: 'B, auto-fit' },
           { text: 'A, auto-fill', why: 'auto-fill keeps the empty columns.' },
+          { text: 'B, auto-fit' },
           { text: 'Both the same', why: 'They differ when there are few items.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should the gig list use grid-template-areas too?',
         options: [
-          { text: 'No, the gig list is data, so it stays a table. Areas are for the page layout.' },
           { text: 'Yes, everything should be Grid.', why: 'Data belongs in a table.' },
           { text: 'Use Flexbox for it.', why: 'It\'s data: a table.' },
+          { text: 'No, the gig list is data, so it stays a table. Areas are for the page layout.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

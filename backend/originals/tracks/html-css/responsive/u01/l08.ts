@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Ama have to scroll sideways?',
         options: [
-          { text: 'The cards are a fixed 500px, wider than her screen' },
           { text: 'Her phone is broken', why: 'Any small screen would do the same.' },
           { text: 'The padding is too small', why: 'It\'s the fixed width.' },
+          { text: 'The cards are a fixed 500px, wider than her screen' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'The pictures go off the side of my phone too!',
         options: [
-          { text: 'I\'ll give the images max-width: 100%, so they shrink to fit the card.' },
           { text: 'Buy a bigger phone.', why: 'Ama\'s phone is the test. Fix the page.' },
+          { text: 'I\'ll give the images max-width: 100%, so they shrink to fit the card.' },
           { text: 'I\'ll make them 800px wide.', why: 'Even wider.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         code: 'article { max-width: 500px; }',
         language: 'css',
         options: [
-          { text: '500px: it stops there' },
           { text: '1200px', why: 'max-width stops it at 500px.' },
           { text: 'Exactly as wide as the words', why: 'It fills the space up to 500px.' },
+          { text: '500px: it stops there' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

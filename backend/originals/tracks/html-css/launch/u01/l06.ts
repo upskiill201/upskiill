@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the required attribute do?',
         options: [
-          { text: 'Stops the form sending until that box has an answer' },
           { text: 'Makes the box red', why: 'It blocks sending; colour is up to your CSS.' },
           { text: 'Fills the box in automatically', why: 'It only checks it isn\'t empty.' },
+          { text: 'Stops the form sending until that box has an answer' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'I\'ll make every single box required, so I always get everything.',
         options: [
-          { text: 'Every required box is a reason to give up. Only require what I really need to reply.' },
           { text: 'Good plan.', why: 'Too many required boxes put people off.' },
+          { text: 'Every required box is a reason to give up. Only require what I really need to reply.' },
           { text: 'Make none required.', why: 'Then bookings arrive half empty.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         code: '<input type="date" id="date" name="date" required>',
         language: 'html',
         options: [
-          { text: 'The browser stops and points to the date box' },
           { text: 'It sends with no date', why: 'required blocks that.' },
           { text: 'The page reloads empty', why: 'It shows a message and waits.' },
+          { text: 'The browser stops and points to the date box' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

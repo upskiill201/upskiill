@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Your sketch has your name across the top and two boxes below. Which area map fits?',
         options: [
-          { text: '"head head" "main side"' },
           { text: '"head main side"', why: 'That\'s one row of three.' },
           { text: '"head" "main side"', why: 'Rows need the same number of cells.' },
+          { text: '"head head" "main side"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'What will your gallery show?',
         options: [
-          { text: 'Photos I took myself, each with alt text that says what\'s in it.' },
           { text: 'Pictures I found online.', why: 'Use your own, or ones you have the right to use.' },
+          { text: 'Photos I took myself, each with alt text that says what\'s in it.' },
           { text: 'Blank boxes for now.', why: 'Real content shows if the layout works.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

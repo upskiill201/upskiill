@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Everyone buys reviews. How would anyone know?',
         options: [
-          { text: 'People and search engines spot fake patterns, and in many places fake reviews break consumer rules. Real quotes are worth more.' },
           { text: 'Nobody would know.', why: 'Fake reviews are often spotted.' },
+          { text: 'People and search engines spot fake patterns, and in many places fake reviews break consumer rules. Real quotes are worth more.' },
           { text: 'Buy even more so it looks real.', why: 'More fakes, more risk.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         code: 'Search console: mensahbeats.example.app',
         language: 'html',
         options: [
-          { text: 'Which searches lead to his site, which pages are indexed, and problems to fix' },
           { text: 'His bank balance', why: 'It\'s about search.' },
           { text: 'Who visited by name', why: 'It shows search data, not names.' },
+          { text: 'Which searches lead to his site, which pages are indexed, and problems to fix' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -148,11 +148,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Before publishing someone\'s quote, what should Kofi do?',
         options: [
-          { text: 'Ask their permission' },
           { text: 'Nothing, quotes are free to use', why: 'Ask first.' },
+          { text: 'Ask their permission' },
           { text: 'Change the words to sound better', why: 'Keep their real words.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

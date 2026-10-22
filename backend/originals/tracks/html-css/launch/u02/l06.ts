@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'The focus outline looks ugly. Can we remove it with outline: none?',
         options: [
-          { text: 'Keyboard users would be lost. Style it to match the site instead, like a gold outline.' },
           { text: 'Yes, nobody uses keyboards.', why: 'Many people do, every day.' },
           { text: 'Make it invisible but keep it.', why: 'An invisible outline helps nobody.' },
+          { text: 'Keyboard users would be lost. Style it to match the site instead, like a gold outline.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         code: '.play-button:hover, .play-button:focus-visible { transform: translateY(-2px); }',
         language: 'css',
         options: [
-          { text: 'Yes: the rule covers keyboard focus too' },
           { text: 'No, only with a mouse', why: ':focus-visible is in the selector.' },
+          { text: 'Yes: the rule covers keyboard focus too' },
           { text: 'Only on phones', why: 'It\'s the keyboard focus state.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

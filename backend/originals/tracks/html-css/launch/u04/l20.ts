@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         code: '<title>Mensah Beats | Beat producer in Accra</title>',
         language: 'html',
         options: [
-          { text: 'The title, plus text the search engine picks from the page' },
           { text: 'Nothing at all', why: 'It picks some text.' },
           { text: 'The og:description always', why: 'Search usually uses page text or the meta description.' },
+          { text: 'The title, plus text the search engine picks from the page' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Now buy the "number 1 on Google" package to finish it off!',
         options: [
-          { text: 'Nobody can guarantee that. The site is clear, fast and honest; now it\'s about time and real links.' },
           { text: 'Yes, finish strong.', why: 'Guarantees are a red flag.' },
+          { text: 'Nobody can guarantee that. The site is clear, fast and honest; now it\'s about time and real links.' },
           { text: 'Buy two packages.', why: 'Still a red flag.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

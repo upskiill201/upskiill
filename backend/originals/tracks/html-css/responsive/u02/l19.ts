@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Why does .featured come after .gig-card?',
         options: [
-          { text: 'Same score, so the later one wins. A featured gig would get the featured colour.' },
           { text: 'Alphabetical order.', why: 'Order breaks ties between equal scores.' },
+          { text: 'Same score, so the later one wins. A featured gig would get the featured colour.' },
           { text: 'It doesn\'t matter.', why: 'With equal scores, order decides.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         code: '.card { border: 2px solid #FF9600; }\n.gig-card { border-color: #FFF6E5; }\n.featured { border-color: #F0438A; }',
         language: 'css',
         options: [
-          { text: 'Pink: .featured comes last among equal scores' },
           { text: 'Cream', why: '.featured comes later with the same score.' },
           { text: 'Orange', why: 'Both extras come after .card.' },
+          { text: 'Pink: .featured comes last among equal scores' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

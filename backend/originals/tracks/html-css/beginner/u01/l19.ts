@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         code: '<H1>Mensah Beats</H1>',
         language: 'html',
         options: [
-          { text: 'Mensah Beats as a main heading' },
           { text: 'Nothing, capitals aren\'t allowed', why: 'HTML doesn\'t mind capitals. It\'s just that everyone writes lowercase.' },
           { text: 'The tags as plain text', why: 'H1 and h1 mean the same thing to the browser.' },
+          { text: 'Mensah Beats as a main heading' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         from: 'david',
         message: 'I copied your code from WhatsApp into my notes and now nothing works. Why?',
         options: [
-          { text: 'Your notes app probably turned the quotes curly. Paste it into a code editor instead.' },
           { text: 'WhatsApp deletes HTML.', why: 'WhatsApp doesn\'t delete anything, but apps like notes change straight quotes into curly ones.' },
+          { text: 'Your notes app probably turned the quotes curly. Paste it into a code editor instead.' },
           { text: 'HTML only works on my phone.', why: 'HTML works everywhere. The problem is the curly quotes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

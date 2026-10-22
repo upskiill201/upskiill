@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a web host do?',
         options: [
-          { text: 'Keeps your files on an always-on computer and sends them to anyone who asks' },
           { text: 'Designs your page for you', why: 'You design it. The host stores and sends it.' },
+          { text: 'Keeps your files on an always-on computer and sends them to anyone who asks' },
           { text: 'Turns off your page at night', why: 'Hosts are always on.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'If I put it online and find a typo, is it stuck forever?',
         options: [
-          { text: 'No. Fix the file, upload it again, and the live page updates.' },
           { text: 'Yes, so check it twenty times.', why: 'You can update it any time.' },
           { text: 'You need a new web address.', why: 'Same address, new files.' },
+          { text: 'No. Fix the file, upload it again, and the live page updates.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         prompt: 'A fan opens Kofi\'s address with no file name after it. Which file does the host send?',
         code: 'mensah-beats/\n  index.html\n  style.css\n  sunrise.jpg',
         options: [
-          { text: 'index.html' },
           { text: 'style.css', why: 'The stylesheet is loaded by the page, not sent first.' },
+          { text: 'index.html' },
           { text: 'All three at once as a list', why: 'It sends index.html by default.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -132,11 +132,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does Kofi need to pay for a simple site like his?',
         options: [
-          { text: 'Nothing, several hosts have free plans for simple sites' },
           { text: 'A server in his bedroom', why: 'Hosts run the computers for you.' },
           { text: 'A designer', why: 'He built it himself.' },
+          { text: 'Nothing, several hosts have free plans for simple sites' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which value puts the name far left and the nav far right?',
         options: [
-          { text: 'space-between' },
           { text: 'center', why: 'That bunches both in the middle.' },
+          { text: 'space-between' },
           { text: 'flex-start', why: 'That\'s the default: both on the left.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         code: 'p { display: flex; justify-content: center; gap: 8px; }\n\n<p><a>Play</a><a>Share</a><a>Save</a></p>',
         language: 'html',
         options: [
-          { text: 'Together in the middle, 8px apart' },
           { text: 'Spread across the whole row', why: 'That\'s space-between.' },
+          { text: 'Together in the middle, 8px apart' },
           { text: 'Stacked in the middle', why: 'They\'re still in a row.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

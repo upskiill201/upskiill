@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         code: '.card { padding: 16px; color: #FFF6E5; }\n\n<article class="card"><h2>Gigs</h2></article>',
         language: 'html',
         options: [
-          { text: 'No padding, but it does get the cream colour' },
           { text: 'Both padding and colour', why: 'padding doesn\'t inherit.' },
+          { text: 'No padding, but it does get the cream colour' },
           { text: 'Neither', why: 'color inherits.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'I want to rename .card to .tile. What do I need to change?',
         options: [
-          { text: 'Every class="card" in the HTML and every .card in the CSS. Then check the page.' },
           { text: 'Just the CSS.', why: 'The HTML would still say card.' },
           { text: 'Nothing, the browser works it out.', why: 'Names must match exactly.' },
+          { text: 'Every class="card" in the HTML and every .card in the CSS. Then check the page.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'I found a tutorial that builds a menu with floats. Should I follow it?',
         options: [
-          { text: 'It\'s probably old. Today menus are built with Flexbox, which was made for exactly that.' },
           { text: 'Yes, floats are the newest way.', why: 'Floats came before Flexbox.' },
+          { text: 'It\'s probably old. Today menus are built with Flexbox, which was made for exactly that.' },
           { text: 'Use a table instead.', why: 'Tables are for data.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did "centring in CSS" become a joke?',
         options: [
-          { text: 'For years every way of doing it was a workaround' },
           { text: 'CSS couldn\'t show text in the middle at all', why: 'It could, with tricks. Flexbox made it simple.' },
           { text: 'Browsers refused to centre things', why: 'The tools just weren\'t designed for it.' },
+          { text: 'For years every way of doing it was a workaround' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

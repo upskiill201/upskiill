@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is white text on orange hard to read?',
         options: [
-          { text: 'Both colours are light, so the letters don\'t stand out' },
           { text: 'White isn\'t allowed on buttons', why: 'It is. It just needs a dark enough background.' },
+          { text: 'Both colours are light, so the letters don\'t stand out' },
           { text: 'Orange is too bright to show text', why: 'Dark text on orange works well.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'It looks fine on MY screen though.',
         options: [
-          { text: 'Fans read it in sunlight, on old phones, with tired eyes. The checker tells me what works for everyone.' },
           { text: 'Then it\'s fine.', why: 'Ama couldn\'t read it. Check the ratio.' },
           { text: 'Make it smaller.', why: 'Smaller text needs more contrast, not less.' },
+          { text: 'Fans read it in sunlight, on old phones, with tired eyes. The checker tells me what works for everyone.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -133,11 +133,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who does good contrast help?',
         options: [
-          { text: 'Everyone, especially people with low vision, older screens or bright sunlight' },
           { text: 'Only people with perfect eyesight', why: 'It helps everyone, most of all those who struggle.' },
           { text: 'Nobody, it\'s just a rule', why: 'Ama is proof it helps.' },
+          { text: 'Everyone, especially people with low vision, older screens or bright sunlight' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

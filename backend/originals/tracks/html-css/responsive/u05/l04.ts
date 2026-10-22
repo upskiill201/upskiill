@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         code: '.gallery { grid-template-columns: repeat(2, 1fr); }\n@media (min-width: 700px) { .gallery { grid-template-columns: repeat(3, 1fr); } }\n@media (min-width: 1100px) { .gallery { grid-template-columns: repeat(5, 1fr); } }',
         language: 'css',
         options: [
-          { text: 'Five: both queries are true, and the later one wins' },
           { text: 'Three', why: 'The 1100px query also applies and comes later.' },
+          { text: 'Five: both queries are true, and the later one wins' },
           { text: 'Two', why: 'Both queries apply at 1200px.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'My 1100px query is above the 700px one, and big laptops show three columns. Why?',
         options: [
-          { text: 'Both apply on a big laptop, so the later one wins. Put the 1100px query after the 700px one.' },
           { text: '1100px is too big a number.', why: 'It\'s the order.' },
           { text: 'Media queries can\'t be stacked.', why: 'They can; order them small to large.' },
+          { text: 'Both apply on a big laptop, so the later one wins. Put the 1100px query after the 700px one.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "and" do between two conditions?',
         options: [
-          { text: 'Both must be true for the rules to apply' },
           { text: 'Either one is enough', why: 'That would be a comma.' },
+          { text: 'Both must be true for the rules to apply' },
           { text: 'It adds the two widths together', why: 'It joins conditions.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

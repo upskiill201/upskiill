@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How many fonts does Efua use?',
         options: [
-          { text: 'Two: Verdana for the body and Georgia for the main heading' },
           { text: 'Five', why: 'Fallbacks are backups, not extra fonts.' },
           { text: 'One', why: 'Georgia for the h1, Verdana for the rest.' },
+          { text: 'Two: Verdana for the body and Georgia for the main heading' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         from: 'efua',
         message: 'Why do you think my stylesheet is so short?',
         options: [
-          { text: 'Each rule does one job, and grouping means you never repeat yourself.' },
           { text: 'You forgot most of it.', why: 'Short is on purpose.' },
+          { text: 'Each rule does one job, and grouping means you never repeat yourself.' },
           { text: 'Short CSS is required.', why: 'It\'s a choice: clear and easy to change.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

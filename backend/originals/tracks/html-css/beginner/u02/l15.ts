@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         from: 'ama',
         message: 'Can you make the phone say MY name in the quotes section?',
         options: [
-          { text: 'Only if you really said something about my beats. Real quotes only.' },
           { text: 'Sure, I\'ll make something up for you.', why: 'Even for Ama: real quotes only. That\'s the rule from lesson 11.' },
+          { text: 'Only if you really said something about my beats. Real quotes only.' },
           { text: 'No, children can\'t be quoted.', why: 'Anyone can be quoted, if they really said it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

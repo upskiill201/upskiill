@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is adding every email to the newsletter automatically a problem?',
         options: [
-          { text: 'People didn\'t choose it, so the emails feel like spam and trust is lost' },
           { text: 'Newsletters are illegal', why: 'They\'re fine when people choose them.' },
+          { text: 'People didn\'t choose it, so the emails feel like spam and trust is lost' },
           { text: 'It isn\'t a problem', why: 'Efua\'s shop story shows it is.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -122,11 +122,11 @@ const lesson: OriginalLesson = {
         code: '<input type="checkbox" id="news" name="news" value="yes">',
         language: 'html',
         options: [
-          { text: 'No: an unticked checkbox isn\'t sent at all' },
           { text: 'Yes, news = yes', why: 'Only ticked checkboxes are sent.' },
+          { text: 'No: an unticked checkbox isn\'t sent at all' },
           { text: 'It depends on the browser', why: 'Unticked boxes are never sent.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -145,11 +145,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who is responsible for the details people send through Kofi\'s form?',
         options: [
-          { text: 'Kofi: he should keep them safe and use them only as he said' },
           { text: 'Nobody', why: 'Whoever collects data is responsible for it.' },
           { text: 'Only the host', why: 'Kofi collects it, so it\'s his job too.' },
+          { text: 'Kofi: he should keep them safe and use them only as he said' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

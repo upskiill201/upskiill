@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'I\'ll just put style="color: orange" on all twelve headings. Faster.',
         options: [
-          { text: 'One h2 rule is faster, and it\'s one edit when you change your mind.' },
           { text: 'Great idea.', why: 'Twelve copies means twelve edits later.' },
+          { text: 'One h2 rule is faster, and it\'s one edit when you change your mind.' },
           { text: 'Use h1 for all twelve.', why: 'That\'s HTML for looks. Use CSS.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         code: '<style>\n  body { background-color: midnightblue; color: white; }\n</style>\n<p>Live this Saturday.</p>',
         language: 'html',
         options: [
-          { text: 'White text on midnight blue' },
           { text: 'Black text on white', why: 'body\'s rule changes both.' },
           { text: 'Midnight blue text on white', why: 'Blue is the background; text is white.' },
+          { text: 'White text on midnight blue' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

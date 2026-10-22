@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Your links all say "link 1, link 2, link 3". What would Ama\'s phone read out?',
         options: [
-          { text: '"Link 1, link 2, link 3". I\'ll make each one say where it goes.' },
           { text: 'It would be fine.', why: 'Three identical, meaningless links: Ama would give up.' },
+          { text: '"Link 1, link 2, link 3". I\'ll make each one say where it goes.' },
           { text: 'Phones skip links.', why: 'They read them out, which is why link text matters.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         code: '<a href="#love">Things I love</a>\n...\n<h2 id="love">Things I love</h2>',
         language: 'html',
         options: [
-          { text: 'It jumps down to your Things I love section' },
           { text: 'It opens a new website', why: '# links stay on the page.' },
           { text: 'Nothing', why: 'There\'s a matching id, so it jumps.' },
+          { text: 'It jumps down to your Things I love section' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

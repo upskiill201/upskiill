@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Do I put display: flex on each link?',
         options: [
-          { text: 'No, on the parent. The parent becomes the container and lines up its children.' },
           { text: 'Yes, every item needs it.', why: 'It goes on the container.' },
           { text: 'On body.', why: 'Then everything on the page lines up in one row.' },
+          { text: 'No, on the parent. The parent becomes the container and lines up its children.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         code: 'section { display: flex; }\n\n<section><p>One</p><p>Two</p><p>Three</p></section>',
         language: 'html',
         options: [
-          { text: 'Side by side, in one row' },
           { text: 'Stacked, one per line', why: 'display: flex puts children in a row.' },
+          { text: 'Side by side, in one row' },
           { text: 'On top of each other in the same spot', why: 'They line up next to each other.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

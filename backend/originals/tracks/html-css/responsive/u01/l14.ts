@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'I\'ll just keep changing numbers until the gap goes away.',
         options: [
-          { text: 'Faster to make the boxes show themselves, find the owner, and change the one right property.' },
           { text: 'Yes, guess until it works.', why: 'You might change the wrong thing and break something else.' },
           { text: 'Delete the footer.', why: 'The footer is fine. Its margin is too big.' },
+          { text: 'Faster to make the boxes show themselves, find the owner, and change the one right property.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         code: 'article { width: 300px; outline: 4px solid red; }',
         language: 'css',
         options: [
-          { text: 'No, an outline takes no space' },
           { text: 'Yes, 8px wider', why: 'That would happen with a border, not an outline.' },
+          { text: 'No, an outline takes no space' },
           { text: 'Yes, 4px wider', why: 'Outlines don\'t change the size.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

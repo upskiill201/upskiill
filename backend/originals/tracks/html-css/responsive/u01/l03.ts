@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The card is pink. What colour is its margin?',
         options: [
-          { text: 'See-through: the page\'s colour shows' },
           { text: 'Pink', why: 'The background fills padding, not margin.' },
           { text: 'The border colour', why: 'Margin is always see-through.' },
+          { text: 'See-through: the page\'s colour shows' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'The cards are touching each other. More padding?',
         options: [
-          { text: 'Padding makes each card fatter inside. To push cards apart, it\'s margin.' },
           { text: 'Yes, padding separates them.', why: 'Padding is inside. The gap between is margin.' },
+          { text: 'Padding makes each card fatter inside. To push cards apart, it\'s margin.' },
           { text: 'A thicker border.', why: 'They\'d still touch, just with thicker edges.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         code: 'article { margin-bottom: 24px; }\n\n<article>One</article>\n<article>Two</article>',
         language: 'html',
         options: [
-          { text: '24px' },
           { text: '0px', why: 'The first card\'s bottom margin pushes the second down.' },
           { text: '48px', why: 'Only the first card\'s bottom margin sits between them.' },
+          { text: '24px' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

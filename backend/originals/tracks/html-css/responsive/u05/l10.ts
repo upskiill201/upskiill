@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         code: 'h1 { font-size: 2.25rem; }\n@media (min-width: 700px) { h1 { font-size: 4rem; } }',
         language: 'css',
         options: [
-          { text: '4rem' },
           { text: '2.25rem', why: 'The query applies at 1000px and comes later.' },
           { text: '6.25rem', why: 'One value wins.' },
+          { text: '4rem' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does object-fit: cover do?',
         options: [
-          { text: 'Fills the box and trims the edges, without squashing' },
           { text: 'Squashes the image to fit', why: 'It keeps the proportions.' },
           { text: 'Hides the image', why: 'It fills the box.' },
+          { text: 'Fills the box and trims the edges, without squashing' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

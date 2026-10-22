@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Why does Miracle write 0 without px?',
         options: [
-          { text: 'Zero is zero in any unit, so CSS lets you leave the unit off.' },
           { text: 'It\'s a mistake.', why: '0 is fine without a unit.' },
           { text: '0 means "default".', why: '0 means no space at all.' },
+          { text: 'Zero is zero in any unit, so CSS lets you leave the unit off.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

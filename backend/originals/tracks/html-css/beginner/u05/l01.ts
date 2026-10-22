@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can\'t the organiser open Kofi\'s page yet?',
         options: [
-          { text: 'It\'s only a file on his phone, not on the internet' },
           { text: 'It has too many colours', why: 'Colours don\'t stop a page opening. It isn\'t published.' },
           { text: 'Pages can\'t be shared', why: 'They can, once they\'re published.' },
+          { text: 'It\'s only a file on his phone, not on the internet' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'midnightblue is close enough to my cover, isn\'t it?',
         options: [
-          { text: 'Close, but not the same. The exact code makes the page and covers match on the poster.' },
           { text: 'Yes, nobody can tell.', why: 'Efua can. Exact codes match exactly.' },
+          { text: 'Close, but not the same. The exact code makes the page and covers match on the poster.' },
           { text: 'Use black instead.', why: 'Use the exact night blue.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

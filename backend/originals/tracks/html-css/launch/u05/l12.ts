@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the bigger-screens media query come last?',
         options: [
-          { text: 'Phones first: later rules win, so the bigger-screen changes override the phone styles' },
           { text: 'Media queries must always be last', why: 'It\'s about which rule wins.' },
+          { text: 'Phones first: later rules win, so the bigger-screen changes override the phone styles' },
           { text: 'It doesn\'t matter where it goes', why: 'Order decides which rule wins.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         from: 'miracle',
         message: 'Where would you put a new style for the 404 heading?',
         options: [
-          { text: 'In Components, next to the other page parts, with a clear class name.' },
           { text: 'At the very top, before body.', why: 'It belongs with components.' },
           { text: 'In a new random file.', why: 'Keep one tidy stylesheet.' },
+          { text: 'In Components, next to the other page parts, with a clear class name.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         code: '.button { transition: transform 0.15s ease-out; }\n.button:hover { transform: translateY(-2px); }\n@media (prefers-reduced-motion: reduce) { * { transition: none; } }',
         language: 'css',
         options: [
-          { text: 'It still lifts, but instantly, with no animation' },
           { text: 'It animates slowly', why: 'Transitions are switched off.' },
+          { text: 'It still lifts, but instantly, with no animation' },
           { text: 'The button disappears', why: 'Only the animation is removed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

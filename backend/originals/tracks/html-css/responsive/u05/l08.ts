@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should I just delete the width and height attributes then?',
         options: [
-          { text: 'Keep them: they stop the page jumping while it loads. height: auto handles the shape.' },
           { text: 'Yes, they cause the problem.', why: 'They help loading; height: auto fixes the shape.' },
           { text: 'Make them both 100.', why: 'They should be the real image size.' },
+          { text: 'Keep them: they stop the page jumping while it loads. height: auto handles the shape.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         code: 'img { width: 200px; height: 200px; object-fit: cover; }',
         language: 'css',
         options: [
-          { text: 'A 200px square, filled, with the sides trimmed, not squashed' },
           { text: 'Squashed into a square', why: 'object-fit: cover keeps the proportions and trims.' },
+          { text: 'A 200px square, filled, with the sides trimmed, not squashed' },
           { text: 'The full photo with empty bands', why: 'That\'s object-fit: contain.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

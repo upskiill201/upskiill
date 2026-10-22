@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does @media (min-width: 700px) mean?',
         options: [
-          { text: 'Use these rules only when the screen is at least 700px wide' },
           { text: 'Make the screen 700px wide', why: 'It checks the width; it doesn\'t set it.' },
           { text: 'Only on phones', why: 'min-width 700px means wider screens.' },
+          { text: 'Use these rules only when the screen is at least 700px wide' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Why start with the phone? I build on my laptop.',
         options: [
-          { text: 'Most visitors are on phones, and a single column is simpler. It\'s easier to add columns than to take them away.' },
           { text: 'Laptops are going away.', why: 'They\'re not. Phones are just where most visitors are.' },
+          { text: 'Most visitors are on phones, and a single column is simpler. It\'s easier to add columns than to take them away.' },
           { text: 'Phones can\'t show columns.', why: 'They can, but one column suits a narrow screen.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -155,11 +155,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where do most visitors to a site like Mensah Beats usually come from?',
         options: [
-          { text: 'Phones' },
           { text: 'Laptops', why: 'Kofi\'s stats say phones.' },
+          { text: 'Phones' },
           { text: 'Smart TVs', why: 'Phones, by far.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

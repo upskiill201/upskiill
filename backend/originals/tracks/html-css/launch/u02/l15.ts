@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         code: '.new-cover { animation: deal 500ms ease-out 1 both; }\n.new-cover:nth-child(3) { animation-delay: 200ms; }',
         language: 'css',
         options: [
-          { text: '200ms after the page opens' },
           { text: 'Straight away', why: 'It has a 200ms delay.' },
           { text: 'After 500ms', why: 'The delay is 200ms.' },
+          { text: '200ms after the page opens' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'With reduced motion on, should I hide the countdown banner completely?',
         options: [
-          { text: 'No: keep the banner and its words; only the pulse goes.' },
           { text: 'Yes, hide it.', why: 'They still need the information.' },
+          { text: 'No: keep the banner and its words; only the pulse goes.' },
           { text: 'Make it flash instead.', why: 'Definitely not.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

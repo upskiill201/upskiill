@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'It\'s smooth on my laptop, so does it matter?',
         options: [
-          { text: 'Most fans are on phones, many older than mine. transform keeps it smooth for them too.' },
           { text: 'No, laptops are what count.', why: 'Most visitors are on phones.' },
+          { text: 'Most fans are on phones, many older than mine. transform keeps it smooth for them too.' },
           { text: 'Only test on new phones.', why: 'Test on older ones too.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         code: '@keyframes arrive {\n  from { opacity: 0; transform: translateY(12px); }\n  to { opacity: 1; transform: translateY(0); }\n}\n.card { animation: arrive 600ms ease-out 1; }',
         language: 'css',
         options: [
-          { text: 'Fades in while rising 12px into place, once' },
           { text: 'Disappears', why: 'It ends at opacity 1, fully visible.' },
           { text: 'Bounces forever', why: 'It plays once.' },
+          { text: 'Fades in while rising 12px into place, once' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does opacity: 0 mean?',
         options: [
-          { text: 'Fully see-through, invisible' },
           { text: 'Fully visible', why: 'That\'s opacity: 1.' },
+          { text: 'Fully see-through, invisible' },
           { text: 'Half visible', why: 'That\'s about 0.5.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

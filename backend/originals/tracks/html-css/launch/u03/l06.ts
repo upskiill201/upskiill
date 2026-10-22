@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can\'t David reach the "Listen" box?',
         options: [
-          { text: 'It\'s a styled span, not a link or button, so the keyboard skips it' },
           { text: 'His keyboard is broken', why: 'The element can\'t take focus.' },
+          { text: 'It\'s a styled span, not a link or button, so the keyboard skips it' },
           { text: 'It\'s too small', why: 'Size doesn\'t matter to Tab.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Can I add tabindex="1" to the Book me button so people reach it first?',
         options: [
-          { text: 'Positive tabindex jumps the queue and confuses people. Move Book me earlier in the HTML instead.' },
           { text: 'Yes, tabindex 1 is perfect.', why: 'It breaks the natural order.' },
           { text: 'Use tabindex 99.', why: 'Even more confusing.' },
+          { text: 'Positive tabindex jumps the queue and confuses people. Move Book me earlier in the HTML instead.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -138,11 +138,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A link without an href, like <a>Play</a>. Can Tab reach it?',
         options: [
-          { text: 'No: without href it isn\'t a real link' },
           { text: 'Yes', why: 'It needs href to be focusable.' },
           { text: 'Only with a mouse', why: 'It isn\'t focusable at all.' },
+          { text: 'No: without href it isn\'t a real link' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

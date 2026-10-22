@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Can I just write transition: all 200ms?',
         options: [
-          { text: 'It works, but then anything that changes will glide, even things you didn\'t mean. Naming the properties is safer.' },
           { text: 'all is always best.', why: 'It can animate things you didn\'t intend.' },
+          { text: 'It works, but then anything that changes will glide, even things you didn\'t mean. Naming the properties is safer.' },
           { text: 'all is not allowed.', why: 'It\'s allowed, just less precise.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         code: '.card { transition: background-color 200ms; }\n.card:hover { background-color: #2A2350; color: #FF9600; }',
         language: 'css',
         options: [
-          { text: 'Only the background colour; the text colour snaps' },
           { text: 'Both', why: 'Only background-color is in the transition.' },
           { text: 'Neither', why: 'The background glides.' },
+          { text: 'Only the background colour; the text colour snaps' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

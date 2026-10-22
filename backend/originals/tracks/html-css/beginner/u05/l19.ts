@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Should my title just say "Home"?',
         options: [
-          { text: 'Say who you are: "Mensah Beats | Producer from Accra". That\'s what shows in tabs and searches.' },
           { text: 'Yes, Home is fine.', why: 'Every site\'s tab would say Home.' },
           { text: 'Leave the title out.', why: 'Then the tab shows the file name.' },
+          { text: 'Say who you are: "Mensah Beats | Producer from Accra". That\'s what shows in tabs and searches.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         code: '<img src="sunrise.jpg" alt="Sunrise in Osu cover">',
         language: 'html',
         options: [
-          { text: 'The alt text, "Sunrise in Osu cover"' },
           { text: 'An error page', why: 'The rest of the page still loads.' },
+          { text: 'The alt text, "Sunrise in Osu cover"' },
           { text: 'The file name', why: 'Browsers show the alt text.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

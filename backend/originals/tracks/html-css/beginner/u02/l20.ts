@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         from: 'clinton',
         message: 'Put my quote on it. And say a famous DJ called you a genius. Nobody will check.',
         options: [
-          { text: 'Your quote, yes. The DJ one, no. Real quotes only.' },
           { text: 'Okay, both.', why: 'Kofi decided this in lesson 11: invented quotes cost more than they bring.' },
           { text: 'Neither, quotes are cringe.', why: 'Real quotes from real fans are great. Only the fake one goes.' },
+          { text: 'Your quote, yes. The DJ one, no. Real quotes only.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -133,11 +133,11 @@ const lesson: OriginalLesson = {
         code: '<h2>About me</h2>\n<p>Producer from Osu, Accra.</p>\n<details>\n  <summary>How a broken ankle started Mensah Beats</summary>\n  <p>At 14...</p>\n</details>',
         language: 'html',
         options: [
-          { text: 'The heading, the short About, and the summary line to tap' },
           { text: 'Everything, including the full story', why: 'The story inside details stays hidden until she taps.' },
+          { text: 'The heading, the short About, and the summary line to tap' },
           { text: 'Only the heading', why: 'The paragraph and summary are visible too.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',

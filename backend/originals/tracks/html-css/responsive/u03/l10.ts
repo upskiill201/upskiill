@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         code: '.card { display: flex; flex-direction: column; align-items: center; }',
         language: 'css',
         options: [
-          { text: 'Centred left to right' },
           { text: 'Centred top to bottom', why: 'In a column, align-items works left to right.' },
           { text: 'Stretched full width', why: 'center stops the stretch.' },
+          { text: 'Centred left to right' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -82,21 +82,21 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'Why didn\'t align-items move anything in my banner?',
         options: [
-          { text: 'The banner had no extra height, so there was no room to move. Give it a height.' },
           { text: 'It only works in columns.', why: 'It works in rows too.' },
+          { text: 'The banner had no extra height, so there was no room to move. Give it a height.' },
           { text: 'Use !important.', why: 'It needs room, not force.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'By default, what do flex items do when the row is too narrow?',
         options: [
-          { text: 'Stay on one line and shrink' },
           { text: 'Wrap onto new lines', why: 'Only with flex-wrap: wrap.' },
           { text: 'Disappear', why: 'They shrink.' },
+          { text: 'Stay on one line and shrink' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

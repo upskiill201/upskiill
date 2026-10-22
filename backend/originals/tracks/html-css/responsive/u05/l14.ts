@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In what order should the stacked phone areas go?',
         options: [
-          { text: 'The order you\'d want to read them: header, beats, gigs' },
           { text: 'Alphabetical', why: 'Reading order matters.' },
+          { text: 'The order you\'d want to read them: header, beats, gigs' },
           { text: 'Biggest first', why: 'Reading order matters.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'The live site is being used right now. Is it safe to change?',
         options: [
-          { text: 'Make the change locally, test phone and laptop, then upload once. If something breaks, upload the old file again.' },
           { text: 'Edit it live and hope.', why: 'Test locally first.' },
           { text: 'Take the site down for a week.', why: 'A quick local test is enough.' },
+          { text: 'Make the change locally, test phone and laptop, then upload once. If something breaks, upload the old file again.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         code: '.page { grid-template-areas: "head" "beats" "gigs"; }\n@media (min-width: 700px) { .page { grid-template-columns: 2fr 1fr; grid-template-areas: "head head" "beats gigs"; } }',
         language: 'css',
         options: [
-          { text: 'The same two-column layout as v1.4' },
           { text: 'The stacked phone layout', why: 'The query applies on laptops.' },
+          { text: 'The same two-column layout as v1.4' },
           { text: 'A broken layout', why: 'It\'s the original laptop layout, now in a query.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

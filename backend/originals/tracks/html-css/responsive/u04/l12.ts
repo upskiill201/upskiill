@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         from: 'kofi',
         message: 'My full gallery looks identical with auto-fill and auto-fit. Did I break something?',
         options: [
-          { text: 'No: with enough items to fill the row there are no empty columns, so they behave the same.' },
           { text: 'Yes, one of them is broken.', why: 'They only differ when there\'s spare room.' },
+          { text: 'No: with enough items to fill the row there are no empty columns, so they behave the same.' },
           { text: 'Use both at once.', why: 'Pick one; here either works.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'With twelve covers on a laptop, which looks different?',
         options: [
-          { text: 'Neither: the row is full, so auto-fill and auto-fit match' },
           { text: 'auto-fill', why: 'With no empty columns they\'re the same.' },
           { text: 'auto-fit', why: 'With no empty columns they\'re the same.' },
+          { text: 'Neither: the row is full, so auto-fill and auto-fit match' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the 1fr in minmax(150px, 1fr) do?',
         options: [
-          { text: 'Lets each column grow up to one share of the free space' },
           { text: 'Makes every column exactly 1px', why: 'fr is a share, not a pixel.' },
+          { text: 'Lets each column grow up to one share of the free space' },
           { text: 'Sets the minimum', why: '150px is the minimum.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },
