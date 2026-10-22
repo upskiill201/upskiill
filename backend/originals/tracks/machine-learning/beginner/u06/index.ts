@@ -1,0 +1,12 @@
+import type { OriginalUnit } from '../../../../../src/originals/originals-authoring.types';
+import l01 from './l01';
+import l02 from './l02';
+import l03 from './l03';
+import l04 from './l04';
+import l05 from './l05';
+import l06 from './l06';
+import l07 from './l07';
+import l08 from './l08';
+import l09 from './l09';
+const unit: OriginalUnit = { key: 'u06', title: 'Predicting yes or no', marker: 'v0.6', story: 'Folake asks for the no-show predictor, built with scikit-learn.', goal: 'Train classifiers.', lessons: [l01, l02, l03, l04, l05, l06, l07, l08, l09] };
+export default unit;
