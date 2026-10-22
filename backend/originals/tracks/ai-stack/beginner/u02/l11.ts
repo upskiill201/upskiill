@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "edge" mean in "edge AI"?',
         options: [
-          { text: 'Running on the user\'s own device instead of a data centre' },
           { text: 'The newest, most advanced AI', why: 'It\'s about where it runs, not how new it is.' },
+          { text: 'Running on the user\'s own device instead of a data centre' },
           { text: 'AI at the edge of the screen', why: 'It means the edge of the network: the device.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'Let\'s put the whole of Ask Rao on customers\' phones. No bill!',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Phones can only run small models, and the shop\'s data and orders live on our side anyway. Maybe small helpers on the phone, the real answers in the cloud.' },
           { text: 'Great, ship it to every phone.', why: 'Small phone models can\'t see the order system or know much.' },
           { text: 'Phones can\'t run any AI.', why: 'They can run small models.' },
+          { text: 'Phones can only run small models, and the shop\'s data and orders live on our side anyway. Maybe small helpers on the phone, the real answers in the cloud.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What are the AI chips in many phones often called?',
         options: [
-          { text: 'Neural processing units (NPUs)' },
           { text: 'Foundries', why: 'Foundries are chip factories.' },
           { text: 'Vector databases', why: 'Those store searchable data.' },
+          { text: 'Neural processing units (NPUs)' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

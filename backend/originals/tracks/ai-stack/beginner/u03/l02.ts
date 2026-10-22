@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a token?',
         options: [
-          { text: 'A small piece of text: a short word, part of a word, or a symbol' },
           { text: 'Always one whole word', why: 'Long words split into pieces.' },
+          { text: 'A small piece of text: a short word, part of a word, or a symbol' },
           { text: 'Always one letter', why: 'Most tokens are longer than one letter.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Why not just use whole words? Simpler!',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'There are endless words, names and typos. With pieces, a fixed list of tokens can spell anything, even words never seen before.' },
           { text: 'Whole words would be better.', why: 'A model couldn\'t handle new or misspelled words.' },
           { text: 'Tokens are random.', why: 'They\'re chosen from patterns in lots of text.' },
+          { text: 'There are endless words, names and typos. With pieces, a fixed list of tokens can spell anything, even words never seen before.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A rented GPU sits idle overnight. What happens to the bill?',
         options: [
-          { text: 'It keeps running: you pay for every hour it\'s on' },
           { text: 'It pauses automatically', why: 'Not unless you switch it off or use a per-second service.' },
+          { text: 'It keeps running: you pay for every hour it\'s on' },
           { text: 'It gets cheaper', why: 'Same price per hour, busy or not.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'My 4-bit laptop model answered all 10 test questions right. Ship it?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Great test! But for customers it has to be up all day and handle many at once. Keep it as our private test bench.' },
           { text: 'Yes, ship the laptop.', why: 'One laptop can\'t serve every customer reliably.' },
           { text: '10 questions prove nothing.', why: 'They prove something. Just not that a laptop can serve customers.' },
+          { text: 'Great test! But for customers it has to be up all day and handle many at once. Keep it as our private test bench.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         code: 'for hours in [24, 12]:\n    print(1.5 * hours * 30)',
         language: 'python',
         options: [
-          { text: '1080.0 then 540.0' },
           { text: '1080.0 only', why: 'The loop runs once for each value.' },
           { text: '540.0 then 1080.0', why: '24 comes first in the list.' },
+          { text: '1080.0 then 540.0' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

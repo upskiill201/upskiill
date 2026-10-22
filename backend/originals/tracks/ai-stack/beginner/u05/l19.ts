@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which line stops "Do you sell laptops?" from returning juttis?',
         options: [
-          { text: 'Keeping only hits with a score of at least 0.5' },
           { text: 'The in-stock filter', why: 'The juttis are in stock.' },
+          { text: 'Keeping only hits with a score of at least 0.5' },
           { text: 'The price limit', why: 'No price limit was given.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         message: 'What does Ask Rao say when the list comes back empty?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'It says what it couldn\'t find and offers a next step, like the cheapest lehenga or WhatsApp help. Never random products.' },
           { text: 'Nothing; it stays silent.', why: 'Customers need to know why.' },
           { text: 'It shows the top 3 anyway.', why: 'That\'s the juttis mistake again.' },
+          { text: 'It says what it couldn\'t find and offers a next step, like the cheapest lehenga or WhatsApp help. Never random products.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

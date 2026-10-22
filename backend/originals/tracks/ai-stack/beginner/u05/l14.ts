@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The shop\'s products and orders already live in PostgreSQL. Which is the simplest start?',
         options: [
-          { text: 'pgvector, so vectors sit beside the products' },
           { text: 'A new hosted vector database', why: 'Another service and bill, for 120 products.' },
+          { text: 'pgvector, so vectors sit beside the products' },
           { text: 'Build our own database', why: 'Far more work than adding an extension.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Which vector database is the best one?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'The one that fits where your data already lives and your size. For a small shop on PostgreSQL, pgvector. Test before you move.' },
           { text: 'Always the most expensive.', why: 'Price isn\'t the test.' },
           { text: 'They\'re all identical.', why: 'They differ in hosting, scale and features.' },
+          { text: 'The one that fits where your data already lives and your size. For a small shop on PostgreSQL, pgvector. Test before you move.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a library like FAISS leave for you to handle?',
         options: [
-          { text: 'Saving the vectors and scaling to more machines' },
           { text: 'Computing similarity', why: 'That\'s exactly what it does.' },
           { text: 'Nothing at all', why: 'You look after storage and scaling.' },
+          { text: 'Saving the vectors and scaling to more machines' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

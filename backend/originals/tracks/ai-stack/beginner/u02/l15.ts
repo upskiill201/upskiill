@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which makes Ask Rao answer fastest?',
         options: [
-          { text: 'A short reply on a fast model' },
           { text: 'A long reply on a fast model', why: 'Long replies take longer on any model.' },
+          { text: 'A short reply on a fast model' },
           { text: 'A short reply on the slowest model', why: 'Speed matters too.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'Why not decide by whatever\'s cheapest today?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Cheapest is one of four questions. Data rules, who maintains it and reliability can rule the cheapest option out.' },
           { text: 'Yes, cost is all that matters.', why: 'A cheap option that leaks data or goes down costs more later.' },
           { text: 'Always choose the most expensive.', why: 'Price doesn\'t mean quality.' },
+          { text: 'Cheapest is one of four questions. Data rules, who maintains it and reliability can rule the cheapest option out.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

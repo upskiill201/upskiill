@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a router do?',
         options: [
-          { text: 'Decides which model each request goes to, before calling it' },
           { text: 'Connects your Wi-Fi to the internet', why: 'Same word, different job here.' },
+          { text: 'Decides which model each request goes to, before calling it' },
           { text: 'Trains a new model', why: 'It only chooses between existing ones.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'What if half the messages turn out to be "hard"?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Then the bill rises towards $27. We\'ll log how many go to model-a each week and tune the rule.' },
           { text: 'It can\'t happen.', why: 'It can; measure it.' },
           { text: 'Then routing is pointless.', why: 'Even 50/50 is half the cost of model-a on everything.' },
+          { text: 'Then the bill rises towards $27. We\'ll log how many go to model-a each week and tune the rule.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does k mean in a top-k search?',
         options: [
-          { text: 'How many of the closest results to return' },
           { text: 'The minimum score', why: 'That\'s a threshold, a different setting.' },
+          { text: 'How many of the closest results to return' },
           { text: 'The number of products in the store', why: 'k is how many results come back.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: 'The top three scores are 0.704, 0.703 and 0.702. So the sherwani is clearly best?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Not clearly: they\'re almost tied. Show all three and let the customer pick.' },
           { text: 'Yes, it\'s first, so it\'s best.', why: 'A 0.001 gap is too small to mean much.' },
           { text: 'Ties mean the search is broken.', why: 'They mean the products are equally close.' },
+          { text: 'Not clearly: they\'re almost tied. Show all three and let the customer pick.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

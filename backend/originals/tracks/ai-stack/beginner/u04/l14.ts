@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a hosted model provider receive when Ask Rao calls it?',
         options: [
-          { text: 'The whole prompt: instructions, help-page lines and the customer\'s message' },
           { text: 'Only the question, never the details', why: 'Everything in the prompt is sent.' },
+          { text: 'The whole prompt: instructions, help-page lines and the customer\'s message' },
           { text: 'Nothing; it all stays in the browser', why: 'A hosted API runs on the provider\'s computers.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Should we just ban customers from typing phone numbers?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'They\'ll type them anyway. Redact automatically before sending, and say in the chat that details are removed.' },
           { text: 'Yes, block any message with digits.', why: 'Order numbers are digits too, and Ask Rao needs them.' },
           { text: 'It doesn\'t matter.', why: 'Customer details are worth protecting, and laws often require it.' },
+          { text: 'They\'ll type them anyway. Redact automatically before sending, and say in the chat that details are removed.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When do the words never leave the shop?',
         options: [
-          { text: 'When an open-weight model runs on the shop\'s own server' },
           { text: 'When you use a hosted open-weight API', why: 'That\'s still the provider\'s computer.' },
           { text: 'When the prompt is short', why: 'Short prompts still travel.' },
+          { text: 'When an open-weight model runs on the shop\'s own server' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

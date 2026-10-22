@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When are product embeddings made?',
         options: [
-          { text: 'Once, ahead of time, and again only when a product changes' },
           { text: 'On every search', why: 'Only the question is embedded per search.' },
+          { text: 'Once, ahead of time, and again only when a product changes' },
           { text: 'Never; the database guesses', why: 'Every product needs a vector.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: 'Do we need a vector database company today?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Not for 120 products. Exact search takes milliseconds. We\'ll move when the store grows.' },
           { text: 'Yes, today, the biggest plan.', why: 'Nothing to gain at this size.' },
           { text: 'Never.', why: 'It\'ll be worth it at scale.' },
+          { text: 'Not for 120 products. Exact search takes milliseconds. We\'ll move when the store grows.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

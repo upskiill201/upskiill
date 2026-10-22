@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a context window?',
         options: [
-          { text: 'The most tokens a model can read in one request' },
           { text: 'The browser window the chat appears in', why: 'It\'s a limit on input size, not a screen.' },
+          { text: 'The most tokens a model can read in one request' },
           { text: 'How long the model remembers you', why: 'Models don\'t remember between requests by themselves.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'practice-tiny can\'t even read the help page. Useless.',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'It can\'t read the WHOLE page. Send it the three lines that matter and it gets 20 of 30, same as the big ones.' },
           { text: 'Agreed, bin it.', why: 'With a smaller prompt it does the job.' },
           { text: 'Cut the help page in half at random.', why: 'Send the lines that match the question, not a random half.' },
+          { text: 'It can\'t read the WHOLE page. Send it the three lines that matter and it gets 20 of 30, same as the big ones.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

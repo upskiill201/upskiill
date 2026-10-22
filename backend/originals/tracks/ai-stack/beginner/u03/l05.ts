@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A reply of 60 tokens is made of...',
         options: [
-          { text: '60 next-token predictions, one after another' },
           { text: 'One prediction', why: 'Each token is its own prediction.' },
+          { text: '60 next-token predictions, one after another' },
           { text: '60 database lookups', why: 'It predicts; it doesn\'t look up.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         message: 'If it\'s just predicting, why does it sound so sure?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Confident-sounding text is very common in what it learned from, so it writes confidently, whether or not it\'s right.' },
           { text: 'Because it checked.', why: 'It doesn\'t check facts by itself.' },
           { text: 'It\'s never sure.', why: 'It sounds sure; that\'s the danger.' },
+          { text: 'Confident-sounding text is very common in what it learned from, so it writes confidently, whether or not it\'s right.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

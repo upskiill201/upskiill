@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why doesn\'t the model know Mr Rao\'s return policy?',
         options: [
-          { text: 'It was never in its training data, and nobody has given it the policy' },
           { text: 'It forgot it', why: 'It never learned it.' },
+          { text: 'It was never in its training data, and nobody has given it the policy' },
           { text: 'Return policies are secret', why: 'It simply wasn\'t in the text it trained on.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         message: 'So should we train the model on our help page?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'No need: pasting the right part of the page into the prompt works today, and updates the moment the policy changes. Training would be slow and expensive.' },
           { text: 'Yes, every time a policy changes.', why: 'Far too slow and costly for facts that change.' },
           { text: 'Models can\'t learn shops.', why: 'They can. Retrieval is just simpler.' },
+          { text: 'No need: pasting the right part of the page into the prompt works today, and updates the moment the policy changes. Training would be slow and expensive.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does "shaadi" find wedding outfits by meaning but not by keywords?',
         options: [
-          { text: 'Its embedding points the same way as "wedding", though the word never appears in the products' },
           { text: 'The products contain "shaadi"', why: 'None do; that\'s why keywords fail.' },
+          { text: 'Its embedding points the same way as "wedding", though the word never appears in the products' },
           { text: 'It\'s a product code', why: 'It\'s a word for wedding.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         message: 'The shoe shop\'s descriptions just say "Size 7, black". Will search by meaning work for her?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Barely: there\'s little meaning to embed. Better descriptions ("black leather formal shoes for office") will help more than any model.' },
           { text: 'Perfectly; embeddings need no text.', why: 'They embed the text; thin text gives thin meaning.' },
           { text: 'Use a bigger embedding model.', why: 'The problem is the data, not the model.' },
+          { text: 'Barely: there\'s little meaning to embed. Better descriptions ("black leather formal shoes for office") will help more than any model.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',

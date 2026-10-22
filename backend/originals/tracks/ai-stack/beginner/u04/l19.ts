@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is model-c the default?',
         options: [
-          { text: 'It scored the same 20 of 30 as the others and costs the least' },
           { text: 'It\'s the newest', why: 'The test and the price decided it.' },
+          { text: 'It scored the same 20 of 30 as the others and costs the least' },
           { text: 'It\'s the biggest', why: 'It\'s the smallest of the three.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'If I read this in six months, what tells me whether it\'s still right?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Run the 30 questions again and check the bill. If the scores or prices changed, the record says how to decide again.' },
           { text: 'Nothing; decisions are forever.', why: 'Models and prices change all the time.' },
           { text: 'Ask Kavya what she thinks.', why: 'Re-run the evidence, not opinions.' },
+          { text: 'Run the 30 questions again and check the bill. If the scores or prices changed, the record says how to decide again.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

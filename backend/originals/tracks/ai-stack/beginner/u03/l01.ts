@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a language model do, at heart?',
         options: [
-          { text: 'Predicts the most likely next token, over and over' },
           { text: 'Searches the internet for answers', why: 'Most models just generate text from patterns they learned.' },
+          { text: 'Predicts the most likely next token, over and over' },
           { text: 'Copies a stored answer', why: 'It builds each reply token by token.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'If it just predicts likely words, how can it be useful at all?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Predicting well over huge amounts of text captures grammar, facts and reasoning patterns. Give it the right facts and it writes clear, useful answers.' },
           { text: 'It can\'t be useful.', why: 'Next-token prediction at scale is surprisingly capable.' },
           { text: 'It secretly understands everything.', why: 'It\'s prediction from patterns, which is why facts must be given to it.' },
+          { text: 'Predicting well over huge amounts of text captures grammar, facts and reasoning patterns. Give it the right facts and it writes clear, useful answers.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the model say "60 days" for returns?',
         options: [
-          { text: 'A number of days is a likely continuation, and it didn\'t have the shop\'s policy' },
           { text: 'Someone typed it in', why: 'No one did. It predicted it.' },
           { text: 'It is the law', why: 'It\'s just a likely-sounding guess.' },
+          { text: 'A number of days is a likely continuation, and it didn\'t have the shop\'s policy' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

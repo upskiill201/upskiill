@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is usually priced higher per token?',
         options: [
-          { text: 'Output' },
           { text: 'Input', why: 'Writing costs more than reading on most price lists.' },
+          { text: 'Output' },
           { text: 'They\'re always equal', why: 'Usually not.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: 'Why keep model-b as a backup if model-c is just as good?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'If model-c\'s host goes down or raises prices, we switch in minutes, to a model we\'ve already tested.' },
           { text: 'No reason; drop it.', why: 'One supplier is a single point of failure.' },
           { text: 'To run both on every chat.', why: 'Only when the main one fails.' },
+          { text: 'If model-c\'s host goes down or raises prices, we switch in minutes, to a model we\'ve already tested.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

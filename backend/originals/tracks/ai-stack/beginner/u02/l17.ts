@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Kavya wrote "70 x 2 = 140 bytes". What went wrong?',
         options: [
-          { text: 'She dropped the "billion": it\'s 140 billion bytes, which is 140 GB' },
           { text: 'It should be 70 + 2', why: 'Multiply is right; the units were lost.' },
+          { text: 'She dropped the "billion": it\'s 140 billion bytes, which is 140 GB' },
           { text: 'Nothing', why: '140 bytes would fit on anything. The real answer is 140 GB.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Four mistakes in one plan. I\'m bad at this.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'You wrote a plan, and we found the mistakes before spending a rupee. That\'s exactly what plans are for.' },
           { text: 'Yes, leave compute to Joel.', why: 'Everyone makes these. The point is catching them early.' },
           { text: 'They\'re not mistakes.', why: 'They are, and they\'d have cost real money.' },
+          { text: 'You wrote a plan, and we found the mistakes before spending a rupee. That\'s exactly what plans are for.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',

@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Energy is...',
         options: [
-          { text: 'Power x time' },
           { text: 'Power + time', why: 'Multiply: twice the hours is twice the energy.' },
+          { text: 'Power x time' },
           { text: 'Power ÷ time', why: 'More time means more energy, so it\'s a multiplication.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Energy is the data centre\'s problem, not ours.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'It\'s in every price we pay, and it\'s real energy used. Lean prompts and smaller models are cheaper AND greener: no trade-off.' },
           { text: 'True, ignore it.', why: 'It shows up in prices and in the planet\'s energy use.' },
           { text: 'AI uses no energy.', why: 'Every calculation uses electricity.' },
+          { text: 'It\'s in every price we pay, and it\'s real energy used. Lean prompts and smaller models are cheaper AND greener: no trade-off.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -122,11 +122,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which choice cuts both the bill and the energy?',
         options: [
-          { text: 'Sending only the 2 relevant help-page lines instead of the whole page' },
           { text: 'Using the biggest model for "Hi!"', why: 'That uses more of both.' },
           { text: 'Making replies longer', why: 'More tokens, more energy.' },
+          { text: 'Sending only the 2 relevant help-page lines instead of the whole page' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a closed frontier model?',
         options: [
-          { text: 'One of a lab\'s most capable models, used only through its API' },
           { text: 'A model you download and run yourself', why: 'That\'s open-weight. Closed means API only.' },
+          { text: 'One of a lab\'s most capable models, used only through its API' },
           { text: 'A model that has been switched off', why: 'Closed means you can\'t download it, not that it\'s off.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: '$54 isn\'t much for the best model.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'It\'s ten times model-b, and it grows with every chat. If a cheaper model answers the shop\'s questions just as well, the extra buys nothing.' },
           { text: 'You\'re right, money doesn\'t matter.', why: 'It\'s Mr Rao\'s money, and it scales with chats.' },
           { text: 'It\'s too expensive for any business.', why: 'Some jobs are worth it. Test whether this one is.' },
+          { text: 'It\'s ten times model-b, and it grows with every chat. If a cheaper model answers the shop\'s questions just as well, the extra buys nothing.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is model-a ten times model-b\'s bill?',
         options: [
-          { text: 'Its price per token is ten times higher, for the same tokens' },
           { text: 'It writes ten times more', why: 'Same 321 in and 13 out; only the price differs.' },
           { text: 'It reads the help page ten times', why: 'Same prompt; different price.' },
+          { text: 'Its price per token is ten times higher, for the same tokens' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

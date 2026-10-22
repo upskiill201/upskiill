@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A 70B model at 16 bits needs about how much memory just for its numbers?',
         options: [
-          { text: '140 GB' },
           { text: '70 GB', why: 'That\'s at 8 bits (1 byte each). 16 bits is 2 bytes.' },
+          { text: '140 GB' },
           { text: '14 GB', why: 'That\'s a 7B model.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: 'The biggest model we found is 405B. Can we run it?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'At 16 bits that\'s 810 GB just for its numbers: a rack of big chips. For shop questions, a much smaller model is the sensible place to start.' },
           { text: 'Yes, on the laptop.', why: '810 GB is far beyond any laptop.' },
           { text: 'Size doesn\'t matter for memory.', why: 'Memory grows directly with the number of parameters.' },
+          { text: 'At 16 bits that\'s 810 GB just for its numbers: a rack of big chips. For shop questions, a much smaller model is the sensible place to start.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

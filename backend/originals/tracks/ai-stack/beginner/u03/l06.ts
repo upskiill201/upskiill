@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "70B" in a model\'s name mean?',
         options: [
-          { text: 'About 70 billion parameters (learned numbers)' },
           { text: '70 billion users', why: 'It counts the model\'s numbers, not people.' },
+          { text: 'About 70 billion parameters (learned numbers)' },
           { text: '70 GB of memory', why: 'At 16-bit it needs 140 GB. The B is billions of parameters.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: '405B beats 7B. Obviously we use the 405B.',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'For "Is delivery free?" with the answer in the prompt, both say the same thing. One costs far more and replies slower. Smallest that does the job well wins.' },
           { text: 'Yes, always the biggest.', why: 'Bigger is slower and pricier, often for no gain on simple jobs.' },
           { text: 'Small models can\'t answer anything.', why: 'Small models handle simple, well-supported questions well.' },
+          { text: 'For "Is delivery free?" with the answer in the prompt, both say the same thing. One costs far more and replies slower. Smallest that does the job well wins.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can a newer small model beat an older big one?',
         options: [
-          { text: 'Training methods and data keep improving' },
           { text: 'Small models cheat', why: 'They\'re just trained better.' },
           { text: 'They can\'t', why: 'It happens often as methods improve.' },
+          { text: 'Training methods and data keep improving' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

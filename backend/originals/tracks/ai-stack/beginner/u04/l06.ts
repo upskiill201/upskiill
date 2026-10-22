@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does output often cost more than input?',
         options: [
-          { text: 'Each output token is a separate prediction made one after another, which is more work' },
           { text: 'Output tokens are longer', why: 'Same kind of tokens; more work to produce.' },
+          { text: 'Each output token is a separate prediction made one after another, which is more work' },
           { text: 'It doesn\'t', why: 'On most price lists, output is the pricier one.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'Long replies feel more helpful. Is the cost difference really that big?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'A 300-token reply costs 20 times a 15-token one, output is priced at 3x input, and it takes longer to arrive. Short and clear is the helpful version.' },
           { text: 'No difference at all.', why: 'Output tokens cost the most.' },
           { text: 'Make them even longer.', why: 'Slower and pricier, and harder to read on a phone.' },
+          { text: 'A 300-token reply costs 20 times a 15-token one, output is priced at 3x input, and it takes longer to arrive. Short and clear is the helpful version.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

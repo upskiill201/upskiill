@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do you pay for when you rent a cloud GPU?',
         options: [
-          { text: 'Every hour it\'s switched on, busy or idle' },
           { text: 'Only the answers it gives', why: 'That\'s pay-per-answer APIs. Rented GPUs bill by time.' },
+          { text: 'Every hour it\'s switched on, busy or idle' },
           { text: 'Nothing until it breaks', why: 'The meter runs from the moment it starts.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Just switch it off at night. Problem solved!',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'It halves the bill, but night-time customers get no answers. And we\'d still pay $540 for 30,000 chats that would cost about $5 if we paid per answer.' },
           { text: 'Yes, nobody shops at night.', why: 'Online shops get orders at all hours.' },
           { text: 'Switching off is impossible.', why: 'You can; it just has trade-offs.' },
+          { text: 'It halves the bill, but night-time customers get no answers. And we\'d still pay $540 for 30,000 chats that would cost about $5 if we paid per answer.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Idle hours are often the biggest part of a rented-GPU bill. Why?',
         options: [
-          { text: 'Most hours have few or no requests, but the meter still runs' },
           { text: 'Idle GPUs cost extra', why: 'Same price; you just get nothing for it.' },
           { text: 'They aren\'t', why: 'For a small shop, most hours are quiet.' },
+          { text: 'Most hours have few or no requests, but the meter still runs' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which does Ask Rao\'s team pay for?',
         options: [
-          { text: 'Inference: running a model someone else trained' },
           { text: 'Training a new model from scratch', why: 'That costs a fortune and isn\'t needed for shop questions.' },
+          { text: 'Inference: running a model someone else trained' },
           { text: 'Both, equally', why: 'They only run (infer); a lab already trained the model.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Should we train our own model on the shop\'s data, so it really knows us?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Not to start. Giving an existing model the shop\'s facts at answer time (retrieval) is far cheaper and easy to update. Chapter 6.' },
           { text: 'Yes, train one from zero this week.', why: 'That needs enormous data and chips.' },
           { text: 'Models can\'t learn about shops.', why: 'They can, but retrieval is the cheap way here.' },
+          { text: 'Not to start. Giving an existing model the shop\'s facts at answer time (retrieval) is far cheaper and easy to update. Chapter 6.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         code: 'print(f"{500 * 30:,}")',
         language: 'python',
         options: [
-          { text: '15,000' },
           { text: '15000', why: 'The :, adds a comma.' },
           { text: '530', why: 'It multiplies.' },
+          { text: '15,000' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do [2, 2] and [1, 1] score 1.0?',
         options: [
-          { text: 'They point the same way; cosine ignores length' },
           { text: 'They have the same numbers', why: 'They don\'t; one is double.' },
+          { text: 'They point the same way; cosine ignores length' },
           { text: 'Every pair scores 1.0', why: '[1, 0] and [0, 1] score 0.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         message: 'Search found a help line scoring 0.9. So it must be the right answer.',
         prompt: "Joel's best reply?",
         options: [
-          { text: '0.9 means it\'s about the same topic. It could still be the wrong rule. Similarity finds candidates; checking comes later.' },
           { text: 'Yes, 0.9 is always right.', why: 'Similar is not the same as correct.' },
           { text: 'Scores above 0.5 are always wrong.', why: 'High scores are usually useful, just not proof.' },
+          { text: '0.9 means it\'s about the same topic. It could still be the wrong rule. Similarity finds candidates; checking comes later.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

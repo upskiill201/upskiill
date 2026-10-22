@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the order question need a tool, not the help page?',
         options: [
-          { text: 'Order status changes constantly and lives in the order system' },
           { text: 'The help page is too long', why: 'Length isn\'t the issue; the data isn\'t there.' },
+          { text: 'Order status changes constantly and lives in the order system' },
           { text: 'Models can\'t read numbers', why: 'They can; the status just isn\'t in any document.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: 'Can the model answer "How do I wash silk?" by itself?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'It\'s general knowledge, so usually yes, briefly. If the product has its own care label, that beats general advice.' },
           { text: 'Never: only the help page.', why: 'General knowledge is what models are good at, with care.' },
           { text: 'Ask a tool.', why: 'There\'s no system that holds washing advice; general knowledge is fine.' },
+          { text: 'It\'s general knowledge, so usually yes, briefly. If the product has its own care label, that beats general advice.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

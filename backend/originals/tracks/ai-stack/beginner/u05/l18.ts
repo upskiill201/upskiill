@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Five hits all score 0.907. What does their order tell you?',
         options: [
-          { text: 'Nothing: they\'re tied, so the order is just the order they were added' },
           { text: 'The first is the best match', why: 'They\'re equally close.' },
+          { text: 'Nothing: they\'re tied, so the order is just the order they were added' },
           { text: 'The search is broken', why: 'Ties are normal when texts are similar.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'P101 and P137 are the same kurta at ₹799 and ₹1,099. Which should Ask Rao show?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'One of them, probably ₹799, and flag the duplicate to Mr Rao. The same item at two prices confuses customers.' },
           { text: 'Both, side by side.', why: 'It wastes a slot and looks like an error.' },
           { text: 'Neither.', why: 'It\'s a good match; just show it once.' },
+          { text: 'One of them, probably ₹799, and flag the duplicate to Mr Rao. The same item at two prices confuses customers.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

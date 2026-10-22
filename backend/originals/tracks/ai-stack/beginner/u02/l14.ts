@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'For Ask Rao today (30,000 chats a month, small team, no strict data rule), what\'s the sensible choice?',
         options: [
-          { text: 'A model API, with a local model for experiments' },
           { text: 'Buy GPUs', why: 'Far too expensive at this volume, and someone must run them.' },
+          { text: 'A model API, with a local model for experiments' },
           { text: 'The office laptop', why: 'Fine for tests, not for customers.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'Mr Rao asked if customer messages leave the shop. What do we say?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'With an API, messages go to the model provider. We pick one whose terms say they don\'t train on our data, and we never send card or private details.' },
           { text: 'They never leave anywhere.', why: 'With an API, they go to the provider. Be honest about it.' },
           { text: 'Don\'t mention it.', why: 'Privacy questions deserve straight answers.' },
+          { text: 'With an API, messages go to the model provider. We pick one whose terms say they don\'t train on our data, and we never send card or private details.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where does the 6,000,000 in the rule come from?',
         options: [
-          { text: 'The break-even point: where a $1,080 GPU bill equals $0.00018 per chat' },
           { text: 'A law', why: 'It\'s our own practice maths from Chapter 1.' },
           { text: 'The number of Mr Rao\'s customers', why: 'It\'s where the two bills match.' },
+          { text: 'The break-even point: where a $1,080 GPU bill equals $0.00018 per chat' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

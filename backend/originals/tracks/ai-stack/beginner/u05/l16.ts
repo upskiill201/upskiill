@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did juttis beat wedding outfits?',
         options: [
-          { text: 'Festive words like "embroidered" point the same way as "wedding", and meaning can\'t tell an outfit from shoes here' },
           { text: 'Juttis are the most popular product', why: 'Search doesn\'t know popularity.' },
+          { text: 'Festive words like "embroidered" point the same way as "wedding", and meaning can\'t tell an outfit from shoes here' },
           { text: 'The wedding outfits are all sold out', why: 'Most are in stock.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         message: 'No wedding kurtas! Should Ask Rao just say "nothing found"?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Say there\'s no kurta marked for weddings, then offer festive kurtas or sherwanis. And ask Mr Rao if some kurtas should be tagged for weddings.' },
           { text: 'Yes, "nothing found" and stop.', why: 'Offer the nearest good options.' },
           { text: 'Show juttis instead.', why: 'He asked for a kurta.' },
+          { text: 'Say there\'s no kurta marked for weddings, then offer festive kurtas or sherwanis. And ask Mr Rao if some kurtas should be tagged for weddings.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

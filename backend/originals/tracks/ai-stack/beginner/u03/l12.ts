@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the model say "probably yes"?',
         options: [
-          { text: 'Without the shop\'s facts, a likely-sounding reply won over a true one' },
           { text: 'It looked up the shop\'s products', why: 'It looked nothing up.' },
+          { text: 'Without the shop\'s facts, a likely-sounding reply won over a true one' },
           { text: 'It was being rude', why: 'It was predicting, not choosing to mislead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'Bigger models don\'t hallucinate, right?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'They do, just more fluently, which makes it harder to spot. The defences are the same at any size.' },
           { text: 'Right, never.', why: 'All current models can make things up.' },
           { text: 'Only small ones are useful.', why: 'Size isn\'t the cure; the set-up is.' },
+          { text: 'They do, just more fluently, which makes it harder to spot. The defences are the same at any size.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

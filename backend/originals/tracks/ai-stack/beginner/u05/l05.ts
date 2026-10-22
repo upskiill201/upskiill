@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did "shaadi" find no products with keyword search?',
         options: [
-          { text: 'No product text contains the word' },
           { text: 'There are no wedding products', why: 'There are 29.' },
+          { text: 'No product text contains the word' },
           { text: 'Keyword search is broken', why: 'It works; it just matches spelling.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: 'In one sentence: why can\'t we just use keyword search?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Customers use their own words, like "shaadi", and keyword search only finds the exact words we wrote.' },
           { text: 'Keyword search is too expensive.', why: 'It\'s cheap; it just misses meaning.' },
           { text: 'Keyword search needs a GPU.', why: 'It doesn\'t.' },
+          { text: 'Customers use their own words, like "shaadi", and keyword search only finds the exact words we wrote.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

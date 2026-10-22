@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "open-weight" mean?',
         options: [
-          { text: 'The model\'s weights are published, so anyone can download and run them' },
           { text: 'The model is free to use for anything', why: 'Licences can still limit use: lesson 3.' },
+          { text: 'The model\'s weights are published, so anyone can download and run them' },
           { text: 'It only runs on laptops', why: 'It can run anywhere you put it, including a host\'s API.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Open-weight means running it on my laptop, and we already saw that fail.',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'That\'s one way. Hosting providers also run open-weight models behind an API, per token, with no laptop involved.' },
           { text: 'Yes, laptop only.', why: 'Hosted APIs and rented GPUs can run them too.' },
           { text: 'Open models can\'t be used commercially.', why: 'Many can; check the licence.' },
+          { text: 'That\'s one way. Hosting providers also run open-weight models behind an API, per token, with no laptop involved.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

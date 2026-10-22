@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does temperature 0 do?',
         options: [
-          { text: 'Always picks the most likely next token, so the same prompt gives the same answer' },
           { text: 'Freezes the model', why: 'It just removes randomness from the choice.' },
+          { text: 'Always picks the most likely next token, so the same prompt gives the same answer' },
           { text: 'Makes answers more creative', why: 'Higher temperature does that.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Higher temperature makes Ask Rao sound more human. Let\'s turn it up!',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'For facts we want the same right answer every time. Keep it low, and make the wording friendly in the instructions instead.' },
           { text: 'Yes, maximum temperature.', why: 'Facts would start to vary, and more made-up answers would slip in.' },
           { text: 'Temperature does nothing.', why: 'It changes how the next token is picked.' },
+          { text: 'For facts we want the same right answer every time. Keep it low, and make the wording friendly in the instructions instead.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

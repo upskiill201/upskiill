@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why was the laptop so slow?',
         options: [
-          { text: 'Each token needs billions of multiplications, and laptops aren\'t built for that' },
           { text: 'The question was too long', why: '"Is delivery free?" is 5 tokens. The model is the heavy part.' },
+          { text: 'Each token needs billions of multiplications, and laptops aren\'t built for that' },
           { text: 'The internet was slow', why: 'It ran on the laptop itself, with no internet needed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'So my free plan doesn\'t work?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'It works for experiments. For customers you need the right chips. The question is whether to rent them or pay someone who already has them.' },
           { text: 'Running models yourself is always wrong.', why: 'It can be right, on the right hardware and at the right scale.' },
           { text: 'Yes, it\'s free forever.', why: 'The laptop took 40 seconds for one reply. Customers won\'t wait.' },
+          { text: 'It works for experiments. For customers you need the right chips. The question is whether to rent them or pay someone who already has them.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         code: 'print(f"{2 * 1_000_000_000 * 10:,}")',
         language: 'python',
         options: [
-          { text: '20,000,000,000' },
           { text: '2,000,000,000', why: 'The 10 tokens multiply it by 10.' },
           { text: '20000000000', why: 'The :, adds commas.' },
+          { text: '20,000,000,000' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

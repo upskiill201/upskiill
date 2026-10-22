@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A 321-token prompt fails on practice-tiny. Best fix?',
         options: [
-          { text: 'Send only the top 3 matching help-page lines' },
           { text: 'Switch to model-a', why: 'Fifty times the cost to avoid trimming a prompt.' },
+          { text: 'Send only the top 3 matching help-page lines' },
           { text: 'Delete half the help page for good', why: 'Other questions need those lines.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'Let\'s fine-tune model-c on our help page so it just knows it.',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Then every price change means training again. Keep facts in the help page and retrieve them.' },
           { text: 'Great idea, let\'s start.', why: 'Facts go stale inside a fine-tuned model.' },
           { text: 'Fine-tuning deletes the help page.', why: 'It doesn\'t; it just bakes in a copy that goes stale.' },
+          { text: 'Then every price change means training again. Keep facts in the help page and retrieve them.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

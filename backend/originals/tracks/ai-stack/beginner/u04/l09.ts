@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'All three models score 20 of 30. Which should Ask Rao use?',
         options: [
-          { text: 'model-c: same quality on this job, about $1 a month instead of $54' },
           { text: 'model-a: it\'s the most famous', why: 'Same score, 50 times the price.' },
+          { text: 'model-c: same quality on this job, about $1 a month instead of $54' },
           { text: 'None: 20 of 30 is a fail', why: 'The misses come from retrieval, which Chapter 6 fixes, whichever model is used.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Same score? Then model-a must be wasting its brain on us.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Exactly. When the answer is in the prompt, the job is easy. Save the big model for hard questions, if we ever get any.' },
           { text: 'Use model-a anyway, just in case.', why: '50 times the cost for no measured gain.' },
           { text: 'The test must be broken.', why: 'It\'s working: it showed size doesn\'t help this job.' },
+          { text: 'Exactly. When the answer is in the prompt, the job is easy. Save the big model for hard questions, if we ever get any.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where do the 10 wrong answers come from?',
         options: [
-          { text: 'Picking the wrong line of the help page: a retrieval problem, the same for every model' },
           { text: 'The models being too small', why: 'All three, big and small, miss the same 10.' },
           { text: 'The questions being wrong', why: 'They have clear answers in the page.' },
+          { text: 'Picking the wrong line of the help page: a retrieval problem, the same for every model' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

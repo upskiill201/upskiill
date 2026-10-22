@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did practice-tiny refuse the help page?',
         options: [
-          { text: 'The page (316 tokens) is longer than it can read at once (300)' },
           { text: 'It doesn\'t like shops', why: 'It\'s about length, not content.' },
+          { text: 'The page (316 tokens) is longer than it can read at once (300)' },
           { text: 'The laptop was off', why: 'The model itself refused: the prompt was too long.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         message: 'Fine, the laptop loses. Was the whole experiment a waste?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'No: you found the limits of memory, speed and context in a day, for free. And it stays our private test bench.' },
           { text: 'Yes, a total waste.', why: 'It taught the team the key limits quickly.' },
           { text: 'Ship it anyway.', why: 'It can\'t even read the help page.' },
+          { text: 'No: you found the limits of memory, speed and context in a day, for free. And it stays our private test bench.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -140,11 +140,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How will the team use the laptop from now on?',
         options: [
-          { text: 'As a private test bench for trying models and prompts' },
           { text: 'To serve every customer', why: 'Too slow, too small and not reliable enough.' },
           { text: 'Not at all', why: 'It\'s still useful for experiments.' },
+          { text: 'As a private test bench for trying models and prompts' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

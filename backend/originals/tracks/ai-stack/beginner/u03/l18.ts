@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a model card?',
         options: [
-          { text: 'A document describing a model\'s uses, data, scores, limits and licence' },
           { text: 'A payment card for buying models', why: 'It\'s documentation, like a medicine label.' },
+          { text: 'A document describing a model\'s uses, data, scores, limits and licence' },
           { text: 'A picture of the model', why: 'It\'s written information about it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'This card says the model is weak at Hindi. Bad card?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Great card: it told us before customers found out. Now we know to test Hindi carefully, or pick another model.' },
           { text: 'Yes, cards shouldn\'t admit weaknesses.', why: 'Honest limits are what make a card useful.' },
           { text: 'Ignore the limitations section.', why: 'It\'s the most useful part.' },
+          { text: 'Great card: it told us before customers found out. Now we know to test Hindi carefully, or pick another model.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

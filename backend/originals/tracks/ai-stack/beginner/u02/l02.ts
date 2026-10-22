@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why are GPUs good at AI?',
         options: [
-          { text: 'They have thousands of small cores that do many multiplications at the same time' },
           { text: 'They are the smartest chips', why: 'Each core is simple. Their strength is numbers, all working at once.' },
+          { text: 'They have thousands of small cores that do many multiplications at the same time' },
           { text: 'They were invented for AI', why: 'They were built for graphics; AI happens to need the same kind of work.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'If GPUs are so good, why does my laptop have a CPU?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Most of what a laptop does is varied and step-by-step: apps, files, browsing. That\'s CPU work. AI is the unusual job that wants thousands of workers.' },
           { text: 'CPUs are outdated.', why: 'They\'re still the best at general, step-by-step work.' },
           { text: 'Laptops don\'t have CPUs.', why: 'Every computer has one. Many also have a small GPU.' },
+          { text: 'Most of what a laptop does is varied and step-by-step: apps, files, browsing. That\'s CPU work. AI is the unusual job that wants thousands of workers.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

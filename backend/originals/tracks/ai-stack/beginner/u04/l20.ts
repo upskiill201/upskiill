@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Three models score the same on your questions. What decides?',
         options: [
-          { text: 'Cost, speed, licence and privacy' },
           { text: 'Leaderboard rank', why: 'Your own test already beats it.' },
+          { text: 'Cost, speed, licence and privacy' },
           { text: 'Which lab is most famous', why: 'Fame isn\'t evidence.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         message: 'The shoe shop gets 3,000 chats a month, not 30,000. Does our answer change?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'The bills are a tenth: about $5.40 on model-a, $0.11 on model-c. Still test on her questions; the cheapest that passes wins.' },
           { text: 'Then use model-a; it\'s cheap now.', why: 'Still 50 times model-c, for the same score on our test.' },
           { text: 'Small shops can\'t use AI.', why: 'At 3,000 chats the cost is tiny.' },
+          { text: 'The bills are a tenth: about $5.40 on model-a, $0.11 on model-c. Still test on her questions; the cheapest that passes wins.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',

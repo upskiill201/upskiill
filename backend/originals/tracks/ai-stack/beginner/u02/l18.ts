@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which spec line should Joel check first for Ask Rao?',
         options: [
-          { text: 'Memory: if the model doesn\'t fit, nothing else matters' },
           { text: 'The biggest TFLOPS number', why: 'Impressive, but it doesn\'t tell you if the model fits.' },
+          { text: 'Memory: if the model doesn\'t fit, nothing else matters' },
           { text: 'The colour of the card', why: 'Not a spec that matters.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'This GPU has twice the TFLOPS. It must answer twice as fast!',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Not necessarily. Chatbots are often limited by how fast memory feeds the chip. Only a test with our own prompts tells us.' },
           { text: 'Yes, exactly twice.', why: 'Speed in practice depends on more than TFLOPS.' },
           { text: 'TFLOPS means nothing.', why: 'It matters, especially for training. It just isn\'t the whole story.' },
+          { text: 'Not necessarily. Chatbots are often limited by how fast memory feeds the chip. Only a test with our own prompts tells us.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does memory bandwidth matter for chatbots?',
         options: [
-          { text: 'Every token needs the weights read again, so feeding the chip quickly sets the speed' },
           { text: 'It decides the price', why: 'It affects speed; price is a separate line.' },
           { text: 'It doesn\'t', why: 'It often limits how fast replies come out.' },
+          { text: 'Every token needs the weights read again, so feeding the chip quickly sets the speed' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

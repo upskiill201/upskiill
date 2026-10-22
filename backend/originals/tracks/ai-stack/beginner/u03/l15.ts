@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which set-up best prevents made-up answers?',
         options: [
-          { text: 'Facts in the prompt, an honest instruction, and testing' },
           { text: 'A bigger model alone', why: 'Big models make things up too.' },
+          { text: 'Facts in the prompt, an honest instruction, and testing' },
           { text: 'A higher temperature', why: 'That makes answers vary more, not less.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'A customer sent a photo and asked for a refund. Can Ask Rao approve it?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'It can say thanks, describe the photo and pass it to the team. A person approves refunds.' },
           { text: 'Yes, approve everything.', why: 'Money decisions need a person.' },
           { text: 'Ignore the photo.', why: 'The policy asks for photos; acknowledging them helps.' },
+          { text: 'It can say thanks, describe the photo and pass it to the team. A person approves refunds.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

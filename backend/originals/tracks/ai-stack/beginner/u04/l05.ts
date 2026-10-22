@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which can you download and run yourself?',
         options: [
-          { text: 'An open-weight model' },
           { text: 'A closed frontier model', why: 'Closed means API only.' },
+          { text: 'An open-weight model' },
           { text: 'Neither', why: 'Open-weight models can be downloaded.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'model-c is cheapest and open. Can we ship it now?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Licence checks out. Now test it on our questions. Cheap only counts if it answers well.' },
           { text: 'Yes, cheapest wins without testing.', why: 'Untested cheap can be the most expensive mistake.' },
           { text: 'Open models aren\'t allowed in shops.', why: 'This one is, under Apache 2.0.' },
+          { text: 'Licence checks out. Now test it on our questions. Cheap only counts if it answers well.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

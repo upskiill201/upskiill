@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which wait do customers feel most?',
         options: [
-          { text: 'Time to first token: how long before anything appears' },
           { text: 'How long the model took to train', why: 'They never see that.' },
+          { text: 'Time to first token: how long before anything appears' },
           { text: 'The GPU\'s power use', why: 'That affects cost, not what they feel.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'model-a is only a bit slower. Customers won\'t notice.',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'With 300-token replies it\'s 5.8 s against 2.9 on model-b. On a phone, that gap is when people give up. Let\'s measure with real prompts.' },
           { text: 'True, nobody notices seconds.', why: 'On mobile, every second loses some people.' },
           { text: 'Speed doesn\'t matter for shops.', why: 'Slow replies lose customers.' },
+          { text: 'With 300-token replies it\'s 5.8 s against 2.9 on model-b. On a phone, that gap is when people give up. Let\'s measure with real prompts.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

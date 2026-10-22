@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is quantisation?',
         options: [
-          { text: 'Storing each parameter in fewer bits, so the model is smaller' },
           { text: 'Training a model on more data', why: 'It shrinks an existing model; no new training.' },
+          { text: 'Storing each parameter in fewer bits, so the model is smaller' },
           { text: 'Splitting a model across many GPUs', why: 'That\'s a different way to fit big models.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: '4-bit is four times smaller. Why not shrink everything to 1 bit?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Every bit you remove rounds the numbers more. Go too far and answers get noticeably worse. 4 or 8 bits is a common balance; test on your own questions.' },
           { text: 'Yes, 1 bit is always fine.', why: 'Quality drops as precision drops.' },
           { text: 'Models can\'t be shrunk.', why: 'They can; that\'s quantisation.' },
+          { text: 'Every bit you remove rounds the numbers more. Go too far and answers get noticeably worse. 4 or 8 bits is a common balance; test on your own questions.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -121,11 +121,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which can a local runtime run?',
         options: [
-          { text: 'Open-weight models you can download' },
           { text: 'Closed models that are only available through an API', why: 'Closed models can\'t be downloaded.' },
           { text: 'Any model at all', why: 'Only models whose weights you can get.' },
+          { text: 'Open-weight models you can download' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

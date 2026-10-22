@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can\'t similarity alone hide sold-out products?',
         options: [
-          { text: 'Stock isn\'t part of the meaning; it\'s a fact stored as metadata' },
           { text: 'Sold-out products have no vector', why: 'They still have one; stock is separate.' },
+          { text: 'Stock isn\'t part of the meaning; it\'s a fact stored as metadata' },
           { text: 'It can, with a bigger k', why: 'Bigger k shows more, sold out or not.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'No lehengas under ₹3,000. Let\'s just show the closest things under ₹3,000 instead.',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Say there\'s no lehenga under ₹3,000, then offer the cheapest at ₹4,799 or sarees under budget. Don\'t pretend a saree is a lehenga.' },
           { text: 'Yes, show sarees as if they were lehengas.', why: 'Customers notice, and stop trusting the search.' },
           { text: 'Show nothing and no message.', why: 'Tell the customer why, and offer something.' },
+          { text: 'Say there\'s no lehenga under ₹3,000, then offer the cheapest at ₹4,799 or sarees under budget. Don\'t pretend a saree is a lehenga.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

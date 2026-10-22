@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does a long chat cost more per message?',
         options: [
-          { text: 'The earlier messages are resent as history with every new one' },
           { text: 'Providers charge a fee per minute', why: 'You pay per token, not per minute.' },
+          { text: 'The earlier messages are resent as history with every new one' },
           { text: 'The model gets tired', why: 'It\'s the growing history that costs.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         message: 'But with the full list it can answer anything about products!',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'It only needs the 3 products the customer asked about. Retrieve those, and keep the bill at a few dollars.' },
           { text: 'True, paste it in.', why: 'Nearly 20 times the bill for lines it mostly ignores.' },
           { text: 'Products don\'t matter to customers.', why: 'They do; just send the relevant ones.' },
+          { text: 'It only needs the 3 products the customer asked about. Retrieve those, and keep the bill at a few dollars.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

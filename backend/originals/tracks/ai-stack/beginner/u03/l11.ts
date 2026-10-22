@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who sees the system prompt?',
         options: [
-          { text: 'The model, but not the customer' },
           { text: 'Only the customer', why: 'The customer never sees it.' },
+          { text: 'The model, but not the customer' },
           { text: 'Nobody', why: 'The model reads it with every message.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll write a 2,000-word system prompt covering everything!',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'It goes with every message, so we\'d pay for 2,000 words each time, and the important rules get lost. Short and specific works better.' },
           { text: 'Longer is always better.', why: 'Every system token is paid for on every message.' },
           { text: 'System prompts are ignored.', why: 'They strongly steer the model.' },
+          { text: 'It goes with every message, so we\'d pay for 2,000 words each time, and the important rules get lost. Short and specific works better.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

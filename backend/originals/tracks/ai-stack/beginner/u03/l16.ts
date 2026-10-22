@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why "60 days" in particular?',
         options: [
-          { text: 'It\'s a common phrase in return policies, so it was a likely next token' },
           { text: 'Mr Rao used to offer 60 days', why: 'The model never saw anything about Mr Rao\'s shop.' },
+          { text: 'It\'s a common phrase in return policies, so it was a likely next token' },
           { text: 'It\'s random', why: 'Not random: likely, given what it learned.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         message: 'Write me the one-line lesson from this post-mortem.',
         prompt: "Joel's best reply?",
         options: [
-          { text: '"A model predicts likely text, not true text: give it the facts, let it say I don\'t know, and test with answers we know."' },
           { text: '"The model is bad."', why: 'The model did what models do; the set-up was missing.' },
           { text: '"Kavya made a mistake."', why: 'Post-mortems fix systems, not blame people.' },
+          { text: '"A model predicts likely text, not true text: give it the facts, let it say I don\'t know, and test with answers we know."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

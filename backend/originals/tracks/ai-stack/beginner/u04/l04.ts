@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'At $0.50 per million input tokens, what do 1,000,000 input tokens cost?',
         options: [
-          { text: '$0.50' },
           { text: '$500,000', why: 'The price IS for a million tokens.' },
+          { text: '$0.50' },
           { text: '$0.0000005', why: 'That would be per token.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         message: '$5 per million sounds like nothing. Why worry?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Per chat it\'s tiny, but it\'s multiplied by every token of every chat. At 30,000 chats that\'s $54 a month on model-a, and it scales with growth.' },
           { text: 'It is nothing.', why: 'Multiplied by volume, it adds up.' },
           { text: 'It\'s $5 per chat.', why: 'It\'s $5 per million tokens.' },
+          { text: 'Per chat it\'s tiny, but it\'s multiplied by every token of every chat. At 30,000 chats that\'s $54 a month on model-a, and it scales with growth.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

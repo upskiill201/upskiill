@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write the pass mark down before testing?',
         options: [
-          { text: 'So nobody moves the bar after seeing which model they like wins' },
           { text: 'Providers require it', why: 'It\'s for your team\'s honesty, not the provider.' },
+          { text: 'So nobody moves the bar after seeing which model they like wins' },
           { text: 'It makes the models score higher', why: 'It changes the decision, not the scores.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         message: 'The provider updated model-c last night. Same name, so nothing to do, right?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Same name, maybe different behaviour. Run the 30 questions again before we trust it.' },
           { text: 'Right, nothing changes.', why: 'Providers change behaviour under the same name.' },
           { text: 'Switch to model-a to be safe.', why: 'Re-test first; don\'t guess.' },
+          { text: 'Same name, maybe different behaviour. Run the 30 questions again before we trust it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which of these is NOT a job of a vector database?',
         options: [
-          { text: 'Writing the reply to the customer' },
           { text: 'Finding the nearest vectors', why: 'That\'s its main job.' },
+          { text: 'Writing the reply to the customer' },
           { text: 'Filtering by metadata', why: 'Most vector databases do this.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'Let\'s set up a big cloud vector database today.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'For 120 products? Keep the simple store until we outgrow it. The code that calls search won\'t change much.' },
           { text: 'Yes, the biggest one available.', why: 'Another bill and more setup for no gain yet.' },
           { text: 'Vector databases are a fad.', why: 'They\'re useful at scale; we just aren\'t there.' },
+          { text: 'For 120 products? Keep the simple store until we outgrow it. The code that calls search won\'t change much.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

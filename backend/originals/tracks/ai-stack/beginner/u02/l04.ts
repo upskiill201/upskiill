@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a foundry?',
         options: [
-          { text: 'A factory that manufactures chips designed by other companies' },
           { text: 'A company that designs chips', why: 'Designers design; foundries manufacture.' },
+          { text: 'A factory that manufactures chips designed by other companies' },
           { text: 'A data centre', why: 'Data centres run chips; foundries make them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         message: 'Why should a shop assistant care where chips are made?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Because so few places can make them, chips are scarce and expensive, and that shows up in every AI price we pay.' },
           { text: 'It doesn\'t matter at all.', why: 'The supply of chips shapes prices and availability.' },
           { text: 'So we can build our own factory.', why: 'That costs billions and takes years.' },
+          { text: 'Because so few places can make them, chips are scarce and expensive, and that shows up in every AI price we pay.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

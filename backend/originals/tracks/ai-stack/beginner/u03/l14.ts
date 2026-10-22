@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "multimodal" mean?',
         options: [
-          { text: 'A model that handles more than one kind of input, like text and images' },
           { text: 'A model with many users', why: 'It\'s about kinds of input, not users.' },
+          { text: 'A model that handles more than one kind of input, like text and images' },
           { text: 'Several models in a row', why: 'One model, several kinds of input.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Let\'s let Ask Rao approve refunds from photos. Fast!',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Fast, and risky: it can be fooled or simply wrong, and money moves. Let it describe the photo and pass it to a person to approve.' },
           { text: 'Yes, automate all refunds.', why: 'Money decisions need a human check.' },
           { text: 'Models can\'t see photos.', why: 'Multimodal ones can.' },
+          { text: 'Fast, and risky: it can be fooled or simply wrong, and money moves. Let it describe the photo and pass it to a person to approve.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The help page says "send a photo within 48 hours". What\'s a sensible first photo feature for Ask Rao?',
         options: [
-          { text: 'Confirm a photo arrived, describe it, and pass it to the team' },
           { text: 'Automatically refund every photo', why: 'Money needs a human decision.' },
           { text: 'Ignore photos', why: 'The policy asks for them; helping is good.' },
+          { text: 'Confirm a photo arrived, describe it, and pass it to the team' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

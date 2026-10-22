@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ask Rao doesn\'t know the shop\'s delivery price. Which lever first?',
         options: [
-          { text: 'RAG: put the delivery line from the help page into the prompt' },
           { text: 'Fine-tuning', why: 'Slow, expensive, and the fact goes stale when the price changes.' },
+          { text: 'RAG: put the delivery line from the help page into the prompt' },
           { text: 'A bigger model', why: 'No model knows Mr Rao\'s prices unless you tell it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'Serious companies fine-tune. Shouldn\'t we?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Only after the cheap levers fail a test. Ours passes 20 of 30, and the misses are retrieval. Fixing RAG is the next step, not fine-tuning.' },
           { text: 'Yes, always fine-tune first.', why: 'It\'s the slowest and most expensive lever.' },
           { text: 'Fine-tuning is never useful.', why: 'It helps with style and narrow formats, when there\'s enough data.' },
+          { text: 'Only after the cheap levers fail a test. Ours passes 20 of 30, and the misses are retrieval. Fixing RAG is the next step, not fine-tuning.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does RAG stand for?',
         options: [
-          { text: 'Retrieval-augmented generation' },
           { text: 'Random answer generator', why: 'It\'s about looking up the right facts first.' },
           { text: 'Rapid AI graphics', why: 'Nothing to do with pictures.' },
+          { text: 'Retrieval-augmented generation' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

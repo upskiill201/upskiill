@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is an embedding?',
         options: [
-          { text: 'A list of numbers that stands for what a piece of text means' },
           { text: 'A shorter copy of the text', why: 'It\'s numbers, not words.' },
+          { text: 'A list of numbers that stands for what a piece of text means' },
           { text: 'The text\'s token count', why: 'That\'s one number; an embedding is a whole list.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'So someone typed in that "shaadi" means "festive"?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'In the practice toolkit, yes, a small word list. Real embedding models learn it from billions of sentences where "shaadi" and "wedding" appear in similar places.' },
           { text: 'No, the computer just knows.', why: 'It learns it from data, or here, from a list.' },
           { text: 'Every real model is a hand-typed list.', why: 'Real ones are learned, not typed.' },
+          { text: 'In the practice toolkit, yes, a small word list. Real embedding models learn it from billions of sentences where "shaadi" and "wedding" appear in similar places.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

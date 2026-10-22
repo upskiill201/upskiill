@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why add a minimum score?',
         options: [
-          { text: 'So questions with no good match get "no match" instead of random products' },
           { text: 'To make search faster', why: 'It\'s about honest results.' },
+          { text: 'So questions with no good match get "no match" instead of random products' },
           { text: 'Because scores below 0.5 are errors', why: 'They\'re valid, just not close.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         message: 'A new embedding model came out. I\'ll switch it just for questions.',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Then the questions and products live in different spaces. Switch both, re-embed all 120 products, and re-test.' },
           { text: 'Good idea, questions matter most.', why: 'Both sides must use the same model.' },
           { text: 'Models don\'t matter for search.', why: 'Mixing them breaks it silently.' },
+          { text: 'Then the questions and products live in different spaces. Switch both, re-embed all 120 products, and re-test.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

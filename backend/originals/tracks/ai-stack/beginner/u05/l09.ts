@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does exact search get slow?',
         options: [
-          { text: 'It compares the question with every single item' },
           { text: 'Vectors get longer over time', why: 'They stay the same length.' },
+          { text: 'It compares the question with every single item' },
           { text: 'It uses a GPU', why: 'The problem is the number of comparisons.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'An approximate index can miss the best match? That sounds bad.',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Very rarely, and usually the miss is nearly as good. In return, searches over millions take milliseconds instead of seconds.' },
           { text: 'It misses half the time.', why: 'Good indexes find the true best almost always.' },
           { text: 'Never use one.', why: 'At large scale exact search is too slow.' },
+          { text: 'Very rarely, and usually the miss is nearly as good. In return, searches over millions take milliseconds instead of seconds.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

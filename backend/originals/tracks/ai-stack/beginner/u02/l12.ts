@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A reply is 300 tokens and the model writes 60 tokens a second. How long does it take?',
         options: [
-          { text: '5 seconds' },
           { text: '18,000 seconds', why: 'Divide, don\'t multiply: 300 / 60.' },
+          { text: '5 seconds' },
           { text: '0.2 seconds', why: 'That\'s 60 / 300, upside down.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'But long replies sound friendlier!',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Friendly can be short. "Yes! Free delivery over ₹999." is warm and takes half a second.' },
           { text: 'True, make them longer.', why: 'Longer is slower and costs more.' },
           { text: 'Friendliness doesn\'t matter.', why: 'It matters; it just doesn\'t need many words.' },
+          { text: 'Friendly can be short. "Yes! Free delivery over ₹999." is warm and takes half a second.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

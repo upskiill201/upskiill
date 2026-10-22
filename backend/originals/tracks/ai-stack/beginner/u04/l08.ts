@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a benchmark?',
         options: [
-          { text: 'A fixed set of test questions used to compare models' },
           { text: 'A guarantee that a model will work for you', why: 'It measures one test, not your job.' },
+          { text: 'A fixed set of test questions used to compare models' },
           { text: 'The model\'s price list', why: 'It\'s a test, not prices.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'model-a is #1 on the leaderboard. Why test anything?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'The leaderboard tests school exams and coding, not "is delivery free?". It shortlists models; our own questions choose one.' },
           { text: 'You\'re right, #1 is always best.', why: '#1 on a different task may not help yours.' },
           { text: 'Leaderboards are always fake.', why: 'They\'re useful for shortlists; just not final decisions.' },
+          { text: 'The leaderboard tests school exams and coding, not "is delivery free?". It shortlists models; our own questions choose one.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can leaked test questions inflate a score?',
         options: [
-          { text: 'If the model saw the questions in training, it may remember answers rather than work them out' },
           { text: 'Leaks make the test harder', why: 'They make it easier, unfairly.' },
           { text: 'They don\'t affect scores', why: 'Seeing the test in advance helps.' },
+          { text: 'If the model saw the questions in training, it may remember answers rather than work them out' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

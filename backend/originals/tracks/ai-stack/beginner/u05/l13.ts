@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do "cheap kurta" and "expensive kurta" score so high?',
         options: [
-          { text: 'Both are about kurtas and price, so they point the same way, though the wishes are opposite' },
           { text: 'Cheap and expensive mean the same', why: 'They\'re opposites; the topic is the same.' },
+          { text: 'Both are about kurtas and price, so they point the same way, though the wishes are opposite' },
           { text: 'The model is broken', why: 'This is a normal limit of similarity.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'So embeddings are useless?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'They\'re great at "what is this about". Prices, "not", codes and stock need filters or keywords alongside.' },
           { text: 'Yes, go back to keywords.', why: 'Keywords fail on "shaadi".' },
           { text: 'Bigger embeddings fix everything.', why: 'Better models help, but blind spots remain.' },
+          { text: 'They\'re great at "what is this about". Prices, "not", codes and stock need filters or keywords alongside.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

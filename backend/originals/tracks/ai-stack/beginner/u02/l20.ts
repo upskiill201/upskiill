@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Ask Rao pay per answer instead of renting a GPU?',
         options: [
-          { text: 'At about 30,000 chats a month, it costs about $5 instead of $1,080, with nothing to maintain' },
           { text: 'GPUs don\'t work', why: 'They work; they just don\'t pay off at this volume.' },
+          { text: 'At about 30,000 chats a month, it costs about $5 instead of $1,080, with nothing to maintain' },
           { text: 'APIs are always faster', why: 'Not always. Here the deciding factors are cost and maintenance.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         message: 'Mr Rao: "Will it cost more if more people chat?"',
         prompt: "Joel's best reply?",
         options: [
-          { text: '"Yes, a little: it\'s paid per answer, so about $5 a month now, and roughly double if chats double."' },
           { text: '"No, it\'s a fixed price."', why: 'Pay-per-answer grows with use.' },
           { text: '"We can\'t know."', why: 'It\'s simple multiplication.' },
+          { text: '"Yes, a little: it\'s paid per answer, so about $5 a month now, and roughly double if chats double."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

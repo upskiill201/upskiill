@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can counting letters trip a model up?',
         options: [
-          { text: 'It sees tokens like "kurt" + "a", not individual letters' },
           { text: 'It can\'t read', why: 'It reads tokens, which hide individual letters.' },
+          { text: 'It sees tokens like "kurt" + "a", not individual letters' },
           { text: 'Letters are secret', why: 'They\'re just grouped into tokens.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         message: 'Mr Rao\'s nephew says the AI remembers his last chat. Should I correct him?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Kindly: "It seems to remember because the app resends the chat. Close the chat and it starts fresh." It helps him trust it the right amount.' },
           { text: 'Tell him he\'s wrong and move on.', why: 'Explaining kindly builds the right trust.' },
           { text: 'Agree with him.', why: 'Wrong beliefs lead to wrong trust.' },
+          { text: 'Kindly: "It seems to remember because the app resends the chat. Close the chat and it starts fresh." It helps him trust it the right amount.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

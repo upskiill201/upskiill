@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why store price as metadata instead of embedding it?',
         options: [
-          { text: 'Price isn\'t meaning; it\'s used for exact filters like "under ₹3,000"' },
           { text: 'Embeddings can\'t hold numbers', why: 'They\'re all numbers; price just doesn\'t belong in the meaning.' },
+          { text: 'Price isn\'t meaning; it\'s used for exact filters like "under ₹3,000"' },
           { text: 'To save money', why: 'It\'s about getting the right results.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Do we embed all 120 products every time someone searches?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'No, once, ahead of time. Each search only embeds the question, then compares.' },
           { text: 'Yes, every search.', why: 'That would waste time and money.' },
           { text: 'Only on Mondays.', why: 'Only when a product is added or changed.' },
+          { text: 'No, once, ahead of time. Each search only embeds the question, then compares.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

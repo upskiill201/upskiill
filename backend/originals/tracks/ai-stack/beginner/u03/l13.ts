@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do some languages use more tokens?',
         options: [
-          { text: 'Tokenizers learned mostly from English, so other scripts split into smaller pieces' },
           { text: 'Those languages are longer', why: 'The meaning is the same; the tokenizer is the difference.' },
+          { text: 'Tokenizers learned mostly from English, so other scripts split into smaller pieces' },
           { text: 'Models dislike other languages', why: 'It\'s about how text was split when tokenizers were built.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Should Ask Rao only answer in English to save tokens?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'No: customers should be answered in their language. We budget for the extra tokens, and test Hindi questions as carefully as English ones.' },
           { text: 'Yes, English only.', why: 'Customers who write Hindi deserve answers in Hindi.' },
           { text: 'Tokens don\'t change by language.', why: 'They do, sometimes a lot.' },
+          { text: 'No: customers should be answered in their language. We budget for the extra tokens, and test Hindi questions as carefully as English ones.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

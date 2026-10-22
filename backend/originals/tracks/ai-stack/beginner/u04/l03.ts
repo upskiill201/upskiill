@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why check the licence of an open-weight model?',
         options: [
-          { text: 'It decides whether, and how, you may use it in a product' },
           { text: 'It sets the model\'s speed', why: 'It sets the rules of use, not performance.' },
+          { text: 'It decides whether, and how, you may use it in a product' },
           { text: 'Open models have no licences', why: 'They do, and they differ a lot.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'It\'s open, so we can do whatever we want, right?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: '"Open weights" means you can download them. What you may DO with them is in the licence. Ten minutes reading it can save the business.' },
           { text: 'Yes, open means no rules.', why: 'Licences set rules even for open weights.' },
           { text: 'Open models are illegal to use.', why: 'Most are fine to use under their licence.' },
+          { text: '"Open weights" means you can download them. What you may DO with them is in the licence. Ten minutes reading it can save the business.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -121,11 +121,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Meta\'s Llama licence is an example of...',
         options: [
-          { text: 'A custom licence with conditions, such as limits for very large companies' },
           { text: 'A research-only licence', why: 'It allows commercial use within its conditions.' },
           { text: 'No licence', why: 'It has its own licence.' },
+          { text: 'A custom licence with conditions, such as limits for very large companies' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

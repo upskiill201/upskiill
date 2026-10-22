@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which job suits a batch discount?',
         options: [
-          { text: 'Writing tags for all 120 products overnight' },
           { text: 'Answering a customer who is waiting in the chat', why: 'Batch can take hours; live chat can\'t wait.' },
+          { text: 'Writing tags for all 120 products overnight' },
           { text: 'Sorting a message as it arrives', why: 'That needs an answer now.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'A blog post says model-b costs $1 per million. The page says $0.50. Which do I trust?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'The pricing page, checked today. Blog posts go out of date.' },
           { text: 'The blog, it\'s easier to read.', why: 'Prices change; the provider\'s page is the source.' },
           { text: 'Average them: $0.75.', why: 'Only one of them is the real price.' },
+          { text: 'The pricing page, checked today. Blog posts go out of date.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

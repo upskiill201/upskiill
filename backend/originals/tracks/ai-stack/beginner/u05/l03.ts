@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A similarity score of 0 means...',
         options: [
-          { text: 'The two texts are about unrelated things' },
           { text: 'The two texts are identical', why: 'Identical is 1.' },
+          { text: 'The two texts are about unrelated things' },
           { text: 'One of them is empty', why: 'An empty text has no direction at all; 0 here means unrelated.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: '"shoes" and "juttis" share no letters. How can they score 0.92?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Both point at the footwear idea. The score compares meaning, not spelling. That\'s the whole point.' },
           { text: 'It\'s a bug.', why: 'It\'s exactly what embeddings are for.' },
           { text: 'They share the letter s.', why: 'Letters aren\'t what\'s compared.' },
+          { text: 'Both point at the footwear idea. The score compares meaning, not spelling. That\'s the whole point.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

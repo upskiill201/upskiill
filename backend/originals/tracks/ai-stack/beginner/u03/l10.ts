@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does a long chat forget what the customer said at the start?',
         options: [
-          { text: 'The oldest messages were trimmed to fit the budget, so the model never saw them again' },
           { text: 'The model got tired', why: 'It only sees what\'s sent.' },
+          { text: 'The oldest messages were trimmed to fit the budget, so the model never saw them again' },
           { text: 'The model deletes them', why: 'The app decides what to resend.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'Why not just use the biggest window and send everything?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Every token costs money and time, and the right fact gets lost among the rest. Send what\'s relevant.' },
           { text: 'Yes, always fill it.', why: 'Fitting isn\'t free or helpful.' },
           { text: 'Windows are too small for anything.', why: 'Big ones hold a lot; the issue is cost and focus.' },
+          { text: 'Every token costs money and time, and the right fact gets lost among the rest. Send what\'s relevant.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

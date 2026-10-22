@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Roughly how many tokens is 100 English words, by the rule of thumb?',
         options: [
-          { text: 'About 130' },
           { text: 'About 25', why: 'That would be 4 words per token. It\'s about 4 letters.' },
+          { text: 'About 130' },
           { text: 'Exactly 100', why: 'Many words are more than one token.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'Why should I care about counting tokens?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Every token in and out is billed, takes time, and fills the model\'s limited window. Counting is how we keep all three under control.' },
           { text: 'You shouldn\'t.', why: 'Tokens drive cost, speed and what fits.' },
           { text: 'Only output tokens matter.', why: 'Input tokens are billed too, and the help page is most of them.' },
+          { text: 'Every token in and out is billed, takes time, and fills the model\'s limited window. Counting is how we keep all three under control.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

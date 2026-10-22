@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do GPUs suit AI better than CPUs?',
         options: [
-          { text: 'AI is millions of independent multiplications, and GPUs do thousands at once' },
           { text: 'GPUs are newer', why: 'It\'s about how many small workers they have.' },
+          { text: 'AI is millions of independent multiplications, and GPUs do thousands at once' },
           { text: 'CPUs can\'t multiply', why: 'They can; they just have far fewer workers.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'Next idea: we buy the biggest GPU and keep it under my desk.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Let\'s first compare renting by the hour and paying per answer. Owning hardware only pays off at a scale we don\'t have.' },
           { text: 'Yes, buy three.', why: 'At Mr Rao\'s volume, owning hardware wastes money.' },
           { text: 'GPUs can\'t be bought.', why: 'They can. The question is whether it\'s worth it.' },
+          { text: 'Let\'s first compare renting by the hour and paying per answer. Owning hardware only pays off at a scale we don\'t have.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         code: 'print(2 * 1_000_000 * 3)',
         language: 'python',
         options: [
-          { text: '6000000' },
           { text: '2000003', why: 'All three are multiplied.' },
           { text: '6,000,000', why: 'Without :, there are no commas.' },
+          { text: '6000000' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

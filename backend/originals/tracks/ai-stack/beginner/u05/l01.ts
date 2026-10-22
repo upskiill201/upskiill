@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does "shaadi" find no products?',
         options: [
-          { text: 'No product text contains that word, even though the meaning matches' },
           { text: 'The shop sells no wedding clothes', why: 'It has 29.' },
+          { text: 'No product text contains that word, even though the meaning matches' },
           { text: 'Python can\'t search Hindi words', why: 'It can; the word just isn\'t in the descriptions.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll just add "shaadi" to every wedding description.',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Then "my sister\'s big day" fails, and "nikah", and a hundred others. We need search that matches meaning, not a longer word list.' },
           { text: 'Perfect, that fixes it for good.', why: 'Customers have endless ways to say the same thing.' },
           { text: 'Delete the search box.', why: 'Customers need search; it just has to understand them.' },
+          { text: 'Then "my sister\'s big day" fails, and "nikah", and a hundred others. We need search that matches meaning, not a longer word list.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

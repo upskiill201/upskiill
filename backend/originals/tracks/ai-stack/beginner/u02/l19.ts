@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write down when to decide again?',
         options: [
-          { text: 'The right choice changes with volume, prices and rules, so the team knows when to revisit' },
           { text: 'To look busy', why: 'It\'s a real trigger for a real change.' },
+          { text: 'The right choice changes with volume, prices and rules, so the team knows when to revisit' },
           { text: 'Decisions never change', why: 'They do, as traffic and prices change.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'Mr Rao will ask: "Why not our own computer, like Kavya said?"',
         prompt: "Joel's best reply?",
         options: [
-          { text: '"We tried it: too slow for customers and it can\'t read the help page. Renting a service costs about $5 a month."' },
           { text: '"Because Kavya was wrong."', why: 'Blame doesn\'t help. Share what the test showed.' },
           { text: '"Computers are bad."', why: 'Give the real reasons and numbers.' },
+          { text: '"We tried it: too slow for customers and it can\'t read the help page. Renting a service costs about $5 a month."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the model say "60 days" back in Chapter 1?',
         options: [
-          { text: 'It predicted a likely continuation, with no shop policy to go on' },
           { text: 'It had an old policy', why: 'It never saw any shop policy.' },
+          { text: 'It predicted a likely continuation, with no shop policy to go on' },
           { text: 'The temperature was too low', why: 'Low temperature doesn\'t cause made-up facts; missing facts do.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         message: 'One line for Mr Rao about what changed in v0.3?',
         prompt: "Joel's best reply?",
         options: [
-          { text: '"Ask Rao now answers only from your help page, says when it doesn\'t know, and gives the same answer every time."' },
           { text: '"We set temperature to 0 and checked the context window."', why: 'True, and meaningless to him.' },
           { text: '"Nothing changed."', why: 'A lot changed, in ways he\'ll notice.' },
+          { text: '"Ask Rao now answers only from your help page, says when it doesn\'t know, and gives the same answer every time."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can AI chips be in short supply?',
         options: [
-          { text: 'Few companies and factories can make them, and new factories take years' },
           { text: 'They are made from rare gold', why: 'They\'re made from silicon. The bottleneck is factories and machines.' },
+          { text: 'Few companies and factories can make them, and new factories take years' },
           { text: 'Nobody wants them', why: 'The opposite: demand is huge.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'Price rises are a problem for big companies, not us.',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'They reach us through every price we pay. A small team feels a 20% rise more, not less.' },
           { text: 'True, small teams pay nothing.', why: 'Everyone pays for compute, directly or through a provider.' },
           { text: 'So let\'s stop using AI.', why: 'Plan for it instead: a backup and lean prompts.' },
+          { text: 'They reach us through every price we pay. A small team feels a 20% rise more, not less.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A 20% rise on a $1,080 bill adds how much?',
         options: [
-          { text: '$216' },
           { text: '$20', why: '20% of 1,080 is 216.' },
           { text: '$1,296', why: 'That\'s the new total, not the extra.' },
+          { text: '$216' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

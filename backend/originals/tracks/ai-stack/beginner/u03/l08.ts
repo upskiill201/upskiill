@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How does a chat app make a model seem to remember?',
         options: [
-          { text: 'It resends the conversation so far with every new message' },
           { text: 'The model stores each customer\'s chat', why: 'Models don\'t keep memory between calls.' },
+          { text: 'It resends the conversation so far with every new message' },
           { text: 'It doesn\'t', why: 'It does, by resending the history.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'Ask Rao forgot the customer\'s size. Is the model broken?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'No: the message with the size was trimmed from the history. We\'ll keep a summary like "size: XL" in every prompt.' },
           { text: 'Yes, get a new model.', why: 'Any model forgets what it isn\'t sent.' },
           { text: 'Customers should repeat themselves.', why: 'Annoying for them. Keep a summary instead.' },
+          { text: 'No: the message with the size was trimmed from the history. We\'ll keep a summary like "size: XL" in every prompt.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Message 20 of a chat. Roughly what does the app send?',
         options: [
-          { text: 'Messages 1 to 19 (or what\'s left after trimming) plus message 20' },
           { text: 'Only message 20', why: 'Then the model couldn\'t follow the conversation.' },
           { text: 'The help page only', why: 'The chat history goes too.' },
+          { text: 'Messages 1 to 19 (or what\'s left after trimming) plus message 20' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

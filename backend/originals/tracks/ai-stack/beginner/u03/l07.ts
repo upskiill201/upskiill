@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What has to fit inside the context window?',
         options: [
-          { text: 'The whole prompt and the reply together' },
           { text: 'Only the question', why: 'Everything in the prompt counts, plus the reply.' },
+          { text: 'The whole prompt and the reply together' },
           { text: 'Only the reply', why: 'The prompt counts too.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         message: 'model-b reads 128,000 tokens. Let\'s send it the whole product list every time!',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'It would fit, but we\'d pay for every token on every message, wait longer, and make it harder for the model to find the one product that matters.' },
           { text: 'Great idea, fill the window.', why: 'Fitting isn\'t free: more tokens, more cost and more confusion.' },
           { text: 'It won\'t fit.', why: 'It fits; that\'s not the problem.' },
+          { text: 'It would fit, but we\'d pay for every token on every message, wait longer, and make it harder for the model to find the one product that matters.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

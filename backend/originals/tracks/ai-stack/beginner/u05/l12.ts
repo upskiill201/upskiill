@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did meaning alone put the maroon saree first?',
         options: [
-          { text: 'Colour isn\'t one of the practice ideas, so navy and maroon look the same to it' },
           { text: 'Maroon is more popular', why: 'Search doesn\'t know popularity.' },
+          { text: 'Colour isn\'t one of the practice ideas, so navy and maroon look the same to it' },
           { text: 'The navy saree is sold out', why: 'It\'s in stock; meaning just can\'t see colour.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'So keyword search was right all along?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'For exact words, yes. For "shaadi", no. Each is blind where the other sees, so we use both.' },
           { text: 'Yes, delete the embeddings.', why: 'Then "shaadi" finds nothing again.' },
           { text: 'No, keywords never help.', why: 'They found the navy saree.' },
+          { text: 'For exact words, yes. For "shaadi", no. Each is blind where the other sees, so we use both.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

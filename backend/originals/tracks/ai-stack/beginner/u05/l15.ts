@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A customer types "P121". What should Ask Rao do?',
         options: [
-          { text: 'Look up product P121 directly' },
           { text: 'Search by meaning', why: 'Codes carry no meaning; it returned a dupatta.' },
+          { text: 'Look up product P121 directly' },
           { text: 'Say it doesn\'t understand', why: 'It\'s a valid product code.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         message: 'Which vector database for Ask Rao?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Our products are in PostgreSQL, so pgvector, when we outgrow the in-memory store.' },
           { text: 'The most famous one, today.', why: 'Fit and size decide, not fame.' },
           { text: 'None, ever.', why: 'We\'ll need one as the shop grows.' },
+          { text: 'Our products are in PostgreSQL, so pgvector, when we outgrow the in-memory store.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
