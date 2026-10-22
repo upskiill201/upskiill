@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does "the usual format" fail?',
         options: [
-          { text: 'Different places use different "usual" formats, so it still has to guess' },
           { text: 'The agent can\'t read the word "usual"', why: 'It reads it; it just doesn\'t say which format.' },
+          { text: 'Different places use different "usual" formats, so it still has to guess' },
           { text: 'It\'s too short', why: 'A short example works; the problem is vagueness.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll explain the format properly: four-digit year, dash, two-digit month...',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Or paste one real date. "2026-03-06 15:00" says all of that, and can\'t be misread.' },
           { text: 'Yes, the longer the better.', why: 'One example is clearer and shorter.' },
           { text: 'Leave the format out.', why: 'Then it guesses, as in lesson 1.' },
+          { text: 'Or paste one real date. "2026-03-06 15:00" says all of that, and can\'t be misread.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

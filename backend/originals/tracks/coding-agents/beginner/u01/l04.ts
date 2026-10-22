@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which job suits an agent best?',
         options: [
-          { text: 'Make the 3 failing tests pass without changing the tests' },
           { text: 'Decide what the Delivery Board should do', why: 'That needs Zanele and Mr Kamau, not guesses.' },
+          { text: 'Make the 3 failing tests pass without changing the tests' },
           { text: 'Approve its own work for production', why: 'A human reviews; that\'s Felix\'s job.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         message: 'It got the weather thing wrong. Maybe agents just can\'t do real work?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'They do real work all day when the job is clear and checkable. "Make the delivery thing" was neither.' },
           { text: 'Right, agents are useless.', why: 'They\'re very useful for clear, checkable jobs.' },
           { text: 'They can do anything; try again.', why: 'Trying again with the same brief gets the same guess.' },
+          { text: 'They do real work all day when the job is clear and checkable. "Make the delivery thing" was neither.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

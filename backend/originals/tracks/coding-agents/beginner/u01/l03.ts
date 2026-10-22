@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which step did the weather-dashboard session skip?',
         options: [
-          { text: 'Check: it never ran the tests' },
           { text: 'Read: it read nothing', why: 'It read README.md first.' },
+          { text: 'Check: it never ran the tests' },
           { text: 'Act: it changed nothing', why: 'It created board/dashboard.py.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'The second session ran the tests itself. So I don\'t need to?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'Its test run is good evidence. I still run them myself before I approve. Trust, then verify.' },
           { text: 'Right, never run them yourself.', why: 'Running them yourself takes seconds and catches surprises.' },
           { text: 'Tests are a waste of time.', why: 'They\'re the best evidence you have.' },
+          { text: 'Its test run is good evidence. I still run them myself before I approve. Trust, then verify.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

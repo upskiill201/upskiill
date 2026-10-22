@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The agent says "All tests pass." What do you do first?',
         options: [
-          { text: 'Run the tests yourself' },
           { text: 'Tell Felix it\'s ready', why: 'Check first.' },
+          { text: 'Run the tests yourself' },
           { text: 'Ask the agent if it\'s sure', why: 'It will say yes. Run them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         message: 'Did YOU run them?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'Now I have: 0 of 7 pass, and it changed report.py without saying. I\'ll fix the brief before sending anything again.' },
           { text: 'No, but it said they pass.', why: 'That\'s the claim Felix is questioning.' },
           { text: 'Tests are your job.', why: 'Checking your own change is your job.' },
+          { text: 'Now I have: 0 of 7 pass, and it changed report.py without saying. I\'ll fix the brief before sending anything again.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

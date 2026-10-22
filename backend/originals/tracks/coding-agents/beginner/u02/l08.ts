@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why answer the questions in the brief rather than in a chat reply?',
         options: [
-          { text: 'The brief is kept; the next session starts with the answers' },
           { text: 'Agents can\'t read replies', why: 'They can, but chats end and are forgotten.' },
+          { text: 'The brief is kept; the next session starts with the answers' },
           { text: 'It\'s faster to type', why: 'It\'s about keeping the knowledge.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: 'It asked six questions. That\'s annoying. Can I turn it off?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Each question is a gap that would have been a guess. Six questions now beats six bugs later.' },
           { text: 'Yes, questions waste time.', why: 'Guesses waste more.' },
           { text: 'Answer randomly to save time.', why: 'Random answers are guesses with extra steps.' },
+          { text: 'Each question is a gap that would have been a guess. Six questions now beats six bugs later.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

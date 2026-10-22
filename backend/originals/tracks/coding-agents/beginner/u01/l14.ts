@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which cost do people forget most?',
         options: [
-          { text: 'Their own attention, checking the work' },
           { text: 'The token bill', why: 'That one shows up on an invoice.' },
+          { text: 'Their own attention, checking the work' },
           { text: 'The waiting time', why: 'People notice waiting; they forget the checking.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         message: 'Two cents a session? Then let\'s run it all day on everything!',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'The tokens are cheap here; my checking time isn\'t. Real sessions also cost more. Clear jobs only, and I check each one.' },
           { text: 'Great idea.', why: 'Every change still needs checking.' },
           { text: 'It\'s too expensive to use.', why: 'For clear jobs it\'s good value.' },
+          { text: 'The tokens are cheap here; my checking time isn\'t. Real sessions also cost more. Clear jobs only, and I check each one.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

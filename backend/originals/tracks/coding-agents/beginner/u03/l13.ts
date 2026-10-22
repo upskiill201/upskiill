@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who should decide what counts as "at risk"?',
         options: [
-          { text: 'Zanele, who knows why deliveries are late' },
           { text: 'The agent', why: 'It would guess, as it did in Chapter 1.' },
+          { text: 'Zanele, who knows why deliveries are late' },
           { text: 'Whoever types the code', why: 'Rules come from the business, not the keyboard.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'Couldn\'t the agent just decide the wording of Brian\'s message too?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'It can draft three versions. Brian reads it every morning, so Brian picks. Drafts from the agent, decisions from people.' },
           { text: 'Yes, let it decide everything.', why: 'Decisions belong to the people affected.' },
           { text: 'Agents can\'t write text.', why: 'They can draft well; deciding is the human part.' },
+          { text: 'It can draft three versions. Brian reads it every morning, so Brian picks. Drafts from the agent, decisions from people.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

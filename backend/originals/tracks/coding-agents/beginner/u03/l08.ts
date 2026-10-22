@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the morning list empty when it\'s built first?',
         options: [
-          { text: 'It uses is_at_risk, which still always returns False' },
           { text: 'The list code is wrong', why: 'The code is fine; its dependency isn\'t built.' },
+          { text: 'It uses is_at_risk, which still always returns False' },
           { text: 'The sample data is empty', why: 'It has 12 deliveries.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'The list came back empty but the agent said its code was fine. Who\'s right?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'Both. Its code is fine; it was built before the rule it depends on. Look: its own report says the 3 rule tests still fail.' },
           { text: 'The agent is lying.', why: 'Its report was honest; the order was wrong.' },
           { text: 'The data is broken.', why: 'The data is fine; the rule is missing.' },
+          { text: 'Both. Its code is fine; it was built before the rule it depends on. Look: its own report says the 3 rule tests still fail.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

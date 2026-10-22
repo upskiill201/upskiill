@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When does a step get its tick?',
         options: [
-          { text: 'When it\'s done and you\'ve checked it' },
           { text: 'When the agent says "Done!"', why: 'That\'s a claim.' },
+          { text: 'When it\'s done and you\'ve checked it' },
           { text: 'When you start it', why: 'Ticks mean finished.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         message: 'Where are we with the board?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'Two of five steps done and checked: the rule and the morning list. Next is the message for you. It\'s all in TASKS.md.' },
           { text: 'Nearly done, I think.', why: 'The list gives an exact answer.' },
           { text: 'Ask the agent.', why: 'The list is the source of truth.' },
+          { text: 'Two of five steps done and checked: the rule and the morning list. Next is the message for you. It\'s all in TASKS.md.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

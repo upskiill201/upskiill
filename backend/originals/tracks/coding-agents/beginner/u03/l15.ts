@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"Good morning! 1 deliveries at risk today" has a grammar slip. What\'s the best fix?',
         options: [
-          { text: 'Add the one-delivery case to the brief ("1 delivery") and rerun the step' },
           { text: 'Ignore it', why: 'Brian reads it every day.' },
+          { text: 'Add the one-delivery case to the brief ("1 delivery") and rerun the step' },
           { text: 'Delete the message feature', why: 'It\'s a one-line brief fix.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         message: 'The session has been open since 9 a.m. and it just suggested the weather dashboard again.',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'Time for a fresh session. Your brief, plan and code are saved; point it at TASKS.md and the next step.' },
           { text: 'Tell it off and keep going.', why: 'A tired session drifts; start fresh.' },
           { text: 'Build the dashboard then.', why: 'Nobody asked for it.' },
+          { text: 'Time for a fresh session. Your brief, plan and code are saved; point it at TASKS.md and the next step.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

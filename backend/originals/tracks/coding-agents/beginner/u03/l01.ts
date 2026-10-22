@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can\'t Felix review the six-file change?',
         options: [
-          { text: 'With six things changed at once, he can\'t tell which one broke the tests' },
           { text: 'He doesn\'t like long code', why: 'It\'s about finding the cause, not taste.' },
+          { text: 'With six things changed at once, he can\'t tell which one broke the tests' },
           { text: 'Reviews only work on one file', why: 'They work on any size; small ones work best.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         message: 'Can\'t I just fix the big change instead of starting over?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'You could spend the afternoon untangling it. Or throw it away and do three small steps, checking each. The second is faster.' },
           { text: 'Yes, patch it.', why: 'Patching a tangle you can\'t read makes a bigger tangle.' },
           { text: 'Ship it, the tests will catch problems later.', why: 'They\'re failing now.' },
+          { text: 'You could spend the afternoon untangling it. Or throw it away and do three small steps, checking each. The second is faster.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a baseline?',
         options: [
-          { text: 'What passes and fails before any change, so you can compare' },
           { text: 'The agent\'s first message', why: 'It\'s your own measurement of the starting point.' },
+          { text: 'What passes and fails before any change, so you can compare' },
           { text: 'The cheapest agent plan', why: 'It\'s about the starting state of the project.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         message: 'After the agent, 3 tests fail. It broke 3 things!',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'Did they fail before it started? Check your baseline. If it\'s the same 3, it broke nothing; it just fixed nothing.' },
           { text: 'Yes, revert everything now.', why: 'Compare with the baseline first.' },
           { text: 'Tests don\'t matter.', why: 'They matter; you need the before to read the after.' },
+          { text: 'Did they fail before it started? Check your baseline. If it\'s the same 3, it broke nothing; it just fixed nothing.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

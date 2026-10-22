@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does distance_km arrive as text like "180"?',
         options: [
-          { text: 'It comes from a CSV file, and CSV values are read as text' },
           { text: 'Someone typed it wrong', why: 'Every CSV value starts as text.' },
+          { text: 'It comes from a CSV file, and CSV values are read as text' },
           { text: 'Python stores all numbers as text', why: 'It doesn\'t; CSV reading gives text.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'The agent figured out the inputs from the tests. So I don\'t need to write them?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'This time the tests showed it. Next time there might be no tests for that part. Write it down; it costs one line.' },
           { text: 'Right, never write inputs.', why: 'You\'re relying on luck.' },
           { text: 'Inputs don\'t matter.', why: 'Wrong key names break everything.' },
+          { text: 'This time the tests showed it. Next time there might be no tests for that part. Write it down; it costs one line.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

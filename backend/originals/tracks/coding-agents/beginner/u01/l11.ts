@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which file should Remi NOT change without asking?',
         options: [
-          { text: 'board/report.py, Zanele\'s weekly report' },
           { text: 'board/rules.py', why: 'That\'s Remi\'s job.' },
+          { text: 'board/report.py, Zanele\'s weekly report' },
           { text: 'README.md', why: 'The README is where the warning is written.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Why read the project myself? The agent reads it anyway.',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'Because you can\'t judge a change to files you\'ve never seen. And the agent might skip README.md, where Zanele\'s warning lives.' },
           { text: 'You don\'t need to.', why: 'You can\'t review what you don\'t know.' },
           { text: 'Only read the tests.', why: 'The README holds the ownership rules.' },
+          { text: 'Because you can\'t judge a change to files you\'ve never seen. And the agent might skip README.md, where Zanele\'s warning lives.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

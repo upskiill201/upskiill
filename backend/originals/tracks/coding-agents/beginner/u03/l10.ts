@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The morning list returns [] on a fresh project. Why?',
         options: [
-          { text: 'The rule it depends on isn\'t written yet' },
           { text: 'The list code is wrong', why: 'It\'s correct; its foundation is missing.' },
+          { text: 'The rule it depends on isn\'t written yet' },
           { text: 'There are no deliveries', why: 'There are 12.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         message: 'What if the agent wrecks everything?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'I save a checkpoint before every step, so the worst case is going back ten seconds and rewriting one brief.' },
           { text: 'It won\'t.', why: 'It will sometimes; the checkpoint is why it doesn\'t matter.' },
           { text: 'We\'d start the project again.', why: 'The checkpoint keeps every good step.' },
+          { text: 'I save a checkpoint before every step, so the worst case is going back ten seconds and rewriting one brief.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the main danger of a very long brief?',
         options: [
-          { text: 'The key rules get buried, and sentences start to contradict each other' },
           { text: 'Agents refuse long briefs', why: 'They accept them; that\'s the problem.' },
+          { text: 'The key rules get buried, and sentences start to contradict each other' },
           { text: 'Nothing, longer is always safer', why: 'Remi\'s page had a contradiction.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll write everything, just in case. More context can\'t hurt.',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'It can. The rule gets lost, and your page told it to change one file AND tidy another. Put background in the README, not the brief.' },
           { text: 'Right, write it all.', why: 'Long briefs bury rules and contradict themselves.' },
           { text: 'Write nothing.', why: 'Too short leaves gaps.' },
+          { text: 'It can. The rule gets lost, and your page told it to change one file AND tidy another. Put background in the README, not the brief.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

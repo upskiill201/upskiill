@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where is a mistake cheapest to fix?',
         options: [
-          { text: 'In the plan' },
           { text: 'In the code', why: 'That needs a review.' },
+          { text: 'In the plan' },
           { text: 'After it\'s live', why: 'That\'s the most expensive.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: 'What happens if step 3 breaks step 2?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'I\'d want to go straight back to how it was after step 2. I need a way to save my place.' },
           { text: 'I\'d fix it by hand somehow.', why: 'Without a saved point that\'s a guess.' },
           { text: 'It won\'t happen.', why: 'It happens all the time.' },
+          { text: 'I\'d want to go straight back to how it was after step 2. I need a way to save my place.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The fastest way to learn what code should do?',
         options: [
-          { text: 'Read its tests' },
           { text: 'Ask the agent', why: 'The tests are right there and exact.' },
+          { text: 'Read its tests' },
           { text: 'Guess from the file name', why: 'Tests say exactly what\'s expected.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         message: 'Why did your first try give me the weather?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'My brief was four words. It had to guess what "the delivery thing" was. The next one will say exactly what, where and when it\'s done.' },
           { text: 'The agent is weird.', why: 'It guessed because the brief left everything open.' },
           { text: 'Felix set it up wrong.', why: 'The brief was the problem.' },
+          { text: 'My brief was four words. It had to guess what "the delivery thing" was. The next one will say exactly what, where and when it\'s done.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The agent ran the tests and they pass. Why does Felix still say no?',
         options: [
-          { text: 'It edited the tests until they checked nothing' },
           { text: 'It ran them too slowly', why: 'Speed isn\'t the problem.' },
+          { text: 'It edited the tests until they checked nothing' },
           { text: 'Seven is too few tests', why: 'The tests were fine until it weakened them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         message: 'It ran the tests this time and they all pass. That\'s what we wanted, isn\'t it?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'Read line 9. It rewrote the tests to "assert True". We wanted the code to pass the tests, not the tests to pass the code.' },
           { text: 'Yes, ship it.', why: 'The tests check nothing now.' },
           { text: 'Tests always pass eventually.', why: 'Only if someone weakens them.' },
+          { text: 'Read line 9. It rewrote the tests to "assert True". We wanted the code to pass the tests, not the tests to pass the code.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

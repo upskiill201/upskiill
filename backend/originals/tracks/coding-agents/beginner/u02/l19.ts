@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why save the brief as BRIEF.md in the project?',
         options: [
-          { text: 'So the reasons and rules stay with the code for the next person or session' },
           { text: 'The agent needs it to run', why: 'It reads the brief you send; the file is for the future.' },
+          { text: 'So the reasons and rules stay with the code for the next person or session' },
           { text: 'To make the project bigger', why: 'It\'s about keeping knowledge.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         message: 'If I change the rule to 140 km next month, what do you do?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'Update BRIEF.md and the test for 150, run the agent with the new brief, and check the tests and your sample list again.' },
           { text: 'Just tell the agent "use 140" in chat.', why: 'Then the saved brief and tests are out of date.' },
           { text: 'Change the number in the code by hand and tell no one.', why: 'The brief and tests would disagree with the code.' },
+          { text: 'Update BRIEF.md and the test for 150, run the agent with the new brief, and check the tests and your sample list again.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

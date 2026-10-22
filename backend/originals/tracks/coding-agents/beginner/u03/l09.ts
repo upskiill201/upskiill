@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When is an explore step most useful?',
         options: [
-          { text: 'On a project or part of a project you don\'t know yet' },
           { text: 'Before every single one-line fix', why: 'It costs tokens; once per new area is enough.' },
+          { text: 'On a project or part of a project you don\'t know yet' },
           { text: 'After the code is shipped', why: 'Explore before you change things.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         message: 'Why didn\'t it find Zanele\'s rule? It read everything.',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Because the rule isn\'t in the project; it\'s in Zanele\'s head. Exploring finds what\'s written down. The rest you have to ask people.' },
           { text: 'It should have guessed it.', why: 'Guessing is what we\'re avoiding.' },
           { text: 'It didn\'t read properly.', why: 'It read all 9 files; the rule isn\'t there.' },
+          { text: 'Because the rule isn\'t in the project; it\'s in Zanele\'s head. Exploring finds what\'s written down. The rest you have to ask people.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

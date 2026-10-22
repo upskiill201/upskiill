@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In what order should the three steps run?',
         options: [
-          { text: 'Rule, morning list, message' },
           { text: 'Message, list, rule', why: 'Each needs the one before it.' },
+          { text: 'Rule, morning list, message' },
           { text: 'All at once', why: 'That\'s the six-file change.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         message: 'Your step 2 touched report.py as well. What now?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'Restore the checkpoint from before step 2, add "Only change board/morning.py." to the brief, and run it again.' },
           { text: 'Fix report.py by hand and carry on.', why: 'Restore and re-brief is faster and certain.' },
           { text: 'Leave it; the list works.', why: 'Zanele\'s report is now broken.' },
+          { text: 'Restore the checkpoint from before step 2, add "Only change board/morning.py." to the brief, and run it again.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

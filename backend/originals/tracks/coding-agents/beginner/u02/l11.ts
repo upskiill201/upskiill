@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the stranger test?',
         options: [
-          { text: 'Could someone who joined this morning do the task from the brief alone?' },
           { text: 'Would a stranger like the brief?', why: 'It\'s about whether they could act on it.' },
+          { text: 'Could someone who joined this morning do the task from the brief alone?' },
           { text: 'Is the brief short?', why: 'Short briefs often fail the test.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'But I know what "the usual way" means!',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'You do. The agent starts every session knowing nothing about you. Write for a stranger who\'s smart but wasn\'t there.' },
           { text: 'Then it\'ll know too.', why: 'It only knows what you write.' },
           { text: 'Agents remember your meetings.', why: 'They don\'t; they weren\'t there.' },
+          { text: 'You do. The agent starts every session knowing nothing about you. Write for a stranger who\'s smart but wasn\'t there.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

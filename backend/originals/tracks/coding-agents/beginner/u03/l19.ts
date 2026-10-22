@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why stop the plan as soon as a step fails?',
         options: [
-          { text: 'Later steps would build on a broken one' },
           { text: 'To save tokens only', why: 'The real reason is not building on broken work.' },
+          { text: 'Later steps would build on a broken one' },
           { text: 'Agents can\'t continue after a failure', why: 'They can; you shouldn\'t let them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         message: 'Why was this so much better than Monday?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'On Monday I asked for everything in one line. This time: a plan, then three small, complete briefs, checking each before the next.' },
           { text: 'The agent got smarter.', why: 'Same agent; different process.' },
           { text: 'Luck.', why: 'Every step was checked.' },
+          { text: 'On Monday I asked for everything in one line. This time: a plan, then three small, complete briefs, checking each before the next.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

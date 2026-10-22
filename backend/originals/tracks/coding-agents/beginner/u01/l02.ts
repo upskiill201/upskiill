@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What can an agent do that chat and autocomplete can\'t?',
         options: [
-          { text: 'Change files and run commands in your project on its own' },
           { text: 'Write code', why: 'All three can write code; only the agent applies and runs it.' },
+          { text: 'Change files and run commands in your project on its own' },
           { text: 'Answer questions about code', why: 'Chat does that too.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ve used AI for code for a year. An agent is just a faster chatbot, right?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'No. A chatbot hands you text. An agent changes your files and runs things. That\'s why I review everything it does.' },
           { text: 'Yes, exactly the same.', why: 'An agent acts on your project; chat only suggests.' },
           { text: 'Agents can\'t write code.', why: 'Writing and applying code is their main job.' },
+          { text: 'No. A chatbot hands you text. An agent changes your files and runs things. That\'s why I review everything it does.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

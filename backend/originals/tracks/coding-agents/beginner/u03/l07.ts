@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the best quick test of step size?',
         options: [
-          { text: 'Could you check every line in about two minutes?' },
           { text: 'Is it under 100 lines?', why: 'Line counts are only a rough guide.' },
+          { text: 'Could you check every line in about two minutes?' },
           { text: 'Did the agent finish quickly?', why: 'Agent speed says nothing about review time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         message: 'Is 31 lines too big then? The function says 30.',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'The numbers are a guide. The real question is whether you can check it all in a couple of minutes and explain it in one sentence.' },
           { text: 'Yes, 31 is forbidden.', why: 'It\'s a rule of thumb, not a law.' },
           { text: 'Size doesn\'t matter.', why: 'The six-file change says otherwise.' },
+          { text: 'The numbers are a guide. The real question is whether you can check it all in a couple of minutes and explain it in one sentence.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

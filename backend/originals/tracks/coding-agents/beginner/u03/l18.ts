@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is there no "Tidy up board/report.py" step this time?',
         options: [
-          { text: 'The brief set a limit ("Only change files in board/")' },
           { text: 'The agent forgot', why: 'The limit removed it.' },
+          { text: 'The brief set a limit ("Only change files in board/")' },
           { text: 'The report was deleted', why: 'It\'s still there.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Here\'s my review of the plan: "Looks fine!"',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'Fine how? Say which steps to keep, which to drop and why, and what order. Two lines is enough.' },
           { text: 'Perfect, ship it.', why: '"Looks fine" doesn\'t catch the extras.' },
           { text: 'Rewrite the whole plan yourself.', why: 'Reviewing is quicker; most steps are good.' },
+          { text: 'Fine how? Say which steps to keep, which to drop and why, and what order. Two lines is enough.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

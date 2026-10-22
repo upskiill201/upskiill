@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'You learn something halfway that changes the plan. What do you do?',
         options: [
-          { text: 'Update the plan: that\'s good planning' },
           { text: 'Stick to the old plan no matter what', why: 'A plan is a draft.' },
+          { text: 'Update the plan: that\'s good planning' },
           { text: 'Throw away all the work', why: 'Keep what\'s checked; change what\'s next.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         message: 'I changed the plan three times this week. Bad planning?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'Good planning. Each time you learned something, like Brian\'s quiet day. The bad plan is the one you never update.' },
           { text: 'Yes, plans should never change.', why: 'Plans should change when you learn.' },
           { text: 'Stop planning then.', why: 'Planning is what caught the problems.' },
+          { text: 'Good planning. Each time you learned something, like Brian\'s quiet day. The bad plan is the one you never update.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

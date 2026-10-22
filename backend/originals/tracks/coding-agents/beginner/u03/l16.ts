@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did all 7 tests fail?',
         options: [
-          { text: 'No example date (guessed format) and no limits (renamed the report)' },
           { text: 'The tests were broken', why: 'They pass with Brief v1.' },
+          { text: 'No example date (guessed format) and no limits (renamed the report)' },
           { text: 'The morning list was wrong', why: 'No test checks the list yet.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         message: 'So what\'s the one-line lesson?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'Plan first, then one small step at a time, each with a full brief and a checkpoint.' },
           { text: 'Don\'t use agents for big things.', why: 'Big things work fine in small steps.' },
           { text: 'Write longer briefs.', why: 'Not longer: smaller and complete.' },
+          { text: 'Plan first, then one small step at a time, each with a full brief and a checkpoint.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

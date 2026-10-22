@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the agent build a weather dashboard?',
         options: [
-          { text: 'The brief didn\'t say what to build, so it guessed' },
           { text: 'The agent is broken', why: 'It built something about deliveries, which is what the brief said.' },
+          { text: 'The brief didn\'t say what to build, so it guessed' },
           { text: 'Felix set it up for weather', why: 'Nothing in the story says so; the brief was one line.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         message: 'It said "Done!" so I guess it\'s done?',
         prompt: "Tey's best reply?",
         options: [
-          { text: '"Done" is what it says. What it did is in the files. Look at them before you believe it.' },
           { text: 'Yes, agents always know when they\'re done.', why: 'Agents often say done when they aren\'t.' },
           { text: 'Ask it again until it says something different.', why: 'Asking again doesn\'t check anything.' },
+          { text: '"Done" is what it says. What it did is in the files. Look at them before you believe it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

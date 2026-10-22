@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which limit is safest?',
         options: [
-          { text: 'An allow list: "Only change board/rules.py."' },
           { text: 'A deny list for one file', why: 'Everything else stays open.' },
+          { text: 'An allow list: "Only change board/rules.py."' },
           { text: 'No limit, and trust it', why: 'Then it tidies Zanele\'s report.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         message: 'I wrote "Don\'t change the tests". Why did Zanele\'s test still fail?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'You protected the tests, not the report. It renamed her function, and her test caught it. Use "Only change board/rules.py."' },
           { text: 'The test is wrong.', why: 'It caught a real break.' },
           { text: 'Limits never work.', why: 'The right limit works.' },
+          { text: 'You protected the tests, not the report. It renamed her function, and her test caught it. Use "Only change board/rules.py."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

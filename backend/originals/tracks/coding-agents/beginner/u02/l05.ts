@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happens to every gap in a brief?',
         options: [
-          { text: 'The agent fills it with a guess' },
           { text: 'The agent stops and asks', why: 'Only if you tell it to ask (lesson 8).' },
+          { text: 'The agent fills it with a guess' },
           { text: 'Nothing; gaps are ignored', why: 'They become guesses in the code.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         message: 'Why do you keep asking me for exact times and numbers?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'Because anything I leave vague, the agent guesses. Your "afternoon" became "all day" last time.' },
           { text: 'The agent likes numbers.', why: 'It\'s about removing guesses.' },
           { text: 'No reason.', why: 'Every exact value removes a guess.' },
+          { text: 'Because anything I leave vague, the agent guesses. Your "afternoon" became "all day" last time.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

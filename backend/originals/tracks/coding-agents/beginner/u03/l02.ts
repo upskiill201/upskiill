@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask for a plan before the code?',
         options: [
-          { text: 'Fixing a plan costs seconds; fixing code costs a review' },
           { text: 'Agents can\'t code without a plan', why: 'They can; that\'s the problem.' },
+          { text: 'Fixing a plan costs seconds; fixing code costs a review' },
           { text: 'Plans use more tokens', why: 'They use fewer, and save work.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         message: 'Asking for a plan first doubles the work. Why not just let it code?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'It\'s one extra message. You just saw three bad steps in a list you read in ten seconds. In code they\'d have taken a review.' },
           { text: 'You\'re right, skip plans.', why: 'Plans are the cheapest place to catch mistakes.' },
           { text: 'Plans are only for big projects.', why: 'Even a 3-step job benefits.' },
+          { text: 'It\'s one extra message. You just saw three bad steps in a list you read in ten seconds. In code they\'d have taken a review.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

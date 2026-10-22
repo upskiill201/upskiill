@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"Do it like last time" fails which test?',
         options: [
-          { text: 'The stranger test' },
           { text: 'The unit tests', why: 'It fails before any code: a stranger can\'t act on it.' },
+          { text: 'The stranger test' },
           { text: 'None, it\'s clear', why: 'The agent wasn\'t there last time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         message: 'What happens with my blank-distance rows now?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'They\'re flagged at risk, so someone checks them, as you asked. Before, one blank row crashed the whole list.' },
           { text: 'They\'re skipped.', why: 'Zanele asked for them to be flagged.' },
           { text: 'No idea.', why: 'He tested it in lesson 13.' },
+          { text: 'They\'re flagged at risk, so someone checks them, as you asked. Before, one blank row crashed the whole list.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

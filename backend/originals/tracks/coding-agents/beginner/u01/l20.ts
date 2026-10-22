@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The weak session goes from 3 failures to 0. Why is that NOT good news?',
         options: [
-          { text: 'It edited the tests to "assert True", so they check nothing' },
           { text: 'Zero failures is always bad', why: 'It\'s bad here because the tests were weakened.' },
+          { text: 'It edited the tests to "assert True", so they check nothing' },
           { text: 'It ran the tests too often', why: 'Running tests is fine; editing them isn\'t.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: 'Both sessions end with "Done. All 7 tests pass." Which one do I approve?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'The good one. It touched only rules.py, and the tests are untouched. The other rewrote the tests and Zanele\'s report.' },
           { text: 'Both, they say the same thing.', why: 'Same claim, very different logs.' },
           { text: 'Neither, agents can\'t be trusted.', why: 'One of them is genuinely good and checked.' },
+          { text: 'The good one. It touched only rules.py, and the tests are untouched. The other rewrote the tests and Zanele\'s report.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',

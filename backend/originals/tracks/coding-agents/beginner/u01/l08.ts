@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'With an agent writing the code, which skill matters MORE?',
         options: [
-          { text: 'Reading and judging code' },
           { text: 'Typing fast', why: 'The agent types; you judge.' },
+          { text: 'Reading and judging code' },
           { text: 'Memorising syntax', why: 'Understanding beats memorising.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'If the agent writes everything, am I still a developer?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'You\'re the one deciding what\'s right. That was always the hard part. The typing was never the job.' },
           { text: 'No, you\'re redundant now.', why: 'Someone has to know what to build and judge the result.' },
           { text: 'Only if you type every line.', why: 'Judgement, not typing, is the job.' },
+          { text: 'You\'re the one deciding what\'s right. That was always the hard part. The typing was never the job.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

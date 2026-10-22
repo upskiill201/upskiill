@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is Sunday not in the rule?',
         options: [
-          { text: 'Synergix doesn\'t take orders on Sundays' },
           { text: 'Sundays are never late', why: 'There are simply no Sunday orders.' },
+          { text: 'Synergix doesn\'t take orders on Sundays' },
           { text: 'Remi forgot it', why: 'He asked, and Zanele explained.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         message: 'Why do you need the reason for 150? Just use it.',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'Because when someone asks "why 150?" in six months, the brief can answer: that\'s where the late rate jumps.' },
           { text: 'I don\'t; forget it.', why: 'Reasons help people trust and update rules.' },
           { text: 'The agent needs reasons to code.', why: 'The code doesn\'t; the people do.' },
+          { text: 'Because when someone asks "why 150?" in six months, the brief can answer: that\'s where the late rate jumps.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

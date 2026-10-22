@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the agent change board/report.py?',
         options: [
-          { text: 'Nothing told it not to, so it "tidied up" nearby code' },
           { text: 'The report was broken', why: 'Its test passed before the agent touched it.' },
+          { text: 'Nothing told it not to, so it "tidied up" nearby code' },
           { text: 'The rule needed it', why: 'is_at_risk doesn\'t use the report at all.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'It improved the report function name. Isn\'t that helpful?',
         prompt: "Zanele's best reply?",
         options: [
-          { text: 'My weekly report calls deliveries_by_city. Your "improvement" broke it. Ask before you touch my file.' },
           { text: 'Yes, rename everything.', why: 'Other code depends on the old name.' },
           { text: 'Names don\'t matter.', why: 'Code that uses the old name breaks.' },
+          { text: 'My weekly report calls deliveries_by_city. Your "improvement" broke it. Ask before you touch my file.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

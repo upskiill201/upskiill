@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why use a fresh project for each brief?',
         options: [
-          { text: 'So each result shows only that brief\'s effect' },
           { text: 'Projects get slow after one run', why: 'It\'s about a fair comparison.' },
+          { text: 'So each result shows only that brief\'s effect' },
           { text: 'The agent can\'t run twice', why: 'It can; but results would mix.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'So longer briefs are better?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'Not longer: complete. The full brief is only five words longer than the nearly one. The missing example made all the difference.' },
           { text: 'Yes, write pages.', why: 'Completeness matters, not length (lesson 14).' },
           { text: 'No, shorter is always better.', why: 'Too short leaves gaps.' },
+          { text: 'Not longer: complete. The full brief is only five words longer than the nearly one. The missing example made all the difference.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which part is completely missing from the messy brief?',
         options: [
-          { text: 'An example of the data' },
           { text: 'A goal of any kind', why: '"Flag the late ones" is a rough goal.' },
+          { text: 'An example of the data' },
           { text: 'Any mention of Zanele', why: 'It mentions her stuff, vaguely.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         message: 'Why does a brief need all that? Can\'t the agent work it out?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'It works out a guess. A week ago that guess was a weather dashboard. Five minutes of brief saves an afternoon of checking.' },
           { text: 'Yes, it can work it out.', why: 'It guesses, and guesses look right.' },
           { text: 'Agents are useless without a page of text.', why: 'A complete, short brief is enough.' },
+          { text: 'It works out a guess. A week ago that guess was a weather dashboard. Five minutes of brief saves an afternoon of checking.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

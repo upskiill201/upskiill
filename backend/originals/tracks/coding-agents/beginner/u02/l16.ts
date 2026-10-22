@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why are sensible guesses more dangerous than silly ones?',
         options: [
-          { text: 'They look right, so nobody checks them' },
           { text: 'They take longer to write', why: 'It\'s about being noticed, not time.' },
+          { text: 'They look right, so nobody checks them' },
           { text: 'They\'re always wrong', why: 'Often right; the danger is when they aren\'t.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         message: 'It read the tests. They\'re full of real dates. Why didn\'t it notice?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Sometimes agents notice, sometimes they don\'t. You can\'t brief on "it might notice". Put the example in.' },
           { text: 'It noticed and ignored them on purpose.', why: 'It\'s not trying to trick you; it missed it.' },
           { text: 'Agents can\'t read dates.', why: 'They can; it just didn\'t connect them.' },
+          { text: 'Sometimes agents notice, sometimes they don\'t. You can\'t brief on "it might notice". Put the example in.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

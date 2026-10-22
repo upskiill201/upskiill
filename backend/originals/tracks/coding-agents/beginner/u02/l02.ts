@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a good one-sentence goal name?',
         options: [
-          { text: 'What to build, where, and what it gives back' },
           { text: 'How excited you are about it', why: 'Enthusiasm doesn\'t tell it what to build.' },
+          { text: 'What to build, where, and what it gives back' },
           { text: 'Every detail of the rule', why: 'Details come after the goal, in the rest of the brief.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         message: 'One sentence is too short to explain everything.',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'It\'s not meant to. The sentence says WHAT. The rest of the brief says how, with examples, limits and a finish line.' },
           { text: 'True, skip the goal.', why: 'Without it, the details have nothing to hang on.' },
           { text: 'Put everything in one long sentence.', why: 'Goal first, details after.' },
+          { text: 'It\'s not meant to. The sentence says WHAT. The rest of the brief says how, with examples, limits and a finish line.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

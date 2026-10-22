@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In edit mode, who runs the tests?',
         options: [
-          { text: 'You do' },
           { text: 'The agent', why: 'Edit mode can\'t run commands.' },
+          { text: 'You do' },
           { text: 'Nobody needs to', why: 'Someone always does.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'Suggest mode is so slow. Can\'t I just use run mode for everything?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'Earn it. A week of good suggestions on this project, then edit. Run mode comes when it\'s proven itself, and never for anything that can delete data.' },
           { text: 'Sure, speed is all that matters.', why: 'More power means more damage when it guesses wrong.' },
           { text: 'Never use run mode.', why: 'For trusted, checkable work it\'s the fastest and fine.' },
+          { text: 'Earn it. A week of good suggestions on this project, then edit. Run mode comes when it\'s proven itself, and never for anything that can delete data.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

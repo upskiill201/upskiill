@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does a blank distance crash the code?',
         options: [
-          { text: 'float("") can\'t turn empty text into a number' },
           { text: 'The date is wrong', why: 'The date reads fine; the distance line fails.' },
+          { text: 'float("") can\'t turn empty text into a number' },
           { text: 'Blank rows are always deleted', why: 'They reach the code and crash it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         message: 'All 7 tests pass. Why look for more cases?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'The tests only ask 7 questions. Real data asks thousands. One blank distance and the whole morning list crashes.' },
           { text: 'You don\'t need to.', why: 'Edge cases are where real data breaks code.' },
           { text: 'Add a test for every number.', why: 'Test the edges, not every value.' },
+          { text: 'The tests only ask 7 questions. Real data asks thousands. One blank distance and the whole morning list crashes.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

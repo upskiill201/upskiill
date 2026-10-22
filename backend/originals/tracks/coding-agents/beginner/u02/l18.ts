@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why doesn\'t the practice agent recognise "flag the risky ones"?',
         options: [
-          { text: '"Risky" isn\'t the project\'s word; the code and tests say "at risk"' },
           { text: 'Brian isn\'t allowed to use it', why: 'Anyone can; the words are the problem.' },
+          { text: '"Risky" isn\'t the project\'s word; the code and tests say "at risk"' },
           { text: 'It\'s a question', why: 'Questions are fine; the key term doesn\'t match.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Here\'s my brief. Just run it, I\'m sure it\'s fine.',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'Nearly! It needs the exact rule, a sample date, which file, and "done when tests pass". Want to add them together? Takes two minutes.' },
           { text: 'Sure, running it now.', why: 'It would build a weather dashboard.' },
           { text: 'This brief is terrible.', why: 'True-ish, but unkind and not helpful.' },
+          { text: 'Nearly! It needs the exact rule, a sample date, which file, and "done when tests pass". Want to add them together? Takes two minutes.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

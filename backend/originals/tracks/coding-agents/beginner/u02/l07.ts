@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes a finish line checkable?',
         options: [
-          { text: 'Two people would agree whether it\'s met' },
           { text: 'It uses strong words like "robust"', why: 'Strong words aren\'t checkable.' },
+          { text: 'Two people would agree whether it\'s met' },
           { text: 'It\'s long', why: 'Length doesn\'t make it checkable.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: '"Works well" is obvious. Why spell it out?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'Obvious to you. To the agent it\'s nothing it can test. "All tests pass" it can run, and so can I.' },
           { text: 'You\'re right, it\'s obvious.', why: 'The agent claimed it without checking.' },
           { text: 'Finish lines slow it down.', why: 'They make it check its work.' },
+          { text: 'Obvious to you. To the agent it\'s nothing it can test. "All tests pass" it can run, and so can I.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

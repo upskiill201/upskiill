@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where did the dashboard\'s weather come from?',
         options: [
-          { text: 'The agent made up a fixed list' },
           { text: 'A live weather service', why: 'There\'s no internet call; it\'s a dictionary in the file.' },
+          { text: 'The agent made up a fixed list' },
           { text: 'Zanele\'s data', why: 'The sample has no weather column.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         message: 'This post-mortem is embarrassing. Can we skip it?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'Five minutes, no blame. We write one rule from it, and nobody makes this mistake twice.' },
           { text: 'Yes, forget it happened.', why: 'Then the lesson is lost.' },
           { text: 'It\'s to decide who\'s at fault.', why: 'Good post-mortems are about causes, not blame.' },
+          { text: 'Five minutes, no blame. We write one rule from it, and nobody makes this mistake twice.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

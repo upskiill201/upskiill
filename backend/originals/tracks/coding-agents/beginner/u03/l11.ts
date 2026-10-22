@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What usually happens as a session\'s context fills up?',
         options: [
-          { text: 'Early instructions get less attention and old ideas creep back' },
           { text: 'It gets smarter with every message', why: 'More history isn\'t more skill.' },
+          { text: 'Early instructions get less attention and old ideas creep back' },
           { text: 'Nothing changes', why: 'Long sessions often drift.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'If I close the session, won\'t it forget everything we did today?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'It forgets the chat, not the work. The code, BRIEF.md and the plan are all saved. The new session reads them and starts clean.' },
           { text: 'Yes, so never close it.', why: 'Long sessions drift; the work is saved anyway.' },
           { text: 'It remembers everything forever.', why: 'A fresh session starts empty.' },
+          { text: 'It forgets the chat, not the work. The code, BRIEF.md and the plan are all saved. The new session reads them and starts clean.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

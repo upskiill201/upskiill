@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did 6 tests fail when the rule was in the brief?',
         options: [
-          { text: 'The agent guessed the wrong date format, so every date failed to read' },
           { text: 'The rule was wrong', why: 'The rule was right; the code crashed before using it.' },
+          { text: 'The agent guessed the wrong date format, so every date failed to read' },
           { text: 'The tests are broken', why: 'The tests use real dates like 2026-03-06 15:00.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         message: 'I gave it the whole rule. How can one little thing break everything?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'Every date goes through that one line. Get it wrong and every test that reads a date fails. Small gaps in a brief can be the biggest.' },
           { text: 'Bad luck; try again.', why: 'Same brief, same guess.' },
           { text: 'The agent is broken.', why: 'It did what the brief allowed: it guessed.' },
+          { text: 'Every date goes through that one line. Get it wrong and every test that reads a date fails. Small gaps in a brief can be the biggest.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which of the agent\'s tools is the riskiest?',
         options: [
-          { text: 'The terminal: one command can delete or change a lot' },
           { text: 'Reading files', why: 'Reading changes nothing.' },
+          { text: 'The terminal: one command can delete or change a lot' },
           { text: 'The tests', why: 'Running tests only checks code.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'Agent, how many tests are failing right now?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'Don\'t ask it. Run the tests yourself: it takes a second and you get the real answer.' },
           { text: 'Good question for the agent.', why: 'You can check it yourself faster and for sure.' },
           { text: 'Tests don\'t matter yet.', why: 'Knowing what fails before you start is the baseline.' },
+          { text: 'Don\'t ask it. Run the tests yourself: it takes a second and you get the real answer.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

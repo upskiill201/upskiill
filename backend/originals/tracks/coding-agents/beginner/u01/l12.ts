@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why run the rule on real data when the tests already pass?',
         options: [
-          { text: 'Tests check a few examples; real data shows whether it does what Zanele means' },
           { text: 'Tests are usually wrong', why: 'They\'re useful, just limited to the cases written.' },
+          { text: 'Tests check a few examples; real data shows whether it does what Zanele means' },
           { text: 'To make it faster', why: 'It\'s about correctness, not speed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         message: 'D-1007 is Friday morning, 140 km. Why isn\'t it flagged?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'It\'s before 2 p.m. and under 150 km, so by your rule it goes out the same day. Is that right?' },
           { text: 'The agent decided.', why: 'Remi should explain the rule and check it with her.' },
           { text: 'It must be a bug.', why: 'It matches the rule as written.' },
+          { text: 'It\'s before 2 p.m. and under 150 km, so by your rule it goes out the same day. Is that right?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

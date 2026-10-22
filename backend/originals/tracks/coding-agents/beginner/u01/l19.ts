@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write the answers into the brief, not just reply in the chat?',
         options: [
-          { text: 'The brief is the record; the next session (or person) gets the answers too' },
           { text: 'Agents can\'t read chat replies', why: 'They can; but chats end and get lost.' },
+          { text: 'The brief is the record; the next session (or person) gets the answers too' },
           { text: 'It uses fewer tokens', why: 'It\'s about keeping the knowledge.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         message: 'Six questions! Isn\'t a good agent supposed to just know?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'A good agent asks. Each question is a gap that would have become a guess. Better six questions than six bugs.' },
           { text: 'Yes, questions mean it\'s weak.', why: 'Questions catch gaps before they become bugs.' },
           { text: 'Ignore its questions.', why: 'Then it guesses all six.' },
+          { text: 'A good agent asks. Each question is a gap that would have become a guess. Better six questions than six bugs.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

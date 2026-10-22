@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which matters most when you switch to a new agent?',
         options: [
-          { text: 'Your habits: clear briefs, small steps, reading changes, running tests' },
           { text: 'Picking the most popular brand', why: 'Popularity changes; habits carry over.' },
+          { text: 'Your habits: clear briefs, small steps, reading changes, running tests' },
           { text: 'Learning every setting first', why: 'Settings matter, but the habits matter more.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'My friend says his agent is way better than mine. Should I switch?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Maybe one day. But the skills here work with any agent. Switching won\'t fix a one-line brief.' },
           { text: 'Yes, always use the newest one.', why: 'Habits matter more than the tool.' },
           { text: 'Never switch tools.', why: 'Tools improve; switching thoughtfully is fine.' },
+          { text: 'Maybe one day. But the skills here work with any agent. Switching won\'t fix a one-line brief.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

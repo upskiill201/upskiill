@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "one change at a time" really mean?',
         options: [
-          { text: 'One reason for the change, small enough to check completely' },
           { text: 'Exactly one line', why: 'It\'s about one idea, not a line count.' },
+          { text: 'One reason for the change, small enough to check completely' },
           { text: 'One change per day', why: 'It\'s about size, not speed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         message: 'Only one file a time? At this rate the board will take months.',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'Each step takes minutes and I know it works. The big version came back in seconds and none of it worked.' },
           { text: 'You\'re right, I\'ll do it all at once.', why: 'That\'s what produced 0 of 7.' },
           { text: 'Agents are slow.', why: 'The agent is fast; checking is what takes time.' },
+          { text: 'Each step takes minutes and I know it works. The big version came back in seconds and none of it worked.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the real-world version of read_brief()?',
         options: [
-          { text: 'Asking the agent "any questions first?"' },
           { text: 'Running the tests', why: 'That checks the code, not the brief.' },
+          { text: 'Asking the agent "any questions first?"' },
           { text: 'Writing a longer brief', why: 'Length doesn\'t show gaps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ve made every one of these mistakes this week.',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'Good, now you know them. Keep the list next to you, and check every brief against it before you send.' },
           { text: 'That\'s bad.', why: 'Mistakes in week one are how you learn.' },
           { text: 'Stop using the agent.', why: 'The fix is better briefs, not no agent.' },
+          { text: 'Good, now you know them. Keep the list next to you, and check every brief against it before you send.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

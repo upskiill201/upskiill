@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The agent says "All tests pass" but ran_tests is False. What is "All tests pass"?',
         options: [
-          { text: 'A guess presented as a fact' },
           { text: 'Proof the code works', why: 'It never ran them.' },
+          { text: 'A guess presented as a fact' },
           { text: 'A lie on purpose', why: 'Agents predict likely text; it isn\'t trying to trick you, which is why you check.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         message: 'It literally said all tests pass. Why would it say that if it didn\'t check?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'An agent writes the most likely next words. After "I added the function", "All tests pass" is a likely sentence. Likely isn\'t checked.' },
           { text: 'It must have checked in secret.', why: 'Its log shows no test run.' },
           { text: 'Agents never claim things.', why: 'They do it often; that\'s the lesson.' },
+          { text: 'An agent writes the most likely next words. After "I added the function", "All tests pass" is a likely sentence. Likely isn\'t checked.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

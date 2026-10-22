@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the difference between an agent and autocomplete?',
         options: [
-          { text: 'An agent edits files and runs commands on its own; autocomplete suggests lines you accept' },
           { text: 'Autocomplete is smarter', why: 'They may use the same model; the tools differ.' },
+          { text: 'An agent edits files and runs commands on its own; autocomplete suggests lines you accept' },
           { text: 'There is none', why: 'An agent acts; autocomplete suggests.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'Felix says you have an AI that writes code now. So the board is basically done?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'Not yet. It writes fast, but I have to tell it exactly what we need and check everything. I\'ll show you something tested.' },
           { text: 'Yes, it said done!', why: 'It built a weather dashboard.' },
           { text: 'The AI is useless.', why: 'It\'s useful once the job is clear.' },
+          { text: 'Not yet. It writes fast, but I have to tell it exactly what we need and check everything. I\'ll show you something tested.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

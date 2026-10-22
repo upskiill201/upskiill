@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When should you save a checkpoint?',
         options: [
-          { text: 'Right after you\'ve checked a step works, before the next one' },
           { text: 'Only at the end of the day', why: 'Then a bad step costs you the whole day.' },
+          { text: 'Right after you\'ve checked a step works, before the next one' },
           { text: 'Only when something breaks', why: 'By then it\'s too late to save the good state.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'The agent broke the report again. I\'ll spend the afternoon fixing it.',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'You saved after step 2? Then restore it: one line, ten seconds. Fix the brief, not the mess.' },
           { text: 'Yes, fix it by hand.', why: 'Restoring is faster and certain.' },
           { text: 'Start the whole project again.', why: 'The checkpoint keeps steps 1 and 2.' },
+          { text: 'You saved after step 2? Then restore it: one line, ten seconds. Fix the brief, not the mess.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

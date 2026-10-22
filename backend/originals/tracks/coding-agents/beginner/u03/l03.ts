@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why cross out "Write is_at_risk in board/rules.py"?',
         options: [
-          { text: 'Brief v1 already did it; redoing it could break working code' },
           { text: 'The rule isn\'t needed', why: 'It\'s needed, and already done.' },
+          { text: 'Brief v1 already did it; redoing it could break working code' },
           { text: 'Zanele owns rules.py', why: 'She owns report.py.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'The settings file might be useful later. Keep it just in case?',
         prompt: "Felix's best reply?",
         options: [
-          { text: 'Later, when something needs it. Code nobody uses still has to be read, reviewed and kept up to date.' },
           { text: 'Yes, keep everything.', why: 'Unused code is a cost, not a gift.' },
           { text: 'Add even more settings.', why: 'Build what\'s needed now.' },
+          { text: 'Later, when something needs it. Code nobody uses still has to be read, reviewed and kept up to date.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

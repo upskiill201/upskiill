@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why stop and show Brian before the next step?',
         options: [
-          { text: 'He uses it, so he spots problems the tests never thought of' },
           { text: 'To slow the project down', why: 'It saves time by catching problems early.' },
+          { text: 'He uses it, so he spots problems the tests never thought of' },
           { text: 'Because the agent needs a break', why: 'It\'s for the people, not the agent.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         message: '"0 deliveries at risk today: ." looks broken.',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'Good catch. I\'ll add "If none are at risk, say so." to the brief, redo this step, and show you again.' },
           { text: 'There will never be a quiet day.', why: 'There will, and Brian will see this.' },
           { text: 'That\'s how computers talk.', why: 'It\'s a missing case, easy to fix.' },
+          { text: 'Good catch. I\'ll add "If none are at risk, say so." to the brief, redo this step, and show you again.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
