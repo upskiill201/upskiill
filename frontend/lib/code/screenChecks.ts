@@ -34,9 +34,11 @@ export interface ScreenTest {
    * View's backgroundColor counts for the text inside it). `prop` is the
    * React Native name (fontSize, color, backgroundColor, padding). Give
    * `value` for an exact match (colours are normalised: "#ff9600" matches
-   * "rgb(255, 150, 0)"), or `min` / `max` for numbers.
+   * "rgb(255, 150, 0)"), or `min` / `max` for numbers. `self: true` only
+   * looks at the component holding the text (e.g. flex: 1 on a name, not on
+   * the screen around it).
    */
-  style?: { of: string; prop: string; value?: string; min?: number; max?: number };
+  style?: { of: string; prop: string; value?: string; min?: number; max?: number; self?: boolean };
   /** This text appears at least `min` times, e.g. one per menu row. */
   repeated?: { text: string; min: number };
 }
@@ -109,10 +111,33 @@ function colour(doc: Document, win: Win, value: string): string {
   return out || value.trim().toLowerCase();
 }
 
-/** The React Native style recorded on this element or the nearest styled component around it (the runtime's tagStyle). */
-function rnStyleValue(el: Element, prop: string): unknown {
+/** Text styles: on a phone a Text only inherits these from a Text around it, never from a View. */
+const TEXT_PROPS = new Set([
+  'color',
+  'fontSize',
+  'fontWeight',
+  'fontStyle',
+  'fontFamily',
+  'lineHeight',
+  'letterSpacing',
+  'textAlign',
+  'textDecorationLine',
+  'textTransform',
+]);
+
+/**
+ * The React Native style recorded on this element or the nearest styled
+ * component around it (the runtime's tagStyle). Layout and box styles
+ * (flexDirection, backgroundColor, padding) are found on any ancestor, so a
+ * row's flexDirection counts for the text inside it. Text styles stop at the
+ * first ancestor that isn't a Text, like React Native's own inheritance.
+ */
+function rnStyleValue(el: Element, prop: string, self = false): unknown {
+  const textOnly = TEXT_PROPS.has(prop);
   let node: Element | null = el;
   while (node) {
+    const kind = node.getAttribute('data-teyro-kind');
+    if (textOnly && kind && kind !== 'Text') return undefined;
     const raw = node.getAttribute('data-teyro-style');
     if (raw) {
       try {
@@ -122,6 +147,8 @@ function rnStyleValue(el: Element, prop: string): unknown {
         /* not ours */
       }
     }
+    // self: stop at the first component (the one the text belongs to).
+    if (self && node.getAttribute('data-teyro-kind')) return undefined;
     node = node.parentElement;
   }
   return undefined;
@@ -142,7 +169,7 @@ export function screenPasses(root: Element, win: Win, t: ScreenTest): boolean {
   if (t.style !== undefined) {
     const s = t.style;
     const ok = innermost(root, s.of).some((el) => {
-      const got = rnStyleValue(el, s.prop);
+      const got = rnStyleValue(el, s.prop, s.self === true);
       if (got === undefined || got === null) return false;
       if (s.value !== undefined) {
         if (typeof got === 'number') return got === Number(s.value);

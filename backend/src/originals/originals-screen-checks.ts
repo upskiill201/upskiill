@@ -21,7 +21,7 @@ export interface ScreenTest {
   /** At least this many images are on the screen. */
   images?: number;
   /** A React Native style (fontSize, color...) on the element whose text contains `of`: an exact value, or min/max for numbers. */
-  style?: { of: string; prop: string; value?: string; min?: number; max?: number };
+  style?: { of: string; prop: string; value?: string; min?: number; max?: number; /** Only the component holding the text, not its parents. */ self?: boolean };
   /** This text appears at least `min` times, e.g. one per menu row. */
   repeated?: { text: string; min: number };
 }

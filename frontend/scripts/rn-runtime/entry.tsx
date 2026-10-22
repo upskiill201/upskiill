@@ -41,27 +41,30 @@ function assertNoRawText(children: React.ReactNode, where: string) {
 /**
  * The style this element was given, as React Native sees it (flattened), so
  * screen checks can test fontSize: 32 rather than whatever CSS the web made
- * of it. Rendered as data-teyro-style through react-native-web's dataSet.
+ * of it. Rendered as data-teyro-style through react-native-web's dataSet,
+ * with data-teyro-kind (Text, View...) so checks know which styles a Text
+ * can inherit (only from a Text around it, as on a phone).
  */
-function tagStyle(props: AnyProps): AnyProps {
+function tagStyle(props: AnyProps, kind: string): AnyProps {
+  const dataSet: Record<string, string> = { ...(props.dataSet as Record<string, string> | undefined), teyroKind: kind };
   let style = props.style;
   if (typeof style === 'function') style = (style as (s: { pressed: boolean }) => unknown)({ pressed: false });
   const flat = RNW.StyleSheet.flatten(style as never) as Record<string, unknown> | undefined;
-  if (!flat || Object.keys(flat).length === 0) return props;
-  let json = '';
-  try {
-    json = JSON.stringify(flat);
-  } catch {
-    return props;
+  if (flat && Object.keys(flat).length > 0) {
+    try {
+      dataSet.teyroStyle = JSON.stringify(flat);
+    } catch {
+      /* a style we can't record is still rendered */
+    }
   }
-  return { ...props, dataSet: { ...(props.dataSet as Record<string, string> | undefined), teyroStyle: json } };
+  return { ...props, dataSet };
 }
 
 /** Wrap a react-native-web component: record its style, and (for containers) enforce the raw-text rule. */
 function strict<P extends AnyProps>(Base: React.ComponentType<P>, name: string, container = true) {
   const Wrapped = React.forwardRef<unknown, P>((props, ref) => {
     if (container && typeof props.children !== 'function') assertNoRawText(props.children as React.ReactNode, name);
-    return React.createElement(Base as React.ComponentType<P & { ref?: unknown }>, { ...(tagStyle(props) as P), ref });
+    return React.createElement(Base as React.ComponentType<P & { ref?: unknown }>, { ...(tagStyle(props, name) as P), ref });
   });
   Wrapped.displayName = name;
   return Wrapped;

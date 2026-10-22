@@ -358,6 +358,7 @@ function parseScreen(s: any): ScreenTest | undefined {
       ...(text(s.style.value, 100) !== undefined ? { value: text(s.style.value, 100) } : {}),
       ...(num(s.style.min) !== undefined ? { min: num(s.style.min) } : {}),
       ...(num(s.style.max) !== undefined ? { max: num(s.style.max) } : {}),
+      ...(s.style.self === true ? { self: true } : {}),
     };
   }
   if (s.repeated && text(s.repeated.text) && num(s.repeated.min) !== undefined) out.repeated = { text: text(s.repeated.text)!, min: num(s.repeated.min)! };
