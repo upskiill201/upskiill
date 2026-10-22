@@ -21,6 +21,10 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  /// Teyro Pro's Stripe customer. Stored, never looked up by email, so a
+  /// payment can't attach to another account that shares an address.
+  stripeCustomerId String? @unique
+
   // WhatsApp verification (set on onboarding Step 6)
   whatsappPhone    String? // E.164 format, e.g. +2347012345678
   whatsappVerified Boolean @default(false)
@@ -833,6 +837,11 @@ model StudentProfile {
   /// the most recently active enrolment (common/focus-course.util.ts).
   focusCourseId String?
 
+  /// Teyro Pro free tier: the one course whose Chapter 1 a free learner can
+  /// study. Follows the focus course, at most once every 30 days.
+  freeCourseId    String?
+  freeCourseSetAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1014,6 +1023,15 @@ model OnboardingChallengeClaim {
   settledByUserId String?   @unique
   settledAt       DateTime?
   createdAt       DateTime  @default(now())
+
+  /// CHALLENGE (v1 shape game) or LESSON (onboarding v3: the real first
+  /// lesson played before signup, settled into the new account).
+  kind     String  @default("CHALLENGE")
+  courseId String?
+  lessonId String?
+  /// Bounded performance stats from the anonymous lesson; XP is always
+  /// recomputed server-side from the lesson, never read from here.
+  stats    Json?
 
   @@map("onboarding_challenge_claims")
 }
@@ -1848,6 +1866,7 @@ enum EarningsEntryType {
   CHARGEBACK // negative entry when a dispute opens
   REVERSAL // positive entry restoring a won dispute
   ADJUSTMENT // manual admin correction (either sign), reason mandatory
+  POOL_SHARE // creator's monthly share of the Teyro Pro pool (either sign on revisions)
 }
 
 enum PayoutStatus {
@@ -3157,4 +3176,355 @@ model SupportReply {
 
   @@index([ticketId, createdAt])
   @@map("support_replies")
+}
+
+// ─── TEYRO PRO ───────────────────────────────────────────────────────────────
+// One app-wide subscription that unlocks every course. Billing tables keep no
+// foreign keys to User (like the earnings ledger) so money history survives
+// account deletion. Amounts are integer minor units (USD cents).
+
+enum ProPlan {
+  MONTHLY
+  YEARLY
+}
+
+enum ProProvider {
+  STRIPE // card / Apple Pay / Google Pay, 7-day trial, auto-renews
+  MESOMB // Mobile Money, prepaid period, never renews
+}
+
+enum ProStatus {
+  INCOMPLETE // created, first payment not confirmed: no access
+  TRIALING
+  ACTIVE
+  PAST_DUE // renewal failed; access only until graceUntil
+  CANCELED
+  EXPIRED
+}
+
+enum ProCheckoutStatus {
+  CREATED
+  REQUIRES_ACTION
+  SUCCEEDED
+  FAILED
+  ABANDONED
+}
+
+enum ProOfferStatus {
+  OFFERED
+  REDEEMED
+  EXPIRED
+}
+
+enum ExitSurveyReason {
+  TOO_EXPENSIVE
+  NOT_SURE
+  JUST_LOOKING
+  DECIDE_LATER
+  OTHER
+}
+
+enum ProPoolRunStatus {
+  DRAFT
+  POSTED
+  SUPERSEDED
+}
+
+/// A learner's Pro subscription. At most one live row (TRIALING, ACTIVE,
+/// PAST_DUE) per user, enforced by the partial unique index
+/// pro_subscriptions_one_live_per_user in migration 20261023090100.
+model ProSubscription {
+  id                   String      @id @default(uuid())
+  userId               String
+  provider             ProProvider
+  plan                 ProPlan
+  status               ProStatus
+  stripeSubscriptionId String?     @unique
+  stripeCustomerId     String?
+  stripePriceId        String?
+  stripeStatus         String? // raw Stripe status, for support
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean     @default(false)
+  canceledAt           DateTime?
+  endedAt              DateTime?
+  /// PAST_DUE keeps access until here (7 days on renewals, none on the
+  /// first charge after a trial, so a failed card never extends a trial).
+  graceUntil           DateTime?
+  hasPaid              Boolean     @default(false)
+  autoRenew            Boolean     @default(true)
+  offerId              String?
+  checkoutAttemptId    String?
+  cancellationReason   String?
+  lastSyncedAt         DateTime?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  @@index([userId, status])
+  @@index([status, trialEnd])
+  @@index([status, currentPeriodEnd])
+  @@map("pro_subscriptions")
+}
+
+/// Every Pro payment that moved money (Stripe invoice or Mobile Money
+/// collection). Source of truth for revenue, refunds and the creator pool.
+model ProInvoice {
+  id                    String      @id @default(uuid())
+  userId                String
+  proSubscriptionId     String?
+  provider              ProProvider
+  /// in_... for Stripe, the MeSomb reference for Mobile Money.
+  providerReference     String      @unique
+  stripePaymentIntentId String?
+  stripeChargeId        String?
+  billingReason         String?
+  plan                  ProPlan
+  amountPaidMinor       Int
+  discountMinor         Int         @default(0)
+  taxMinor              Int         @default(0)
+  feeMinor              Int         @default(0)
+  amountRefundedMinor   Int         @default(0)
+  amountDisputedMinor   Int         @default(0)
+  currency              String      @default("USD")
+  nativeCurrency        String?
+  nativeAmountMinor     Int?
+  /// Service period from the invoice line item (not the invoice dates).
+  periodStart           DateTime
+  periodEnd             DateTime
+  paidAt                DateTime
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([stripePaymentIntentId])
+  @@index([periodStart, periodEnd])
+  @@map("pro_invoices")
+}
+
+/// One free trial per person and per card.
+model ProTrialClaim {
+  id                   String    @id @default(uuid())
+  userId               String    @unique
+  cardFingerprint      String?   @unique
+  status               String // PENDING | CLAIMED
+  checkoutAttemptId    String?
+  stripeSubscriptionId String?
+  createdAt            DateTime  @default(now())
+  claimedAt            DateTime?
+
+  @@map("pro_trial_claims")
+}
+
+/// One press of "Start my trial" / "Subscribe". Tracks the payment sheet so
+/// a backed-out checkout (paywall moment 4) can be recovered.
+model ProCheckoutAttempt {
+  id                   String            @id // client-generated UUIDv4
+  userId               String
+  provider             ProProvider       @default(STRIPE)
+  plan                 ProPlan
+  offerId              String?
+  trial                Boolean           @default(false)
+  intentType           String? // SETUP | PAYMENT | MOBILE_MONEY
+  stripeSetupIntentId  String?           @unique
+  stripeSubscriptionId String?           @unique
+  status               ProCheckoutStatus @default(CREATED)
+  lastErrorCode        String?
+  lastDeclineCode      String?
+  paywallSessionId     String?
+  moment               String?
+  recoveryStage        Int               @default(0)
+  recoveredAt          DateTime?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+  @@map("pro_checkout_attempts")
+}
+
+/// Paywall analytics: every view, close, plan pick, sheet open/close,
+/// submit, failure and offer, per moment. Feeds Teyro HQ.
+model PaywallEvent {
+  id          String    @id @default(uuid())
+  userId      String?
+  anonymousId String?
+  sessionId   String
+  moment      String
+  type        String
+  plan        String?
+  offerId     String?
+  attemptId   String?
+  variant     String?
+  errorCode   String?
+  declineCode String?
+  meta        Json?
+  clientTs    DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([type, createdAt])
+  @@index([moment, createdAt])
+  @@index([userId, createdAt])
+  @@index([sessionId])
+  @@map("paywall_events")
+}
+
+/// "Why are you leaving?" answers from the paywall's close button.
+model ExitSurveyResponse {
+  id        String           @id @default(uuid())
+  userId    String
+  sessionId String           @unique
+  reason    ExitSurveyReason
+  freeText  String?          @db.VarChar(500)
+  route     String
+  offerId   String?
+  moment    String?
+  plan      String?
+  remindAt  DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([reason, createdAt])
+  @@index([userId])
+  @@map("exit_survey_responses")
+}
+
+/// A real, one-time discount: shown once per person ever, expires for real.
+model ProOffer {
+  id                   String         @id @default(uuid())
+  userId               String
+  kind                 String // EXIT_YEARLY_FIRST_YEAR
+  plan                 ProPlan
+  percentOff           Int
+  stripeCouponId       String?
+  status               ProOfferStatus @default(OFFERED)
+  offeredAt            DateTime       @default(now())
+  expiresAt            DateTime
+  redeemedAt           DateTime?
+  stripeSubscriptionId String?
+
+  @@unique([userId, kind])
+  @@map("pro_offers")
+}
+
+/// Free tier daily cap: one row per lesson a free learner opened today
+/// (learner-local day). Replays of a claimed lesson don't use a new slot.
+model FreeLessonClaim {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  lessonId  String
+  day       DateTime @db.Date
+  claimedAt DateTime @default(now())
+
+  @@unique([userId, day, lessonId])
+  @@index([userId, day])
+  @@index([userId, lessonId])
+  @@map("free_lesson_claims")
+}
+
+/// Learning time a Pro learner spent on a lesson (first completion only).
+/// Append-only. The creator pool is split by these.
+model ProLearningMinute {
+  id                String   @id @default(uuid())
+  userId            String
+  lessonId          String
+  courseId          String
+  creatorId         String // snapshot of course.instructorId
+  isOriginal        Boolean // snapshot: Originals' share stays with Teyro
+  seconds           Int
+  proSubscriptionId String?
+  proStatus         String
+  completedAt       DateTime @default(now())
+
+  @@unique([userId, lessonId])
+  @@index([completedAt])
+  @@index([courseId, completedAt])
+  @@map("pro_learning_minutes")
+}
+
+/// One computation of the monthly creator pool. Revisions supersede each
+/// other; only POSTED runs write POOL_SHARE ledger rows.
+model ProPoolRun {
+  id                       String              @id @default(uuid())
+  month                    DateTime            @db.Date
+  revision                 Int
+  status                   ProPoolRunStatus    @default(DRAFT)
+  sharePct                 Int
+  recognizedRevenueMinor   Int
+  creatorPoolMinor         Int
+  allocatedToCreatorsMinor Int
+  retainedOriginalsMinor   Int
+  unallocatedMinor         Int
+  totalSeconds             Int
+  learners                 Int
+  approvedBy               String?
+  postedAt                 DateTime?
+  summary                  Json?
+  createdAt                DateTime            @default(now())
+  allocations              ProPoolAllocation[]
+
+  @@unique([month, revision])
+  @@map("pro_pool_runs")
+}
+
+model ProPoolAllocation {
+  id                    String     @id @default(uuid())
+  runId                 String
+  run                   ProPoolRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  creatorId             String
+  courseId              String
+  seconds               Int
+  learners              Int
+  amountMinor           Int
+  postedDeltaMinor      Int?
+  earningsTransactionId String?
+
+  @@unique([runId, courseId])
+  @@index([creatorId])
+  @@map("pro_pool_allocations")
+}
+
+/// Server-side audit trail of every Pro billing transition.
+model ProBillingEvent {
+  id                String   @id @default(uuid())
+  userId            String
+  proSubscriptionId String?
+  stripeEventId     String?
+  type              String
+  fromStatus        String?
+  toStatus          String?
+  data              Json?
+  createdAt         DateTime @default(now())
+
+  @@index([type, createdAt])
+  @@index([userId, createdAt])
+  @@map("pro_billing_events")
+}
+
+/// Onboarding analytics for Teyro HQ: every screen view, answer, quit and
+/// resume, from the first tap (anonymous device id) through signup (userId
+/// back-filled). Personal answers (name, free text) are never stored.
+model OnboardingEvent {
+  id          String    @id @default(uuid())
+  anonymousId String
+  userId      String?
+  sessionId   String
+  step        String
+  stepIndex   Int?
+  type        String
+  answerKey   String?
+  answerValue String?   @db.VarChar(120)
+  ms          Int?
+  reason      String?
+  device      String?
+  source      String?
+  clientTs    DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([type, createdAt])
+  @@index([anonymousId])
+  @@index([userId])
+  @@index([step, type])
+  @@map("onboarding_events")
 }

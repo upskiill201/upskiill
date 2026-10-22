@@ -6,6 +6,7 @@ import { StripeProvider } from './providers/stripe.provider';
 import { MesombProvider } from './providers/mesomb.provider';
 import { EarningsService } from '../earnings/earnings.service';
 import { CouponsService } from '../coupons/coupons.service';
+import { ProGrantService } from '../pro/pro-grant.service';
 import { BadRequestException, ServiceUnavailableException } from '@nestjs/common';
 
 describe('PaymentService', () => {
@@ -35,6 +36,7 @@ describe('PaymentService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PaymentService,
+        { provide: ProGrantService, useValue: { grantMesombPro: jest.fn() } },
         {
           provide: PrismaService,
           useValue: prismaServiceMock,
@@ -122,6 +124,7 @@ describe('PaymentService — free (100%) coupon bypass', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PaymentService,
+        { provide: ProGrantService, useValue: { grantMesombPro: jest.fn() } },
         { provide: PrismaService, useValue: prismaMock },
         { provide: StripeProvider, useValue: stripeProviderMock },
         { provide: MesombProvider, useValue: mesombMock },
@@ -216,6 +219,7 @@ describe('PaymentService — MeSomb webhook signature verification', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PaymentService,
+        { provide: ProGrantService, useValue: { grantMesombPro: jest.fn() } },
         { provide: PrismaService, useValue: prismaMock },
         { provide: StripeProvider, useValue: { createSubscription: jest.fn(), cancelSubscription: jest.fn() } },
         { provide: MesombProvider, useValue: { createSubscription: jest.fn(), cancelSubscription: jest.fn() } },
@@ -337,6 +341,7 @@ describe('PaymentService — Stripe webhook verification and refund revocation',
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PaymentService,
+        { provide: ProGrantService, useValue: { grantMesombPro: jest.fn() } },
         { provide: PrismaService, useValue: prisma },
         { provide: StripeProvider, useValue: {} },
         { provide: MesombProvider, useValue: {} },

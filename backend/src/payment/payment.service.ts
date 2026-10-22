@@ -25,6 +25,7 @@ import {
 } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EnrollmentCreatedEvent } from '../common/events/enrollment-created.event';
+import { PRO_MESOMB_SENTINEL, ProGrantService } from '../pro/pro-grant.service';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const StripeSDK = require('stripe');
@@ -57,6 +58,7 @@ export class PaymentService {
     private earnings: EarningsService,
     private coupons: CouponsService,
     private eventEmitter: EventEmitter2,
+    private proGrants: ProGrantService,
   ) {
     this.stripe = new StripeSDK(
       process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder',
@@ -1306,7 +1308,21 @@ export class PaymentService {
           typeof parsed?.ccy === 'string' && Number(parsed?.rate) > 0;
         const nativeCurrency = hasRateSnapshot ? parsed.ccy : 'XAF';
         const nativeAmountMinor = Math.round(Number(payload['amount']) || 0);
-        if (parsed.userId && parsed.courseId && parsed.plan) {
+        if (parsed.userId && parsed.courseId === PRO_MESOMB_SENTINEL && parsed.plan) {
+          // Prepaid Teyro Pro: credit the USD price that was quoted, keep
+          // the native amount alongside (same FX snapshot rule as courses).
+          const usd = hasRateSnapshot
+            ? nativeAmountMinor / Number(parsed.rate)
+            : nativeAmountMinor / 600;
+          await this.proGrants.grantMesombPro({
+            userId: parsed.userId,
+            plan: parsed.plan === 'YEARLY' ? 'YEARLY' : 'MONTHLY',
+            amountUsdMinor: Math.round(usd * 100),
+            providerReference: pk || `mesomb_${Date.now()}`,
+            nativeCurrency,
+            nativeAmountMinor,
+          });
+        } else if (parsed.userId && parsed.courseId && parsed.plan) {
           // ÷600 = the legacy approximate XAF→USD rate used before rate
           // snapshots were embedded in the reference. The raw native amount
           // travels alongside untouched.
