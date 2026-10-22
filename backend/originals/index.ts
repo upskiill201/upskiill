@@ -15,10 +15,11 @@ import setClearExpectations from './tracks/set-clear-expectations';
 import motivateTeam from './tracks/motivate-team';
 import dataScience from './tracks/data-science';
 import { launchLineup } from './tracks/launch-lineup';
+import reactNative from './tracks/react-native';
 
 /**
  * Every Teyro Original the loader knows about (scripts/originals.ts).
  * Add a Track here once its file exists. Tracks with no units yet are
  * checked but never loaded.
  */
-export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, typescript, htmlCss, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, ...launchLineup, formatTour];
+export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, typescript, htmlCss, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, ...launchLineup, reactNative, formatTour];
