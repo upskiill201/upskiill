@@ -1,6 +1,7 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './investment-risk/beginner/u01';
 import u02 from './investment-risk/beginner/u02';
+import u03 from './investment-risk/beginner/u03';
 
 /**
  * How to Understand Investment Risk — storyline "Arjun's Windfall".
@@ -50,8 +51,8 @@ const track: OriginalTrackDef = {
         'Spot guaranteed-return red flags and the psychology behind bad bets',
       ],
       skills: ['Investment risk', 'Diversification', 'Risk management', 'Financial literacy', 'Personal finance'],
-      upcomingUnits: 3,
-      units: [u01, u02],
+      upcomingUnits: 2,
+      units: [u01, u02, u03],
     },
   ],
 };
