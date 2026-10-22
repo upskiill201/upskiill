@@ -13,10 +13,20 @@
  */
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { AlertTriangle, Check, Loader2, Play, RotateCcw, X } from 'lucide-react';
+import { AlertTriangle, Check, Download, Loader2, Play, RotateCcw, Wifi, X } from 'lucide-react';
 import { highlightCode } from '@/lib/lesson/highlight';
 import type { CodeCheck } from '@/lib/lesson/blocks';
-import { getPythonStatus, onPythonStatus, retryPython, warmPython, type PythonStatus } from '@/lib/code/pythonRunner';
+import {
+  allowMlToolsDownload,
+  getPythonStatus,
+  needsMlToolsDownload,
+  onMlToolsAllowed,
+  onPythonStatus,
+  packagesFor,
+  retryPython,
+  warmPython,
+  type PythonStatus,
+} from '@/lib/code/pythonRunner';
 import {
   explainError,
   runAndCheck,
@@ -48,6 +58,42 @@ const QUICK_KEYS: { label: string; insert: string; aria?: string }[] = [
   { label: '_', insert: '_' },
   { label: ',', insert: ',' },
 ];
+
+/** True when the browser says it's on mobile data or saving data (Chrome/Android only). */
+function onMobileData(): boolean {
+  const c = (navigator as Navigator & { connection?: { type?: string; saveData?: boolean } }).connection;
+  return Boolean(c && (c.saveData || c.type === 'cellular'));
+}
+
+/**
+ * Before the first scikit-learn program: ask, once per device, before a
+ * ~70 MB download. Shown in place of the Run row.
+ */
+function MlToolsGate({ code }: { code: string }) {
+  // Only ever rendered after mount (the gate is decided in an effect), so navigator exists.
+  const [mobile] = useState(() => typeof navigator !== 'undefined' && onMobileData());
+  return (
+    <div className={styles.mlGate} role="region" aria-label="Download the machine learning tools">
+      <div className={styles.mlGateIcon} aria-hidden="true">
+        <Download size={22} />
+      </div>
+      <div className={styles.mlGateBody}>
+        <p className={styles.mlGateTitle}>Get the machine learning tools</p>
+        <p className={styles.mlGateText}>
+          This code uses scikit-learn, the toolkit real data scientists use. It&apos;s a one-time download of about
+          70 MB, and your browser usually keeps it, so it&apos;s much quicker next time.
+        </p>
+        <p className={`${styles.mlGateText} ${mobile ? styles.mlGateWarn : ''}`}>
+          <Wifi size={14} aria-hidden="true" /> {mobile ? 'You look to be on mobile data. Wi-Fi is best for this.' : 'Wi-Fi is best for this.'}
+        </p>
+        <button type="button" className={styles.run} onClick={() => allowMlToolsDownload(code)}>
+          <Download size={18} aria-hidden="true" />
+          Download (70 MB)
+        </button>
+      </div>
+    </div>
+  );
+}
 
 /** Keep Python's status in React state. */
 export function usePythonStatus(): PythonStatus {
@@ -331,6 +377,14 @@ export function PythonPad({
   // eslint-disable-next-line react-hooks/exhaustive-deps -- warm once, for the code first shown
   useEffect(() => warmPython(value), []);
 
+  // Worked out after mount (it reads localStorage), and again once anyone says yes.
+  const [mlGate, setMlGate] = useState(false);
+  useEffect(() => {
+    setMlGate(needsMlToolsDownload(value));
+    return onMlToolsAllowed(() => setMlGate(needsMlToolsDownload(value)));
+  }, [value]);
+  const usesMlTools = useMemo(() => packagesFor(value).includes('scikit-learn'), [value]);
+
   const needsInputBox = !stdin && usesInput(value);
 
   const execute = useCallback(async () => {
@@ -406,14 +460,20 @@ export function PythonPad({
 
       {checks && checks.length > 0 && <CheckList checks={checks} results={run?.checks ?? null} />}
 
-      {!readOnly && (
+      {!readOnly && mlGate && <MlToolsGate code={value} />}
+
+      {!readOnly && !mlGate && (
         <div className={styles.runRow}>
           <button type="button" className={styles.run} onClick={() => void execute()} disabled={running}>
             {running ? <Loader2 size={18} className="animate-spin" aria-hidden="true" /> : <Play size={18} fill="currentColor" aria-hidden="true" />}
-            {running ? (loading ? 'Starting Python' : 'Running') : runLabel}
+            {running ? (loading ? (usesMlTools ? 'Getting ML tools' : 'Starting Python') : 'Running') : runLabel}
           </button>
           {actions}
-          {status === 'loading' && !running && <span className={styles.status}>Warming up Python...</span>}
+          {status === 'loading' && !running && (
+            <span className={styles.status}>
+              {usesMlTools ? 'Downloading the ML tools (about 70 MB)...' : 'Warming up Python...'}
+            </span>
+          )}
           {status === 'error' && (
             <span className={`${styles.status} ${styles.statusError}`}>
               Python couldn&apos;t load.{' '}
