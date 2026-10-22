@@ -1,5 +1,6 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './scams-fraud/beginner/u01';
+import u02 from './scams-fraud/beginner/u02';
 
 /**
  * How Scams and Financial Fraud Work — storyline "Grace and the Scam Files".
@@ -46,8 +47,8 @@ const track: OriginalTrackDef = {
         'Protect accounts, act in the first hour, report and help others',
       ],
       skills: ['Fraud prevention', 'Scam awareness', 'Online safety', 'Financial literacy', 'Personal finance'],
-      upcomingUnits: 4,
-      units: [u01],
+      upcomingUnits: 3,
+      units: [u01, u02],
     },
   ],
 };
