@@ -2,6 +2,7 @@ import type { OriginalTrackDef } from '../../src/originals/originals-authoring.t
 import u01 from './machine-learning/beginner/u01';
 import u02 from './machine-learning/beginner/u02';
 import u03 from './machine-learning/beginner/u03';
+import u04 from './machine-learning/beginner/u04';
 
 /**
  * Machine Learning for Beginners — storyline "Halima's Empty Chairs".
@@ -44,8 +45,8 @@ const track: OriginalTrackDef = {
       skills: ['Machine learning', 'Python', 'pandas', 'scikit-learn', 'Model evaluation', 'Responsible AI'],
       // Cover: frontend/public/originals, designed in originals/covers.
       thumbnailUrl: '/originals/machine-learning-for-beginners.jpg',
-      upcomingUnits: 10,
-      units: [u01, u02, u03],
+      upcomingUnits: 9,
+      units: [u01, u02, u03, u04],
     },
   ],
 };
