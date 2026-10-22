@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'What if some first-years really can\'t pay 1,800?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Then give them a cheaper option that still earns, like dropping the bag at a pickup point. That\'s Chapter 3. Don\'t drop the main price for everyone.' },
           { text: 'Then charge everyone 1,500.', why: 'That underprices the many who value it more.' },
           { text: 'Ignore them.', why: 'A cheaper, cheaper-to-serve option can keep them.' },
+          { text: 'Then give them a cheaper option that still earns, like dropping the bag at a pickup point. That\'s Chapter 3. Don\'t drop the main price for everyone.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which evidence best supports 1,800 being acceptable to students?',
         options: [
-          { text: 'Many already pay 2,400 at the stand and carry it themselves' },
           { text: 'A poll where students said 1,000', why: 'That argues the other way, and it\'s weak evidence.' },
+          { text: 'Many already pay 2,400 at the stand and carry it themselves' },
           { text: 'Clinton wants more money', why: 'That\'s his need, not their evidence.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

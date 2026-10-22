@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why move a heated chat thread to a call?',
         options: [
-          { text: 'Text strips tone, so people misread each other more' },
           { text: 'Calls are always better', why: 'For heated topics, yes; for routine ones, not always.' },
+          { text: 'Text strips tone, so people misread each other more' },
           { text: 'To hide the evidence', why: 'It\'s about tone.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why check in privately after a heated group moment?',
         options: [
-          { text: 'People may be upset but won\'t say so in front of others' },
           { text: 'To gossip', why: 'It\'s a care check.' },
+          { text: 'People may be upset but won\'t say so in front of others' },
           { text: 'It\'s not needed', why: 'Feelings often linger after.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

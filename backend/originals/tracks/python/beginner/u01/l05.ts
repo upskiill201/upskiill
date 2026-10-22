@@ -29,11 +29,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: "Python's name comes from...",
         options: [
-          { text: "Monty Python's Flying Circus" },
           { text: 'A snake', why: 'The logo has snakes. The name is from the comedy show.' },
           { text: 'An abbreviation', why: 'It is not short for anything.' },
+          { text: "Monty Python's Flying Circus" },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         code: 'print(20000 * 10)',
         language: 'python',
         options: [
-          { text: '200000' },
           { text: '20000 * 10', why: 'No quotes, so Python works the sum out.' },
+          { text: '200000' },
           { text: '2000010', why: '* multiplies.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

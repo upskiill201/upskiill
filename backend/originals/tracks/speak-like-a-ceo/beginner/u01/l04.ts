@@ -29,11 +29,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'About how many chunks did Cowan (2001) conclude working memory holds?',
         options: [
-          { text: 'About four' },
           { text: 'About twenty', why: 'Much fewer.' },
           { text: 'Unlimited', why: 'About four.' },
+          { text: 'About four' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can\'t listeners handle seven points?',
         options: [
-          { text: 'They can\'t scroll back, and working memory is small' },
           { text: 'They\'re not interested', why: 'It\'s about memory.' },
           { text: 'Seven is an unlucky number', why: 'It\'s about memory.' },
+          { text: 'They can\'t scroll back, and working memory is small' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

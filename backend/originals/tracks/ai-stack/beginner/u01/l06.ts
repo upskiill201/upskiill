@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"It takes 9 seconds to answer." What\'s the first thing to check?',
         options: [
-          { text: 'How big the model is, and the compute it runs on' },
           { text: 'The return policy document', why: 'That affects whether it\'s right, not how fast.' },
+          { text: 'How big the model is, and the compute it runs on' },
           { text: 'The colour of the chat box', why: 'The app shows the reply; the delay is usually the model.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'It\'s slow AND wrong. Should I switch to a bigger model?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'A bigger model is usually slower. "Wrong" is probably missing facts. Fix them separately, layer by layer.' },
           { text: 'Yes, bigger fixes everything.', why: 'Bigger is often slower and pricier, and still won\'t know your shop.' },
           { text: 'Switch it off.', why: 'Both problems have clear fixes in different layers.' },
+          { text: 'A bigger model is usually slower. "Wrong" is probably missing facts. Fix them separately, layer by layer.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"It can\'t say where order R-1042 is." Which chapter will fix it?',
         options: [
-          { text: 'Tools and agents: let the assistant look orders up' },
           { text: 'Chips and clouds', why: 'Faster chips won\'t give it the order data.' },
           { text: 'Choosing a model', why: 'No model knows a live order unless it can look it up.' },
+          { text: 'Tools and agents: let the assistant look orders up' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

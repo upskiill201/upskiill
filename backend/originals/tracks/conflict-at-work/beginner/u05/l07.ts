@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'I can\'t tell my manager no. She\'d hate me.',
         prompt: "Priya's best reply?",
         options: [
-          { text: 'As a manager: I\'d much rather hear "I\'m at capacity, what should move?" than find out later. Ask it that way.' },
           { text: 'Yes, never say no to managers.', why: 'A kind boundary helps managers.' },
           { text: 'Just stop answering her.', why: 'That\'s not a boundary.' },
+          { text: 'As a manager: I\'d much rather hear "I\'m at capacity, what should move?" than find out later. Ask it that way.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happens if Grace lends the car anyway when Jayden doesn\'t ask?',
         options: [
-          { text: 'The boundary disappears and he learns it wasn\'t real' },
           { text: 'He asks next time', why: 'He learns asking isn\'t needed.' },
+          { text: 'The boundary disappears and he learns it wasn\'t real' },
           { text: 'Nothing', why: 'Unkept boundaries vanish.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

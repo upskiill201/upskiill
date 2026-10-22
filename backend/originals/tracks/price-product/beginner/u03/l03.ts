@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Saver need students to bring their bag to the stand?',
         options: [
-          { text: 'So it costs Clinton less time to run, and only people who value price over convenience choose it' },
           { text: 'To punish budget customers', why: 'It\'s a fair trade: less service, lower price.' },
           { text: 'Mama Rose insists', why: 'It\'s about Clinton\'s cost.' },
+          { text: 'So it costs Clinton less time to run, and only people who value price over convenience choose it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'What if everyone picks Saver because it\'s cheapest?',
         prompt: "David's best reply?",
         options: [
-          { text: 'Then they do the carrying, which is the thing most students hate. Saver is cheap because it\'s less service. Most will still want room pickup.' },
           { text: 'Then remove Saver.', why: 'It serves budget customers and still earns.' },
+          { text: 'Then they do the carrying, which is the thing most students hate. Saver is cheap because it\'s less service. Most will still want room pickup.' },
           { text: 'Make Saver identical to Standard.', why: 'Then everyone would move to it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

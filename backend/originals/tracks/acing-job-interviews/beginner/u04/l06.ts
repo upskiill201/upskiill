@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which law does the lesson give as an example?',
         options: [
-          { text: 'Kenya\'s Employment Act 2007' },
           { text: 'The US Plain Writing Act', why: 'That\'s about government writing.' },
           { text: 'No law covers this', why: 'Many countries have anti-discrimination laws.' },
+          { text: 'Kenya\'s Employment Act 2007' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What can Remi do after the interview?',
         options: [
-          { text: 'Note what was said, tell the recruiter or HR, and decide if he wants to work there' },
           { text: 'Nothing at all', why: 'He has options.' },
           { text: 'Post the interviewer\'s name online', why: 'Report through proper channels.' },
+          { text: 'Note what was said, tell the recruiter or HR, and decide if he wants to work there' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

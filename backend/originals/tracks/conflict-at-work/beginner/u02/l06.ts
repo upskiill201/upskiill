@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why have sentences ready rather than rely on theory?',
         options: [
-          { text: 'Under stress you remember sentences, not theories' },
           { text: 'Theory is useless', why: 'The sentences come from it.' },
+          { text: 'Under stress you remember sentences, not theories' },
           { text: 'To sound like a robot', why: 'Short lines come out naturally.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: '(heated) Nobody here understands how much pressure I\'m under!',
         prompt: "Grace's best reply?",
         options: [
-          { text: '"Help me understand. What\'s worrying you most right now?"' },
           { text: '"We\'re all under pressure, Femi."', why: 'True, but it dismisses him.' },
           { text: '"You need to calm down."', why: 'The one line never to use.' },
+          { text: '"Help me understand. What\'s worrying you most right now?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does "you might be right about that part" help?',
         options: [
-          { text: 'Agreeing with what\'s true makes people less defensive about the rest' },
           { text: 'It means you give up', why: 'Only about "that part".' },
+          { text: 'Agreeing with what\'s true makes people less defensive about the rest' },
           { text: 'It doesn\'t help', why: 'It lowers defences.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

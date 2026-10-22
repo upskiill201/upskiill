@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the goal of a negotiation?',
         options: [
-          { text: 'An agreement both sides prefer to no deal' },
           { text: 'Beating the other side', why: 'Beaten people don\'t keep deals.' },
+          { text: 'An agreement both sides prefer to no deal' },
           { text: 'Avoiding all conflict', why: 'Some disagreement is normal.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do people usually get wrong about direct requests?',
         options: [
-          { text: 'They underestimate how often others will say yes' },
           { text: 'They overestimate yes', why: 'Research found the opposite.' },
+          { text: 'They underestimate how often others will say yes' },
           { text: 'Nothing', why: 'Askers guess too low.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

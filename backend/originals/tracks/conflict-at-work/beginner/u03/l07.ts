@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s often the first sign of a misunderstanding?',
         options: [
-          { text: 'Someone going quiet' },
           { text: 'A loud argument', why: 'Often it starts with silence.' },
           { text: 'A thank-you note', why: 'Silence is the usual first sign.' },
+          { text: 'Someone going quiet' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Mum, if Femi was upset he\'d just say so.',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'Would you? You go quiet when you\'re annoyed with me. Lots of people do. That\'s why I check now.' },
           { text: 'You\'re right.', why: 'Many people go quiet.' },
+          { text: 'Would you? You go quiet when you\'re annoyed with me. Lots of people do. That\'s why I check now.' },
           { text: 'What would you know?', why: 'Unkind, and he has a point to learn from.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does it help to believe most misunderstandings are no one\'s fault?',
         options: [
-          { text: 'You can fix it together without anyone defending themselves' },
           { text: 'So nobody ever apologises', why: 'You can still repair the impact.' },
           { text: 'It doesn\'t help', why: 'It lowers defensiveness.' },
+          { text: 'You can fix it together without anyone defending themselves' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Grace ask the team to write the agreement together?',
         options: [
-          { text: 'People keep agreements they helped write' },
           { text: 'To save her time', why: 'It\'s about ownership.' },
           { text: 'Because she had no ideas', why: 'She had a whole page.' },
+          { text: 'People keep agreements they helped write' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'What if someone breaks the agreement in a heated moment?',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'They will, sometimes. Then anyone can point to it kindly: "Shall we take our 20 minutes?" It\'s there to help, not to punish.' },
           { text: 'Then they\'re out of the team.', why: 'An ultimatum, not a boundary.' },
+          { text: 'They will, sometimes. Then anyone can point to it kindly: "Shall we take our 20 minutes?" It\'s there to help, not to punish.' },
           { text: 'Then the agreement failed.', why: 'Agreements are reminders, not perfection.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

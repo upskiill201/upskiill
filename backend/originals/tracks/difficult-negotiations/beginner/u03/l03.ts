@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'He pushed again. Should I give him a new reason?',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'No. Each new reason is something to argue with. Repeat calmly: "120 days doesn\'t work for us. 40/30/30 does."' },
           { text: 'Yes, give him five new reasons.', why: 'More reasons, more to argue about.' },
           { text: 'Give in.', why: 'Hold the no; offer the path.' },
+          { text: 'No. Each new reason is something to argue with. Repeat calmly: "120 days doesn\'t work for us. 40/30/30 does."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Arjun need monthly cash flow?',
         options: [
-          { text: 'He pays Kavya and Joel every month, whether or not the client has paid' },
           { text: 'He doesn\'t', why: 'Four months unpaid would break the team.' },
+          { text: 'He pays Kavya and Joel every month, whether or not the client has paid' },
           { text: 'To buy a new laptop', why: 'It\'s about paying the team.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

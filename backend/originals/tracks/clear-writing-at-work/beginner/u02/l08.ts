@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         message: 'I always add "sorry for any mistakes in my English".',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Drop it. It makes people hunt for mistakes, and your English is clear. Let the message speak.' },
           { text: 'Keep it, it\'s polite.', why: 'It draws attention to errors.' },
           { text: 'Write in capitals so it\'s clearer.', why: 'No.' },
+          { text: 'Drop it. It makes people hunt for mistakes, and your English is clear. Let the message speak.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the simplest way to catch mistakes?',
         options: [
-          { text: 'Read it aloud slowly' },
           { text: 'Write it faster', why: 'Slow down.' },
+          { text: 'Read it aloud slowly' },
           { text: 'Add more words', why: 'Read it aloud.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

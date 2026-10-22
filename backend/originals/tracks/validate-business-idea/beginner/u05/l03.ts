@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '8 out of 12 came back. About what share is that?',
         options: [
-          { text: 'About 67%' },
           { text: 'About 8%', why: '8 of 12 is two-thirds.' },
           { text: 'About 33%', why: 'That\'s the share who didn\'t return.' },
+          { text: 'About 67%' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'Four didn\'t come back. Is WashDay failing?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Two-thirds came back from a bicycle and a WhatsApp post. That\'s strong. Fix the late bags, look at the price, and keep watching.' },
           { text: 'Yes, everyone should come back.', why: 'Nobody gets 100%; two-thirds is strong early.' },
+          { text: 'Two-thirds came back from a bicycle and a WhatsApp post. That\'s strong. Fix the late bags, look at the price, and keep watching.' },
           { text: 'Ignore the four.', why: 'Two of their reasons are useful.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

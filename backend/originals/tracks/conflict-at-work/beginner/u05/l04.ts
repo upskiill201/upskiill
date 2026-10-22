@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "never drive it again" a weak consequence?',
         options: [
-          { text: 'It\'s impossible to keep, and Jayden knows it' },
           { text: 'It\'s too gentle', why: 'It\'s too extreme to keep.' },
           { text: 'It\'s a strong consequence', why: 'Unkeepable threats lose credibility.' },
+          { text: 'It\'s impossible to keep, and Jayden knows it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why say the reason (work mornings, worry)?',
         options: [
-          { text: 'It turns a rule into something Jayden can understand and respect' },
           { text: 'To make him feel guilty', why: 'It\'s to explain, not guilt-trip.' },
           { text: 'It\'s not needed', why: 'Reasons make boundaries easier to accept.' },
+          { text: 'It turns a rule into something Jayden can understand and respect' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

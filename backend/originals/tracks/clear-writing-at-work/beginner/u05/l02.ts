@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'Shouldn\'t we apologise properly? A full paragraph at least.',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: 'One line owning it is enough. A long apology makes it about us; he needs the plan.' },
           { text: 'Yes, a full page of apology.', why: 'It buries the plan.' },
           { text: 'Never apologise.', why: 'One line is right.' },
+          { text: 'One line owning it is enough. A long apology makes it about us; he needs the plan.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the pilot average after week 9?',
         options: [
-          { text: '22%' },
           { text: '28%', why: 'That\'s week 9 alone.' },
+          { text: '22%' },
           { text: '34%', why: 'That was March, before the pilot.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

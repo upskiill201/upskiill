@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What went wrong while Grace was avoiding Femi?',
         options: [
-          { text: 'He rebuilt step 3 without her notes and got part of it wrong' },
           { text: 'Nothing', why: 'The work suffered.' },
+          { text: 'He rebuilt step 3 without her notes and got part of it wrong' },
           { text: 'He apologised', why: 'Nothing was said.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'What if raising it makes things worse?',
         prompt: "Priya's best reply?",
         options: [
-          { text: 'Raised calmly and privately, it usually makes things better. Left alone, it\'s already making things worse.' },
           { text: 'It will. Never raise it.', why: 'Avoiding is already costing the team.' },
           { text: 'Raise it in stand-up tomorrow.', why: 'Private is better.' },
+          { text: 'Raised calmly and privately, it usually makes things better. Left alone, it\'s already making things worse.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why mention the shared goal (the launch, the patients)?',
         options: [
-          { text: 'It reminds both of them they\'re on the same side' },
           { text: 'To change the subject', why: 'It reframes the problem.' },
+          { text: 'It reminds both of them they\'re on the same side' },
           { text: 'It isn\'t useful', why: 'Shared goals lower the temperature.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

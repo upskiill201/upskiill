@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'members.remove("Femi") and Femi isn\'t there. What happens?',
         options: [
-          { text: 'ValueError' },
           { text: 'Nothing', why: 'It crashes. Check with in first.' },
           { text: 'IndexError', why: 'IndexError is for positions. A missing value is ValueError.' },
+          { text: 'ValueError' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         message: 'Four changes this week, and the pot line didn\'t move. Why?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Because it counts the list with len(). Whatever the list does, the pot follows.' },
           { text: 'Luck.', why: 'It\'s by design: one source of truth.' },
+          { text: 'Because it counts the list with len(). Whatever the list does, the pot follows.' },
           { text: 'I updated it each time.', why: 'You didn\'t need to.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A run of 1,400 shared by 3 bags. About how much is that per bag?',
         options: [
-          { text: 'About 467 FCFA' },
           { text: 'About 400 FCFA', why: 'That was at 1,200 a run.' },
+          { text: 'About 467 FCFA' },
           { text: 'About 700 FCFA', why: 'That would be 2 bags.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A 1,200 dry-season Saver would earn 75 a bag. Why is that risky?',
         options: [
-          { text: 'It barely covers costs, so one bad week turns it into a loss' },
           { text: 'It earns too much', why: '75 is very thin.' },
+          { text: 'It barely covers costs, so one bad week turns it into a loss' },
           { text: 'It isn\'t risky', why: 'A thin margin has no room for surprises.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

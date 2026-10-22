@@ -35,11 +35,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does one paid order out of ten suggest about "students will pay 500 FCFA for delivery"?',
         options: [
-          { text: 'It looks weak; most won\'t pay when the stalls are close' },
           { text: 'It\'s strongly supported', why: 'Nine of ten didn\'t pay.' },
+          { text: 'It looks weak; most won\'t pay when the stalls are close' },
           { text: 'Nothing at all', why: 'Real money from real students is strong evidence.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Clinton write on his evidence board for "students will pay 500 FCFA for delivery"?',
         options: [
-          { text: 'Killed (for now): 1 of 10 paid; 7 said the stalls are too close' },
           { text: 'Supported: someone paid', why: 'One in ten isn\'t support.' },
+          { text: 'Killed (for now): 1 of 10 paid; 7 said the stalls are too close' },
           { text: 'Untested', why: 'It was tested on Friday.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the most valuable thing Clinton learned on Friday?',
         options: [
-          { text: 'His riskiest guess looks wrong, cheaply, and a different problem came up' },
           { text: 'That ten doors is too few', why: 'Seven gave the same clear reason.' },
           { text: 'That he should build the app anyway', why: 'The evidence points the other way.' },
+          { text: 'His riskiest guess looks wrong, cheaply, and a different problem came up' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

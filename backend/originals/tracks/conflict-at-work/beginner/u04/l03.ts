@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What was the fair question inside Callum\'s comment?',
         options: [
-          { text: 'Whether six people can show how big the problem is' },
           { text: 'Whether Grace is qualified', why: 'That\'s not a fair question here.' },
           { text: 'Whether research matters', why: 'He asked about sample size.' },
+          { text: 'Whether six people can show how big the problem is' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

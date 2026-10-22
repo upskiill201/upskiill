@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'members has 12 items. After members.append("Ola"), what is len(members)?',
         options: [
-          { text: '13' },
           { text: '12', why: '.append() adds an item.' },
+          { text: '13' },
           { text: 'None', why: 'len() of the list is a number; it\'s .append() that returns None.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         message: 'Why doesn\'t members.append() give me anything back, like .upper() does?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Strings can\'t change, so their methods hand you a new string. Lists can change, so .append() just changes the list you have.' },
           { text: 'It\'s a bug in Python.', why: 'It\'s deliberate, so you don\'t mistake it for a copy.' },
           { text: 'It returns the new item.', why: 'It returns None.' },
+          { text: 'Strings can\'t change, so their methods hand you a new string. Lists can change, so .append() just changes the list you have.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

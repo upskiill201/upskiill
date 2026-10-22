@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Logos for small businesses here go for ₦80,000 to ₦200,000. Should I go first?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'Yes. You know the range. Quote above your goal with a reason: your hours and what\'s included.' },
           { text: 'No, wait for her to say ₦20,000.', why: 'Then her low anchor pulls everything down.' },
+          { text: 'Yes. You know the range. Quote above your goal with a reason: your hours and what\'s included.' },
           { text: 'Quote ₦1,000,000 to be safe.', why: 'Extreme offers damage trust.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can an extreme first offer backfire?',
         options: [
-          { text: 'It can insult the other side and end the conversation' },
           { text: 'It never backfires', why: 'Extreme offers can lose deals.' },
           { text: 'It\'s against the rules', why: 'There are no rules; it\'s about trust.' },
+          { text: 'It can insult the other side and end the conversation' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

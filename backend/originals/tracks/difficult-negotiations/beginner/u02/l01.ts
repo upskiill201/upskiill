@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a tactic, in negotiation?',
         options: [
-          { text: 'A move designed to change your behaviour' },
           { text: 'A fact about the deal', why: 'Tactics are moves, not facts.' },
+          { text: 'A move designed to change your behaviour' },
           { text: 'A lie, always', why: 'Some tactics are true; they\'re still moves.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         message: 'Ms Okafor-Lane is lovely. Maybe she\'ll get us a better deal?',
         prompt: "Kavya's best reply?",
         options: [
-          { text: 'Maybe she\'s genuine. But she and Pryce are on the same side. Treat them both the same: polite and firm.' },
           { text: 'Yes, trust her completely.', why: 'Warmth can be part of the routine.' },
           { text: 'She\'s lying, ignore her.', why: 'She may be genuine; just don\'t rely on it.' },
+          { text: 'Maybe she\'s genuine. But she and Pryce are on the same side. Treat them both the same: polite and firm.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "I know exactly what you\'re doing" risky?',
         options: [
-          { text: 'It embarrasses them, and people who lose face dig in' },
           { text: 'It\'s too weak', why: 'It\'s confrontational.' },
+          { text: 'It embarrasses them, and people who lose face dig in' },
           { text: 'It\'s never risky', why: 'Calling people out publicly backfires.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

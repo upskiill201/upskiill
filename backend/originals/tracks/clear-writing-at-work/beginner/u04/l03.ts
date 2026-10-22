@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What question turns a label into a message heading?',
         options: [
-          { text: '"So what?"' },
           { text: '"Who wrote it?"', why: 'Ask "so what?".' },
           { text: '"How long is it?"', why: 'Ask "so what?".' },
+          { text: '"So what?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'Isn\'t "Introduction, Method, Results" the professional format?',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: 'It\'s fine for academic papers. For a board deciding in 90 seconds, headings that state the findings work better.' },
           { text: 'Yes, always use it.', why: 'It suits some readers, not busy boards.' },
+          { text: 'It\'s fine for academic papers. For a board deciding in 90 seconds, headings that state the findings work better.' },
           { text: 'Headings are pointless.', why: 'They\'re what scanners read.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why add numbers to headings?',
         options: [
-          { text: 'They make the message specific and memorable' },
           { text: 'To look technical', why: 'For specificity.' },
           { text: 'Numbers don\'t belong in headings', why: 'They help.' },
+          { text: 'They make the message specific and memorable' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

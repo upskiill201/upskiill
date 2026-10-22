@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does Ada\'s new text ask for?',
         options: [
-          { text: 'A conversation about the rent' },
           { text: 'A specific lower number', why: 'Not yet; she\'ll prepare one first.' },
           { text: 'An apology', why: 'He has done nothing wrong.' },
+          { text: 'A conversation about the rent' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'But I already said OK. Isn\'t it rude to change my mind?',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'He hasn\'t sent the agreement yet. Saying "I\'d like to talk about it first" is honest, not rude.' },
           { text: 'Yes, you\'re stuck now.', why: 'Nothing is signed yet.' },
+          { text: 'He hasn\'t sent the agreement yet. Saying "I\'d like to talk about it first" is honest, not rude.' },
           { text: 'Just ignore him.', why: 'Silence makes it worse.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Ada mention two years of paying on time?',
         options: [
-          { text: 'A reliable tenant is worth a lot to a landlord' },
           { text: 'To show off', why: 'It\'s relevant: it\'s her value to him.' },
           { text: 'It\'s not useful', why: 'It\'s one of her strongest points.' },
+          { text: 'A reliable tenant is worth a lot to a landlord' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

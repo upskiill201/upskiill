@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the biggest problem with "any hostel, any weather, any day"?',
         options: [
-          { text: 'Very different jobs cost Clinton very different amounts but pay the same' },
           { text: 'It\'s too long to read', why: 'It\'s short; the issue is the costs behind it.' },
+          { text: 'Very different jobs cost Clinton very different amounts but pay the same' },
           { text: 'Nothing, it\'s simple', why: 'Simple, but some orders lose money.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Students like one simple price. Isn\'t simple good?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Simple is good, until simple loses you money. Keep it easy to read, but make sure every order pays its way.' },
           { text: 'Simple is always best.', why: 'Not if some orders lose money.' },
           { text: 'Make it as complicated as possible.', why: 'Clear and fair, not complicated.' },
+          { text: 'Simple is good, until simple loses you money. Keep it easy to read, but make sure every order pays its way.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

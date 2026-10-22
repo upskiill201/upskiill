@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which test gives the strongest evidence?',
         options: [
-          { text: 'Pre-sale: people pay real money' },
           { text: 'Fake door: people click', why: 'Clicking costs nothing; paying does.' },
+          { text: 'Pre-sale: people pay real money' },
           { text: 'A survey', why: 'Opinions, not behaviour.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did the Zappos example test?',
         options: [
-          { text: 'Whether people would buy shoes online, before stocking any' },
           { text: 'How to build a warehouse', why: 'No warehouse; shoes were bought only after orders.' },
+          { text: 'Whether people would buy shoes online, before stocking any' },
           { text: 'Which shoes look best', why: 'It tested demand, not style.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

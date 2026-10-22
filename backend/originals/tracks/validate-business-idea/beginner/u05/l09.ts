@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'Most cards are supported. So I\'ve built a business!',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'You\'ve validated an idea. A business also needs a price that pays you and room to grow. Those are your next two cards.' },
           { text: 'Yes, you\'re done learning.', why: 'Two important cards are still open.' },
+          { text: 'You\'ve validated an idea. A business also needs a price that pays you and room to grow. Those are your next two cards.' },
           { text: 'No, start over.', why: 'The evidence is strong; keep building on it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which card opens the pricing course?',
         options: [
-          { text: 'The price pays Clinton fairly: doubtful' },
           { text: 'Food delivery: killed', why: 'That\'s the past.' },
           { text: 'They come back', why: 'Supported; not about price.' },
+          { text: 'The price pays Clinton fairly: doubtful' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'They offer exactly your walk-away. What\'s the best move?',
         options: [
-          { text: 'Look for value to add that makes it better for both' },
           { text: 'Accept immediately', why: 'Acceptable isn\'t good.' },
+          { text: 'Look for value to add that makes it better for both' },
           { text: 'Walk away', why: 'It\'s acceptable; try to improve it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why add launch support to the package?',
         options: [
-          { text: 'It\'s cheap for Arjun\'s team and valuable to the client' },
           { text: 'To give something away free', why: 'It\'s priced in.' },
+          { text: 'It\'s cheap for Arjun\'s team and valuable to the client' },
           { text: 'No reason', why: 'It lifted the deal for both sides.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the margin %: 375 ÷ 1,500?',
         options: [
-          { text: '25%' },
           { text: '33%', why: 'That\'s 375 ÷ 1,125, the markup.' },
           { text: '37.5%', why: '375 ÷ 1,500 = 0.25.' },
+          { text: '25%' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'At 1,800, what is the margin %: 675 ÷ 1,800?',
         options: [
-          { text: '37.5%' },
           { text: '60%', why: '675 ÷ 1,125 is the markup.' },
           { text: '25%', why: 'That\'s at 1,500.' },
+          { text: '37.5%' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

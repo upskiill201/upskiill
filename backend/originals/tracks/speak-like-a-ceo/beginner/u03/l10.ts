@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How long did the run-through take?',
         options: [
-          { text: '14 minutes 30 seconds' },
           { text: '42 minutes', why: '14:30.' },
           { text: '5 minutes', why: '14:30.' },
+          { text: '14 minutes 30 seconds' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'I hate watching myself on video.',
         prompt: "Diego\'s best reply?",
         options: [
-          { text: 'Everyone does. Watch it once with the sound off, once with it on. You\'ll see two fixes in five minutes.' },
           { text: 'Then don\'t watch it.', why: 'It\'s the fastest feedback.' },
+          { text: 'Everyone does. Watch it once with the sound off, once with it on. You\'ll see two fixes in five minutes.' },
           { text: 'Watch it ten times tonight.', why: 'Once or twice is enough.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Diego say about the talk?',
         options: [
-          { text: 'The talk is great; the delivery isn\'t yet' },
           { text: 'Start again from 42 slides', why: 'The talk is great.' },
           { text: 'It\'s perfect', why: 'The delivery needs work.' },
+          { text: 'The talk is great; the delivery isn\'t yet' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

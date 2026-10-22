@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happened to speakers who were told about the illusion?',
         options: [
-          { text: 'They felt less nervous and their speeches were rated better' },
           { text: 'They felt more nervous', why: 'They felt less nervous.' },
           { text: 'Nothing changed', why: 'Both feeling and ratings improved.' },
+          { text: 'They felt less nervous and their speeches were rated better' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'But my hands really do shake.',
         prompt: "Sofía\'s best reply?",
         options: [
-          { text: 'Maybe a little. From row three, almost nobody will see it, and anyone who does will forget by lunch.' },
           { text: 'Everyone will notice.', why: 'Far fewer than you think.' },
+          { text: 'Maybe a little. From row three, almost nobody will see it, and anyone who does will forget by lunch.' },
           { text: 'Hide your hands behind your back.', why: 'They\'re less visible than you think.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In the T-shirt study, about what share of the room actually noticed?',
         options: [
-          { text: 'About a quarter' },
           { text: 'About half', why: 'That was the guess.' },
           { text: 'Everyone', why: 'About a quarter.' },
+          { text: 'About a quarter' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

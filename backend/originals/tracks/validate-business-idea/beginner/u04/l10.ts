@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '52 said "interested" and 19 paid. About what share paid?',
         options: [
-          { text: 'About 37%' },
           { text: 'About 19%', why: '19 of 52 is about 37%.' },
           { text: 'About 63%', why: 'That\'s the share who didn\'t pay.' },
+          { text: 'About 37%' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What caused the two late bags?',
         options: [
-          { text: 'Clinton couldn\'t carry all the bags up the hill in one trip' },
           { text: 'Mama Rose was slow', why: 'She washed all 19 in time.' },
           { text: 'Customers weren\'t home', why: 'The cause was carrying capacity.' },
+          { text: 'Clinton couldn\'t carry all the bags up the hill in one trip' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does six repeat customers tell Clinton?',
         options: [
-          { text: 'An early sign WashDay solves a real, repeating problem' },
           { text: 'Proof the business will succeed', why: 'Early sign, not proof.' },
+          { text: 'An early sign WashDay solves a real, repeating problem' },
           { text: 'Nothing', why: 'Coming back and paying again is strong evidence.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',

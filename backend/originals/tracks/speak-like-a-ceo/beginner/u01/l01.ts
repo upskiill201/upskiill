@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How long is Lucía\'s update meant to be?',
         options: [
-          { text: 'Two minutes' },
           { text: 'Four minutes', why: 'That\'s how long it took.' },
+          { text: 'Two minutes' },
           { text: 'Ten minutes', why: 'Two minutes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'But if I start with the result, they won\'t know how we got there.',
         prompt: "Diego\'s best reply?",
         options: [
-          { text: 'They\'ll ask if they want to know. Start with the result, give one line of why, and stop.' },
           { text: 'Tell the whole story in order.', why: 'That buried the news.' },
           { text: 'Skip the update.', why: 'Lead with the headline.' },
+          { text: 'They\'ll ask if they want to know. Start with the result, give one line of why, and stop.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'With a 10% discount, what is the margin on a Standard bag (normally 675)?',
         options: [
-          { text: '495 FCFA' },
           { text: '607 FCFA', why: 'The full 180 comes off the margin, not 10% of it.' },
           { text: '675 FCFA', why: 'The discount comes off.' },
+          { text: '495 FCFA' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'With 20% off, the margin falls from 675 to 315. Roughly how many times more bags would earn the same?',
         options: [
-          { text: 'About 2.1 times' },
           { text: 'About 1.2 times', why: '675 ÷ 315 ≈ 2.14.' },
+          { text: 'About 2.1 times' },
           { text: 'The same number', why: 'Each bag earns much less.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'It\'s only 360 francs. Surely that\'s fine for friends?',
         prompt: "David's best reply?",
         options: [
-          { text: '360 is more than half your 675 margin. For friends, offer the Saturday Plan: 1,600 a bag, and they commit to four bags.' },
           { text: 'Yes, small discounts don\'t matter.', why: 'It\'s 53% of the margin.' },
           { text: 'Never do anything for friends.', why: 'A plan gives a fair saving that earns.' },
+          { text: '360 is more than half your 675 margin. For friends, offer the Saturday Plan: 1,600 a bag, and they commit to four bags.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

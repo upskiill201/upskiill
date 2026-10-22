@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is scope creep?',
         options: [
-          { text: 'A project slowly growing beyond what was agreed, through small unpriced additions' },
           { text: 'A client cancelling a project', why: 'It\'s about growth, not cancellation.' },
           { text: 'A bug in the code', why: 'It\'s about what\'s included.' },
+          { text: 'A project slowly growing beyond what was agreed, through small unpriced additions' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'A green button is just an hour. Can\'t we say yes to small stuff?',
         prompt: "Kavya's best reply?",
         options: [
-          { text: 'One hour, fine. But log it. Twenty "just an hour"s is half a week, and nobody will remember agreeing to them.' },
           { text: 'Never do anything extra.', why: 'Small extras are fine if visible.' },
+          { text: 'One hour, fine. But log it. Twenty "just an hour"s is half a week, and nobody will remember agreeing to them.' },
           { text: 'Yes, never log small things.', why: 'Small things add up unseen.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

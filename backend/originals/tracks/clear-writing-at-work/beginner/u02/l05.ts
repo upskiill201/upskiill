@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the first question to ask before writing?',
         options: [
-          { text: 'Who will read this, on what, in what language?' },
           { text: 'How can I sound impressive?', why: 'Start with the reader.' },
           { text: 'How long should it be?', why: 'Start with the reader.' },
+          { text: 'Who will read this, on what, in what language?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When should you keep a technical term?',
         options: [
-          { text: 'When your reader knows it and it\'s the most precise word' },
           { text: 'Always', why: 'Only when the reader knows it.' },
           { text: 'Never', why: 'Sometimes it\'s the right word.' },
+          { text: 'When your reader knows it and it\'s the most precise word' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

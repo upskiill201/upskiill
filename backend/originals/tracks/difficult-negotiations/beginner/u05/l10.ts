@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which skill turned "all three by Christmas" into a plan?',
         options: [
-          { text: 'Yes-if with trade-offs: what fits by Christmas, what follows in January' },
           { text: 'A flat no', why: 'He offered a path.' },
           { text: 'Saying yes to everything', why: 'He held the scope.' },
+          { text: 'Yes-if with trade-offs: what fits by Christmas, what follows in January' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'The new manager says the budget is fixed at £10,000. Do we match it?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'A fixed budget means a fixed scope. £10,000 buys gift cards with a bit to spare; everything else is priced separately.' },
           { text: 'Yes, do all three for £10,000.', why: 'That\'s £8,000 of free work.' },
+          { text: 'A fixed budget means a fixed scope. £10,000 buys gift cards with a bit to spare; everything else is priced separately.' },
           { text: 'Refuse to talk to the new manager.', why: 'Offer the path instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

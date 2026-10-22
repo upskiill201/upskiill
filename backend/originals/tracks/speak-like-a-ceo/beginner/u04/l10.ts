@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Questions from finance? I can rehearse a talk. I can\'t rehearse questions.',
         prompt: "Carmen\'s best reply?",
         options: [
-          { text: 'You can, mostly. List the ten questions you dread, and practise a short answer to each. Most real ones will be on the list.' },
           { text: 'Then skip the questions.', why: 'You can prepare for them.' },
+          { text: 'You can, mostly. List the ten questions you dread, and practise a short answer to each. Most real ones will be on the list.' },
           { text: 'Make it up on the day.', why: 'Prepare the likely ones.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which city will finance ask about?',
         options: [
-          { text: 'Puebla' },
           { text: 'Guadalajara', why: 'Puebla.' },
           { text: 'Toluca', why: 'Puebla.' },
+          { text: 'Puebla' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

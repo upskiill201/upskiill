@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In the email study, readers got the tone right about how often?',
         options: [
-          { text: 'About 56% of the time' },
           { text: 'About 90%', why: 'Much lower.' },
           { text: 'About 78%', why: 'That\'s what writers predicted.' },
+          { text: 'About 56% of the time' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the best first move when a message feels cold?',
         options: [
-          { text: 'Assume the generous reading and, if it matters, check' },
           { text: 'Reply equally coldly', why: 'That starts a real cold war.' },
           { text: 'Tell others about it', why: 'Check with the person first.' },
+          { text: 'Assume the generous reading and, if it matters, check' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

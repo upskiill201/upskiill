@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s new on v2 compared with v1?',
         options: [
-          { text: 'Company-specific research, evidence for must-haves, questions and set-up' },
           { text: 'A new life story', why: 'The one-minute answer stays.' },
+          { text: 'Company-specific research, evidence for must-haves, questions and set-up' },
           { text: 'Nothing', why: 'v2 adds research for Mtaa Labs.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Should I keep the card open on screen during the call?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Keep a few keywords beside the camera. Glance, don\'t read. You know this stuff now.' },
           { text: 'Read it out.', why: 'It shows on camera.' },
           { text: 'Hide it completely.', why: 'Keywords are fine.' },
+          { text: 'Keep a few keywords beside the camera. Glance, don\'t read. You know this stuff now.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "Swahili for shop owners?" a strong question?',
         options: [
-          { text: 'It comes from using the app and shows he thinks about users' },
           { text: 'It criticises them', why: 'It\'s framed as curiosity.' },
+          { text: 'It comes from using the app and shows he thinks about users' },
           { text: 'It\'s random', why: 'It comes from his research.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How long did the board take to approve the rollout?',
         options: [
-          { text: 'Eleven minutes' },
           { text: 'An hour', why: 'That was last year\'s paper.' },
+          { text: 'Eleven minutes' },
           { text: 'They sent it back', why: 'They approved it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where was the answer to the board member\'s question?',
         options: [
-          { text: 'Appendix C' },
           { text: 'Page 11', why: 'There is no page 11 now.' },
+          { text: 'Appendix C' },
           { text: 'Nowhere', why: 'It was in the driver survey.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

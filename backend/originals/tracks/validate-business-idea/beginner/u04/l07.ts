@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Clinton keeps 500 FCFA on each of 12 bags. How much for the weekend?',
         options: [
-          { text: '6,000 FCFA' },
           { text: '18,000 FCFA', why: 'That\'s total money in, before paying Mama Rose.' },
+          { text: '6,000 FCFA' },
           { text: '12,000 FCFA', why: 'That\'s what Mama Rose gets.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: '6,000 FCFA for a whole weekend of cycling? That feels terrible.',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'That\'s a pricing question, and an important one. But this weekend asked "will they pay?", and 12 did. Note it and test the price next.' },
           { text: 'Then quit now.', why: 'The demand question passed; the price can change.' },
           { text: 'Don\'t think about money.', why: 'Money matters; just one question at a time.' },
+          { text: 'That\'s a pricing question, and an important one. But this weekend asked "will they pay?", and 12 did. Note it and test the price next.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

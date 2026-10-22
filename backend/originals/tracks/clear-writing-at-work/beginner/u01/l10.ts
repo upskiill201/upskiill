@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'Should Mr Kamau know about the export bug?',
         prompt: "Mrs Achieng's best reply?",
         options: [
-          { text: 'One line, as a risk: it may affect week 4. Felix gets the detail.' },
           { text: 'Send him Felix\'s whole email.', why: 'Just the risk.' },
           { text: 'Never tell him.', why: 'It\'s a real risk.' },
+          { text: 'One line, as a risk: it may affect week 4. Felix gets the detail.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where did the team lunch go?',
         options: [
-          { text: 'The team chat' },
           { text: 'Mr Kamau\'s email', why: 'Not his business.' },
+          { text: 'The team chat' },
           { text: 'Nowhere', why: 'Team chat.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

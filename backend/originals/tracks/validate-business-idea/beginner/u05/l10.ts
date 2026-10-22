@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Based on the evidence, what is the best decision?',
         options: [
-          { text: 'Persevere: go ahead, fixing capacity and price' },
           { text: 'Stop', why: 'Payment, return and pull are all supported.' },
+          { text: 'Persevere: go ahead, fixing capacity and price' },
           { text: 'Pivot to food delivery again', why: 'That card was killed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Of that 81,000 FCFA, Mama Rose received 1,000 per bag. How much did she get?',
         options: [
-          { text: '54,000 FCFA' },
           { text: '27,000 FCFA', why: 'That\'s what Clinton kept.' },
           { text: '81,000 FCFA', why: 'That\'s the total.' },
+          { text: '54,000 FCFA' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -134,11 +134,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is Clinton\'s next problem, and the next course?',
         options: [
-          { text: 'The price: he keeps only 500 FCFA a bag' },
           { text: 'The logo', why: 'Not on his list.' },
           { text: 'Finding the problem', why: 'That\'s validated.' },
+          { text: 'The price: he keeps only 500 FCFA a bag' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

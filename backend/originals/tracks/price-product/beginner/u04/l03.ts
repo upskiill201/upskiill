@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'Free first bags would bring in tons of new customers!',
         prompt: "David's best reply?",
         options: [
-          { text: 'And many who only wanted the free one. Each costs 1,125. Bring-a-friend costs 600 and brings people who already trust you.' },
           { text: 'Yes, free is always best.', why: 'Free attracts bargain hunters.' },
           { text: 'Never do any deals.', why: 'Some deals pay for themselves.' },
+          { text: 'And many who only wanted the free one. Each costs 1,125. Bring-a-friend costs 600 and brings people who already trust you.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Bring-a-friend costs 600. How many referred friends can Clinton pay for with one regular\'s 5,400?',
         options: [
-          { text: '9' },
           { text: '5', why: '5,400 ÷ 600 = 9.' },
+          { text: '9' },
           { text: '600', why: 'Divide 5,400 by 600.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'If we argue about step 3, doesn\'t that mean we\'re a bad team?',
         prompt: "Priya's best reply?",
         options: [
-          { text: 'No. Arguing about step 3 is the job. It only turns bad when it\'s about each other instead of the design.' },
           { text: 'Yes, stop arguing.', why: 'Task disagreement can help.' },
           { text: 'Argue more, louder.', why: 'Respectfully, about the work.' },
+          { text: 'No. Arguing about step 3 is the job. It only turns bad when it\'s about each other instead of the design.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might a team that never disagrees be a warning sign?',
         options: [
-          { text: 'People may be avoiding problems instead of raising them' },
           { text: 'It\'s always a great sign', why: 'Silence can hide problems.' },
+          { text: 'People may be avoiding problems instead of raising them' },
           { text: 'It means they\'re lazy', why: 'It may mean they\'re afraid.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

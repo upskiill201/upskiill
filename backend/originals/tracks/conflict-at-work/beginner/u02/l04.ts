@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Gottman find about the start of conflict conversations?',
         options: [
-          { text: 'How they start strongly predicts how they end' },
           { text: 'Starts don\'t matter', why: 'They strongly predict the ending.' },
+          { text: 'How they start strongly predicts how they end' },
           { text: 'Harsh starts work best', why: 'They tend to end badly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'But he really does shout a lot. Isn\'t "always" just honest?',
         prompt: "Priya's best reply?",
         options: [
-          { text: '"Always" gives him something to argue with ("not always!"). Talk about Thursday. One clear moment is harder to dispute.' },
           { text: 'Yes, say always.', why: 'It invites defence.' },
           { text: 'Then say "never" too.', why: 'Same problem.' },
+          { text: '"Always" gives him something to argue with ("not always!"). Talk about Thursday. One clear moment is harder to dispute.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

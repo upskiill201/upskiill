@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'I made everything bold so they won\'t miss anything.',
         prompt: "Mrs Achieng\'s best reply?",
         options: [
-          { text: 'Then they\'ll miss everything. Squint at it: what should jump out? Bold only that.' },
           { text: 'Good idea.', why: 'Nothing stands out.' },
           { text: 'Use capitals too.', why: 'Even worse.' },
+          { text: 'Then they\'ll miss everything. Squint at it: what should jump out? Bold only that.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the squint test?',
         options: [
-          { text: 'Squint at the page: do the two or three key things jump out?' },
           { text: 'Read with one eye closed', why: 'It checks what stands out.' },
+          { text: 'Squint at the page: do the two or three key things jump out?' },
           { text: 'Print it tiny', why: 'Just squint.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

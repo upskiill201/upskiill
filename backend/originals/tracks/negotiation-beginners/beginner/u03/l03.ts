@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         message: '(silence on the practice call)',
         prompt: 'Remi stays silent for five seconds. What should Ada do?',
         options: [
-          { text: 'Wait. Let him speak first.' },
           { text: 'Say "Or ₦1,400,000 is fine too!"', why: 'She just lowered her own offer for nothing.' },
           { text: 'Explain the reason again', why: 'Repeating it sounds unsure.' },
+          { text: 'Wait. Let him speak first.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'He says "That\'s too low." What should Ada say first?',
         options: [
-          { text: '"What would make it hard for you?"' },
           { text: '"OK, ₦1,450,000."', why: 'She\'s jumped to her walk-away.' },
+          { text: '"What would make it hard for you?"' },
           { text: '"No it isn\'t."', why: 'Arguing teaches her nothing.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

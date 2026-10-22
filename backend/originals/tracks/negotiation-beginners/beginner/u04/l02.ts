@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Isn\'t meeting in the middle the fairest thing?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'It feels fair, but it only uses one number. Add the lease length and repairs, and you can both do better than the middle.' },
           { text: 'Yes, always split.', why: 'Splitting leaves value on the table.' },
+          { text: 'It feels fair, but it only uses one number. Add the lease length and repairs, and you can both do better than the middle.' },
           { text: 'No, never compromise.', why: 'The point is better trades, not refusing.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which card is still the riskiest?',
         options: [
-          { text: 'They would pay me for pickup (risk 25)' },
           { text: 'Mama Rose is overloaded', why: 'That\'s supported by what he saw.' },
           { text: 'The reachable market', why: 'Estimated from counts; payment is the bigger unknown.' },
+          { text: 'They would pay me for pickup (risk 25)' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'The market is 2.4 million. Can I mark "they\'d pay me" as supported now?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'No: the market size says how many COULD pay. Nobody has paid you yet. That\'s Chapter 4.' },
           { text: 'Yes, the numbers prove it.', why: 'Estimates aren\'t payments.' },
+          { text: 'No: the market size says how many COULD pay. Nobody has paid you yet. That\'s Chapter 4.' },
           { text: 'Mark it killed.', why: 'There\'s no evidence against it either; it\'s untested.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the partnership card "big if true"?',
         options: [
-          { text: 'Clinton wouldn\'t need his own washing and drying space' },
           { text: 'It makes the logo better', why: 'It changes what he has to build.' },
           { text: 'It doubles the price', why: 'It changes costs and capacity, not price.' },
+          { text: 'Clinton wouldn\'t need his own washing and drying space' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

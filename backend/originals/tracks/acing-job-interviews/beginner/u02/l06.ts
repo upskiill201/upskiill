@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'Can I read my answers from a script beside the camera?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'A few keywords, yes. A full script shows: your eyes move and your voice goes flat.' },
           { text: 'Yes, read everything.', why: 'It shows on camera.' },
+          { text: 'A few keywords, yes. A full script shows: your eyes move and your voice goes flat.' },
           { text: 'No notes at all.', why: 'Keywords are fine.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why test the connection the day before?',
         options: [
-          { text: 'There\'s still time to fix it or arrange a backup' },
           { text: 'To impress the interviewer', why: 'It\'s about avoiding problems.' },
           { text: 'It doesn\'t matter', why: 'Most issues are connection issues.' },
+          { text: 'There\'s still time to fix it or arrange a backup' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

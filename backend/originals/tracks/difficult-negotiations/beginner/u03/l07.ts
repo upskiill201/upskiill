@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does good service really mean here?',
         options: [
-          { text: 'Reliably delivering what you promised' },
           { text: 'Saying yes to everything', why: 'That breaks promises.' },
+          { text: 'Reliably delivering what you promised' },
           { text: 'Never talking to the client', why: 'Communication matters.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'She asked for 14 features. She\'s trying to cheat us.',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'More likely she didn\'t know what they cost. When you showed her, she chose four. That\'s not cheating.' },
           { text: 'Yes, cut her off.', why: 'She responded well to seeing the cost.' },
           { text: 'Give her all 14 to be nice.', why: 'Show costs; let her choose.' },
+          { text: 'More likely she didn\'t know what they cost. When you showed her, she chose four. That\'s not cheating.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do vague yeses hurt trust?',
         options: [
-          { text: 'They lead to missed dates and surprises later' },
           { text: 'They don\'t', why: 'Surprises damage trust.' },
+          { text: 'They lead to missed dates and surprises later' },
           { text: 'Clients hate the word yes', why: 'They hate broken promises.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

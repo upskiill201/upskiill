@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which principle says "don\'t read your slides aloud"?',
         options: [
-          { text: 'Redundancy' },
           { text: 'Coherence', why: 'That\'s cutting extras.' },
+          { text: 'Redundancy' },
           { text: 'Signalling', why: 'That\'s highlighting.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         message: 'My training talk is called "Overview of new processes". Is that a message?',
         prompt: "Lucía\'s best reply?",
         options: [
-          { text: 'That\'s a topic. Ask "so what for them?" Maybe: "The new process saves you an hour a week."' },
           { text: 'Yes, perfect.', why: 'It\'s a topic.' },
           { text: 'Call it "Processes".', why: 'Still a topic.' },
+          { text: 'That\'s a topic. Ask "so what for them?" Maybe: "The new process saves you an hour a week."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s new on v2 compared with v1?',
         options: [
-          { text: 'Numbers, evidence, a BATNA, both sides\' interests and offers' },
           { text: 'Nothing', why: 'v1 had only wants and first lines.' },
+          { text: 'Numbers, evidence, a BATNA, both sides\' interests and offers' },
           { text: 'Only the first line', why: 'Most of the plan is new.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'My first line doesn\'t mention a number. Is that weak?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'No. It starts on the same side of the table. The number comes next, with your evidence. That\'s Chapter 3.' },
           { text: 'Yes, open with ₦1,000,000.', why: 'An unbacked low number damages trust.' },
           { text: 'Never mention a number.', why: 'She will, after the opening.' },
+          { text: 'No. It starts on the same side of the table. The number comes next, with your evidence. That\'s Chapter 3.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "rent on the 1st" on the card?',
         options: [
-          { text: 'It costs Ada little but eases one of his worries' },
           { text: 'It\'s a legal requirement', why: 'It\'s an offer, not a rule.' },
+          { text: 'It costs Ada little but eases one of his worries' },
           { text: 'It\'s irrelevant', why: 'On-time rent is one of his interests.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

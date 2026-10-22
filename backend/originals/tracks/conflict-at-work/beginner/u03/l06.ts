@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does paraphrasing do?',
         options: [
-          { text: 'Shows you listened and lets them correct you' },
           { text: 'Repeats their words to annoy them', why: 'It\'s in your own words, to check.' },
+          { text: 'Shows you listened and lets them correct you' },
           { text: 'Ends the conversation', why: 'It keeps it accurate.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why "confirm and agree what\'s next"?',
         options: [
-          { text: 'So nobody leaves with a different version of what was agreed' },
           { text: 'To have the last word', why: 'It\'s about a shared understanding.' },
+          { text: 'So nobody leaves with a different version of what was agreed' },
           { text: 'It\'s not needed', why: 'Misunderstandings start at the end of talks too.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

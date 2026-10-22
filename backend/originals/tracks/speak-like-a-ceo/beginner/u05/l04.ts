@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is guessing risky?',
         options: [
-          { text: 'A wrong guess in front of 300 people is worse than "I don\'t know"' },
           { text: 'Guessing is always right', why: 'It can be wrong.' },
           { text: 'It isn\'t risky', why: 'Wrong guesses cost trust.' },
+          { text: 'A wrong guess in front of 300 people is worse than "I don\'t know"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where will Lucía share the forecast?',
         options: [
-          { text: 'On the intranet' },
           { text: 'At next year\'s Encuentro', why: 'The intranet.' },
           { text: 'Nowhere', why: 'The intranet.' },
+          { text: 'On the intranet' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

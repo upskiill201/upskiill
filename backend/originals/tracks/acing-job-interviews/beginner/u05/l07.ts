@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'So if body language is 93%, my answers barely matter?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'That number is a misreading. Your answers are what they score. Body language just shouldn\'t get in the way.' },
           { text: 'Right, focus on posing.', why: 'Answers matter most.' },
           { text: 'Words are 7%, so skip preparation.', why: 'Based on a myth.' },
+          { text: 'That number is a misreading. Your answers are what they score. Body language just shouldn\'t get in the way.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'On a video interview, where should you look when speaking?',
         options: [
-          { text: 'At the camera' },
           { text: 'At your own picture', why: 'It looks like looking away.' },
+          { text: 'At the camera' },
           { text: 'At your notes', why: 'Glance only.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

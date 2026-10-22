@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which rung was the only fact in Grace\'s climb?',
         options: [
-          { text: 'Femi wrote "Fine."' },
           { text: 'He\'s annoyed', why: 'That\'s an interpretation.' },
           { text: 'He thinks I\'m ruining the launch', why: 'That\'s a conclusion.' },
+          { text: 'Femi wrote "Fine."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'It felt like a fact, not a story.',
         prompt: "Priya's best reply?",
         options: [
-          { text: 'That\'s the trick of the ladder. We climb so fast that the top feels like the bottom. Slowing down shows the rungs.' },
           { text: 'Then it was a fact.', why: 'Feelings aren\'t facts.' },
+          { text: 'That\'s the trick of the ladder. We climb so fast that the top feels like the bottom. Slowing down shows the rungs.' },
           { text: 'You\'re being silly.', why: 'Everyone climbs the ladder.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

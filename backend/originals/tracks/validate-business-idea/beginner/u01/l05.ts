@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         message: 'Can I just skip the assumptions and start building?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'You can, but then you\'re betting your savings on eleven unchecked guesses. Test the riskiest one first; it might take a day.' },
           { text: 'Sure, assumptions are boring.', why: 'They\'re what decides whether the business works.' },
+          { text: 'You can, but then you\'re betting your savings on eleven unchecked guesses. Test the riskiest one first; it might take a day.' },
           { text: 'Never build anything.', why: 'Build once the key guesses are checked.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which group is specific enough to go and talk to?',
         options: [
-          { text: 'First-year students in the hostels near campus' },
           { text: 'Young Africans', why: 'Far too broad to find and test.' },
           { text: 'Hungry people', why: 'Everyone, so no one in particular.' },
+          { text: 'First-year students in the hostels near campus' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

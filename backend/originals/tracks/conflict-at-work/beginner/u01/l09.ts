@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write rules instead of remembering the theory?',
         options: [
-          { text: 'Short rules are easier to follow under stress' },
           { text: 'Theory is wrong', why: 'The rules come from the theory.' },
+          { text: 'Short rules are easier to follow under stress' },
           { text: 'To show Priya', why: 'They\'re for Grace.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Mum, you have RULES for talking to colleagues?',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'I had rules for 18 years on the ward and they kept people safe. Why not at work?' },
           { text: 'No, forget it.', why: 'They help her.' },
           { text: 'And you\'re rule one.', why: 'Funny, but not helpful.' },
+          { text: 'I had rules for 18 years on the ward and they kept people safe. Why not at work?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

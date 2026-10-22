@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         code: 'members = ["Ada", "Tunde", "Bisi"]\nprint("Tunde" in members)',
         language: 'python',
         options: [
-          { text: 'True' },
           { text: 'False', why: 'Tunde is the second item.' },
+          { text: 'True' },
           { text: '1', why: 'in gives True or False, not a position.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         message: 'Femi swears he\'s a member. The tracker says he isn\'t. Who do I believe?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Check the list is right first. If it is, the tracker is telling you what the group agreed. Then talk to Femi kindly.' },
           { text: 'Add him so he stops messaging.', why: 'The list is the group\'s agreement; changing it needs the group.' },
+          { text: 'Check the list is right first. If it is, the tracker is telling you what the group agreed. Then talk to Femi kindly.' },
           { text: 'The code must be broken.', why: 'in is reliable; the question is whether the data is.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

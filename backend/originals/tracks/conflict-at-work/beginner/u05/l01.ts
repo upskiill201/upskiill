@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why was Grace\'s instant yes a problem?',
         options: [
-          { text: 'She agreed before checking her capacity, and her evenings and launch work paid for it' },
           { text: 'Surveys are pointless', why: 'The survey wasn\'t the problem.' },
+          { text: 'She agreed before checking her capacity, and her evenings and launch work paid for it' },
           { text: 'It wasn\'t a problem', why: 'She was working until 10 p.m.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Priya\'s my manager. Can I even say no?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'You can say "yes, if something moves". Asking which priority to drop isn\'t refusing; it\'s helping her manage the team.' },
           { text: 'No, managers can\'t be refused.', why: 'Honest capacity is part of the job.' },
           { text: 'Just quietly not do it.', why: 'That breaks trust.' },
+          { text: 'You can say "yes, if something moves". Asking which priority to drop isn\'t refusing; it\'s helping her manage the team.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

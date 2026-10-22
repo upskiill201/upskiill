@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'After "£40,000? Hmm." and a long silence, what should Arjun do?',
         options: [
-          { text: 'Stay calm; maybe say once what option B includes' },
           { text: 'Drop to £35,000 to fill the silence', why: 'That rewards the flinch.' },
           { text: 'Ask "Are you OK?"', why: 'Just let the silence sit.' },
+          { text: 'Stay calm; maybe say once what option B includes' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'He said "decide today". Why didn\'t you?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'We tested Friday last time; this is the same move. The real driver is spring. Monday is still fast.' },
           { text: 'I forgot.', why: 'It was deliberate.' },
           { text: 'To annoy him.', why: 'To decide calmly.' },
+          { text: 'We tested Friday last time; this is the same move. The real driver is spring. Monday is still fast.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'You\'re a natural now. I could never do that.',
         prompt: "Lucía\'s best reply?",
         options: [
-          { text: 'Two weeks ago I took four minutes and said 23 ums. It\'s practice: a headline, three points, and recording myself.' },
           { text: 'You\'re right, some people just can\'t.', why: 'It\'s learnable.' },
+          { text: 'Two weeks ago I took four minutes and said 23 ums. It\'s practice: a headline, three points, and recording myself.' },
           { text: 'It\'s magic.', why: 'It\'s practice.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do three points work well?',
         options: [
-          { text: 'They fit comfortably in working memory' },
           { text: 'Three is lucky', why: 'It\'s about memory.' },
           { text: 'They don\'t', why: 'They fit working memory.' },
+          { text: 'They fit comfortably in working memory' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a price floor?',
         options: [
-          { text: 'The lowest price you can charge and still cover costs and your time' },
           { text: 'The price competitors charge', why: 'That\'s a reference, not your floor.' },
+          { text: 'The lowest price you can charge and still cover costs and your time' },
           { text: 'The highest price customers accept', why: 'That\'s the ceiling.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Clinton have to borrow 5,000 in a profitable month?',
         options: [
-          { text: 'Money came in later than he had to pay it out' },
           { text: 'His prices were too low', why: 'The prices now earn well; the timing is the problem.' },
+          { text: 'Money came in later than he had to pay it out' },
           { text: 'He lost customers', why: 'He kept 9 of 10 regulars.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

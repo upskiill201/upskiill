@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Could I share Rule 12 with the whole team?',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'Please do. "Writing has no voice" might save us a few cold wars.' },
           { text: 'No, it\'s embarrassing.', why: 'It helps everyone.' },
+          { text: 'Please do. "Writing has no voice" might save us a few cold wars.' },
           { text: 'Only if you credit me in the all-hands.', why: 'Just share it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "Do both ways" in Rule 14 ask Grace to do?',
         options: [
-          { text: 'Own her impact on others, and ask about their intent' },
           { text: 'Judge everyone harshly', why: 'It asks for fairness in both directions.' },
           { text: 'Ignore impact', why: 'It asks her to own it.' },
+          { text: 'Own her impact on others, and ask about their intent' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

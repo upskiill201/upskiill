@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'He wants two years, I want a lower rent. Do I offer the two years first?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'Offer them together: "If I sign for two years, could we agree ₦1,350,000?" Never give the lease away on its own.' },
           { text: 'Yes, give it first and hope.', why: 'Free concessions often get nothing back.' },
+          { text: 'Offer them together: "If I sign for two years, could we agree ₦1,350,000?" Never give the lease away on its own.' },
           { text: 'Never mention the lease.', why: 'It\'s her best trade.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the spare-room deal work?',
         options: [
-          { text: 'They needed different things at different times' },
           { text: 'One of them gave up', why: 'Both got what they needed.' },
           { text: 'They split it in half', why: 'They traded, not split.' },
+          { text: 'They needed different things at different times' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

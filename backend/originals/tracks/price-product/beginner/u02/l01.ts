@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is Clinton\'s price so much lower than Mama Rose\'s?',
         options: [
-          { text: 'He set it from his own cost (her bulk rate), not from what students pay or value' },
           { text: 'His service is worse', why: 'It collects and delivers: it does more.' },
           { text: 'Students can\'t pay more', why: 'They already pay her 2,400.' },
+          { text: 'He set it from his own cost (her bulk rate), not from what students pay or value' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'Brenda says she\'d pay more. Does that mean everyone will?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Not necessarily. Brenda is your keenest regular. Find out what the service is worth to most students, then test a price.' },
           { text: 'Yes, everyone thinks like Brenda.', why: 'One regular isn\'t the whole market.' },
+          { text: 'Not necessarily. Brenda is your keenest regular. Find out what the service is worth to most students, then test a price.' },
           { text: 'No, nobody else will.', why: 'Many already pay Mama Rose 2,400.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'WashDay bags hold up to 12 items, like a basket. Per item, what does 1,500 FCFA work out to?',
         options: [
-          { text: '125 FCFA an item' },
           { text: '200 FCFA an item', why: 'That\'s Mama Rose\'s price per item.' },
           { text: '1,500 FCFA an item', why: 'That\'s per bag of 12.' },
+          { text: '125 FCFA an item' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What are the three natural reactions to hardball, according to Ury?',
         options: [
-          { text: 'Strike back, give in, or break off' },
           { text: 'Laugh, cry, or sleep', why: 'Not quite.' },
+          { text: 'Strike back, give in, or break off' },
           { text: 'Ask, listen, trade', why: 'Those are good responses, not reactions.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the best first step after a shocking offer?',
         options: [
-          { text: 'Pause and work out your own numbers' },
           { text: 'Reply within five minutes', why: 'That\'s reacting.' },
+          { text: 'Pause and work out your own numbers' },
           { text: 'Accept to keep the client', why: 'Check your walk-away first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

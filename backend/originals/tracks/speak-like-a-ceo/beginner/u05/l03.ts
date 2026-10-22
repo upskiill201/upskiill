@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the problem with the defensive answer?',
         options: [
-          { text: 'It attacks and never answers the question' },
           { text: 'It\'s too short', why: 'It doesn\'t answer.' },
+          { text: 'It attacks and never answers the question' },
           { text: 'It\'s too calm', why: 'It\'s defensive.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'What if the question is actually rude, not just tough?',
         prompt: "Diego\'s best reply?",
         options: [
-          { text: 'Answer the fair part of it, calmly. The room is watching how you respond, and calm wins them over.' },
           { text: 'Be rude back.', why: 'Calm wins the room.' },
           { text: 'Refuse to answer.', why: 'Answer the fair part.' },
+          { text: 'Answer the fair part of it, calmly. The room is watching how you respond, and calm wins them over.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why say "Fair question"?',
         options: [
-          { text: 'It lowers the heat and buys a second to think' },
           { text: 'To flatter them', why: 'It lowers the heat.' },
+          { text: 'It lowers the heat and buys a second to think' },
           { text: 'To avoid answering', why: 'You still answer.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

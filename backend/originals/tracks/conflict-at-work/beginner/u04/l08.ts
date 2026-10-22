@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does public criticism hurt more?',
         options: [
-          { text: 'Your identity feels threatened in front of an audience' },
           { text: 'It\'s louder', why: 'It\'s about the audience.' },
           { text: 'It doesn\'t', why: 'Audiences make it harder.' },
+          { text: 'Your identity feels threatened in front of an audience' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         message: 'How do I raise "don\'t criticise me in public" without sounding precious?',
         prompt: "Priya's best reply?",
         options: [
-          { text: 'Make it a team norm, not a complaint: "Could we raise concerns about each other\'s work one-to-one first? It\'d help me get you better answers."' },
           { text: '"Never embarrass me again."', why: 'Sounds like a threat.' },
+          { text: 'Make it a team norm, not a complaint: "Could we raise concerns about each other\'s work one-to-one first? It\'d help me get you better answers."' },
           { text: 'Don\'t raise it.', why: 'It\'s worth raising, softly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When is it right to correct a fact in the moment?',
         options: [
-          { text: 'When it\'s factually wrong and one brief, calm correction will help' },
           { text: 'Always, at length', why: 'Brief and calm only.' },
           { text: 'Never', why: 'A short factual correction can help.' },
+          { text: 'When it\'s factually wrong and one brief, calm correction will help' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

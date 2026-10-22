@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which question tests a trade?',
         options: [
-          { text: '"If I signed for two years, would that help with the rent?"' },
           { text: '"What matters most to you?"', why: 'That finds interests; it doesn\'t test a trade yet.' },
           { text: '"Why so expensive?"', why: 'That sounds like an attack.' },
+          { text: '"If I signed for two years, would that help with the rent?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'What if he just says "I want more money"?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'Follow up: "What\'s driving that, rising costs?" Money is usually a means to something. Find the something.' },
           { text: 'Then there\'s nothing to trade.', why: 'There\'s usually a reason behind "more money".' },
+          { text: 'Follow up: "What\'s driving that, rising costs?" Money is usually a means to something. Find the something.' },
           { text: 'Tell him that\'s greedy.', why: 'That ends the questions.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do closed questions find fewer interests?',
         options: [
-          { text: 'They can be answered with yes or no, so people don\'t explain' },
           { text: 'They\'re rude', why: 'They\'re fine, just less revealing.' },
           { text: 'They find more', why: 'Open questions get people talking.' },
+          { text: 'They can be answered with yes or no, so people don\'t explain' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

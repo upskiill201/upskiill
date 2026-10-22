@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What evidence shows that many students can pay more than 1,500?',
         options: [
-          { text: 'Several already pay Mama Rose 2,400 a basket' },
           { text: 'A poll said so', why: 'Polls give guesses.' },
           { text: 'Clinton feels it', why: 'Feelings aren\'t evidence.' },
+          { text: 'Several already pay Mama Rose 2,400 a basket' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might a very cheap laundry service lose customers?',
         options: [
-          { text: 'People worry their clothes won\'t come back clean or at all' },
           { text: 'Cheap is illegal', why: 'It\'s about trust.' },
           { text: 'It never does', why: 'Too cheap can look risky.' },
+          { text: 'People worry their clothes won\'t come back clean or at all' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

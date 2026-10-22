@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which STAR part should be longest?',
         options: [
-          { text: 'Action' },
           { text: 'Situation', why: 'Short set-up.' },
+          { text: 'Action' },
           { text: 'Task', why: 'One sentence.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'My result is small: we just submitted on time. Should I make it sound bigger?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'No. Say it exactly: "two days early, A-minus." Small, true and specific beats big and vague.' },
           { text: 'Yes, say you won an award.', why: 'Never invent results.' },
           { text: 'Leave out the result.', why: 'Always end with one.' },
+          { text: 'No. Say it exactly: "two days early, A-minus." Small, true and specific beats big and vague.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

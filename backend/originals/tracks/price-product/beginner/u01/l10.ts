@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'An ordinary bag costs 1,125. Add 1,200 in moto-taxis. What does the rainy-day hill bag cost?',
         options: [
-          { text: '2,325 FCFA' },
           { text: '1,425 FCFA', why: 'That only adds 300; there are four rides.' },
           { text: '1,500 FCFA', why: 'That\'s the price, not the cost.' },
+          { text: '2,325 FCFA' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Two bags from the same hostel share the 1,200 FCFA in rides. What does each bag cost now?',
         options: [
-          { text: '1,725 FCFA (1,125 + 600)' },
           { text: '2,325 FCFA', why: 'The rides are split between two bags.' },
+          { text: '1,725 FCFA (1,125 + 600)' },
           { text: '1,125 FCFA', why: 'They still need the rides.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should change on the next price card?',
         options: [
-          { text: 'Hard orders, like far or rainy pickups, need their own price or fee' },
           { text: 'Everything should cost 2,325', why: 'Most orders cost 1,125; charge the extra where it happens.' },
+          { text: 'Hard orders, like far or rainy pickups, need their own price or fee' },
           { text: 'Nothing', why: 'Some orders lose 825 FCFA.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'Without bullets, how will I remember what to say?',
         prompt: "Sofía\'s best reply?",
         options: [
-          { text: 'Put the notes in speaker notes or on your talk card. The slide is for them; the notes are for you.' },
           { text: 'Keep the bullets and read them.', why: 'Redundancy.' },
           { text: 'Don\'t prepare.', why: 'Use speaker notes.' },
+          { text: 'Put the notes in speaker notes or on your talk card. The slide is for them; the notes are for you.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is an example of signalling?',
         options: [
-          { text: 'One bar in a different colour' },
           { text: 'Background music', why: 'That breaks coherence.' },
+          { text: 'One bar in a different colour' },
           { text: 'Reading the slide aloud', why: 'That\'s redundancy.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

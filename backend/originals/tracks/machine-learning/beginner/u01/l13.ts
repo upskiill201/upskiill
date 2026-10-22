@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The model finds that patients who wait long miss more. What can Halima say?',
         options: [
-          { text: 'Long waits go with more no-shows' },
           { text: 'Long waits cause no-shows: proven', why: 'A pattern isn\'t proof of cause.' },
           { text: 'Nothing at all', why: 'The pattern is real and useful, just not proof of cause.' },
+          { text: 'Long waits go with more no-shows' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -84,21 +84,21 @@ const lesson: OriginalLesson = {
         message: 'Can it predict no-shows at the clinics we open next year?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Only roughly. It has no examples from those clinics yet. Once they have a few months of bookings, we can check.' },
           { text: 'Yes, exactly.', why: 'It has never seen those clinics.' },
+          { text: 'Only roughly. It has no examples from those clinics yet. Once they have a few months of bookings, we can check.' },
           { text: 'Never, under any circumstances.', why: 'With data from them later, it could.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'A new bus route opens near Yaba clinic. What might happen to the model?',
         options: [
-          { text: 'Its patterns for Yaba may go out of date' },
           { text: 'It automatically knows about the bus', why: 'It only knows what was in its examples.' },
           { text: 'Nothing can change a model', why: 'The world changing makes a model\'s patterns stale.' },
+          { text: 'Its patterns for Yaba may go out of date' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -146,11 +146,11 @@ const lesson: OriginalLesson = {
         message: 'Let\'s just give it ten times more data and it\'ll be perfect.',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'More data helps only if it has the clues that matter. Ten times more of the wrong columns won\'t fix anything.' },
           { text: 'Yes, more data always wins.', why: 'Not if the key clue is missing or the data is biased.' },
           { text: 'Data doesn\'t matter.', why: 'It matters a lot. It just isn\'t magic.' },
+          { text: 'More data helps only if it has the clues that matter. Ten times more of the wrong columns won\'t fix anything.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

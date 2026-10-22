@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is an anchor in negotiation?',
         options: [
-          { text: 'A first number that pulls the final deal towards it' },
           { text: 'Your walk-away point', why: 'That\'s private; an anchor is put on the table.' },
           { text: 'A final offer', why: 'Anchors come first.' },
+          { text: 'A first number that pulls the final deal towards it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'Why did ₦1,450,000 feel almost OK after ₦1,500,000?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'His first number anchored you. Compare it with the market, not with his ask: ₦1,450,000 is the very top.' },
           { text: 'Because it is OK.', why: 'It\'s exactly her walk-away.' },
+          { text: 'His first number anchored you. Compare it with the market, not with his ask: ₦1,450,000 is the very top.' },
           { text: 'You were tired.', why: 'It\'s the anchoring effect.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Galinsky suggest focusing on when the other side anchors first?',
         options: [
-          { text: 'Your own goal and their alternatives' },
           { text: 'Their number', why: 'That strengthens their anchor.' },
           { text: 'Your fear', why: 'Focus on goals and alternatives.' },
+          { text: 'Your own goal and their alternatives' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

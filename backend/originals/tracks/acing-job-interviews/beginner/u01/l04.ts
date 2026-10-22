@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         message: 'Should I use the same answer for the bank and for Mtaa Labs?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Same shape, different details. Pick the past examples and the future reason that fit each role.' },
           { text: 'Yes, word for word.', why: 'Tailor the details.' },
           { text: 'Make up a new life for each.', why: 'Same true facts, different emphasis.' },
+          { text: 'Same shape, different details. Pick the past examples and the future reason that fit each role.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'About how long is Tey\'s example out loud, before adding detail?',
         options: [
-          { text: 'About 45 seconds' },
           { text: 'About 4 minutes', why: 'That was Remi\'s first answer.' },
           { text: 'About 5 seconds', why: 'It\'s three full parts.' },
+          { text: 'About 45 seconds' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

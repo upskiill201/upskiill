@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why read it out loud?',
         options: [
-          { text: 'Your ear catches long sentences and harsh words' },
           { text: 'To practise a speech', why: 'It\'s to catch problems.' },
           { text: 'No reason', why: 'It catches tone and length.' },
+          { text: 'Your ear catches long sentences and harsh words' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A line would sting. What should Zanele change?',
         options: [
-          { text: 'That line, not the message' },
           { text: 'Delete the whole message', why: 'Just fix the line.' },
           { text: 'Nothing', why: 'Change the line.' },
+          { text: 'That line, not the message' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

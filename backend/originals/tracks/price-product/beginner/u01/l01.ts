@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Clinton forget when he said "20 bags = 10,000 FCFA for me"?',
         options: [
-          { text: 'The other costs: bags, tags, Mobile Money fees, repairs, moto-taxis' },
           { text: 'Nothing; 10,000 is right', why: 'Those costs come out of his 500 a bag.' },
+          { text: 'The other costs: bags, tags, Mobile Money fees, repairs, moto-taxis' },
           { text: 'Mama Rose\'s share', why: 'He took that off already.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         message: 'We\'re so busy! That must mean we\'re doing well.',
         prompt: "David's best reply?",
         options: [
-          { text: 'Busy means people want it. It doesn\'t mean you\'re earning. Let\'s count every cost before we celebrate.' },
           { text: 'Yes, busy always means profit.', why: 'Busy and broke is common.' },
           { text: 'Busy means you should stop.', why: 'Demand is good news; the price is the question.' },
+          { text: 'Busy means people want it. It doesn\'t mean you\'re earning. Let\'s count every cost before we celebrate.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

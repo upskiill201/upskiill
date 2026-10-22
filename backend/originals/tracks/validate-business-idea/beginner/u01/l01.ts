@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "validating" a business idea mean?',
         options: [
-          { text: 'Finding evidence that people have the problem and will pay for your solution' },
           { text: 'Getting your friends to say it\'s a good idea', why: 'Friends being kind isn\'t evidence of paying customers.' },
+          { text: 'Finding evidence that people have the problem and will pay for your solution' },
           { text: 'Building the product and hoping', why: 'Validation happens before building.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Forty people love it. Isn\'t that proof?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'It\'s proof they like the idea. It isn\'t proof they\'d pay. Let\'s find that out before you spend your savings.' },
           { text: 'Yes, forty is plenty. Build it.', why: 'Liking costs nothing; paying is the real test.' },
           { text: 'No, forty is too few. Wait for a hundred.', why: 'More emojis won\'t answer the paying question either.' },
+          { text: 'It\'s proof they like the idea. It isn\'t proof they\'d pay. Let\'s find that out before you spend your savings.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What will Clinton spend most of this course doing?',
         options: [
-          { text: 'Collecting evidence about customers before building' },
           { text: 'Learning to code the app', why: 'This course is about testing the idea, not building it.' },
           { text: 'Writing a 40-page business plan', why: 'Evidence first; plans come later.' },
+          { text: 'Collecting evidence about customers before building' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Should I have asked him to apologise?',
         prompt: "Priya's best reply?",
         options: [
-          { text: 'No. You named the impact and asked for a better habit. That gave him room to apologise himself, which means more.' },
           { text: 'Yes, demand it.', why: 'Demanded apologies rarely feel real.' },
+          { text: 'No. You named the impact and asked for a better habit. That gave him room to apologise himself, which means more.' },
           { text: 'You shouldn\'t have mentioned Monday.', why: 'Raising it softly helped.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Grace frame the delivery request as helping him?',
         options: [
-          { text: 'It makes the change easy to accept, without blame' },
           { text: 'To manipulate him', why: 'It\'s true: she would answer better.' },
           { text: 'No reason', why: 'It saved his face.' },
+          { text: 'It makes the change easy to accept, without blame' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

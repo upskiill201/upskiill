@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why start with the problem, not the solution?',
         options: [
-          { text: 'If the problem isn\'t real, no solution will sell' },
           { text: 'Problems are easier to build', why: 'You don\'t build a problem; you check it\'s real.' },
           { text: 'Investors like long problem statements', why: 'It\'s about whether customers care.' },
+          { text: 'If the problem isn\'t real, no solution will sell' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'The problem is "students need food". Done!',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Everyone needs food. Which students, what goes wrong today, how often? And what do they already do about it?' },
           { text: 'Perfect problem statement.', why: 'Too broad to test or act on.' },
+          { text: 'Everyone needs food. Which students, what goes wrong today, how often? And what do they already do about it?' },
           { text: 'Problems don\'t matter; build it.', why: 'The problem decides whether anyone pays.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which problem is most worth solving?',
         options: [
-          { text: 'One people meet every week and already spend money on' },
           { text: 'One people meet once a year and shrug at', why: 'Rare, mild problems rarely pay.' },
           { text: 'One only you have noticed', why: 'Check that others have it too.' },
+          { text: 'One people meet every week and already spend money on' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

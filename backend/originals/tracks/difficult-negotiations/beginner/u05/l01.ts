@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is £37,000 "acceptable, not good"?',
         options: [
-          { text: 'It only matches what he\'d keep at Kinwell' },
           { text: 'It\'s below his walk-away', why: 'It\'s exactly at it.' },
+          { text: 'It only matches what he\'d keep at Kinwell' },
           { text: 'It\'s a great deal', why: 'It\'s just level with his BATNA.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'It\'s our walk-away. Why not just take it?',
         prompt: "Kavya's best reply?",
         options: [
-          { text: 'At the walk-away we\'re no better off than Kinwell. And they need spring support. Let\'s package that in.' },
           { text: 'You\'re right, take it.', why: 'There\'s value left on the table.' },
           { text: 'Walk out now.', why: 'There\'s a better deal to find.' },
+          { text: 'At the walk-away we\'re no better off than Kinwell. And they need spring support. Let\'s package that in.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In the magazine example, what did the "print only" option do?',
         options: [
-          { text: 'Made "print and web" look like a bargain at the same price' },
           { text: 'Sold the most', why: 'Almost nobody chose it.' },
+          { text: 'Made "print and web" look like a bargain at the same price' },
           { text: 'Nothing', why: 'Removing it changed what people chose.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'With three tiers (Saver, Standard, Express), which one might many students choose because it\'s in the middle?',
         options: [
-          { text: 'Standard' },
           { text: 'Saver', why: 'It\'s the cheapest, not the middle.' },
+          { text: 'Standard' },
           { text: 'Express', why: 'It\'s the most expensive.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

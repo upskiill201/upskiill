@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What pace do many coaches suggest for a talk?',
         options: [
-          { text: 'Around 130 to 160 words a minute' },
           { text: 'Around 190', why: 'That\'s Lucía\'s rushed pace.' },
+          { text: 'Around 130 to 160 words a minute' },
           { text: 'Around 60', why: 'Too slow.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'When I pause, it feels like forever. People will think I\'ve forgotten.',
         prompt: "Diego\'s best reply?",
         options: [
-          { text: 'Two seconds feels like ten to you. To them it sounds calm. Watch the recording: you\'ll see.' },
           { text: 'Then don\'t pause.', why: 'Pauses help them.' },
           { text: 'Pause for a full minute.', why: 'Two seconds.' },
+          { text: 'Two seconds feels like ten to you. To them it sounds calm. Watch the recording: you\'ll see.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

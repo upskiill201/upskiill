@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the best swap for "um" in a talk?',
         options: [
-          { text: 'A silent pause' },
           { text: '"Like"', why: 'Another filler.' },
+          { text: 'A silent pause' },
           { text: 'Talking faster', why: 'A pause.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why stop after your point?',
         options: [
-          { text: 'Extra detail weakens it; silence invites questions' },
           { text: 'To seem rude', why: 'It keeps the point strong.' },
+          { text: 'Extra detail weakens it; silence invites questions' },
           { text: 'You shouldn\'t stop', why: 'Stopping helps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

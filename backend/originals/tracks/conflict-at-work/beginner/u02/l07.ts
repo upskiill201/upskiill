@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happened in Bushman\'s venting study?',
         options: [
-          { text: 'People who hit a punching bag while thinking about the person got angrier' },
           { text: 'Venting calmed them', why: 'It made them angrier.' },
           { text: 'Nothing changed', why: 'Anger and aggression rose.' },
+          { text: 'People who hit a punching bag while thinking about the person got angrier' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes a break different from avoiding?',
         options: [
-          { text: 'You agree when you\'ll come back' },
           { text: 'It\'s shorter', why: 'The key is coming back.' },
           { text: 'There\'s no difference', why: 'Returning is the difference.' },
+          { text: 'You agree when you\'ll come back' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

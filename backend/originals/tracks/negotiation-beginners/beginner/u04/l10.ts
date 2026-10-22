@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Ada\'s questions reveal?',
         options: [
-          { text: 'His service charge rose and his last tenant left the flat empty for ten weeks' },
           { text: 'He wanted her to leave', why: 'He badly wanted a reliable tenant.' },
+          { text: 'His service charge rose and his last tenant left the flat empty for ten weeks' },
           { text: 'Nothing useful', why: 'They showed exactly what he valued.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How does ₦1,350,000 compare with Ada\'s goal and walk-away?',
         options: [
-          { text: 'Just above her ₦1,300,000 goal, well below her ₦1,450,000 walk-away' },
           { text: 'Above her walk-away', why: '₦1,350,000 is below ₦1,450,000.' },
+          { text: 'Just above her ₦1,300,000 goal, well below her ₦1,450,000 walk-away' },
           { text: 'Below her goal', why: 'It\'s ₦50,000 above her goal.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

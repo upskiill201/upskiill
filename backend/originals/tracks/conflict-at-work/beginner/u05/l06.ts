@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is a real feeling, not a judgement?',
         options: [
-          { text: '"I felt worried."' },
           { text: '"I felt you were disrespectful."', why: 'That\'s a judgement of him.' },
           { text: '"I felt ignored by you."', why: 'That\'s about what he did, not how she feels.' },
+          { text: '"I felt worried."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'Isn\'t "I felt embarrassed" too soft for work?',
         prompt: "Priya's best reply?",
         options: [
-          { text: 'It\'s honest and short. It tells Callum the impact without accusing him. You can say it calmly and move on.' },
           { text: 'Yes, never mention feelings at work.', why: 'A brief feeling explains the impact.' },
+          { text: 'It\'s honest and short. It tells Callum the impact without accusing him. You can say it calmly and move on.' },
           { text: 'Say you were furious.', why: 'Honest and calm works better.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes a request different from a demand?',
         options: [
-          { text: 'It\'s clear and doable, and the other person can say no or suggest another way' },
           { text: 'It\'s louder', why: 'It\'s about choice.' },
           { text: 'Nothing', why: 'Demands leave no choice.' },
+          { text: 'It\'s clear and doable, and the other person can say no or suggest another way' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

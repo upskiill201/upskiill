@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Watching myself is horrible. Is it really worth it?',
         prompt: "Diego\'s best reply?",
         options: [
-          { text: 'Yes. Five minutes of cringing shows you what months of guessing wouldn\'t. And it gets easier.' },
           { text: 'No, just guess.', why: 'Recording is the fastest feedback.' },
           { text: 'Only watch the good bits.', why: 'Watch it all once.' },
+          { text: 'Yes. Five minutes of cringing shows you what months of guessing wouldn\'t. And it gets easier.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Diego say about the content?',
         options: [
-          { text: 'It\'s good; the delivery needs work' },
           { text: 'Start over', why: 'The content is good.' },
+          { text: 'It\'s good; the delivery needs work' },
           { text: 'It\'s too short', why: 'It\'s good.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why would Brenda switch from Mama Rose to WashDay?',
         options: [
-          { text: 'No carrying baskets uphill, and clothes back sooner' },
           { text: 'Because WashDay has a nicer name', why: 'Names don\'t solve her two complaints.' },
+          { text: 'No carrying baskets uphill, and clothes back sooner' },
           { text: 'Because it\'s new', why: 'New isn\'t a reason to change.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can\'t WashDay win by being cheapest?',
         options: [
-          { text: 'Its biggest competitor, hand-washing, is free' },
           { text: 'Cheap is illegal', why: 'It\'s about the competition, not rules.' },
+          { text: 'Its biggest competitor, hand-washing, is free' },
           { text: 'Mama Rose is free', why: 'She charges about 2,400 FCFA a basket.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

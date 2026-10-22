@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is confirmation bias?',
         options: [
-          { text: 'Noticing and remembering evidence that agrees with what we already believe' },
           { text: 'Confirming an order with a customer', why: 'It\'s a thinking trap, not a business step.' },
+          { text: 'Noticing and remembering evidence that agrees with what we already believe' },
           { text: 'Asking for proof of payment', why: 'That\'s a good habit, not the bias.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         message: 'Those three doubters are just negative people. I\'ll ignore them.',
         prompt: "David's best reply?",
         options: [
-          { text: 'They\'re telling you the most useful thing in the chat: why people might NOT pay. Write their doubts on your board.' },
           { text: 'Yes, block them.', why: 'Doubts are free warnings.' },
           { text: 'Argue with them until they agree.', why: 'Winning an argument doesn\'t change what they\'ll pay.' },
+          { text: 'They\'re telling you the most useful thing in the chat: why people might NOT pay. Write their doubts on your board.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which doubt attacks Clinton\'s riskiest assumption most directly?',
         options: [
-          { text: '"the food stalls are right there though"' },
           { text: '"nice logo"', why: 'That\'s not a doubt about paying.' },
+          { text: '"the food stalls are right there though"' },
           { text: '"what time do you close?"', why: 'A question about details, not about paying.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

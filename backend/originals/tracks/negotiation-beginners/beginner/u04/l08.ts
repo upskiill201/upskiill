@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the difference between compromise and win-win?',
         options: [
-          { text: 'Compromise splits; win-win trades so both get more of what they value' },
           { text: 'There\'s no difference', why: 'One divides; the other adds value.' },
+          { text: 'Compromise splits; win-win trades so both get more of what they value' },
           { text: 'Win-win means one side wins twice', why: 'Both sides gain.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: 'If you care about win-win, shouldn\'t you just accept less?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'No. I make the deal bigger for both of us, and I still aim for a good rent. Both at once.' },
           { text: 'Yes, accept less.', why: 'Win-win isn\'t giving in.' },
           { text: 'Win-win is a myth.', why: 'It\'s real when you trade issues.' },
+          { text: 'No. I make the deal bigger for both of us, and I still aim for a good rent. Both at once.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can very nice negotiators get worse deals?',
         options: [
-          { text: 'They give things away without asking for anything back' },
           { text: 'People dislike them', why: 'People like them; they just give too much.' },
+          { text: 'They give things away without asking for anything back' },
           { text: 'They don\'t', why: 'Niceness without goals often gives value away.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

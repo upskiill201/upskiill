@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is an exploding offer?',
         options: [
-          { text: 'An offer that expires quickly so you can\'t compare it with others' },
           { text: 'A very high offer', why: 'It\'s about time, not size.' },
           { text: 'An offer that changes every day', why: 'It\'s about a short expiry.' },
+          { text: 'An offer that expires quickly so you can\'t compare it with others' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'If we miss Friday, it\'s gone!',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'We\'re sending options on Thursday. And the real driver is the spring launch, which still needs a team. Let\'s not panic.' },
           { text: 'You\'re right, accept £30,000 now.', why: 'That\'s exactly what the deadline is for.' },
+          { text: 'We\'re sending options on Thursday. And the real driver is the spring launch, which still needs a team. Let\'s not panic.' },
           { text: 'Ignore Friday completely.', why: 'Answer calmly and on time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does research suggest about time pressure?',
         options: [
-          { text: 'People under time pressure tend to concede more and explore less' },
           { text: 'It always helps everyone', why: 'It usually narrows thinking.' },
           { text: 'It has no effect', why: 'It changes behaviour.' },
+          { text: 'People under time pressure tend to concede more and explore less' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

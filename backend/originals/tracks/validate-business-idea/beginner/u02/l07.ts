@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'My mum says WashDay is brilliant. That counts, right?',
         prompt: "David's best reply?",
         options: [
-          { text: 'Your mum would call anything you do brilliant. Does she have the problem? If not, find people who do.' },
           { text: 'Yes, mums know best.', why: 'She loves you; that makes her a biased judge.' },
           { text: 'Never talk to your mum again.', why: 'Just don\'t count her opinion as evidence.' },
+          { text: 'Your mum would call anything you do brilliant. Does she have the problem? If not, find people who do.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When CAN a friend give you good evidence?',
         options: [
-          { text: 'When they have the problem and you ask about their life, not your idea' },
           { text: 'When you ask them to rate your idea out of 10', why: 'That\'s exactly when they\'re kind instead of honest.' },
+          { text: 'When they have the problem and you ask about their life, not your idea' },
           { text: 'Never', why: 'With the right questions, they can.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

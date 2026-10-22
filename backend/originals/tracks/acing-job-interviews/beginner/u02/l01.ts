@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s wrong with "I want to work there because it\'s a startup"?',
         options: [
-          { text: 'It could be said about any startup; it shows no research' },
           { text: 'Startups don\'t like it', why: 'It\'s too generic for anyone.' },
+          { text: 'It could be said about any startup; it shows no research' },
           { text: 'Nothing', why: 'It\'s not specific to them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         message: 'I only have tonight. Should I revise algorithms instead?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Do an hour of research first. Then review the two or three skills the ad lists. Then sleep.' },
           { text: 'Yes, revise everything all night.', why: 'Impossible, and you\'ll be exhausted.' },
           { text: 'Skip both.', why: 'One focused hour helps a lot.' },
+          { text: 'Do an hour of research first. Then review the two or three skills the ad lists. Then sleep.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "have you used the app?" a strong research question?',
         options: [
-          { text: 'Using the product gives real things to talk about and shows interest' },
           { text: 'To find bugs to criticise', why: 'It\'s about understanding it.' },
+          { text: 'Using the product gives real things to talk about and shows interest' },
           { text: 'It isn\'t useful', why: 'It\'s one of the best things to do.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

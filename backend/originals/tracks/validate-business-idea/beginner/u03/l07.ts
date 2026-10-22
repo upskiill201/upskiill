@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What was the most important thing Clinton learned at the stand?',
         options: [
-          { text: 'She\'s overloaded and can\'t collect or deliver, so students are turned away' },
           { text: 'Her stand is painted blue', why: 'Not useful.' },
           { text: 'She has no customers', why: 'She has more than she can handle.' },
+          { text: 'She\'s overloaded and can\'t collect or deliver, so students are turned away' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'If she turned away 15 baskets at 2,400 FCFA each, how much business was lost that Saturday?',
         options: [
-          { text: '36,000 FCFA' },
           { text: '3,600 FCFA', why: '15 × 2,400 = 36,000.' },
           { text: '240,000 FCFA', why: 'That\'s 100 baskets.' },
+          { text: '36,000 FCFA' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

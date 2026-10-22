@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do nibbles often work?',
         options: [
-          { text: 'They come when you\'re relieved the deal is done and don\'t want to reopen it' },
           { text: 'They\'re always small', why: 'Some, like the dashboard, are weeks of work.' },
+          { text: 'They come when you\'re relieved the deal is done and don\'t want to reopen it' },
           { text: 'They don\'t work', why: 'Relief makes people say yes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'He said take it or leave it. Do we just take it?',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'Not yet. Hear it as a position. Offer a path: "I understand. Here\'s an option that might work for both of us."' },
           { text: 'Yes, ultimatums are final.', why: 'Often they\'re just firmly stated positions.' },
           { text: 'Say "Then we leave!"', why: 'Answering heat with heat closes the door.' },
+          { text: 'Not yet. Hear it as a position. Offer a path: "I understand. Here\'s an option that might work for both of us."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

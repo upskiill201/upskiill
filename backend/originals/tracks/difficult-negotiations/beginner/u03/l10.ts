@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Arjun say no to?',
         options: [
-          { text: 'A full working app by Monday' },
           { text: 'Helping with the board meeting', why: 'He offered a demo to help.' },
           { text: 'The whole project', why: 'He offered a path.' },
+          { text: 'A full working app by Monday' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Why charge £675? She\'s about to sign. Do it free.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'It\'s real work, and it\'s credited against phase one if they sign. If they don\'t, we\'re still paid.' },
           { text: 'You\'re right, free.', why: 'Unsigned work for free is a risk.' },
+          { text: 'It\'s real work, and it\'s credited against phase one if they sign. If they don\'t, we\'re still paid.' },
           { text: 'Charge £5,000.', why: 'Use the agreed rate.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why wait until Saturday morning to reply?',
         options: [
-          { text: 'It was 1:30 a.m. for him; a rested reply was better than a panicked one' },
           { text: 'To punish her', why: 'It was about replying well.' },
           { text: 'He forgot', why: 'It was a balcony move.' },
+          { text: 'It was 1:30 a.m. for him; a rested reply was better than a panicked one' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

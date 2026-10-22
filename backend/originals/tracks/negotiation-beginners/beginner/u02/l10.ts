@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is the best goal for Ada\'s review?',
         options: [
-          { text: '₦480,000: ambitious, inside the range, matching her bigger role' },
           { text: '₦360,000', why: 'Below the market range.' },
           { text: '₦900,000', why: 'Far outside the evidence; easy to dismiss.' },
+          { text: '₦480,000: ambitious, inside the range, matching her bigger role' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'Should I tell Tobi about the ₦420,000 offer?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'Only if it\'s real and you\'d take it. Say it calmly as context, not as a threat. Lead with your value and the market range.' },
           { text: 'Exaggerate it to ₦600,000.', why: 'Lies get found out.' },
           { text: 'Threaten to leave tomorrow.', why: 'Threats damage the relationship.' },
+          { text: 'Only if it\'s real and you\'d take it. Say it calmly as context, not as a threat. Lead with your value and the market range.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

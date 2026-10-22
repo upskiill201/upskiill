@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes a weakness answer convincing?',
         options: [
-          { text: 'Evidence that you\'re actively improving it' },
           { text: 'Making the weakness sound like a strength', why: 'That\'s the fake version.' },
+          { text: 'Evidence that you\'re actively improving it' },
           { text: 'Saying you have none', why: 'Not believable.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'What about "tell me about a failure"? Same thing?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Similar shape: a real failure, your part in it, what you did, what you changed. Your hackathon story is ready.' },
           { text: 'Say you\'ve never failed.', why: 'Not believable.' },
           { text: 'Blame your team.', why: 'Ownership matters.' },
+          { text: 'Similar shape: a real failure, your part in it, what you did, what you changed. Your hackathon story is ready.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Mr Kamau reply?',
         options: [
-          { text: '"Thanks for telling me early. Keep me posted."' },
           { text: '"Why didn\'t you tell me sooner?"', why: 'She told him the same day.' },
           { text: '"Cancel the rollout."', why: 'He thanked her.' },
+          { text: '"Thanks for telling me early. Keep me posted."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         message: 'My manager wants me on a second project. I said "I\'ll try".',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: 'If you can\'t, say so: the no, one reason, what you can do instead, and a question. "I\'ll try" sounds like yes.' },
           { text: '"I\'ll try" is perfect.', why: 'It sounds like yes.' },
+          { text: 'If you can\'t, say so: the no, one reason, what you can do instead, and a question. "I\'ll try" sounds like yes.' },
           { text: 'Ignore the request.', why: 'Answer it clearly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

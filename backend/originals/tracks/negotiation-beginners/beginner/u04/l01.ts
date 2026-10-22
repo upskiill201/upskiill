@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'Just flip a coin. It\'s fair.',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Fair, but one of us loses everything. If we both say what we need it for, we might both win.' },
           { text: 'Fine, flip it.', why: 'That skips a better deal.' },
           { text: 'I\'m the leaseholder, so it\'s mine.', why: 'Pulling rank hurts the friendship.' },
+          { text: 'Fair, but one of us loses everything. If we both say what we need it for, we might both win.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s wrong with "Ada Monday to Wednesday, Ngozi Thursday to Sunday"?',
         options: [
-          { text: 'It splits the room without meeting either need' },
           { text: 'Nothing', why: 'Ngozi\'s fabric still has nowhere to live.' },
+          { text: 'It splits the room without meeting either need' },
           { text: 'It\'s too generous', why: 'It\'s just a split, not a solution.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

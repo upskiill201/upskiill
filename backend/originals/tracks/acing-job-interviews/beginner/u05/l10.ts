@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How does KES 35,000 compare with Remi\'s own range (30,000 to 35,000)?',
         options: [
-          { text: 'It\'s the top of his range' },
           { text: 'It\'s below his range', why: 'It\'s at the top.' },
           { text: 'It\'s double his range', why: 'It\'s exactly the top.' },
+          { text: 'It\'s the top of his range' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'Should I just say yes immediately?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Say you\'re delighted and want to accept, ask your two questions, and confirm once you\'ve read the letter.' },
           { text: 'Wait a week to seem cool.', why: 'Respond warmly and promptly.' },
+          { text: 'Say you\'re delighted and want to accept, ask your two questions, and confirm once you\'ve read the letter.' },
           { text: 'Accept without reading anything.', why: 'Check the letter.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

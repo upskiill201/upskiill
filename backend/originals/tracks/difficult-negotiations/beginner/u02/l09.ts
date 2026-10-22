@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did testing the Friday deadline reveal?',
         options: [
-          { text: 'The real date was finance approvals next week' },
           { text: 'Friday was absolutely final', why: 'It turned out softer.' },
+          { text: 'The real date was finance approvals next week' },
           { text: 'Nothing', why: 'It revealed the real driver.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Why write down tactics we already beat?',
         prompt: "Kavya's best reply?",
         options: [
-          { text: 'Because they\'ll use them again, and next time we\'ll answer without thinking.' },
           { text: 'No reason, delete it.', why: 'Tactics come back.' },
           { text: 'To send it to them.', why: 'It\'s an internal tool.' },
+          { text: 'Because they\'ll use them again, and next time we\'ll answer without thinking.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "ask what spring success looks like" do with the good cop?',
         options: [
-          { text: 'Turns her warmth into real information about their needs' },
           { text: 'Flatters her', why: 'It\'s a genuine question.' },
+          { text: 'Turns her warmth into real information about their needs' },
           { text: 'Nothing', why: 'It reveals interests.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

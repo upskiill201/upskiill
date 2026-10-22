@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'Can I use the booking app story twice in one interview?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Better to use a different story the second time. It shows range. Keep your best one for the question it fits most.' },
           { text: 'Use it for every question.', why: 'Range matters.' },
           { text: 'Never mention it.', why: 'It\'s his strongest story.' },
+          { text: 'Better to use a different story the second time. It shows range. Keep your best one for the question it fits most.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which kind of story is missing from many people\'s banks, but asked often?',
         options: [
-          { text: 'A failure or mistake you learned from' },
           { text: 'Your favourite film', why: 'Not a behavioural story.' },
+          { text: 'A failure or mistake you learned from' },
           { text: 'Your grades', why: 'Not a story.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

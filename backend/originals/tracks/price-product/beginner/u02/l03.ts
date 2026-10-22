@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'How can I put a price on "no damp jeans"?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'You don\'t need an exact number. Notice what people do to avoid it: Esther bought extra clothes. That shows it\'s worth something real.' },
           { text: 'You can\'t, so ignore it.', why: 'Hard-to-price value is still value.' },
+          { text: 'You don\'t need an exact number. Notice what people do to avoid it: Esther bought extra clothes. That shows it\'s worth something real.' },
           { text: 'Charge 5,000 for it.', why: 'Don\'t invent precise numbers; watch behaviour.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Compared with Mama Rose\'s 2,400, how much does a student save in money with WashDay at 1,500?',
         options: [
-          { text: '900 FCFA, and the carrying' },
           { text: '1,500 FCFA', why: 'That\'s WashDay\'s price.' },
           { text: 'Nothing', why: 'WashDay is cheaper.' },
+          { text: '900 FCFA, and the carrying' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

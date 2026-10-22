@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Could we lower the walk-away to £35,000, just this once?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Only if something real changes, like Kinwell falling through. The walk-away comes from the BATNA, not from wanting the deal.' },
           { text: 'Sure, why not.', why: 'Then the walk-away means nothing.' },
           { text: 'Raise it to £48,000.', why: 'It should match the BATNA, not a wish.' },
+          { text: 'Only if something real changes, like Kinwell falling through. The walk-away comes from the BATNA, not from wanting the deal.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "the board saw our demo" on the sheet?',
         options: [
-          { text: 'It raises Harlow & Finch\'s cost of switching agencies' },
           { text: 'To brag', why: 'It\'s a source of power.' },
+          { text: 'It raises Harlow & Finch\'s cost of switching agencies' },
           { text: 'No reason', why: 'It matters to their alternatives.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

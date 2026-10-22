@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'If I\'m the cheapest in Buea, everyone will use me!',
         prompt: "David's best reply?",
         options: [
-          { text: 'The bucket is free and you still beat it. Students pay for their Saturday, not for the cheapest option.' },
           { text: 'Yes, be the cheapest.', why: 'That\'s how he got busy and broke.' },
           { text: 'Be the most expensive instead.', why: 'Price should follow value, not a slogan.' },
+          { text: 'The bucket is free and you still beat it. Students pay for their Saturday, not for the cheapest option.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The price goes from 1,500 to 1,600. By roughly what percent is that?',
         options: [
-          { text: 'About 7%' },
           { text: 'About 27%', why: 'That\'s the margin rise.' },
+          { text: 'About 7%' },
           { text: '100%', why: '100 more on 1,500 is under 7%.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

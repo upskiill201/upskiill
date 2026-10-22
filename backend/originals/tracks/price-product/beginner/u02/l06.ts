@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a price anchor?',
         options: [
-          { text: 'The number people compare a price with' },
           { text: 'The lowest price allowed', why: 'That\'s the floor.' },
+          { text: 'The number people compare a price with' },
           { text: 'A discount code', why: 'It\'s a comparison point.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         message: 'Could I write "Was 3,000, now only 1,800!"?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Only if it really was 3,000. It never was. Fake "was" prices are dishonest, and students would see through it. Use the real 2,400 at the stand.' },
           { text: 'Yes, everyone does it.', why: 'It\'s misleading, and may break consumer rules.' },
           { text: 'Write "was 10,000".', why: 'Even more misleading.' },
+          { text: 'Only if it really was 3,000. It never was. Fake "was" prices are dishonest, and students would see through it. Use the real 2,400 at the stand.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Clinton\'s old post ("WashDay: 1,500 FCFA.") make students think of the bucket?',
         options: [
-          { text: 'It gave no comparison, so they compared with what they do now: wash for free' },
           { text: 'It was too long', why: 'It was short; it had no anchor.' },
+          { text: 'It gave no comparison, so they compared with what they do now: wash for free' },
           { text: 'It mentioned buckets', why: 'It didn\'t; that was their default.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

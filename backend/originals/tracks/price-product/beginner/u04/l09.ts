@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes v4 different from v3?',
         options: [
-          { text: 'It was tested, announced and launched with care for regulars' },
           { text: 'It has completely new prices', why: 'The prices match v3; the rollout is new.' },
+          { text: 'It was tested, announced and launched with care for regulars' },
           { text: 'Nothing', why: 'It went from design to tested launch.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did the Hostel A test show?',
         options: [
-          { text: 'Fewer bags but more margin at the new price' },
           { text: 'Nobody booked', why: '14 bags were booked.' },
+          { text: 'Fewer bags but more margin at the new price' },
           { text: 'The old price earned more', why: '9,450 vs 6,375.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "already spends money on it" strong evidence?',
         options: [
-          { text: 'It shows the problem hurts enough that people pay to fix it today' },
           { text: 'It means they\'re rich', why: 'It means they value a fix, not that they\'re rich.' },
           { text: 'It\'s weak evidence', why: 'Past spending is some of the strongest evidence there is.' },
+          { text: 'It shows the problem hurts enough that people pay to fix it today' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A student pays Mama Rose 2,400 FCFA twice a month. What is that per month?',
         options: [
-          { text: '4,800 FCFA' },
           { text: '2,400 FCFA', why: 'Twice a month doubles it.' },
+          { text: '4,800 FCFA' },
           { text: '9,600 FCFA', why: 'That would be four times a month.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Only six of fifteen pay Mama Rose. Isn\'t that bad news?',
         prompt: "David's best reply?",
         options: [
-          { text: 'Six already pay, and the others spend hours or patch it badly. The ones who can\'t afford her every week might be your customers.' },
           { text: 'Yes, give up.', why: 'Paying customers plus a big gap is good news.' },
           { text: 'It means everyone pays.', why: 'Six of fifteen, not all.' },
+          { text: 'Six already pay, and the others spend hours or patch it badly. The ones who can\'t afford her every week might be your customers.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

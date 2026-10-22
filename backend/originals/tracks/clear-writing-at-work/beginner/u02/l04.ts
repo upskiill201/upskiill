@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s wrong with "It has been decided that..."?',
         options: [
-          { text: 'It hides who decided' },
           { text: 'It\'s too short', why: 'It hides the doer.' },
+          { text: 'It hides who decided' },
           { text: 'Nothing', why: 'Readers want to know who.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Is the passive voice always wrong?',
         prompt: "Mrs Achieng's best reply?",
         options: [
-          { text: 'No. Use it when the doer doesn\'t matter or is unknown. Use active when readers need to know who does what.' },
           { text: 'Always wrong.', why: 'It has uses.' },
           { text: 'Always better.', why: 'It often hides the doer.' },
+          { text: 'No. Use it when the doer doesn\'t matter or is unknown. Use active when readers need to know who does what.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which passive sentence is fine as it is?',
         options: [
-          { text: '"The depot was built in 1998."' },
           { text: '"It has been decided that you will work Saturdays."', why: 'Readers need to know who decided.' },
+          { text: '"The depot was built in 1998."' },
           { text: '"Mistakes were made."', why: 'Hides who; often a dodge.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

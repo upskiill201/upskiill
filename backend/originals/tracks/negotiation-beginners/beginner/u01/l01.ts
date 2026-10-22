@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How many of Ada\'s four yeses were negotiations?',
         options: [
-          { text: 'All four' },
           { text: 'Only the rent', why: 'The project, logo and fuel all needed agreement too.' },
+          { text: 'All four' },
           { text: 'None of them', why: 'Each one was a chance to agree terms.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'If I ask, they\'ll think I\'m greedy.',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'Asking politely, with a reason, isn\'t greedy. People ask me for things every day. I only mind when they\'re rude.' },
           { text: 'Yes, so never ask.', why: 'Then Ada pays for every yes.' },
           { text: 'Demand it, don\'t ask.', why: 'Demands are what feel greedy.' },
+          { text: 'Asking politely, with a reason, isn\'t greedy. People ask me for things every day. I only mind when they\'re rude.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

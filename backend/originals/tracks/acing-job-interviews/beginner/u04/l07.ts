@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When is asking "what range do you have in mind?" a good move?',
         options: [
-          { text: 'When you can\'t find good research on pay' },
           { text: 'Never', why: 'It\'s fine when unsure.' },
+          { text: 'When you can\'t find good research on pay' },
           { text: 'Only after accepting', why: 'Ask before.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which line buys thinking time calmly?',
         options: [
-          { text: '"Let me think about that for a second."' },
           { text: '"Next question."', why: 'That dodges it.' },
+          { text: '"Let me think about that for a second."' },
           { text: '"Um, um, um..."', why: 'Silence or a calm line is better.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

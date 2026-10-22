@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s new on v5 compared with v4?',
         options: [
-          { text: 'It explains itself: what\'s included, totals shown first, and a review date' },
           { text: 'All the prices went up again', why: 'Prices are the same as v4.' },
           { text: 'The hill fee was removed', why: 'It stays; it\'s due for review.' },
+          { text: 'It explains itself: what\'s included, totals shown first, and a review date' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "Mobile Money fees included" better than adding them at the end?',
         options: [
-          { text: 'The price people see is the price they pay' },
           { text: 'It\'s cheaper for Clinton', why: 'He pays them either way; it\'s about trust.' },
           { text: 'Mobile Money requires it', why: 'It\'s Clinton\'s choice, for clarity.' },
+          { text: 'The price people see is the price they pay' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

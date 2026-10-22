@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do the authors say about busy readers?',
         options: [
-          { text: 'They\'re not lazy, they\'re busy' },
           { text: 'They\'re lazy', why: 'The opposite.' },
           { text: 'They read everything carefully', why: 'They skim.' },
+          { text: 'They\'re not lazy, they\'re busy' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'Six principles is a lot to remember.',
         prompt: "Mrs Achieng's best reply?",
         options: [
-          { text: 'Start with one: less is more. Most of the others follow once you cut.' },
           { text: 'Memorise all six tonight.', why: 'Start with one.' },
+          { text: 'Start with one: less is more. Most of the others follow once you cut.' },
           { text: 'Ignore them.', why: 'They work.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

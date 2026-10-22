@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Grace do after Femi\'s comment?',
         options: [
-          { text: 'Avoided him for three days' },
           { text: 'Talked to him straight away', why: 'She froze and avoided him.' },
+          { text: 'Avoided him for three days' },
           { text: 'Reported him to HR', why: 'She went quiet instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'I can calm a frightened patient, but I freeze with colleagues. Why?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'On the ward you had a role and a script. With colleagues, it feels personal. This course gives you a script for work.' },
           { text: 'You\'re just bad at conflict.', why: 'She\'s skilled; the setting is new.' },
           { text: 'Colleagues don\'t matter.', why: 'They matter every day.' },
+          { text: 'On the ward you had a role and a script. With colleagues, it feels personal. This course gives you a script for work.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

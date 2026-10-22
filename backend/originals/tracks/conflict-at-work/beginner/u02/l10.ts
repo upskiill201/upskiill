@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: '(privately, after) Sorry for shouting. The weekend was brutal.',
         prompt: "Grace's best reply?",
         options: [
-          { text: '"Thanks for saying that. It sounds like a horrible weekend. The weekly review should stop it happening again."' },
           { text: '"You were out of line."', why: 'He\'s already apologised.' },
           { text: '"Don\'t do it again."', why: 'Acknowledge and look forward.' },
+          { text: '"Thanks for saying that. It sounds like a horrible weekend. The weekly review should stop it happening again."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why say "you\'ve both got a point"?',
         options: [
-          { text: 'Each feels heard, so neither needs to shout louder' },
           { text: 'To avoid deciding anything', why: 'They still agreed changes.' },
+          { text: 'Each feels heard, so neither needs to shout louder' },
           { text: 'It isn\'t true', why: 'Both did have a point.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: '(still loud) This research stuff always lands at the worst time!',
         prompt: "Grace's best first reply?",
         options: [
-          { text: '"I know. The timing is awful, with the 14th so close."' },
           { text: '"It\'s not my fault!"', why: 'Defending escalates.' },
           { text: '"Calm down, Femi."', why: 'That usually makes it worse.' },
+          { text: '"I know. The timing is awful, with the 14th so close."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes a pause a pause, not avoiding?',
         options: [
-          { text: 'You agree when you\'ll come back, and you do' },
           { text: 'You never come back', why: 'That\'s avoiding.' },
+          { text: 'You agree when you\'ll come back, and you do' },
           { text: 'You leave without a word', why: 'Say you\'re pausing and when you\'ll return.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

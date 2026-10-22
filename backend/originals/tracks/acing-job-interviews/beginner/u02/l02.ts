@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why finish with notes rather than more reading?',
         options: [
-          { text: 'Research only helps if it becomes things you can say in the interview' },
           { text: 'Reading is useless', why: 'It\'s useful when turned into notes.' },
           { text: 'To fill the hour', why: 'Notes are what you use.' },
+          { text: 'Research only helps if it becomes things you can say in the interview' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The app has no Swahili option. How could Remi use that?',
         options: [
-          { text: 'As a thoughtful question: "Have you thought about Swahili for shop owners?"' },
           { text: 'To say the app is bad', why: 'Frame it as curiosity, not criticism.' },
           { text: 'Not at all', why: 'It\'s a good, specific talking point.' },
+          { text: 'As a thoughtful question: "Have you thought about Swahili for shop owners?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

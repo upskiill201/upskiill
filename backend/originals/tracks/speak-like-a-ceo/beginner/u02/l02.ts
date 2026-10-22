@@ -35,11 +35,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who taught the pyramid structure at McKinsey?',
         options: [
-          { text: 'Barbara Minto' },
           { text: 'Señora Ibarra', why: 'She\'s Nopal\'s CEO.' },
           { text: 'Carmen', why: 'Barbara Minto.' },
+          { text: 'Barbara Minto' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does it mean if you can\'t write one line for a question?',
         options: [
-          { text: 'That\'s the gap they\'ll find' },
           { text: 'They won\'t ask it', why: 'They probably will.' },
           { text: 'Nothing', why: 'It\'s your gap.' },
+          { text: 'That\'s the gap they\'ll find' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

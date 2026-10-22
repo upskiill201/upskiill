@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should be the first line of a request?',
         options: [
-          { text: 'The ask' },
           { text: 'The history', why: 'That buries the ask.' },
           { text: 'An apology', why: 'Start with the ask.' },
+          { text: 'The ask' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'My manager says background first is more respectful.',
         prompt: "Mrs Achieng\'s best reply?",
         options: [
-          { text: 'Respect is not wasting his time. Give the ask first, then the background for anyone who wants it.' },
           { text: 'Your manager is right.', why: 'Busy readers need the ask first.' },
+          { text: 'Respect is not wasting his time. Give the ask first, then the background for anyone who wants it.' },
           { text: 'Ignore your manager.', why: 'Explain the reason kindly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which subject-line type means no action is needed?',
         options: [
-          { text: 'FYI' },
           { text: 'Decision needed', why: 'That needs a decision.' },
           { text: 'Action', why: 'That needs action.' },
+          { text: 'FYI' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

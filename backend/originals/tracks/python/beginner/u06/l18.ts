@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'IndexError: list index out of range. What does it mean?',
         options: [
-          { text: 'You asked for a position the list doesn\'t have' },
           { text: 'The item isn\'t in the list', why: 'That\'s .remove()\'s ValueError.' },
+          { text: 'You asked for a position the list doesn\'t have' },
           { text: 'The list is the wrong type', why: 'That would be a TypeError.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -121,11 +121,11 @@ const lesson: OriginalLesson = {
         code: 'members = ["Ada", "Tunde", "Bisi"]\nprint(members[1:10])',
         language: 'python',
         options: [
-          { text: "['Tunde', 'Bisi']" },
           { text: 'IndexError', why: 'Slices never raise IndexError; they stop at the end.' },
           { text: "['Tunde']", why: 'It runs to the end of the list.' },
+          { text: "['Tunde', 'Bisi']" },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

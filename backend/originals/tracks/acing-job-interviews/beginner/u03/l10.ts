@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Remi do with the 30 seconds of thinking time?',
         options: [
-          { text: 'Pick the story and its result' },
           { text: 'Write a full script', why: 'There\'s no time, and it sounds read.' },
           { text: 'Panic quietly', why: 'Pick the story.' },
+          { text: 'Pick the story and its result' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Talking to a camera with no one there feels so strange.',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Imagine one friendly person behind the lens. Look at the camera, smile at the start, and tell the story to them.' },
           { text: 'Read from notes instead.', why: 'It shows on camera.' },
+          { text: 'Imagine one friendly person behind the lens. Look at the camera, smile at the start, and tell the story to them.' },
           { text: 'Skip the video.', why: 'It\'s the next step.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What two next steps came after the video?',
         options: [
-          { text: 'Synergix\'s assessment day and a second Mtaa Labs interview' },
           { text: 'Two rejections', why: 'He was invited forward.' },
           { text: 'An immediate offer', why: 'There\'s a final round first.' },
+          { text: 'Synergix\'s assessment day and a second Mtaa Labs interview' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

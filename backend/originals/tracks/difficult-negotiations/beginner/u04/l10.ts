@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'We nearly lost them by walking away!',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'We had Kinwell either way. Walking away at our limit, politely, is what brought them back.' },
           { text: 'You\'re right, never walk again.', why: 'The walk-away worked because it was real.' },
+          { text: 'We had Kinwell either way. Walking away at our limit, politely, is what brought them back.' },
           { text: 'We should have been ruder.', why: 'The politeness kept the door open.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Pryce\'s vague answer about the quotes suggest?',
         options: [
-          { text: 'The quotes weren\'t really like for like' },
           { text: 'They were exactly the same', why: 'He couldn\'t say what they included.' },
           { text: 'Nothing', why: 'Vague answers are information.' },
+          { text: 'The quotes weren\'t really like for like' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

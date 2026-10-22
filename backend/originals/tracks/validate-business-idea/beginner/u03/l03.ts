@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: '2.4 million a month! I\'m rich!',
         prompt: "David's best reply?",
         options: [
-          { text: 'That\'s if every one of the 800 used WashDay. You can\'t carry 1,600 bags a month on one bicycle. Next lesson: what you can actually win.' },
           { text: 'Yes, start spending it.', why: 'It\'s the whole reachable market, not his share.' },
+          { text: 'That\'s if every one of the 800 used WashDay. You can\'t carry 1,600 bags a month on one bicycle. Next lesson: what you can actually win.' },
           { text: 'The sums are wrong.', why: 'The sums are right; the meaning is what matters.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write down the source of every number?',
         options: [
-          { text: 'So anyone can check it, challenge it and improve it' },
           { text: 'To make the slide longer', why: 'It\'s about trust, not length.' },
           { text: 'Sources don\'t matter if the maths is right', why: 'Right maths on a made-up number is still made up.' },
+          { text: 'So anyone can check it, challenge it and improve it' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

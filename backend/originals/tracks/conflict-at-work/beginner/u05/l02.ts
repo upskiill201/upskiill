@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a boundary about?',
         options: [
-          { text: 'What you will and won\'t do' },
           { text: 'What others must do', why: 'That\'s a rule for them.' },
           { text: 'Punishing people', why: 'It\'s about your own actions.' },
+          { text: 'What you will and won\'t do' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         message: 'So you\'re banning me from the car?',
         prompt: "Grace's best reply?",
         options: [
-          { text: '"No. I\'ll happily lend it when you ask the day before, so I can plan. That\'s all."' },
           { text: '"Yes, forever."', why: 'That\'s a punishment, not a boundary.' },
+          { text: '"No. I\'ll happily lend it when you ask the day before, so I can plan. That\'s all."' },
           { text: '"Do whatever you want."', why: 'That\'s no boundary.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

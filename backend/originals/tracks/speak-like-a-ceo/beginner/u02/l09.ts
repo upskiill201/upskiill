@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which check is new on v2?',
         options: [
-          { text: 'Can I answer the four questions?' },
           { text: 'Pause instead of um', why: 'That was v1.' },
+          { text: 'Can I answer the four questions?' },
           { text: 'Three points at most', why: 'That was v1.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'I\'m presenting to Carmen for the first time on Friday.',
         prompt: "Lucía\'s best reply?",
         options: [
-          { text: 'Write one line for each of the four questions tonight. If one\'s blank, that\'s what to work on.' },
           { text: 'Make 30 slides to be safe.', why: 'Four lines first.' },
           { text: 'Just wing it.', why: 'Ten minutes of prep.' },
+          { text: 'Write one line for each of the four questions tonight. If one\'s blank, that\'s what to work on.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'By when should Lucía make her one contribution?',
         options: [
-          { text: 'In the first ten minutes' },
           { text: 'At the very end', why: 'Early is easier.' },
+          { text: 'In the first ten minutes' },
           { text: 'Only if asked', why: 'Speak up early.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

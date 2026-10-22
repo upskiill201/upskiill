@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'Why mention week 9 at all? It makes the pilot look shaky.',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: 'He already knows about week 9, because I told him early. Naming the risk with a plan shows we learned from it.' },
           { text: 'You\'re right, delete it.', why: 'Hiding a known risk costs trust.' },
           { text: 'Add three paragraphs about it.', why: 'One line with the plan is enough.' },
+          { text: 'He already knows about week 9, because I told him early. Naming the risk with a plan shows we learned from it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Mr Kamau ask Zanele to do next?',
         options: [
-          { text: 'Present it at the all-staff meeting for five minutes' },
           { text: 'Write twelve more pages', why: 'He said yes and asked for a talk.' },
+          { text: 'Present it at the all-staff meeting for five minutes' },
           { text: 'Wait until next year', why: 'He said yes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

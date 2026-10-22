@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do leaders usually want instead of every detail?',
         options: [
-          { text: 'Your judgement and the main reasons' },
           { text: 'A longer presentation', why: 'Judgement and reasons.' },
           { text: 'Nothing at all', why: 'Judgement and reasons.' },
+          { text: 'Your judgement and the main reasons' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'My plan: agree with Señora Ibarra on everything. Then she\'ll like me.',
         prompt: "Lucía\'s best reply?",
         options: [
-          { text: 'She has plenty of people who agree. What helps her is someone who spots problems early, with a fact and an idea.' },
           { text: 'Great plan.', why: 'Leaders value early warnings.' },
+          { text: 'She has plenty of people who agree. What helps her is someone who spots problems early, with a fact and an idea.' },
           { text: 'Disagree with everything instead.', why: 'Disagree when you have a fact.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

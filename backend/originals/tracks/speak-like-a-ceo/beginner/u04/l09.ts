@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'I always look at the floor when I present.',
         prompt: "Lucía\'s best reply?",
         options: [
-          { text: 'Try check 19: pick three people around the room and give each one a thought. Record it and see the difference.' },
           { text: 'Look at the ceiling instead.', why: 'Look at people.' },
           { text: 'It doesn\'t matter.', why: 'Eye contact helps people feel spoken to.' },
+          { text: 'Try check 19: pick three people around the room and give each one a thought. Record it and see the difference.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When should you move on stage, according to check 20?',
         options: [
-          { text: 'On signposts' },
           { text: 'All the time', why: 'On signposts.' },
+          { text: 'On signposts' },
           { text: 'Never', why: 'On signposts.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which check is new on v5?',
         options: [
-          { text: 'If AI helped, have I checked every fact?' },
           { text: 'Do the headings tell the story?', why: 'That was v4.' },
           { text: 'Is the ask in the subject line?', why: 'That was v3.' },
+          { text: 'If AI helped, have I checked every fact?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'Twenty-five checks for every email? That\'ll take all day.',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: 'Most take seconds, and you only need the ones that fit. Hard messages get the full list; a quick yes needs three.' },
           { text: 'Yes, every check on every email.', why: 'Match the checks to the message.' },
+          { text: 'Most take seconds, and you only need the ones that fit. Hard messages get the full list; a quick yes needs three.' },
           { text: 'Skip the list entirely.', why: 'It catches real mistakes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does check 25 ask last?',
         options: [
-          { text: 'Am I calm?' },
           { text: 'Is it long enough?', why: 'It asks if you\'re calm.' },
           { text: 'Did AI write it?', why: 'That\'s check 24.' },
+          { text: 'Am I calm?' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

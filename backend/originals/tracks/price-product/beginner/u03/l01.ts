@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Should I just drop to 1,500 for everyone so Esther stays?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Give Esther a cheaper option that costs you less to run, like dropping her bag at the gate. Don\'t lower the price for people who value it more.' },
           { text: 'Yes, lower it for everyone.', why: 'That gives away margin on customers happy at 1,800.' },
+          { text: 'Give Esther a cheaper option that costs you less to run, like dropping her bag at the gate. Don\'t lower the price for people who value it more.' },
           { text: 'Tell Esther to wash by hand.', why: 'She\'s a customer worth keeping with the right option.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What would a cheaper option for Esther need to do?',
         options: [
-          { text: 'Cost Clinton less to run, so it still makes money' },
           { text: 'Lose money but keep her happy', why: 'Every option must earn.' },
           { text: 'Be exactly the same as standard but cheaper', why: 'Then everyone would choose it.' },
+          { text: 'Cost Clinton less to run, so it still makes money' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

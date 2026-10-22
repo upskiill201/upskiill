@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What three conditions can a "yes, if" usually offer?',
         options: [
-          { text: 'More time, more money, or less scope' },
           { text: 'Yes, no or maybe', why: 'Those aren\'t conditions.' },
           { text: 'Free work, extra work or overtime', why: 'Those are costs to the team.' },
+          { text: 'More time, more money, or less scope' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'Why not just say no? We agreed the scope.',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'A plain no makes you the obstacle. "Yes, if" makes you the helper, and she chooses what she\'s willing to pay for.' },
           { text: 'Yes, say no.', why: 'It blocks someone important.' },
+          { text: 'A plain no makes you the obstacle. "Yes, if" makes you the helper, and she chooses what she\'s willing to pay for.' },
           { text: 'Say yes to keep her happy.', why: 'Then the team pays.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who decides after a "yes, if"?',
         options: [
-          { text: 'The person making the request, now that they can see the cost' },
           { text: 'Nobody', why: 'They choose an option.' },
           { text: 'Only Arjun', why: 'He hands the choice back.' },
+          { text: 'The person making the request, now that they can see the cost' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

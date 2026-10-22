@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '400 customers, twice a month, at 1,500 FCFA. What\'s Bomaka\'s reachable market per month?',
         options: [
-          { text: '1,200,000 FCFA' },
           { text: '600,000 FCFA', why: 'Twice a month: 400 × 2 × 1,500.' },
           { text: '2,400,000 FCFA', why: 'That\'s the Molyko figure.' },
+          { text: '1,200,000 FCFA' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'Bomaka adds 1.2 million a month! I\'ll start there next week too.',
         prompt: "David's best reply?",
         options: [
-          { text: 'Your winnable market is set by one bike. Two areas means fewer bags in each. And nobody has paid you yet. Test in Molyko first.' },
           { text: 'Yes, double the market, double the money.', why: 'Capacity and the payment test come first.' },
+          { text: 'Your winnable market is set by one bike. Two areas means fewer bags in each. And nobody has paid you yet. Test in Molyko first.' },
           { text: 'Never go to Bomaka.', why: 'Later, maybe; not before the first test.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

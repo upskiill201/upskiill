@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is the biggest umbrella?',
         options: [
-          { text: 'AI' },
           { text: 'Machine learning', why: 'ML is one way of building AI, so it sits inside it.' },
           { text: 'Chatbots', why: 'Chatbots are one kind of ML model.' },
+          { text: 'AI' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'So we\'re building a chatbot?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'No. A small model that looks at a booking and guesses if it\'ll be missed. No chatting.' },
           { text: 'Yes, like the famous ones.', why: 'Different job, different data, much smaller.' },
+          { text: 'No. A small model that looks at a booking and guesses if it\'ll be missed. No chatting.' },
           { text: 'We\'re building a robot.', why: 'Just a few lines of code that make predictions.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         message: 'It\'s just statistics with a fancy name.',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'It shares a lot with statistics. The difference is the goal: we care most about good predictions for new cases.' },
           { text: 'It has nothing to do with statistics.', why: 'It borrows heavily from statistics.' },
+          { text: 'It shares a lot with statistics. The difference is the goal: we care most about good predictions for new cases.' },
           { text: 'You\'re right, let\'s stop.', why: 'Shared roots don\'t make it less useful.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'November: about 60,000 for 52 hours. Roughly what is the margin per hour now?',
         options: [
-          { text: 'About 1,150 FCFA' },
           { text: 'About 650 FCFA', why: 'Margin doubled; hours only rose by 4.' },
           { text: 'About 2,000 FCFA', why: '60,000 ÷ 52 is about 1,154.' },
+          { text: 'About 1,150 FCFA' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did complaints about late bags disappear?',
         options: [
-          { text: 'Auntie Bih now takes the overflow, so no bag waits' },
           { text: 'Customers stopped caring', why: 'The service actually got better.' },
           { text: 'Clinton hid the messages', why: 'The cause was a real fix.' },
+          { text: 'Auntie Bih now takes the overflow, so no bag waits' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

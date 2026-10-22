@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         code: 'members = ["Tunde", "Ada", "Bisi"]\nboard = sorted(members)\nprint(members)',
         language: 'python',
         options: [
-          { text: "['Tunde', 'Ada', 'Bisi']" },
           { text: "['Ada', 'Bisi', 'Tunde']", why: 'sorted() makes a new list; members is unchanged.' },
           { text: 'None', why: 'sorted() returns a list, and members is printed anyway.' },
+          { text: "['Tunde', 'Ada', 'Bisi']" },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         code: 'print(sorted(["bisi", "Ada", "Tunde"]))',
         language: 'python',
         options: [
-          { text: "['Ada', 'Tunde', 'bisi']" },
           { text: "['Ada', 'bisi', 'Tunde']", why: 'Capitals sort before small letters.' },
+          { text: "['Ada', 'Tunde', 'bisi']" },
           { text: "['bisi', 'Ada', 'Tunde']", why: 'Small letters come after all the capitals.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -147,11 +147,11 @@ const lesson: OriginalLesson = {
         message: 'I ran members.sort() for Kemi\'s board. Now Amaka collects in month 2 instead of Tunde. Help!',
         prompt: "Arjun's best reply?",
         options: [
-          { text: '.sort() changed the real list. Put the original order back from your notes, and use sorted(members) for the board.' },
           { text: 'Run .sort() again to undo it.', why: 'Sorting a sorted list keeps it sorted.' },
           { text: 'Tell the group Amaka goes first now.', why: 'The payout order is the group\'s agreement, not the code\'s.' },
+          { text: '.sort() changed the real list. Put the original order back from your notes, and use sorted(members) for the board.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

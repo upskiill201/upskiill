@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why end with "Does this match your notes?"',
         options: [
-          { text: 'It invites him to confirm or correct, in a friendly way' },
           { text: 'It\'s just polite filler', why: 'It turns the email into a confirmed agreement.' },
+          { text: 'It invites him to confirm or correct, in a friendly way' },
           { text: 'It reopens the negotiation', why: 'It checks, rather than reopens.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'Won\'t an email look like I don\'t trust him?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'It looks organised. Managers forget, budgets change, people move. A summary protects both of you.' },
           { text: 'Yes, don\'t send it.', why: 'Then "a few months" becomes never.' },
           { text: 'Send it to the whole company.', why: 'Just Tobi is enough.' },
+          { text: 'It looks organised. Managers forget, budgets change, people move. A summary protects both of you.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

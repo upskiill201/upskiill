@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "Add AI" not a plan?',
         options: [
-          { text: 'It doesn\'t say what the AI must do, what it needs to know, or what it may cost' },
           { text: 'Because AI can\'t help shops', why: 'It can. The brief just doesn\'t say how.' },
+          { text: 'It doesn\'t say what the AI must do, what it needs to know, or what it may cost' },
           { text: 'Because it\'s too short', why: 'Short is fine. It\'s missing the what, the knowledge and the cost.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         message: 'The biggest model knows everything. Why would it get our shop wrong?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'It knows a lot in general, but nothing about OUR shop: not our prices, our return policy or anyone\'s order.' },
           { text: 'It wouldn\'t. Big models are always right.', why: 'They\'re often wrong about things they were never shown.' },
           { text: 'Because it\'s broken.', why: 'It isn\'t broken. It just hasn\'t seen the shop\'s data.' },
+          { text: 'It knows a lot in general, but nothing about OUR shop: not our prices, our return policy or anyone\'s order.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -144,11 +144,11 @@ const lesson: OriginalLesson = {
         message: 'Mr Rao wants a price. What do we tell him today?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'That we\'ll come back this week with a cost per chat, once we know what it has to do.' },
           { text: 'It\'s free.', why: 'Nothing that runs on a computer is free. Give a real estimate later.' },
           { text: 'A million rupees.', why: 'Guessing before you\'ve worked it out helps nobody.' },
+          { text: 'That we\'ll come back this week with a cost per chat, once we know what it has to do.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

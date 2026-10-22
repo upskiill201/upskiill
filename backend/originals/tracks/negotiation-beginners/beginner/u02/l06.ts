@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'Should I say "my friend earns ₦500,000" in my review?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'Don\'t name a friend\'s pay. Say "From what I\'ve seen, similar roles in Lagos pay ₦400,000 to ₦550,000."' },
           { text: 'Yes, name her and her salary.', why: 'That shares private information and starts comparisons.' },
+          { text: 'Don\'t name a friend\'s pay. Say "From what I\'ve seen, similar roles in Lagos pay ₦400,000 to ₦550,000."' },
           { text: 'Don\'t mention the market at all.', why: 'A market range is strong evidence.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is ₦1,300,000 a good goal, not an unfair one?',
         options: [
-          { text: 'Real flats nearby rent for that, so she can defend it' },
           { text: 'It\'s the lowest number she can think of', why: 'It\'s backed by a real listing.' },
           { text: 'It\'s exactly in the middle', why: 'It\'s at the bottom of the range: ambitious but defensible.' },
+          { text: 'Real flats nearby rent for that, so she can defend it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

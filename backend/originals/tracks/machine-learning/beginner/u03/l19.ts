@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why give Bisi a ranked list instead of "miss" / "come" labels?',
         options: [
-          { text: 'She can only make about 10 calls, so she needs the riskiest first' },
           { text: 'Labels are illegal', why: 'They\'re fine. A ranking just matches her job better.' },
+          { text: 'She can only make about 10 calls, so she needs the riskiest first' },
           { text: 'The predictor can\'t make labels', why: 'It can. The ranking is simply more useful here.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ten random calls in week 12 would reach about how many no-shows?',
         options: [
-          { text: 'About 2 (10 x 37/200 = 1.85)' },
           { text: 'About 7', why: 'That\'s the predictor\'s list, not random calls.' },
+          { text: 'About 2 (10 x 37/200 = 1.85)' },
           { text: 'About 10', why: 'Only 37 of 200 missed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

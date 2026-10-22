@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Is it OK to ask for ten minutes to think, in the middle of a review?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'Yes. "Can I take ten minutes to think about this?" is calm and professional. It beats a rushed answer.' },
           { text: 'No, answer instantly.', why: 'Rushed answers are usually worse.' },
           { text: 'Leave and come back next month.', why: 'Ten minutes is enough here.' },
+          { text: 'Yes. "Can I take ten minutes to think about this?" is calm and professional. It beats a rushed answer.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why tie the rest of the raise to goals?',
         options: [
-          { text: 'It gives Tobi a clear reason to justify it, and Ada a clear path' },
           { text: 'To make Ada work harder for free', why: 'The goals are her job; the raise rewards them.' },
+          { text: 'It gives Tobi a clear reason to justify it, and Ada a clear path' },
           { text: 'It doesn\'t help', why: 'It removes his main obstacle.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

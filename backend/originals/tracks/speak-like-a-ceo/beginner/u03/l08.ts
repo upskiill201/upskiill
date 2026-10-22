@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'And what percentage recalled a statistic?',
         options: [
-          { text: '5%' },
           { text: '63%', why: 'That was stories.' },
           { text: '50%', why: '5%.' },
+          { text: '5%' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can interesting extras hurt?',
         options: [
-          { text: 'They pull attention away from the main point' },
           { text: 'They\'re too short', why: 'They distract.' },
           { text: 'They can\'t', why: 'They distract.' },
+          { text: 'They pull attention away from the main point' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'I wrote "people like food" as my first assumption.',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Nobody could prove that wrong, so it can\'t be tested. Try "students will pay 500 FCFA for delivery after 8 p.m."' },
           { text: 'Great, that\'s certainly true.', why: 'True but untestable; it tells you nothing.' },
           { text: 'Assumptions should be vague.', why: 'They should be specific enough to be wrong.' },
+          { text: 'Nobody could prove that wrong, so it can\'t be tested. Try "students will pay 500 FCFA for delivery after 8 p.m."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How many of Clinton\'s eleven assumptions had he checked?',
         options: [
-          { text: 'None' },
           { text: 'All eleven', why: 'Every answer was "I think so".' },
+          { text: 'None' },
           { text: 'Five', why: 'He hadn\'t checked any.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

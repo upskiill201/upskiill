@@ -121,11 +121,11 @@ const lesson: OriginalLesson = {
         message: 'Can we train the AI now?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Yes: the table is clean and logged. Next we build a first predictor ourselves, so we understand what a model really does.' },
           { text: 'No, we need another year of cleaning.', why: 'The table is ready.' },
+          { text: 'Yes: the table is clean and logged. Next we build a first predictor ourselves, so we understand what a model really does.' },
           { text: 'We trained it already.', why: 'Not yet. Chapter 3 builds the first one.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

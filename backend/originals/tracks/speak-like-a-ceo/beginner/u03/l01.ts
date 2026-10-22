@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What was Carmen\'s question?',
         options: [
-          { text: 'What one thing should they remember on the bus home?' },
           { text: 'Can you add more slides?', why: 'She asked for one message.' },
+          { text: 'What one thing should they remember on the bus home?' },
           { text: 'Which font are you using?', why: 'The bus-home question.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What was missing from Lucía\'s three things?',
         options: [
-          { text: 'Why chili-lime did well' },
           { text: 'More numbers', why: 'The why was missing.' },
+          { text: 'Why chili-lime did well' },
           { text: 'Nothing', why: 'The why.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

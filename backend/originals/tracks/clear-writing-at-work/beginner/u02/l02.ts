@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is plain language?',
         options: [
-          { text: 'Writing your reader understands the first time they read it' },
           { text: 'Writing with no long words ever', why: 'It\'s about the reader understanding.' },
+          { text: 'Writing your reader understands the first time they read it' },
           { text: 'Writing for children', why: 'For any reader.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'Plain words are fine for drivers, but for executives we need sophistication.',
         prompt: "Mrs Achieng's best reply?",
         options: [
-          { text: 'Mr Kamau reads two lines of everything. Executives are the busiest readers of all. Plain is how you get read.' },
           { text: 'You\'re right, executives love jargon.', why: 'The evidence says otherwise.' },
           { text: 'Executives don\'t read.', why: 'They do, briefly.' },
+          { text: 'Mr Kamau reads two lines of everything. Executives are the busiest readers of all. Plain is how you get read.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

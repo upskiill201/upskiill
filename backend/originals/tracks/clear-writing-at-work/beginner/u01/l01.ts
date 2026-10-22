@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where was the result in Zanele\'s email?',
         options: [
-          { text: 'In paragraph five' },
           { text: 'In the subject line', why: 'That\'s where it should have been.' },
+          { text: 'In paragraph five' },
           { text: 'Nowhere', why: 'It was there, but buried.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'If I write less, won\'t he think I didn\'t work hard?',
         prompt: "Mrs Achieng's best reply?",
         options: [
-          { text: 'He\'ll think you\'re clear. The hard work shows in the result, not the word count.' },
           { text: 'Yes, so write more.', why: 'He didn\'t read the 900.' },
           { text: 'Don\'t send updates at all.', why: 'He needs them, short.' },
+          { text: 'He\'ll think you\'re clear. The hard work shows in the result, not the word count.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

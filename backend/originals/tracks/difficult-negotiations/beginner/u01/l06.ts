@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happened when people faked anger in Côté and colleagues\' research?',
         options: [
-          { text: 'They were trusted less, and the other side asked for more' },
           { text: 'They got bigger concessions', why: 'Faked anger backfired.' },
           { text: 'Nothing changed', why: 'It made things worse.' },
+          { text: 'They were trusted less, and the other side asked for more' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'Let\'s act really angry on the call so he backs down.',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'Faked anger tends to backfire, and you want to work with them for years. Be calm and clear about what doesn\'t work.' },
           { text: 'Yes, shout a bit.', why: 'It damages trust.' },
+          { text: 'Faked anger tends to backfire, and you want to work with them for years. Be calm and clear about what doesn\'t work.' },
           { text: 'Pretend you\'re happy with £28,000.', why: 'Be honest, not fake either way.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might real anger still hurt Arjun here?',
         options: [
-          { text: 'It makes the other side less willing to work together again' },
           { text: 'It\'s against UK law', why: 'It\'s about the relationship.' },
           { text: 'It doesn\'t', why: 'Research links anger to weaker relationships.' },
+          { text: 'It makes the other side less willing to work together again' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

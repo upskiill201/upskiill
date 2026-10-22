@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The sticky note flags 18 (8 missed). v0.3\'s top 20 has 12 who missed. What\'s the fair conclusion?',
         options: [
-          { text: 'On this week, v0.3 finds more no-shows for a similar number of calls' },
           { text: 'v0.3 is perfect', why: '8 of its 20 came anyway.' },
           { text: 'The sticky note is better', why: '8 of 18 vs 12 of 20.' },
+          { text: 'On this week, v0.3 finds more no-shows for a similar number of calls' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         message: 'So v0.3 is ready for all 300 clinics?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Not yet. It did well on one week at 8 pilot clinics. Next I check it\'s not fooling us: other weeks, leaks, and a proper score.' },
           { text: 'Yes, roll it out tomorrow.', why: 'One test week is promising, not proof.' },
+          { text: 'Not yet. It did well on one week at 8 pilot clinics. Next I check it\'s not fooling us: other weeks, leaks, and a proper score.' },
           { text: 'No, it\'s worse than guessing.', why: 'It found three times more no-shows than random calls.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A new tenant at ₦1,500,000, minus ₦250,000 empty and ₦100,000 repainting. What does he get in year one?',
         options: [
-          { text: '₦1,150,000' },
           { text: '₦1,500,000', why: 'That ignores the empty months and costs.' },
+          { text: '₦1,150,000' },
           { text: '₦1,250,000', why: 'Subtract the ₦100,000 too.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Should I tell him "you\'ll lose ₦350,000 if I go"?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Not like that; it sounds like a threat. Offer what solves his worry: "I\'d like to stay, and I\'ll sign for two years."' },
           { text: 'Yes, say it exactly.', why: 'It sounds like a threat.' },
           { text: 'Keep it secret and say nothing useful.', why: 'Use it to shape your offer.' },
+          { text: 'Not like that; it sounds like a threat. Offer what solves his worry: "I\'d like to stay, and I\'ll sign for two years."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

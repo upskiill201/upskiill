@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does saving face matter for Mr Pryce?',
         options: [
-          { text: 'If he looks like he lost, he may stall or reopen the deal' },
           { text: 'It doesn\'t; the deal is done', why: 'Nothing is signed yet.' },
           { text: 'He wants to be friends', why: 'He has a target and a boss.' },
+          { text: 'If he looks like he lost, he may stall or reopen the deal' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Is helping Pryce save face the same as giving him more money?',
         options: [
-          { text: 'No. It\'s framing true facts so his report looks good' },
           { text: 'Yes', why: 'The price doesn\'t change.' },
           { text: 'It means lying for him', why: 'Every fact in the story is true.' },
+          { text: 'No. It\'s framing true facts so his report looks good' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

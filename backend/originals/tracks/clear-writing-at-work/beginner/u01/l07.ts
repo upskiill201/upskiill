@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Oppenheimer find about needlessly complex writing?',
         options: [
-          { text: 'Readers judged the author as less intelligent' },
           { text: 'Readers were impressed', why: 'The opposite.' },
           { text: 'It made no difference', why: 'Complexity hurt.' },
+          { text: 'Readers judged the author as less intelligent' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'If people scan in an F-shape, where should the point go?',
         options: [
-          { text: 'In the first line or two' },
           { text: 'At the bottom', why: 'Most won\'t get there.' },
           { text: 'In the middle', why: 'Put it first.' },
+          { text: 'In the first line or two' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

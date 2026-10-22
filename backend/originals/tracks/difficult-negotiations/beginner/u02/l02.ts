@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the flinch designed to do?',
         options: [
-          { text: 'Make you doubt your price and drop it before they counter' },
           { text: 'Show genuine shock', why: 'It may be real, but it works as a tactic either way.' },
           { text: 'End the negotiation', why: 'It\'s meant to move you, not end things.' },
+          { text: 'Make you doubt your price and drop it before they counter' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "meeting in the middle" at £38,000 a problem here?',
         options: [
-          { text: 'Their extreme anchor decides where the middle is' },
           { text: 'The middle is always unfair', why: 'It\'s unfair here because their start was extreme.' },
           { text: 'It isn\'t a problem', why: 'An extreme anchor drags the middle down.' },
+          { text: 'Their extreme anchor decides where the middle is' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

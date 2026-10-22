@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where does Ada\'s walk-away number come from?',
         options: [
-          { text: 'Her alternative: what moving would really cost' },
           { text: 'Her feelings on the day', why: 'Feelings move under pressure.' },
           { text: 'What her friends pay', why: 'Useful context, but her alternative decides it.' },
+          { text: 'Her alternative: what moving would really cost' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why think about his side at all?',
         options: [
-          { text: 'Knowing what he needs shows where a deal might be' },
           { text: 'To feel sorry for him', why: 'It\'s about finding the deal.' },
           { text: 'It doesn\'t help', why: 'His needs and alternative shape the deal.' },
+          { text: 'Knowing what he needs shows where a deal might be' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

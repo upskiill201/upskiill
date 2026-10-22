@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'During the break, I\'ll plan my best comeback.',
         prompt: "Priya's best reply?",
         options: [
-          { text: 'That keeps you flooded. Do something calming instead: a walk, a tea. Come back to listen, not to win.' },
           { text: 'Good idea.', why: 'Rehearsing the fight keeps the alarm on.' },
+          { text: 'That keeps you flooded. Do something calming instead: a walk, a tea. Come back to listen, not to win.' },
           { text: 'Don\'t come back at all.', why: 'Coming back is what makes it a pause.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does Gottman suggest doing during the break?',
         options: [
-          { text: 'Something calming, not rehearsing the argument' },
           { text: 'Writing a long email to them', why: 'That keeps you in the fight.' },
           { text: 'Telling colleagues what happened', why: 'That spreads it.' },
+          { text: 'Something calming, not rehearsing the argument' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

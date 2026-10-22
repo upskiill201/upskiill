@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should be true of all three offers?',
         options: [
-          { text: 'Each is equally acceptable to Ada' },
           { text: 'One is a trick', why: 'All three must be real and fine for her.' },
+          { text: 'Each is equally acceptable to Ada' },
           { text: 'They\'re all the same', why: 'Same value to her, different shape.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'Won\'t three offers look like I\'m desperate?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'They look flexible and well thought out. Desperate is dropping one number again and again.' },
           { text: 'Yes, only ever make one.', why: 'MESOs often get better deals.' },
           { text: 'Make ten.', why: 'Two or three is enough; more confuses.' },
+          { text: 'They look flexible and well thought out. Desperate is dropping one number again and again.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

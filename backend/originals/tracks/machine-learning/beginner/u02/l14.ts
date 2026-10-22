@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Yaba: 77 no-shows from 363 bookings. Gumel: 50 from 134. Which has the higher no-show rate?',
         options: [
-          { text: 'Gumel' },
           { text: 'Yaba', why: 'Yaba has the higher COUNT. 77 ÷ 363 is 21%; 50 ÷ 134 is 37%.' },
           { text: 'They\'re the same', why: '21% vs 37%.' },
+          { text: 'Gumel' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Yaba has the most no-shows. Call their manager in.',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Yaba is also the busiest clinic. Its RATE is 21%, close to average. Gumel\'s is 37%: that\'s where help is needed.' },
           { text: 'Yes, Yaba is the worst.', why: 'Most no-shows, but also most bookings. The rate is near average.' },
+          { text: 'Yaba is also the busiest clinic. Its RATE is 21%, close to average. Gumel\'s is 37%: that\'s where help is needed.' },
           { text: 'All clinics are the same.', why: 'Rates range from 15% to 37%.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When is comparing counts fair?',
         options: [
-          { text: 'When the groups are the same size' },
           { text: 'Always', why: 'Bigger groups have bigger counts of everything.' },
           { text: 'Never', why: 'With equal-sized groups, counts and rates tell the same story.' },
+          { text: 'When the groups are the same size' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

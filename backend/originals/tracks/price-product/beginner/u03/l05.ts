@@ -35,11 +35,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Saver have to cost Clinton less time?',
         options: [
-          { text: 'Otherwise it\'s the same service for less, and everyone moves to it' },
           { text: 'It doesn\'t matter', why: 'It decides whether options help or hurt.' },
           { text: 'To make Esther unhappy', why: 'She\'s happy with the trade.' },
+          { text: 'Otherwise it\'s the same service for less, and everyone moves to it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ironing: Mama Rose charges 100 extra; WashDay charges 200 extra. Is it a good extra?',
         options: [
-          { text: 'Yes: cheap to add, valued before exams, and it earns 100 more' },
           { text: 'No: it loses money', why: 'It earns 100.' },
           { text: 'No: nobody irons', why: 'Regulars already pay for ironing.' },
+          { text: 'Yes: cheap to add, valued before exams, and it earns 100 more' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

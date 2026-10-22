@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What was the most common reason in the study of failed startups?',
         options: [
-          { text: 'No market need: not enough people wanted it' },
           { text: 'The logo was bad', why: 'Branding came far lower.' },
+          { text: 'No market need: not enough people wanted it' },
           { text: 'The founders were too young', why: 'Age wasn\'t a top reason.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is running out of cash often the same story as "no market need"?',
         options: [
-          { text: 'When too few people buy, the money runs out' },
           { text: 'Banks close new businesses on purpose', why: 'The usual cause is too few sales.' },
+          { text: 'When too few people buy, the money runs out' },
           { text: 'They aren\'t related at all', why: 'Low sales drain cash.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

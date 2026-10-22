@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A product sells for 1,000 and costs 920 in total. What is the margin %?',
         options: [
-          { text: '8%' },
           { text: '80%', why: '80 ÷ 1,000 = 8%.' },
+          { text: '8%' },
           { text: '92%', why: 'That\'s the cost as a share of the price.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Price 1,500, cost 1,125. What is the markup %?',
         options: [
-          { text: 'About 33%' },
           { text: '25%', why: 'That\'s the margin %.' },
+          { text: 'About 33%' },
           { text: '75%', why: 'Markup = 375 ÷ 1,125.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

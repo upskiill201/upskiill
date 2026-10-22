@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "tell me about yourself" really ask?',
         options: [
-          { text: 'Why you fit this role, briefly' },
           { text: 'Your life story from childhood', why: 'That\'s what Remi gave; it cost him time.' },
+          { text: 'Why you fit this role, briefly' },
           { text: 'Your hobbies', why: 'Some colour is fine; fit is the point.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'But if I keep it short, won\'t they think I have nothing to say?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Short and clear makes them want to ask more. That\'s what you want: a conversation, not a speech.' },
           { text: 'Yes, talk as long as you can.', why: 'They skipped two questions because of it.' },
           { text: 'Just say your name.', why: 'Too short; about a minute is right.' },
+          { text: 'Short and clear makes them want to ask more. That\'s what you want: a conversation, not a speech.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

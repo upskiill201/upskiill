@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Ada go first with Mrs Okon?',
         options: [
-          { text: 'She knows the range, so her number sets the anchor' },
           { text: 'It\'s polite to go first', why: 'It\'s about information and anchoring.' },
+          { text: 'She knows the range, so her number sets the anchor' },
           { text: 'She has to by law', why: 'It\'s a strategic choice.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the BATNA "my own portfolio" and not "nothing"?',
         options: [
-          { text: 'Her weekends have value; she\'d use them to grow her own work' },
           { text: 'It\'s the same as nothing', why: 'Her time is worth something.' },
+          { text: 'Her weekends have value; she\'d use them to grow her own work' },
           { text: 'To sound busy', why: 'It\'s her real alternative.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

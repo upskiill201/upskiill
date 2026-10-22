@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Mehrabian\'s studies actually test?',
         options: [
-          { text: 'Single words about feelings, with mixed signals' },
           { text: 'Full business presentations', why: 'Single words about feelings.' },
           { text: 'Job interviews', why: 'Single words about feelings.' },
+          { text: 'Single words about feelings, with mixed signals' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: 'So words only count for 7%? Then why did you spend a week on the message?',
         prompt: "Lucía\'s best reply?",
         options: [
-          { text: 'That figure comes from studies of single words about feelings. In a talk, the words carry the message. Voice and body help them land.' },
           { text: 'You\'re right, I wasted a week.', why: 'Words matter a lot.' },
+          { text: 'That figure comes from studies of single words about feelings. In a talk, the words carry the message. Voice and body help them land.' },
           { text: 'Words are 100%, body language is nothing.', why: 'Both matter.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What has Mehrabian said about the 7-38-55 figures?',
         options: [
-          { text: 'They don\'t apply to communication in general' },
           { text: 'They apply to every talk', why: 'He has said they don\'t.' },
           { text: 'Nothing', why: 'He has corrected the misuse.' },
+          { text: 'They don\'t apply to communication in general' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

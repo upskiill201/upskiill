@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which estimate is bottom-up?',
         options: [
-          { text: 'Hostels counted × rooms × shares from interviews' },
           { text: '10% of all students', why: 'Top-down with a guessed share.' },
           { text: '1% of the national market', why: 'Top-down.' },
+          { text: 'Hostels counted × rooms × shares from interviews' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll tell Miracle the market is 2.4 million and leave it there.',
         prompt: "David's best reply?",
         options: [
-          { text: 'Tell her both: 2.4 million reachable, about 360,000 a month winnable with one bike. She\'ll trust you more.' },
           { text: 'Yes, the bigger the better.', why: 'Leaving out the realistic number misleads everyone, including you.' },
+          { text: 'Tell her both: 2.4 million reachable, about 360,000 a month winnable with one bike. She\'ll trust you more.' },
           { text: 'Don\'t mention numbers.', why: 'Numbers with sources are the point.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

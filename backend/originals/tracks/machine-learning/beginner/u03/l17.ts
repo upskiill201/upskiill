@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         message: 'OK, but more features is still better, so the label helps.',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'The label is the one thing we can\'t know before the appointment. Using it is like predicting a match after reading the result.' },
           { text: 'Yes, keep it in.', why: 'Then the model reads the answer instead of predicting it.' },
+          { text: 'The label is the one thing we can\'t know before the appointment. Using it is like predicting a match after reading the result.' },
           { text: 'Features don\'t matter.', why: 'They matter a lot. This one is cheating.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'confirmed_on_day is filled in AFTER the appointment. Should it be a feature?',
         options: [
-          { text: 'No: like the label, it isn\'t known in advance. Chapter 4 shows what it does to a model' },
           { text: 'Yes: it\'s very predictive', why: 'It\'s predictive because it\'s filled in after the fact. That\'s a leak.' },
           { text: 'Only on rainy days', why: 'It\'s never known before the day.' },
+          { text: 'No: like the label, it isn\'t known in advance. Chapter 4 shows what it does to a model' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',

@@ -29,11 +29,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Kluger and DeNisi (1996) find?',
         options: [
-          { text: 'About a third of feedback made performance worse' },
           { text: 'All feedback helps', why: 'About a third made things worse.' },
+          { text: 'About a third of feedback made performance worse' },
           { text: 'Feedback never matters', why: 'It matters a lot, in both directions.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         message: 'Sorry. I didn\'t know blank dates mattered that much.',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: 'No problem, thanks for fixing it. Blank dates count as late in the numbers, so a quick filter before sending saves us both a day.' },
           { text: 'You should have known.', why: 'Explain the impact.' },
           { text: 'It\'s fine, ignore it.', why: 'Then it happens again.' },
+          { text: 'No problem, thanks for fixing it. Blank dates count as late in the numbers, so a quick filter before sending saves us both a day.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

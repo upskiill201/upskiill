@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Brian says "value-add". Remi isn\'t sure what he means. Best move?',
         options: [
-          { text: '"Just to be sure, by value-add do you mean what I\'d bring to the team?"' },
           { text: 'Nod and answer something else', why: 'He may answer the wrong question.' },
           { text: '"I don\'t understand jargon."', why: 'Clarify politely instead.' },
+          { text: '"Just to be sure, by value-add do you mean what I\'d bring to the team?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask Brian about himself?',
         options: [
-          { text: 'People like being asked, and the answer shows the real culture' },
           { text: 'To flatter him into hiring you', why: 'It\'s genuine curiosity.' },
           { text: 'It\'s too personal', why: 'It\'s about his work.' },
+          { text: 'People like being asked, and the answer shows the real culture' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

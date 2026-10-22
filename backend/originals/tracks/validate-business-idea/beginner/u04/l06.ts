@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: '41 interested! Should I tell Mama Rose to expect 41 bags?',
         prompt: "David's best reply?",
         options: [
-          { text: 'Tell her 12: that\'s who paid. Message the other 29 to say there\'s space next weekend.' },
           { text: 'Yes, 41.', why: 'She\'d clear space for 29 bags that won\'t come.' },
+          { text: 'Tell her 12: that\'s who paid. Message the other 29 to say there\'s space next weekend.' },
           { text: 'Tell her zero, to be safe.', why: '12 are paid and coming.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Clinton do with the 29 who were interested but didn\'t pay?',
         options: [
-          { text: 'Follow up: offer next weekend, and ask what stopped them' },
           { text: 'Count them as customers', why: 'They haven\'t paid.' },
           { text: 'Ignore them', why: 'They\'re warm leads, and their reasons are useful.' },
+          { text: 'Follow up: offer next weekend, and ask what stopped them' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

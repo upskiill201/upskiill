@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A customer says "too expensive". What\'s the first step?',
         options: [
-          { text: 'Ask what they\'re comparing with' },
           { text: 'Lower the price', why: 'Understand the objection first.' },
+          { text: 'Ask what they\'re comparing with' },
           { text: 'Ignore them', why: 'Objections are information.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'A student wants to pay 1,500 because her friend got 1,500 last month.',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Last month\'s price changed for everyone, with notice. If money\'s tight, Saver is 1,400. Same rules for all.' },
           { text: 'Give her 1,500 too.', why: 'Then every customer has a different price.' },
           { text: 'Tell her the friend is lying.', why: 'The friend was right about last month.' },
+          { text: 'Last month\'s price changed for everyone, with notice. If money\'s tight, Saver is 1,400. Same rules for all.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Bih accept 1,050 instead of 1,100?',
         options: [
-          { text: 'Guaranteed bags and same-day payment are worth more to her than 50 a bag' },
           { text: 'Clinton threatened her', why: 'It was a fair trade.' },
+          { text: 'Guaranteed bags and same-day payment are worth more to her than 50 a bag' },
           { text: 'She had no choice', why: 'She chose the steadier deal.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

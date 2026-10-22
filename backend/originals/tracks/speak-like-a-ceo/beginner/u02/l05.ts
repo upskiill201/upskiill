@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         message: 'I think Carmen\'s new email plan is wrong, but she\'s the boss.',
         prompt: "Lucía\'s best reply?",
         options: [
-          { text: 'Ask her for five minutes. Start with the shared goal, give one fact, and offer an alternative. Then accept her call.' },
           { text: 'Say nothing, she\'s the boss.', why: 'Raise it respectfully.' },
           { text: 'Tell everyone else it\'s wrong.', why: 'Tell Carmen, with a fact.' },
+          { text: 'Ask her for five minutes. Start with the shared goal, give one fact, and offer an alternative. Then accept her call.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "disagree and commit" mean?',
         options: [
-          { text: 'Argue your case before the decision, then back it fully' },
           { text: 'Never disagree', why: 'Disagree first.' },
+          { text: 'Argue your case before the decision, then back it fully' },
           { text: 'Keep arguing after', why: 'Commit after.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

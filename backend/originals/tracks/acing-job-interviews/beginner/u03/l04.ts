@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'We didn\'t even win. Is it a good story?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Yes. Failure stories aren\'t about winning. They show honesty, what you did next and what you changed. Yours has all three.' },
           { text: 'No, only tell winning stories.', why: 'Failure questions are common.' },
+          { text: 'Yes. Failure stories aren\'t about winning. They show honesty, what you did next and what you changed. Yours has all three.' },
           { text: 'Say you won.', why: 'Never change the facts.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes a failure story strong?',
         options: [
-          { text: 'Clear actions and a real change you made afterwards' },
           { text: 'Blaming someone else', why: 'Ownership matters.' },
           { text: 'Making the failure sound small', why: 'Honesty works better.' },
+          { text: 'Clear actions and a real change you made afterwards' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -32,11 +32,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did the 2017 paper "Attention Is All You Need" describe?',
         options: [
-          { text: 'The transformer, the design behind most large language models' },
           { text: 'The first GPU', why: 'GPUs came long before. The paper is about a model design.' },
+          { text: 'The transformer, the design behind most large language models' },
           { text: 'ChatGPT', why: 'ChatGPT came in 2022, built on the transformer idea.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'Everyone\'s switching to the new vector database. Should we?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Which job would it do better for us, and what would switching cost? We have 15 help-page lines; we don\'t need it yet.' },
           { text: 'Yes, everyone is.', why: 'Popularity isn\'t a reason. The job and the cost are.' },
           { text: 'Never use new tools.', why: 'Sometimes a new tool is worth it. Ask the three questions.' },
+          { text: 'Which job would it do better for us, and what would switching cost? We have 15 help-page lines; we don\'t need it yet.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

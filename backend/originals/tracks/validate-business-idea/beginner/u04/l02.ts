@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a minimum viable product?',
         options: [
-          { text: 'The smallest thing that tests your riskiest assumption with real customers' },
           { text: 'A small version of the full app', why: 'It doesn\'t have to be an app at all.' },
           { text: 'The cheapest product on the market', why: 'It\'s about learning, not price.' },
+          { text: 'The smallest thing that tests your riskiest assumption with real customers' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why shouldn\'t Clinton wait until WashDay is polished?',
         options: [
-          { text: 'Polish costs time before he knows if anyone will pay' },
           { text: 'Customers hate polish', why: 'They don\'t mind it; it just isn\'t needed yet.' },
           { text: 'Polish is impossible', why: 'Possible, just premature.' },
+          { text: 'Polish costs time before he knows if anyone will pay' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

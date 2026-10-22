@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         code: 'waits = [3, 21, 5, 30]\nprint(len(waits))',
         language: 'python',
         options: [
-          { text: '4' },
           { text: '59', why: 'len() counts items; it doesn\'t add them.' },
           { text: '30', why: 'That\'s the biggest item.' },
+          { text: '4' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -101,11 +101,11 @@ const lesson: OriginalLesson = {
         code: 'total = 0\nfor w in [3, 21, 5]:\n    total = total + w\nprint(total)',
         language: 'python',
         options: [
-          { text: '29' },
           { text: '3', why: 'The loop adds every item, not just the first.' },
+          { text: '29' },
           { text: '0', why: 'total grows inside the loop.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -121,11 +121,11 @@ const lesson: OriginalLesson = {
         message: 'Why learn loops if pandas does tables for me?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'pandas handles most table work, but in Chapter 3 you\'ll build a predictor yourself, and that needs a loop.' },
           { text: 'You don\'t need them, ever.', why: 'You\'ll write a loop in Chapter 3.' },
           { text: 'Loops are only for experts.', why: 'They\'re one of the first things every beginner learns.' },
+          { text: 'pandas handles most table work, but in Chapter 3 you\'ll build a predictor yourself, and that needs a loop.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'What about a scented-bag option? It sounds premium.',
         prompt: "David's best reply?",
         options: [
-          { text: 'Has anyone asked for it? If not, it\'s one more thing to explain and stock. Keep options that match real requests.' },
           { text: 'Yes, add everything premium.', why: 'Unrequested options add confusion.' },
           { text: 'Make scented the only option.', why: 'That removes the options people asked for.' },
+          { text: 'Has anyone asked for it? If not, it\'s one more thing to explain and stock. Keep options that match real requests.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might "midnight express" be a poor option for WashDay?',
         options: [
-          { text: 'Nobody asked for it, and Mama Rose doesn\'t wash at midnight' },
           { text: 'It\'s too cheap', why: 'The problem is need and cost, not price.' },
+          { text: 'Nobody asked for it, and Mama Rose doesn\'t wash at midnight' },
           { text: 'Midnight is too early', why: 'It\'s about need and whether it can be delivered.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

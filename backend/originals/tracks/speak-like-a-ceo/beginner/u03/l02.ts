@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask "so what for them?"',
         options: [
-          { text: 'Most of the audience aren\'t in marketing' },
           { text: 'To make it longer', why: 'To make it useful to them.' },
           { text: 'To impress Carmen', why: 'To make it useful to them.' },
+          { text: 'Most of the audience aren\'t in marketing' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Isn\'t "we listened" too simple for a big talk?',
         prompt: "Lucía\'s best reply?",
         options: [
-          { text: 'Simple is the point. 300 people will remember one simple line. The talk shows the evidence behind it.' },
           { text: 'You\'re right, make it complex.', why: 'Simple is memorable.' },
+          { text: 'Simple is the point. 300 people will remember one simple line. The talk shows the evidence behind it.' },
           { text: 'Add three more messages.', why: 'One message.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who did Nopal listen to?',
         options: [
-          { text: 'The shop owners who sell the chips' },
           { text: 'Only the agency', why: 'The shop owners.' },
           { text: 'Nobody', why: 'The shop owners.' },
+          { text: 'The shop owners who sell the chips' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

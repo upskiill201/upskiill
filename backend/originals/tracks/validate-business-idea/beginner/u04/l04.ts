@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write the pass mark BEFORE the test?',
         options: [
-          { text: 'So you can\'t move it to match whatever happens' },
           { text: 'So the test takes longer', why: 'It\'s about honesty, not time.' },
           { text: 'It doesn\'t matter when', why: 'Afterwards, you\'ll be tempted to call anything a success.' },
+          { text: 'So you can\'t move it to match whatever happens' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'Why do I have to send the pass mark to you two first?',
         prompt: "David's best reply?",
         options: [
-          { text: 'Because on Sunday, if you get 6 bookings, you\'ll want to say 6 was the plan. If we\'ve seen it, you can\'t.' },
           { text: 'No reason.', why: 'Sharing it stops the goalposts moving.' },
+          { text: 'Because on Sunday, if you get 6 bookings, you\'ll want to say 6 was the plan. If we\'ve seen it, you can\'t.' },
           { text: 'So we can take credit.', why: 'It\'s about keeping the test honest.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why "at least half from people Clinton doesn\'t know"?',
         options: [
-          { text: 'Friends might pay to support him, not because they need the service' },
           { text: 'Friends aren\'t allowed to pay', why: 'They can; they just count less as evidence.' },
           { text: 'Strangers pay more', why: 'Same price; the point is honest demand.' },
+          { text: 'Friends might pay to support him, not because they need the service' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

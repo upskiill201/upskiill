@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'My report headings are "Part 1", "Part 2", "Part 3".',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: 'Ask "so what?" for each part, and make the answer the heading. Then people can read just the headings.' },
           { text: 'Perfect, keep them.', why: 'They say nothing.' },
+          { text: 'Ask "so what?" for each part, and make the answer the heading. Then people can read just the headings.' },
           { text: 'Remove all headings.', why: 'Make them say something.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the "so what?" test for?',
         options: [
-          { text: 'Turning label headings into message headings' },
           { text: 'Checking spelling', why: 'For headings.' },
           { text: 'Choosing fonts', why: 'For headings.' },
+          { text: 'Turning label headings into message headings' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

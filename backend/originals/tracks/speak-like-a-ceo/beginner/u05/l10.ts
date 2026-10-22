@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How did Lucía open?',
         options: [
-          { text: 'With a moment: the shop owner in Guadalajara' },
           { text: '"Thank you for having me"', why: 'She opened with a moment.' },
           { text: 'With the agenda', why: 'With a moment.' },
+          { text: 'With a moment: the shop owner in Guadalajara' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'I\'m exhausted. And I want to do it again.',
         prompt: "Carmen\'s best reply?",
         options: [
-          { text: 'Good. Keep the talk card, use the first five checks every Monday, and the whole card for the next big one.' },
           { text: 'Never do it again.', why: 'Keep practising.' },
+          { text: 'Good. Keep the talk card, use the first five checks every Monday, and the whole card for the next big one.' },
           { text: 'Throw the card away now.', why: 'Keep it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

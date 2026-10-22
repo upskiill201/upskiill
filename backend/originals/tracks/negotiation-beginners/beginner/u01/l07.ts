@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Should I ask Lucía how she negotiated her promotion? Won\'t she think I\'m clueless?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Ask. Asking someone experienced for advice on something hard tends to make you look more competent, not less.' },
           { text: 'Don\'t, she\'ll think less of you.', why: 'Research suggests the opposite.' },
           { text: 'Ask a stranger instead.', why: 'Asking the right person matters.' },
+          { text: 'Ask. Asking someone experienced for advice on something hard tends to make you look more competent, not less.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When does asking for advice help how competent you look most?',
         options: [
-          { text: 'On a hard task, when you ask someone who knows the area' },
           { text: 'On a very easy task', why: 'There it made little difference.' },
+          { text: 'On a hard task, when you ask someone who knows the area' },
           { text: 'When you ask anyone at all', why: 'Asking someone who can\'t help can backfire.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

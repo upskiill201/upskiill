@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the goal of a negotiation?',
         options: [
-          { text: 'An agreement both sides prefer to no deal' },
           { text: 'Beating the other side', why: 'Beaten people don\'t keep deals.' },
           { text: 'Getting everything you want', why: 'Rarely possible, and rarely lasts.' },
+          { text: 'An agreement both sides prefer to no deal' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'So negotiating isn\'t about being tough?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'It\'s about being prepared and clear. Calm, curious people often do better than tough ones.' },
           { text: 'It\'s all about being tough.', why: 'Toughness without preparation loses deals.' },
+          { text: 'It\'s about being prepared and clear. Calm, curious people often do better than tough ones.' },
           { text: 'It\'s about being nice and giving in.', why: 'Giving in isn\'t negotiating.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

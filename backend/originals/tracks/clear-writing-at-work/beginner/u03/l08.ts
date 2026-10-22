@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How do you keep a deadline from sounding pushy?',
         options: [
-          { text: 'Give the reason: "By Friday, so rotas go out Monday."' },
           { text: 'Use capitals', why: 'That\'s pushier.' },
+          { text: 'Give the reason: "By Friday, so rotas go out Monday."' },
           { text: 'Never give deadlines', why: 'They help planning.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Putting "by Friday" in an email to the CEO feels pushy.',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: 'With the reason, it\'s helpful: he knows when, and why. Without it, he has to guess how urgent it is.' },
           { text: 'You\'re right, I\'ll remove it.', why: 'Then he can\'t prioritise.' },
           { text: 'Make it "by today".', why: 'Use the real deadline.' },
+          { text: 'With the reason, it\'s helpful: he knows when, and why. Without it, he has to guess how urgent it is.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

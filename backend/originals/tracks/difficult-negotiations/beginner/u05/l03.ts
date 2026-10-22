@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When should Arjun\'s team start work?',
         options: [
-          { text: 'When the statement of work is signed and the first payment is in' },
           { text: 'Tonight, after the handshake', why: 'Nothing is signed yet.' },
+          { text: 'When the statement of work is signed and the first payment is in' },
           { text: 'When they feel like it', why: 'Start on agreed terms.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'We all shook hands. Isn\'t a contract a bit unfriendly?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'It\'s the friendliest thing we can do. In week nine, nobody will argue about what "support" meant.' },
           { text: 'Yes, skip it.', why: 'Vague deals cause fights later.' },
           { text: 'Make it 80 pages of legal text.', why: 'Clear and short is enough.' },
+          { text: 'It\'s the friendliest thing we can do. In week nine, nobody will argue about what "support" meant.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do clear terms matter even more after a hard negotiation?',
         options: [
-          { text: 'Trust is still fragile, and vague terms create the next fight' },
           { text: 'They don\'t', why: 'Hard rounds leave less goodwill for misunderstandings.' },
+          { text: 'Trust is still fragile, and vague terms create the next fight' },
           { text: 'To punish the other side', why: 'They protect both sides.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

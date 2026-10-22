@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "students will pay for food delivery" now marked killed?',
         options: [
-          { text: '1 of 10 paid, and most said the stalls are close' },
           { text: 'Clinton got bored of it', why: 'Evidence killed it, not mood.' },
+          { text: '1 of 10 paid, and most said the stalls are close' },
           { text: 'Nobody eats', why: 'They eat; they don\'t pay for delivery.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Two cards supported! Can I launch WashDay now?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'The problem is real. You still don\'t know if they\'d pay YOU, how many there are, or who else they could use. That\'s the next two chapters.' },
           { text: 'Yes, launch tonight.', why: 'The riskiest card is still untested.' },
           { text: 'No, laundry is a bad idea.', why: 'The evidence for the problem is good.' },
+          { text: 'The problem is real. You still don\'t know if they\'d pay YOU, how many there are, or who else they could use. That\'s the next two chapters.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

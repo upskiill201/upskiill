@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'If I pause, won\'t they think I don\'t know?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Say "Good question, let me think," and take a few seconds. It looks thoughtful.' },
           { text: 'Never pause.', why: 'Rushing leads to rambling.' },
           { text: 'Pause for a full minute.', why: 'A few seconds is enough.' },
+          { text: 'Say "Good question, let me think," and take a few seconds. It looks thoughtful.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s a good way to clarify a vague question?',
         options: [
-          { text: '"Do you mean in a team project or at work?"' },
           { text: '"That\'s a bad question."', why: 'Rude.' },
+          { text: '"Do you mean in a team project or at work?"' },
           { text: 'Guess and answer anything', why: 'You may answer the wrong question.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

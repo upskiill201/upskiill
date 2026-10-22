@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do requests get lost in mixed messages?',
         options: [
-          { text: 'The reader is reading about something else and misses the ask' },
           { text: 'Email deletes them', why: 'It\'s about attention.' },
+          { text: 'The reader is reading about something else and misses the ask' },
           { text: 'They don\'t', why: 'Mixed messages bury asks.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is the best subject line for Felix\'s email?',
         options: [
-          { text: '"Export bug: 14 orders missing dates"' },
           { text: '"Update"', why: 'Says nothing.' },
+          { text: '"Export bug: 14 orders missing dates"' },
           { text: '"Week 3 and other things"', why: 'Mixed and vague.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

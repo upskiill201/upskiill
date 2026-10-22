@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When should Zanele use the checklist?',
         options: [
-          { text: 'Before sending anything that matters' },
           { text: 'Once a year', why: 'Every important message.' },
           { text: 'Only for Mr Kamau', why: 'For every reader.' },
+          { text: 'Before sending anything that matters' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'A checklist for emails? Isn\'t that a bit much?',
         prompt: "Zanele's best reply?",
         options: [
-          { text: 'It takes 30 seconds and my updates went from "?" to "Good. Keep going."' },
           { text: 'Yes, it\'s silly.', why: 'It works.' },
+          { text: 'It takes 30 seconds and my updates went from "?" to "Good. Keep going."' },
           { text: 'Pilots use checklists, so I must too.', why: 'Her reason is the results.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "five cuts" refer to?',
         options: [
-          { text: 'Warm-up, history, method, repeats and filler' },
           { text: 'Five paragraphs to delete', why: 'Five kinds of padding.' },
           { text: 'Five readers to remove', why: 'Kinds of padding.' },
+          { text: 'Warm-up, history, method, repeats and filler' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

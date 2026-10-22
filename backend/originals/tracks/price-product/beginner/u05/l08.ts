@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Ama divide by 30 hours, not all the hours she works?',
         options: [
-          { text: 'Messages, edits and finding clients take time nobody pays for' },
           { text: 'She only works 30 hours', why: 'She works more; only 30 are billable.' },
           { text: 'It makes the rate look lower', why: 'It makes it higher, and honest.' },
+          { text: 'Messages, edits and finding clients take time nobody pays for' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Ama says 7,500 feels too much to ask a friend.',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'At 3,000 she\'s paying to work. She can do a favour for a friend now and then, but her price should keep her going.' },
           { text: 'Then 3,000 is fine.', why: 'It doesn\'t cover her costs and income.' },
+          { text: 'At 3,000 she\'s paying to work. She can do a favour for a friend now and then, but her price should keep her going.' },
           { text: 'Charge friends double.', why: 'Fair, not punishing.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

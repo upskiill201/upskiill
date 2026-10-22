@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s new on v5?',
         options: [
-          { text: 'The final round and after-the-interview sections' },
           { text: 'The story bank', why: 'That was v3.' },
+          { text: 'The final round and after-the-interview sections' },
           { text: 'Nothing', why: 'v5 completes it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Will I need this card again after the internship?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Every interview, for the rest of your career. Just update the stories and the research.' },
           { text: 'No, throw it away.', why: 'It\'s reusable.' },
           { text: 'Only for internships.', why: 'It works for any job.' },
+          { text: 'Every interview, for the rest of your career. Just update the stories and the research.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

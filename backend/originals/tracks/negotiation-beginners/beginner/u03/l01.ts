@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happened when Ada said "whatever is fair"?',
         options: [
-          { text: 'Mr Adeyemi named his own number: ₦1,450,000' },
           { text: 'He offered ₦1,300,000', why: 'He picked a number that suits him.' },
+          { text: 'Mr Adeyemi named his own number: ₦1,450,000' },
           { text: 'Nothing changed', why: 'He took the chance to set the number.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why was "I\'ll think about it" a good move after "₦1,450,000, final"?',
         options: [
-          { text: 'It avoided a rushed yes and kept the talk open for next week' },
           { text: 'It was rude', why: 'It was calm and honest.' },
+          { text: 'It avoided a rushed yes and kept the talk open for next week' },
           { text: 'It accepted the deal', why: 'It didn\'t accept anything.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

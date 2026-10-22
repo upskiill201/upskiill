@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the "layer cake" pattern?',
         options: [
-          { text: 'Eyes jump from heading to heading, reading text only where it looks relevant' },
           { text: 'Reading every word in order', why: 'That\'s rare.' },
+          { text: 'Eyes jump from heading to heading, reading text only where it looks relevant' },
           { text: 'Reading only images', why: 'It\'s about headings.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why start lines with the important words?',
         options: [
-          { text: 'The left edge gets the most attention when people scan' },
           { text: 'It looks nicer', why: 'It\'s about attention.' },
+          { text: 'The left edge gets the most attention when people scan' },
           { text: 'No reason', why: 'Scanning favours the left.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

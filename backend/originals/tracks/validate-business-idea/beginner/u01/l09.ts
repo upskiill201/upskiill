@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'On evidence board v1, how many assumptions are supported by evidence?',
         options: [
-          { text: 'None: they\'re all untested' },
           { text: 'All five', why: 'Nothing has been tested yet.' },
           { text: 'Two', why: 'Believing isn\'t evidence; none are supported yet.' },
+          { text: 'None: they\'re all untested' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which card should Clinton test next?',
         options: [
-          { text: 'Students will pay 500 FCFA for delivery (risk 25)' },
           { text: 'Deliver in 30 minutes (risk 2)', why: 'Lowest risk; it can wait.' },
           { text: 'The app\'s colours', why: 'Not even on the board.' },
+          { text: 'Students will pay 500 FCFA for delivery (risk 25)' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

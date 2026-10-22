@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do Stone, Patton and Heen say about intent and impact?',
         options: [
-          { text: 'We judge ourselves by intent and others by impact' },
           { text: 'Intent is all that matters', why: 'Impact matters too.' },
+          { text: 'We judge ourselves by intent and others by impact' },
           { text: 'Impact is all that matters', why: 'Both matter.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'Your message made me feel like I\'d failed.',
         prompt: "Grace's best reply?",
         options: [
-          { text: '"I didn\'t mean that, and I can see how "again" landed. I\'m sorry. Your fix helped 4 of 6; we\'re nearly there."' },
           { text: '"That\'s not what I meant!"', why: 'True, but it ignores the impact.' },
           { text: '"Well, the fix did fail."', why: 'It didn\'t fully fail, and it hurts.' },
+          { text: '"I didn\'t mean that, and I can see how "again" landed. I\'m sorry. Your fix helped 4 of 6; we\'re nearly there."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Does owning your impact mean admitting you meant harm?',
         options: [
-          { text: 'No. You can say how it landed and still say what you meant' },
           { text: 'Yes', why: 'Intent and impact are separate.' },
+          { text: 'No. You can say how it landed and still say what you meant' },
           { text: 'It means you were wrong to speak', why: 'Not at all.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

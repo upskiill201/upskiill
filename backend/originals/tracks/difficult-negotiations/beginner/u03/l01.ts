@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happens if Arjun says yes to all 14 at the same price and date?',
         options: [
-          { text: 'They miss the date, or the team works for free' },
           { text: 'Everyone is happy', why: 'Until the date slips.' },
+          { text: 'They miss the date, or the team works for free' },
           { text: 'Nothing changes', why: 'It\'s roughly two more months of work.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "a few small additions" misleading?',
         options: [
-          { text: 'Calling them small doesn\'t make them small: together they\'re about two months\' work' },
           { text: 'They are small', why: 'Kavya estimated two months.' },
+          { text: 'Calling them small doesn\'t make them small: together they\'re about two months\' work' },
           { text: 'It isn\'t misleading', why: 'The label hides the real size.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

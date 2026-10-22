@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the new subject line tell Mr Kamau before he opens it?',
         options: [
-          { text: 'That a decision is needed, what it is, and by when' },
           { text: 'Nothing new', why: 'It carries the decision.' },
           { text: 'That the pilot failed', why: 'It asks for a decision.' },
+          { text: 'That a decision is needed, what it is, and by when' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the buried version risk a "?" reply?',
         options: [
-          { text: 'He might stop reading before the ask' },
           { text: 'It had wrong numbers', why: 'The numbers were the same.' },
           { text: 'It was rude', why: 'It was polite but unclear.' },
+          { text: 'He might stop reading before the ask' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

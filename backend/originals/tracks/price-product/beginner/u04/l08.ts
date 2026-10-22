@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In the mail-order experiment, which price sold the most of the same dress?',
         options: [
-          { text: '$39' },
           { text: '$34', why: 'Surprisingly, the cheaper price sold less.' },
           { text: '$44', why: '$39 sold the most.' },
+          { text: '$39' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Across 80 bags a month, how much margin would 1,750 give up compared with 1,800?',
         options: [
-          { text: '4,000 FCFA' },
           { text: '50 FCFA', why: 'That\'s per bag: 80 × 50.' },
           { text: '400 FCFA', why: '80 × 50 = 4,000.' },
+          { text: '4,000 FCFA' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

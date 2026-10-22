@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the weekend test trying to prove?',
         options: [
-          { text: 'That students will pay Clinton for laundry pickup' },
           { text: 'That Clinton can ride a bike', why: 'He knows that already; it\'s low risk.' },
+          { text: 'That students will pay Clinton for laundry pickup' },
           { text: 'That the app design is nice', why: 'There\'s no app yet; that\'s the point.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Doing it by hand feels unprofessional. Won\'t people laugh?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Customers care that their clothes come back clean and on time, not whether there\'s an app. Plenty of big companies started exactly like this.' },
           { text: 'Yes, wait until it\'s perfect.', why: 'Perfect costs six weeks and his savings.' },
           { text: 'Hide that it\'s you.', why: 'Be honest; customers don\'t mind a small start.' },
+          { text: 'Customers care that their clothes come back clean and on time, not whether there\'s an app. Plenty of big companies started exactly like this.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -101,11 +101,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which risk does building the app first take?',
         options: [
-          { text: 'Spending six weeks and 350,000 FCFA before knowing anyone will pay' },
           { text: 'None, apps always work', why: 'Apps nobody uses are very common.' },
+          { text: 'Spending six weeks and 350,000 FCFA before knowing anyone will pay' },
           { text: 'Getting too many customers', why: 'Not the risk here.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

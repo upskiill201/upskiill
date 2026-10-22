@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do people often compete at home but avoid at work?',
         options: [
-          { text: 'They feel safe at home and unsure at work' },
           { text: 'Work is less important', why: 'It\'s about feeling safe, not importance.' },
           { text: 'They don\'t', why: 'It\'s a common pattern.' },
+          { text: 'They feel safe at home and unsure at work' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'Jayden borrowed the car again without asking. I want to shout.',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Issue: important. Relationship: very important. That says collaborate: tell him why it matters and agree a rule together.' },
           { text: 'Shout. You\'re the parent.', why: 'Competing may win today and lose the relationship.' },
+          { text: 'Issue: important. Relationship: very important. That says collaborate: tell him why it matters and agree a rule together.' },
           { text: 'Say nothing.', why: 'It\'s too important to avoid.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did competing feel natural on the ward?',
         options: [
-          { text: 'Clear hierarchy and clear rules in emergencies' },
           { text: 'Nurses are aggressive', why: 'It was about structure and urgency.' },
           { text: 'It didn\'t', why: 'In emergencies it did.' },
+          { text: 'Clear hierarchy and clear rules in emergencies' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

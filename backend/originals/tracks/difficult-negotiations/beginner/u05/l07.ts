@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Pryce wants the first invoice at 45 days, not 30. Should we fight it?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Check cash flow. If 15 more days on one invoice is fine, let it go with a smile. Save firmness for what matters.' },
           { text: 'Fight it to the end.', why: 'It may not be worth the goodwill.' },
           { text: 'Agree to 120 days.', why: 'That\'s a big change, not a small one.' },
+          { text: 'Check cash flow. If 15 more days on one invoice is fine, let it go with a smile. Save firmness for what matters.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When is it right to stay firm on a small point?',
         options: [
-          { text: 'When it affects something that really matters, like paying the team' },
           { text: 'Always', why: 'Not every point deserves a fight.' },
+          { text: 'When it affects something that really matters, like paying the team' },
           { text: 'Never', why: 'Some small points protect big things.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

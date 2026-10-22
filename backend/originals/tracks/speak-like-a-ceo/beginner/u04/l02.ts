@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'I found eleven things to fix. Where do I start?',
         prompt: "Diego\'s best reply?",
         options: [
-          { text: 'Pick the two that would make the biggest difference. Pace and eye contact. The rest can wait.' },
           { text: 'Fix all eleven tonight.', why: 'One or two at a time.' },
+          { text: 'Pick the two that would make the biggest difference. Pace and eye contact. The rest can wait.' },
           { text: 'Give up, it\'s too many.', why: 'Pick two.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where should you prop up the phone?',
         options: [
-          { text: 'Where the audience would be' },
           { text: 'Behind you', why: 'Where the audience would be.' },
           { text: 'On the floor facing the ceiling', why: 'Where the audience would be.' },
+          { text: 'Where the audience would be' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

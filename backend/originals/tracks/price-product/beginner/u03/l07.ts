@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Four Standard bags would normally cost 7,200. How much does a plan member save each month?',
         options: [
-          { text: '800 FCFA' },
           { text: '1,600 FCFA', why: '7,200 − 6,400 = 800.' },
           { text: '200 FCFA', why: 'That\'s the saving per bag.' },
+          { text: '800 FCFA' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'If a member misses a week, I keep the money. That\'s extra profit!',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Short-term, yes. But if members feel they\'re paying for nothing, they cancel and tell friends. Let one unused bag roll over.' },
           { text: 'Yes, unused bags are free money.', why: 'It erodes trust and leads to cancellations.' },
+          { text: 'Short-term, yes. But if members feel they\'re paying for nothing, they cancel and tell friends. Let one unused bag roll over.' },
           { text: 'Refund every unused bag in cash.', why: 'A rollover is simpler and fair.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '10 students join the plan. How much margin is Clinton sure of each month?',
         options: [
-          { text: '19,000 FCFA' },
           { text: '64,000 FCFA', why: 'That\'s total plan money in, not margin.' },
           { text: '4,750 FCFA', why: '10 × 1,900 = 19,000.' },
+          { text: '19,000 FCFA' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

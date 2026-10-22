@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a sunk cost?',
         options: [
-          { text: 'Money or time already spent that you can\'t get back' },
           { text: 'A cost you can still avoid', why: 'That\'s a future cost.' },
+          { text: 'Money or time already spent that you can\'t get back' },
           { text: 'A discount', why: 'It\'s spending that\'s gone.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which choice saved Clinton the most money?',
         options: [
-          { text: 'Testing by hand instead of paying 350,000 FCFA for an app first' },
           { text: 'Buying CampusEats flyers', why: 'That was spent and gone.' },
+          { text: 'Testing by hand instead of paying 350,000 FCFA for an app first' },
           { text: 'Running both ideas', why: 'He didn\'t; that would have split his time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

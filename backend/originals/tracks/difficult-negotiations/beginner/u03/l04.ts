@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         message: 'She says all 14 are must-haves.',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Ask: "If we could only launch with four, which four would you pick?" A real choice gets a real answer.' },
           { text: 'Then build all 14 in 12 weeks.', why: 'Impossible without more time or money.' },
+          { text: 'Ask: "If we could only launch with four, which four would you pick?" A real choice gets a real answer.' },
           { text: 'Tell her she\'s wrong.', why: 'Let her choose instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "what should we drop?" better than "we can\'t do that"?',
         options: [
-          { text: 'It makes the trade-off a shared decision, not a refusal' },
           { text: 'It sounds nicer but changes nothing', why: 'It changes who decides.' },
           { text: 'It isn\'t better', why: 'It turns an argument into planning.' },
+          { text: 'It makes the trade-off a shared decision, not a refusal' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

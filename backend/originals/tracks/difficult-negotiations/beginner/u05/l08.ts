@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Why plan phase two already? We\'ve just started phase one.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Because the next negotiation starts now. Ideas with rough costs, collected as we go, make that talk easy.' },
           { text: 'You\'re right, forget phase two.', why: 'Preparation starts early.' },
+          { text: 'Because the next negotiation starts now. Ideas with rough costs, collected as we go, make that talk easy.' },
           { text: 'Pitch phase two this week.', why: 'Collect quietly; deliver phase one first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why handle the first change request "by the book"?',
         options: [
-          { text: 'It shows both sides the agreed process actually works' },
           { text: 'To be difficult', why: 'It builds confidence in the process.' },
           { text: 'It doesn\'t matter', why: 'The first one sets the pattern.' },
+          { text: 'It shows both sides the agreed process actually works' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

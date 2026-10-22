@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'At 675 margin, how many bags earn the same 7,500? (7,500 ÷ 675, rounded up)',
         options: [
-          { text: '12 bags' },
           { text: '20 bags', why: 'Each bag earns more now.' },
           { text: '11 bags', why: '11 × 675 = 7,425, just short.' },
+          { text: '12 bags' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '12,825 for about 12 hours. Roughly what does Clinton earn per hour now?',
         options: [
-          { text: 'About 1,069 FCFA, above the library\'s 1,000' },
           { text: 'About 625 FCFA', why: 'That was at 1,500.' },
+          { text: 'About 1,069 FCFA, above the library\'s 1,000' },
           { text: 'About 12,825 FCFA', why: 'Divide by 12 hours.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'Two people left. Was the rise a mistake?',
         prompt: "David's best reply?",
         options: [
-          { text: 'You could have lost eight and still earned the same. You lost two, one moved to Saver, and you\'re earning 71% more. It worked.' },
           { text: 'Yes, go back to 1,500.', why: 'The numbers say the opposite.' },
           { text: 'Raise it to 2,400 now.', why: 'Check and review first; don\'t overcorrect.' },
+          { text: 'You could have lost eight and still earned the same. You lost two, one moved to Saver, and you\'re earning 71% more. It worked.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

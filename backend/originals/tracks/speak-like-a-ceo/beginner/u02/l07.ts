@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the goal of a senior meeting?',
         options: [
-          { text: 'A decision' },
           { text: 'Finishing every slide', why: 'A decision.' },
+          { text: 'A decision' },
           { text: 'Talking for the full time', why: 'A decision.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'She cut me off and I never showed my best chart.',
         prompt: "Tey\'s best reply?",
         options: [
-          { text: 'Did you get the yes? Then the chart did its job by being ready. Send it after, if it helps.' },
           { text: 'Ask to start again.', why: 'The goal was the decision.' },
           { text: 'Complain to Carmen.', why: 'It went fine.' },
+          { text: 'Did you get the yes? Then the chart did its job by being ready. Send it after, if it helps.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

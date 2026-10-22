@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write the headline first?',
         options: [
-          { text: 'If you can\'t write it in one sentence, you can\'t say it clearly' },
           { text: 'To read it out word for word', why: 'It\'s to get clear first.' },
           { text: 'No reason', why: 'It tests your clarity.' },
+          { text: 'If you can\'t write it in one sentence, you can\'t say it clearly' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'After I say it, there\'s an awkward silence. So I keep talking.',
         prompt: "Diego\'s best reply?",
         options: [
-          { text: 'That silence is them thinking. Let it sit. If they want more, they\'ll ask.' },
           { text: 'Fill every silence.', why: 'It weakens the point.' },
+          { text: 'That silence is them thinking. Let it sit. If they want more, they\'ll ask.' },
           { text: 'Leave the room.', why: 'Just wait.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

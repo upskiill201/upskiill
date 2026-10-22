@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s new on v4?',
         options: [
-          { text: 'Questions, issues to trade, packages and fair standards' },
           { text: 'A lower walk-away', why: 'The walk-away stays the same.' },
           { text: 'Nothing', why: 'v4 adds the trading tools.' },
+          { text: 'Questions, issues to trade, packages and fair standards' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "never give away the two-year lease on its own" on the card?',
         options: [
-          { text: 'It\'s her best trade; giving it free wastes it' },
           { text: 'She doesn\'t want two years', why: 'She does; she wants something for it.' },
           { text: 'It\'s illegal', why: 'It\'s strategy.' },
+          { text: 'It\'s her best trade; giving it free wastes it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

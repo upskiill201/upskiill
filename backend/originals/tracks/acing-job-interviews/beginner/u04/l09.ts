@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'My card is getting long. Is that a problem?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Keep it to a page of keywords. You\'re not reading it in the interview; it\'s how you prepare.' },
           { text: 'Yes, delete half.', why: 'Keywords, not deletion.' },
           { text: 'Make it 20 pages.', why: 'One page.' },
+          { text: 'Keep it to a page of keywords. You\'re not reading it in the interview; it\'s how you prepare.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the salary line a range, not a single number?',
         options: [
-          { text: 'It shows research and room to talk, starting at a fair target' },
           { text: 'He doesn\'t know what he wants', why: 'The bottom is a real target.' },
+          { text: 'It shows research and room to talk, starting at a fair target' },
           { text: 'Ranges are required', why: 'It\'s a choice.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

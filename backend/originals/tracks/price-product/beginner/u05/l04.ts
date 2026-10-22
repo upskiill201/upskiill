@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'At 1,800, what margin does a Bih bag earn at the new rate (cost 1,175)?',
         options: [
-          { text: '625 FCFA' },
           { text: '575 FCFA', why: 'That was at the old 1,100 rate.' },
           { text: '675 FCFA', why: 'That\'s a Mama Rose bag.' },
+          { text: '625 FCFA' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'Should I push Mama Rose down to 800 a bag?',
         prompt: "David's best reply?",
         options: [
-          { text: 'She gave you your start and she\'s your biggest washer. Squeeze her and she\'ll find other work. Make her job easier instead.' },
           { text: 'Yes, squeeze everyone.', why: 'A squeezed supplier stops being reliable.' },
+          { text: 'She gave you your start and she\'s your biggest washer. Squeeze her and she\'ll find other work. Make her job easier instead.' },
           { text: 'Pay her more than she asks.', why: 'Fair is the goal, not extremes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

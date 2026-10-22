@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the model actually receive?',
         options: [
-          { text: 'Tokens: the prompt cut into small pieces' },
           { text: 'The customer\'s screen', why: 'The model only receives text, turned into tokens.' },
+          { text: 'Tokens: the prompt cut into small pieces' },
           { text: 'The whole shop database', why: 'Only what the orchestration layer puts in the prompt.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         message: 'Why does it matter how many tokens a message is?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Models are priced and limited by tokens. More tokens means more cost and more time.' },
           { text: 'It doesn\'t matter at all.', why: 'Tokens drive cost, speed and how much fits in.' },
+          { text: 'Models are priced and limited by tokens. More tokens means more cost and more time.' },
           { text: 'Tokens are just for fun.', why: 'They\'re how the model reads text, and how it\'s billed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',

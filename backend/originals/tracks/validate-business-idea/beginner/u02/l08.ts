@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'I remember she was super keen. I\'ll just write "very interested".',
         prompt: "David's best reply?",
         options: [
-          { text: 'Write what she actually said and did. "Very interested" is your summary, and it\'s the hopeful one.' },
           { text: 'Perfect note.', why: 'It\'s a vague opinion, filtered by memory.' },
+          { text: 'Write what she actually said and did. "Very interested" is your summary, and it\'s the hopeful one.' },
           { text: 'Don\'t write anything; you\'ll remember.', why: 'Memory edits itself.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A page of notes is all OPINION lines. What does that tell you?',
         options: [
-          { text: 'The conversation didn\'t get to facts about what they did' },
           { text: 'It was a great interview', why: 'Opinions are the weakest evidence.' },
           { text: 'The person has no problem at all', why: 'You don\'t know; you didn\'t dig.' },
+          { text: 'The conversation didn\'t get to facts about what they did' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

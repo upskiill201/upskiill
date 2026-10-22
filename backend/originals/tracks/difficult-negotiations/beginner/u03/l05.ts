@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Time and cost are fixed. A client adds features. What must move?',
         options: [
-          { text: 'Scope: something else moves out or to later' },
           { text: 'Nothing', why: 'Something has to give.' },
+          { text: 'Scope: something else moves out or to later' },
           { text: 'The team\'s sleep', why: 'Unpaid overtime isn\'t a plan.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'A client says "it\'s just a tiny tweak". It\'s two days.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: '"Happy to. It\'s about two days, so it\'s £800, or it can go in phase two. Which would you prefer?"' },
           { text: '"Sure, no charge."', why: 'Two days given away.' },
           { text: '"No tweaks, ever."', why: 'Yes-if works better.' },
+          { text: '"Happy to. It\'s about two days, so it\'s £800, or it can go in phase two. Which would you prefer?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

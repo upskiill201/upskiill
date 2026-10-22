@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the new riskiest card?',
         options: [
-          { text: 'They will come back every week' },
           { text: 'They would pay me for pickup', why: 'That one just passed.' },
+          { text: 'They will come back every week' },
           { text: 'Gates open at 9', why: 'Known and fixed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'The big card passed! Can I quit testing now?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'One weekend of curious customers isn\'t a business. Find out if they come back, and if the money works for you.' },
           { text: 'Yes, you\'re done.', why: 'New risky cards just appeared.' },
           { text: 'Start the app now.', why: 'Repeat demand and price are still open.' },
+          { text: 'One weekend of curious customers isn\'t a business. Find out if they come back, and if the money works for you.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "they will come back every week" so important?',
         options: [
-          { text: 'Paying once could be curiosity; paying again shows the service really solves the problem' },
           { text: 'It isn\'t important', why: 'A business needs repeat customers.' },
+          { text: 'Paying once could be curiosity; paying again shows the service really solves the problem' },
           { text: 'Because the app needs users', why: 'There\'s no app yet; it\'s about real value.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

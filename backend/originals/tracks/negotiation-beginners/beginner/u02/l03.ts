@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do positions tend to clash?',
         options: [
-          { text: 'Two numbers can only move towards or away from each other' },
           { text: 'People are rude', why: 'It\'s the structure, not manners.' },
+          { text: 'Two numbers can only move towards or away from each other' },
           { text: 'They don\'t', why: 'That\'s why interests help.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which question best uncovers an interest?',
         options: [
-          { text: '"What matters most to you in a tenant?"' },
           { text: '"Will you go lower?"', why: 'That\'s about positions.' },
+          { text: '"What matters most to you in a tenant?"' },
           { text: '"Why are you so greedy?"', why: 'That starts a fight.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

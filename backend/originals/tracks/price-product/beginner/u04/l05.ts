@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'With that discount, how many times more sales are needed to earn the same (500 ÷ 300)?',
         options: [
-          { text: 'About 1.67 times' },
           { text: '1.1 times', why: '500 ÷ 300 ≈ 1.67.' },
+          { text: 'About 1.67 times' },
           { text: '3 times', why: 'Divide the old margin by the new one.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         message: 'What do I tell friends who still want 20% off?',
         prompt: "David's best reply?",
         options: [
-          { text: 'Same deal as everyone: Saver if money\'s tight, or the Plan for a real saving. Fair to all, and it still earns.' },
           { text: 'Give them 50% off.', why: 'That\'s below cost.' },
           { text: 'Stop being friends.', why: 'Offer the fair options instead.' },
+          { text: 'Same deal as everyone: Saver if money\'s tight, or the Plan for a real saving. Fair to all, and it still earns.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

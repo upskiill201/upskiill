@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the title of the new page one?',
         options: [
-          { text: 'The main result and the recommendation' },
           { text: '"Pilot Report"', why: 'That\'s a label.' },
+          { text: 'The main result and the recommendation' },
           { text: '"Introduction"', why: 'That was the old one.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'Where did the other eleven pages go?',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: 'They\'re all in the appendices. Page one gives the decision; anyone who wants the depth can turn the page.' },
           { text: 'I deleted them.', why: 'They moved to the appendices.' },
           { text: 'Nobody needs them.', why: 'Some readers do, so they\'re kept.' },
+          { text: 'They\'re all in the appendices. Page one gives the decision; anyone who wants the depth can turn the page.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

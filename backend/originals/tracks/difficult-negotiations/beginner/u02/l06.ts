@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'So we should just accept the budget is fixed?',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'Accept the budget if it\'s real, not the scope. A fixed budget buys a fixed amount of work.' },
           { text: 'Yes, do everything for £30,000.', why: 'Same work for less is a loss.' },
+          { text: 'Accept the budget if it\'s real, not the scope. A fixed budget buys a fixed amount of work.' },
           { text: 'Never accept any budget.', why: 'Budgets can be real; match scope to them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Arjun ask early in any big negotiation?',
         options: [
-          { text: '"Who else is involved in the decision?"' },
           { text: '"Are you the boss?"', why: 'Too blunt; ask who\'s involved.' },
           { text: 'Nothing; it doesn\'t matter', why: 'Knowing decision-makers saves time.' },
+          { text: '"Who else is involved in the decision?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How does the report end?',
         options: [
-          { text: '"So that\'s where we are."' },
           { text: 'With a clear ask', why: 'That\'s the recommendation.' },
+          { text: '"So that\'s where we are."' },
           { text: 'With the risk', why: 'It doesn\'t mention a plan.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'From when does Lucía propose entering Monterrey?',
         options: [
-          { text: 'October' },
           { text: 'Next year', why: 'October.' },
+          { text: 'October' },
           { text: 'Spring', why: 'That\'s mango-chili.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

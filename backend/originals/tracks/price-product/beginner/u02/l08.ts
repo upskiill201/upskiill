@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why not price at the ceiling, 2,400?',
         options: [
-          { text: 'Students would have no money reason to choose WashDay over the stand' },
           { text: 'It\'s below cost', why: 'It\'s far above cost.' },
+          { text: 'Students would have no money reason to choose WashDay over the stand' },
           { text: 'It\'s illegal', why: 'It\'s just poor value for customers.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'At 1,800, does Clinton\'s margin reach the 600 fair-pay mark?',
         options: [
-          { text: 'Yes: 675 is above 600' },
           { text: 'No: 675 is below 600', why: '675 is more than 600.' },
+          { text: 'Yes: 675 is above 600' },
           { text: 'Exactly equal', why: 'It\'s 75 above.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which layer is the "brain" that writes the reply?',
         options: [
-          { text: 'The model' },
           { text: 'The application', why: 'The app shows the reply; the model writes it.' },
           { text: 'Compute', why: 'Compute runs the model, but the model writes the words.' },
+          { text: 'The model' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         message: 'Six layers? I only need the model and a chat box.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Then it won\'t know your shop, can\'t check orders, and you\'ll never know if it\'s right. The other layers are why it works.' },
           { text: 'True, skip the rest.', why: 'Without data, orchestration and evaluation, it guesses about the shop.' },
+          { text: 'Then it won\'t know your shop, can\'t check orders, and you\'ll never know if it\'s right. The other layers are why it works.' },
           { text: 'You need sixty layers.', why: 'Six jobs, each with many possible tools.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         code: 'layers = ["Infrastructure and compute", "Model", "Data and retrieval",\n          "Orchestration", "Application", "Evaluation and governance"]\nprint(layers[-1])',
         language: 'python',
         options: [
-          { text: 'Evaluation and governance' },
           { text: 'Infrastructure and compute', why: '[-1] is the last item, not the first.' },
           { text: 'Application', why: 'That\'s [-2].' },
+          { text: 'Evaluation and governance' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

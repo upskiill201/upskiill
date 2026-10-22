@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happens to people who negotiate without preparing?',
         options: [
-          { text: 'They tend to accept the first number they hear' },
           { text: 'They get better deals', why: 'Usually the opposite.' },
+          { text: 'They tend to accept the first number they hear' },
           { text: 'Nothing different', why: 'Preparation changes the result.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Isn\'t it a bit cold to plan a talk with someone I like?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'Planning is respect. You\'ll be calmer, kinder and clearer if you know your numbers.' },
           { text: 'Yes, don\'t plan.', why: 'Unprepared people panic and give in.' },
           { text: 'Plan to beat him.', why: 'The plan is for a fair deal.' },
+          { text: 'Planning is respect. You\'ll be calmer, kinder and clearer if you know your numbers.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is offering ₦1,000,000 "to see what happens" a weak plan?',
         options: [
-          { text: 'It has no reason behind it, so it\'s easy to dismiss' },
           { text: 'It\'s too high', why: 'It\'s very low, with no facts behind it.' },
+          { text: 'It has no reason behind it, so it\'s easy to dismiss' },
           { text: 'It\'s a strong plan', why: 'Numbers need reasons.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A Bih bag costs 1,100 + 50 + 30 + 45. What is the full cost?',
         options: [
-          { text: '1,225 FCFA' },
           { text: '1,125 FCFA', why: 'That\'s a Mama Rose bag.' },
+          { text: '1,225 FCFA' },
           { text: '1,100 FCFA', why: 'Add the bag, fees and running costs.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does Clinton lose if he keeps 1,500 and turns away 5 bags each Saturday?',
         options: [
-          { text: 'Those customers, who may go elsewhere and not come back' },
           { text: 'Nothing', why: 'Turned-away customers often don\'t return.' },
+          { text: 'Those customers, who may go elsewhere and not come back' },
           { text: 'Mama Rose', why: 'She stays; the customers might not.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

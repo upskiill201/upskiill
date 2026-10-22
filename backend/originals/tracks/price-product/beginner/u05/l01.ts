@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'Why not just give Joseph 1,500? It\'s only one person.',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Everyone else pays 1,800. If word spreads that complaining gets 1,500, everyone complains. Saver gives him a real saving that\'s fair to all.' },
           { text: 'Yes, one discount doesn\'t matter.', why: 'Secret discounts spread and feel unfair.' },
           { text: 'Ban Joseph.', why: 'He\'s a customer with a fair point; serve him well.' },
+          { text: 'Everyone else pays 1,800. If word spreads that complaining gets 1,500, everyone complains. Saver gives him a real saving that\'s fair to all.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Saver still earns Clinton 275 a bag. Why is that better than a 1,500 Standard for Joseph?',
         options: [
-          { text: 'It\'s fair to everyone, takes Clinton less time, and doesn\'t set a "complain to save" pattern' },
           { text: 'It earns more per bag', why: '1,500 Standard would earn 375; Saver is better for other reasons.' },
+          { text: 'It\'s fair to everyone, takes Clinton less time, and doesn\'t set a "complain to save" pattern' },
           { text: 'It isn\'t better', why: 'It\'s fairer and uses less of Clinton\'s time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

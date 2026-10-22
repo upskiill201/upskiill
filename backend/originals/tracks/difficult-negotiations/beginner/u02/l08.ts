@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happens when both sides use tactics on each other?',
         options: [
-          { text: 'It tends to escalate, and both lose trust' },
           { text: 'They cancel out nicely', why: 'Usually it escalates.' },
           { text: 'Both get better deals', why: 'Tactic wars destroy value.' },
+          { text: 'It tends to escalate, and both lose trust' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Let\'s give them a fake deadline too: "Our offer expires Monday."',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'If it\'s fake and they find out, you lose their trust for good. Give real reasons and real dates.' },
           { text: 'Great idea.', why: 'Fake pressure backfires when it\'s discovered.' },
+          { text: 'If it\'s fake and they find out, you lose their trust for good. Give real reasons and real dates.' },
           { text: 'Make it expire in an hour.', why: 'Worse.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

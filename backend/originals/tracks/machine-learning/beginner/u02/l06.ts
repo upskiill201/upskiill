@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does df[["clinic", "wait_days"]] give you?',
         options: [
-          { text: 'A table with just those two columns' },
           { text: 'One column', why: 'Double brackets: a list of names, so a table.' },
           { text: 'An error', why: 'It\'s the normal way to pick several columns.' },
+          { text: 'A table with just those two columns' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'df.iloc[0] gives the first row. What does df.iloc[1] give?',
         options: [
-          { text: 'The second row' },
           { text: 'The first row', why: 'Positions start at 0, so 1 is second.' },
+          { text: 'The second row' },
           { text: 'The second column', why: 'iloc with one number picks a row.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',

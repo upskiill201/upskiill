@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'I went silent for a whole minute on the coding problem.',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Silence hides your thinking. Talk them through it, even if you\'re stuck. They want to see how you approach it.' },
           { text: 'Silence is fine, take five minutes.', why: 'Long silence hides your process.' },
           { text: 'Say you can\'t do it and stop.', why: 'Show your approach.' },
+          { text: 'Silence hides your thinking. Talk them through it, even if you\'re stuck. They want to see how you approach it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What was wrong with "Anything is fine" for salary?',
         options: [
-          { text: 'It shows no research and invites a low offer' },
           { text: 'It\'s rude', why: 'It\'s too passive.' },
+          { text: 'It shows no research and invites a low offer' },
           { text: 'Nothing', why: 'It hands the number to them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the distance rule do worse on the new page?',
         options: [
-          { text: 'It was bent to fit one patient (Obi) on the old page' },
           { text: 'Distance never matters', why: 'It may matter. One example wasn\'t enough to learn the right rule.' },
+          { text: 'It was bent to fit one patient (Obi) on the old page' },
           { text: 'The new patients lied', why: 'The rule was fit too closely to the old page.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -121,11 +121,11 @@ const lesson: OriginalLesson = {
         message: 'So, can I tell the board it\'s 75%?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Tell them we have a first rule that beats guessing on new patients, and that a proper test on thousands of bookings is next.' },
           { text: 'Yes: 75%, guaranteed.', why: 'Four patients can\'t guarantee anything.' },
           { text: 'Tell them it\'s 100%.', why: 'That was the old page, and the distance rule.' },
+          { text: 'Tell them we have a first rule that beats guessing on new patients, and that a proper test on thousands of bookings is next.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which rule would Grace use first when a colleague raises their voice?',
         options: [
-          { text: 'Lower and slower' },
           { text: 'Draft, then respond', why: 'That\'s for written criticism.' },
+          { text: 'Lower and slower' },
           { text: 'Which should move', why: 'That\'s for workload.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Could we turn your page into a team agreement?',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'I\'d love that. But let\'s write it together as a team, so everyone owns it, not just me.' },
           { text: 'No, they\'re my rules.', why: 'Sharing helps the team.' },
           { text: 'Yes, just send everyone mine.', why: 'A shared agreement works better.' },
+          { text: 'I\'d love that. But let\'s write it together as a team, so everyone owns it, not just me.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'Saying no to Brian feels risky. He\'s senior to me.',
         prompt: "Mrs Achieng\'s best reply?",
         options: [
-          { text: 'A vague yes is riskier: on Friday he\'ll have nothing. A clear no with an offer lets him plan.' },
           { text: 'Then just do both.', why: 'She\'d do both badly.' },
+          { text: 'A vague yes is riskier: on Friday he\'ll have nothing. A clear no with an offer lets him plan.' },
           { text: 'Don\'t reply at all.', why: 'Silence is the worst answer.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'From when does Zanele offer the weekly summary?',
         options: [
-          { text: '14 July' },
           { text: 'This Friday', why: 'That\'s what she said no to.' },
           { text: 'Next year', why: '14 July.' },
+          { text: '14 July' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

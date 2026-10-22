@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "I\'d definitely use it" weak evidence?',
         options: [
-          { text: 'It costs nothing to say, and people are often just being kind' },
           { text: 'People always lie', why: 'Mostly they\'re being polite, not lying.' },
+          { text: 'It costs nothing to say, and people are often just being kind' },
           { text: 'It\'s strong evidence', why: 'Saying is easy; doing is the test.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'My cousin said she\'d definitely use it. That\'s one customer!',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Ask her to pay 500 FCFA for a delivery this Friday. If she does, that\'s a customer. If she hesitates, that\'s useful too.' },
           { text: 'Yes, count her.', why: 'An opinion isn\'t a purchase.' },
           { text: 'Family don\'t count at all.', why: 'They can still give real commitments; ask for one.' },
+          { text: 'Ask her to pay 500 FCFA for a delivery this Friday. If she does, that\'s a customer. If she hesitates, that\'s useful too.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

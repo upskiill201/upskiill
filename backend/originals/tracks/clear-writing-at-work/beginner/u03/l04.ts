@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the test for a good subject line?',
         options: [
-          { text: 'It\'s useful even if nobody opens the email' },
           { text: 'It\'s in capitals', why: 'It\'s about content.' },
+          { text: 'It\'s useful even if nobody opens the email' },
           { text: 'It\'s short, whatever it says', why: 'It must say something.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which word starts an email needing no action?',
         options: [
-          { text: 'FYI' },
           { text: 'Action', why: 'That needs action.' },
+          { text: 'FYI' },
           { text: 'Decision needed', why: 'That needs a decision.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

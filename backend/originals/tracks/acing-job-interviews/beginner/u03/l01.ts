@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Wanjiru ask when Remi\'s answer was vague?',
         options: [
-          { text: '"What did you do, specifically?"' },
           { text: '"Who is Kevin?"', why: 'She wanted his actions.' },
+          { text: '"What did you do, specifically?"' },
           { text: '"Next question."', why: 'She gave him a second chance.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why was "we kind of sorted it out" weak?',
         options: [
-          { text: 'It hides Remi\'s actions and gives no result' },
           { text: 'It\'s too modest', why: 'It\'s too vague.' },
+          { text: 'It hides Remi\'s actions and gives no result' },
           { text: 'It\'s fine', why: 'There\'s nothing to score.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

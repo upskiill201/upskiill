@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is it called "The Mom Test"?',
         options: [
-          { text: 'Good questions get honest answers even from someone who loves you and wants to be nice' },
           { text: 'You should only interview your mum', why: 'It\'s a test your questions should pass.' },
+          { text: 'Good questions get honest answers even from someone who loves you and wants to be nice' },
           { text: 'Mums are the target customers', why: 'It\'s about honesty, not a customer group.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'I talked for 15 minutes about my plans and she said it sounds great. Good conversation?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'You talked, she was polite. You learned almost nothing about her week. Next time, ask and listen.' },
           { text: 'Yes, she liked it.', why: 'That\'s a compliment, not evidence.' },
           { text: 'Talk even longer next time.', why: 'Listening is where the learning is.' },
+          { text: 'You talked, she was polite. You learned almost nothing about her week. Next time, ask and listen.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A student talks for 12 minutes and Clinton for 3. What share of the conversation was the student talking?',
         options: [
-          { text: '80%' },
           { text: '75%', why: '12 out of 15 minutes is 80%.' },
+          { text: '80%' },
           { text: '12%', why: 'It\'s 12 of 15 minutes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

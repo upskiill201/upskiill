@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the first step for every negotiation on v1?',
         options: [
-          { text: 'Ask for a conversation' },
           { text: 'Name a number', why: 'She\'ll prepare numbers in Chapters 2 and 3.' },
+          { text: 'Ask for a conversation' },
           { text: 'Say yes', why: 'That\'s what she did before.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Is a card like this overkill for a fuel bill?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'For the fuel bill, one line in your head is enough. For the rent and your review, write it down.' },
           { text: 'Yes, never write anything down.', why: 'Big negotiations deserve a plan.' },
           { text: 'Write ten pages for each.', why: 'Match the effort to the stakes.' },
+          { text: 'For the fuel bill, one line in your head is enough. For the rent and your review, write it down.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the best way to test "three other quotes"?',
         options: [
-          { text: '"Do the other quotes include till integration and a 12-week launch?"' },
           { text: '"I don\'t believe you."', why: 'An accusation, not a test.' },
           { text: '"Send me copies."', why: 'They won\'t; ask about like-for-like instead.' },
+          { text: '"Do the other quotes include till integration and a 12-week launch?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         message: 'What if the other quotes are real and cheaper?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Then you\'ve learned something real and can decide calmly. A cheaper quote that misses spring isn\'t cheaper for them.' },
           { text: 'Then match the cheapest.', why: 'Check it against your walk-away first.' },
+          { text: 'Then you\'ve learned something real and can decide calmly. A cheaper quote that misses spring isn\'t cheaper for them.' },
           { text: 'Then they\'re lying.', why: 'Real quotes exist; compare them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

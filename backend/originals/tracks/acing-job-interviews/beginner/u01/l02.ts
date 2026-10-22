@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What was Savanna Bank\'s phone call?',
         options: [
-          { text: 'A screen' },
           { text: 'A final round', why: 'It was the first call.' },
           { text: 'An offer', why: 'It was an early check.' },
+          { text: 'A screen' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'So should I prepare the same way for all three?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'No. Screens test clarity and interest. Mtaa Labs tests skills. Synergix tests how you think with others. Prepare for each.' },
           { text: 'Yes, same answers everywhere.', why: 'Each stage checks something different.' },
+          { text: 'No. Screens test clarity and interest. Mtaa Labs tests skills. Synergix tests how you think with others. Prepare for each.' },
           { text: 'Don\'t prepare, just be yourself.', why: 'Be yourself, prepared.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

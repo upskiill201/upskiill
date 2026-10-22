@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How do interviewers often catch exaggeration?',
         options: [
-          { text: 'Follow-up questions about details' },
           { text: 'Lie detectors', why: 'Follow-up questions.' },
           { text: 'They never do', why: 'Details fall apart under questions.' },
+          { text: 'Follow-up questions about details' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'My flatmate says say I led the hackathon team.',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'You didn\'t lead it. Say what you did: you owned the part that failed and fixed it. That\'s a stronger story anyway.' },
           { text: 'Go for it.', why: 'It\'s untrue and checkable.' },
+          { text: 'You didn\'t lead it. Say what you did: you owned the part that failed and fixed it. That\'s a stronger story anyway.' },
           { text: 'Don\'t mention the hackathon.', why: 'The true version is strong.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

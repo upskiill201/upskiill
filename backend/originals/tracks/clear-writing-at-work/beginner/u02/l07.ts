@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Felix writes "CSV" to Zanele. Is that jargon?',
         options: [
-          { text: 'No; she knows the term and it\'s precise' },
           { text: 'Yes, always', why: 'It depends on the reader.' },
           { text: 'Only on Mondays', why: 'It depends on the reader.' },
+          { text: 'No; she knows the term and it\'s precise' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Plain language is for people who can\'t handle complexity.',
         prompt: "Mrs Achieng\'s best reply?",
         options: [
-          { text: 'Mr Kamau handles complexity all day, and he reads plain messages first. Plain is respect for busy people.' },
           { text: 'You\'re right.', why: 'Plain helps everyone.' },
+          { text: 'Mr Kamau handles complexity all day, and he reads plain messages first. Plain is respect for busy people.' },
           { text: 'You can\'t handle it either.', why: 'Kind and factual is better.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is plain writing hard?',
         options: [
-          { text: 'You must know exactly what you mean, then cut everything else' },
           { text: 'It needs a big vocabulary', why: 'It needs clear thinking.' },
           { text: 'It isn\'t hard', why: 'It takes real work.' },
+          { text: 'You must know exactly what you mean, then cut everything else' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

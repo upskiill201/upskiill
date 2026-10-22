@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Bowles, Babcock and Lai (2007) find?',
         options: [
-          { text: 'Evaluators were often less willing to work with women who negotiated, even for the same ask' },
           { text: 'Nobody minds anyone asking', why: 'They found real backlash.' },
+          { text: 'Evaluators were often less willing to work with women who negotiated, even for the same ask' },
           { text: 'Women shouldn\'t ask', why: 'The problem is the evaluators\' bias, not asking.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'So I should ask for less, to be safe?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'No. Ask for the same ₦480,000. Change the framing, not the number.' },
           { text: 'Yes, ask for less.', why: 'The research is about framing, not lowering.' },
           { text: 'Don\'t ask at all.', why: 'Not asking costs far more.' },
+          { text: 'No. Ask for the same ₦480,000. Change the framing, not the number.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who does the unfairness belong to?',
         options: [
-          { text: 'The evaluators who react with bias' },
           { text: 'The people asking', why: 'Asking isn\'t the problem.' },
+          { text: 'The evaluators who react with bias' },
           { text: 'Nobody, it\'s fair', why: 'Identical asks were judged differently.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What turned 120-day payment terms into 40/30/30?',
         options: [
-          { text: 'A positive no: yes to paying the team, no to 120 days, then an offer' },
           { text: 'A threat', why: 'It was a positive no.' },
+          { text: 'A positive no: yes to paying the team, no to 120 days, then an offer' },
           { text: 'Giving in', why: 'He held the line with an offer.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'We quoted £48,000 and signed £42,000. Did we lose?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'No. £42,000 for less scope plus support, £15,000 kept, a better deal than our BATNA, and a client who wants phase two.' },
           { text: 'Yes, we lost £6,000.', why: 'The scope changed too.' },
           { text: 'We should have held at £48,000.', why: 'The package beat both alternatives.' },
+          { text: 'No. £42,000 for less scope plus support, £15,000 kept, a better deal than our BATNA, and a client who wants phase two.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

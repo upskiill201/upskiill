@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which mode does Grace use most at Kinwell?',
         options: [
-          { text: 'Avoiding' },
           { text: 'Competing', why: 'That\'s how she handled emergencies on the ward.' },
           { text: 'Collaborating', why: 'That\'s what she needs to do more.' },
+          { text: 'Avoiding' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'So avoiding is wrong?',
         prompt: "Priya's best reply?",
         options: [
-          { text: 'Not always. It\'s fine for small things or to cool down. Step 3 isn\'t small: patients can\'t book.' },
           { text: 'Yes, always wrong.', why: 'It fits trivial issues.' },
+          { text: 'Not always. It\'s fine for small things or to cool down. Step 3 isn\'t small: patients can\'t book.' },
           { text: 'It\'s the best mode.', why: 'Not for important issues.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

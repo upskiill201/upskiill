@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         message: 'Nobody asked me. Isn\'t it rude to jump in?',
         prompt: "Carmen\'s best reply?",
         options: [
-          { text: 'You were invited because you know the launch. Linking to the topic and keeping it short is helpful, not rude.' },
           { text: 'Yes, wait to be asked.', why: 'You might never be.' },
+          { text: 'You were invited because you know the launch. Linking to the topic and keeping it short is helpful, not rude.' },
           { text: 'Interrupt loudly.', why: 'Link in, briefly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How much did the rival raise prices?',
         options: [
-          { text: '10%' },
           { text: '15%', why: 'That\'s how much sales fell.' },
           { text: '50%', why: '10%.' },
+          { text: '10%' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

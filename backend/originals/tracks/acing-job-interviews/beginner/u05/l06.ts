@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When should Remi follow up if he hears nothing?',
         options: [
-          { text: 'Once, politely, after the decision date they gave' },
           { text: 'Every day', why: 'That annoys.' },
           { text: 'Never', why: 'One polite follow-up is fine.' },
+          { text: 'Once, politely, after the decision date they gave' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'Does a thank-you note really change anything?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'It won\'t rescue a weak interview, but it\'s polite, reminds them of you, and costs two minutes.' },
           { text: 'It guarantees the job.', why: 'It helps a little; it\'s not magic.' },
+          { text: 'It won\'t rescue a weak interview, but it\'s polite, reminds them of you, and costs two minutes.' },
           { text: 'No, never send one.', why: 'It\'s cheap and courteous.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Should Remi send separate notes to each panellist?',
         options: [
-          { text: 'He can, or one note to the main contact thanking everyone' },
           { text: 'He must send ten', why: 'One or a few is plenty.' },
           { text: 'Never thank the panel', why: 'Thanking them is courteous.' },
+          { text: 'He can, or one note to the main contact thanking everyone' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

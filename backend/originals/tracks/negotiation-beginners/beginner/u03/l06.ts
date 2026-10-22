@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ada\'s goal is ₦150,000. Which is a bolstering range?',
         options: [
-          { text: '₦150,000 to ₦180,000' },
           { text: '₦100,000 to ₦150,000', why: 'That\'s a backdown range; it starts below her goal.' },
           { text: '₦120,000 to ₦180,000', why: 'That brackets her goal; the bottom is below it.' },
+          { text: '₦150,000 to ₦180,000' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'Why not just give one number?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'One number is fine too. A bolstering range adds a polite choice, and the top end rewards her for wanting more.' },
           { text: 'Single numbers never work.', why: 'They work well; ranges are an option.' },
+          { text: 'One number is fine too. A bolstering range adds a polite choice, and the top end rewards her for wanting more.' },
           { text: 'Always give a wide range.', why: 'Only if it starts at your goal.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

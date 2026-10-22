@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "operationalise weekend throughput" mean, plainly?',
         options: [
-          { text: 'Open the depot on Saturdays' },
           { text: 'Hire more managers', why: 'It means opening on weekends.' },
           { text: 'Nothing at all', why: 'It means something; plainly, Saturdays.' },
+          { text: 'Open the depot on Saturdays' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'In isiZulu and Afrikaans I never used fancy words. In English I thought I had to.',
         prompt: "Mrs Achieng's best reply?",
         options: [
-          { text: 'You don\'t. Your clearest English is your best English. Short words are what fluent writers use.' },
           { text: 'Yes, fancy words prove fluency.', why: 'Plain words do.' },
+          { text: 'You don\'t. Your clearest English is your best English. Short words are what fluent writers use.' },
           { text: 'Write in isiZulu then.', why: 'Plain English works.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

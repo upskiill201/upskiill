@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When should Lucía use the card?',
         options: [
-          { text: 'Just before she speaks, and after, with a recording' },
           { text: 'Only once a year', why: 'Before each update.' },
+          { text: 'Just before she speaks, and after, with a recording' },
           { text: 'Never: memorise it and forget it', why: 'Use it every time for now.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'Could I use your card? I freeze in meetings too.',
         prompt: "Lucía\'s best reply?",
         options: [
-          { text: 'Yes. Start with check 1: write your headline before the meeting. Knowing your first line helps the most.' },
           { text: 'No, it\'s just for me.', why: 'It works for anyone.' },
           { text: 'Only if you memorise all five first.', why: 'Start with one.' },
+          { text: 'Yes. Start with check 1: write your headline before the meeting. Knowing your first line helps the most.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'About how long will each board member spend on Zanele\'s paper?',
         options: [
-          { text: 'About 90 seconds' },
           { text: 'About an hour', why: 'They have 40 documents.' },
           { text: 'About ten minutes', why: 'Mrs Achieng says about 90 seconds.' },
+          { text: 'About 90 seconds' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where was the recommendation in Zanele\'s first draft?',
         options: [
-          { text: 'Page 11' },
           { text: 'Page 1', why: 'That\'s where it should be.' },
           { text: 'Missing', why: 'It was there, on page 11.' },
+          { text: 'Page 11' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

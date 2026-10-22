@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A student says, "I can wash it myself." What\'s the best response?',
         options: [
-          { text: 'Agree it\'s free in money, and ask what three hours of their Saturday are worth' },
           { text: 'Tell them they\'re wrong', why: 'They\'re right that it\'s free in money.' },
+          { text: 'Agree it\'s free in money, and ask what three hours of their Saturday are worth' },
           { text: 'Offer 50% off', why: 'That\'s below cost and doesn\'t answer the point.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'What if they still say no after all that?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Let them go kindly. Not every student has to be your customer. Keeping a price that pays you is how WashDay survives.' },
           { text: 'Keep lowering until they say yes.', why: 'That ends below the floor.' },
           { text: 'Argue until they give in.', why: 'Pressure loses trust.' },
+          { text: 'Let them go kindly. Not every student has to be your customer. Keeping a price that pays you is how WashDay survives.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why stand near the hostel washing areas on Saturday morning?',
         options: [
-          { text: 'People are living the problem right then' },
           { text: 'It\'s the quietest place', why: 'It\'s where the pain is.' },
+          { text: 'People are living the problem right then' },
           { text: 'To check Mama Rose\'s prices', why: 'He knows them already.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'Should I spend 20,000 FCFA on social media ads to get more customers?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Not yet. Free ways still work, and you\'re near Mama Rose\'s 25-bag limit anyway. Fix capacity first.' },
           { text: 'Yes, ads always work.', why: 'He can\'t serve many more yet.' },
           { text: 'Never advertise, ever.', why: 'Ads can make sense later.' },
+          { text: 'Not yet. Free ways still work, and you\'re near Mama Rose\'s 25-bag limit anyway. Fix capacity first.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

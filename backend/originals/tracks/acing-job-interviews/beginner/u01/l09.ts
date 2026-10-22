@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What changes on the card for each employer?',
         options: [
-          { text: 'The future part (why this employer) and which examples to stress' },
           { text: 'His name and degree', why: 'Those stay the same.' },
+          { text: 'The future part (why this employer) and which examples to stress' },
           { text: 'Nothing', why: 'Tailor the why and the examples.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'One page for every interview sounds like a lot of work.',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Most of it repeats. You\'ll change a few lines per employer. Twenty minutes for a calmer interview.' },
           { text: 'Skip it.', why: 'It keeps you focused under pressure.' },
           { text: 'Write ten pages instead.', why: 'One page is enough.' },
+          { text: 'Most of it repeats. You\'ll change a few lines per employer. Twenty minutes for a calmer interview.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

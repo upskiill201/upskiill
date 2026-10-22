@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What made Wanjiru smile?',
         options: [
-          { text: 'Remi had read her post about slow phones' },
           { text: 'His long life story', why: 'He kept it to a minute.' },
           { text: 'He said it\'s a great culture', why: 'He was specific.' },
+          { text: 'Remi had read her post about slow phones' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What was Wanjiru\'s reaction to the honest React Native answer?',
         options: [
-          { text: '"That\'s fine for an intern."' },
           { text: 'She ended the interview', why: 'Honesty was fine.' },
           { text: 'She laughed', why: 'She accepted it.' },
+          { text: '"That\'s fine for an intern."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

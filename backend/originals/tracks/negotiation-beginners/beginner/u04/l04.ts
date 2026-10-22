@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         message: 'So I should give in on things I don\'t care about?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'Not give in: trade. Offer them in return for something you care about. Never give them away for free.' },
           { text: 'Yes, give them all up first.', why: 'Free concessions get nothing back.' },
           { text: 'Never give anything.', why: 'Then there\'s nothing to trade.' },
+          { text: 'Not give in: trade. Offer them in return for something you care about. Never give them away for free.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did cutting the orange in half waste so much?',
         options: [
-          { text: 'They split it without asking why, so each threw away what the other needed' },
           { text: 'The orange was too small', why: 'There was plenty for both.' },
+          { text: 'They split it without asking why, so each threw away what the other needed' },
           { text: 'It didn\'t waste anything', why: 'Half the juice and half the peel were thrown away.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A student has only 6 items. Which is cheaper for her: per item at 150, or 1,800 a bag?',
         options: [
-          { text: 'Per item: 900 FCFA' },
           { text: 'Per bag: 1,800 FCFA', why: 'Per item is 900 for 6.' },
+          { text: 'Per item: 900 FCFA' },
           { text: 'The same', why: '900 vs 1,800.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'Should I switch to per item like Mama Rose?',
         prompt: "David's best reply?",
         options: [
-          { text: 'Your costs are per bag: one pickup, one wash fee. Per bag matches that and is simpler. Handle small loads with a cheaper option.' },
           { text: 'Yes, always copy competitors.', why: 'His costs work differently from hers.' },
           { text: 'Charge per hour instead.', why: 'Customers don\'t think in his hours.' },
+          { text: 'Your costs are per bag: one pickup, one wash fee. Per bag matches that and is simpler. Handle small loads with a cheaper option.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

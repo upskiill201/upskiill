@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did people who said "I am excited" get rated as?',
         options: [
-          { text: 'More persuasive, competent and confident' },
           { text: 'More nervous', why: 'More persuasive and confident.' },
           { text: 'No different', why: 'They were rated better.' },
+          { text: 'More persuasive, competent and confident' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'But I\'m not excited. I\'m terrified.',
         prompt: "Sofía\'s best reply?",
         options: [
-          { text: 'Your body can\'t tell the difference much. Same racing heart. Calling it excitement uses the energy instead of fighting it.' },
           { text: 'Then don\'t do the talk.', why: 'Reframe the nerves.' },
+          { text: 'Your body can\'t tell the difference much. Same racing heart. Calling it excitement uses the energy instead of fighting it.' },
           { text: 'Just calm down.', why: 'That\'s the big jump.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the one-line test for walking away?',
         options: [
-          { text: 'Does this deal beat my BATNA?' },
           { text: 'Do I like them?', why: 'Feelings can mislead both ways.' },
           { text: 'Is it a big company?', why: 'Size isn\'t the test.' },
+          { text: 'Does this deal beat my BATNA?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What could make Arjun stay below £37,000?',
         options: [
-          { text: 'Something else of real value added, like guaranteed phase-two work' },
           { text: 'Pryce being nicer', why: 'Tone doesn\'t change the numbers.' },
           { text: 'Nothing, ever', why: 'Real added value could change it.' },
+          { text: 'Something else of real value added, like guaranteed phase-two work' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

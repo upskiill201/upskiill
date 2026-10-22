@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'I just had a great idea for a new slide. It\'s two days before.',
         prompt: "Carmen\'s best reply?",
         options: [
-          { text: 'Write it down for the follow-up email. Slides are frozen. New slides now mean new nerves.' },
           { text: 'Add it, and three more.', why: 'Slides are frozen.' },
           { text: 'Redo the whole talk.', why: 'Freeze means freeze.' },
+          { text: 'Write it down for the follow-up email. Slides are frozen. New slides now mean new nerves.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the last thing Lucía says to herself backstage?',
         options: [
-          { text: 'Her first line' },
           { text: 'Her whole script', why: 'Just the first line.' },
+          { text: 'Her first line' },
           { text: '"Calm down"', why: '"I am excited", then the first line.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Ten checks? I\'ll never remember all that.',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: 'You don\'t have to remember. It\'s taped to my screen. Thirty seconds before I hit send.' },
           { text: 'Then don\'t bother.', why: 'It works.' },
+          { text: 'You don\'t have to remember. It\'s taped to my screen. Thirty seconds before I hit send.' },
           { text: 'Memorise it tonight.', why: 'Keep it visible instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "who reads it, on what, in what language" check 6?',
         options: [
-          { text: 'Every word choice depends on the reader' },
           { text: 'To fill the list', why: 'It\'s the foundation.' },
           { text: 'It isn\'t important', why: 'It decides everything else.' },
+          { text: 'Every word choice depends on the reader' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

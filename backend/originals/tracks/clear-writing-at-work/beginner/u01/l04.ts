@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the subject line do in the short version?',
         options: [
-          { text: 'Tells him the news before he even opens it' },
           { text: 'Nothing special', why: 'It carries the result.' },
+          { text: 'Tells him the news before he even opens it' },
           { text: 'Asks for approval', why: 'It reports the result.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'Is it rude to start without "I hope this finds you well"?',
         prompt: "Mrs Achieng's best reply?",
         options: [
-          { text: '"Dear Mr Kamau" is polite. The kindest thing after that is the point.' },
           { text: 'Yes, always add three pleasantries.', why: 'They push the point down.' },
           { text: 'Skip "Dear" too.', why: 'A greeting is fine.' },
+          { text: '"Dear Mr Kamau" is polite. The kindest thing after that is the point.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

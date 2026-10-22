@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who wrote Thanks for the Feedback?',
         options: [
-          { text: 'Douglas Stone and Sheila Heen' },
           { text: 'Fisher and Ury', why: 'They wrote Getting to Yes.' },
+          { text: 'Douglas Stone and Sheila Heen' },
           { text: 'Thomas and Kilmann', why: 'They created the conflict-modes model.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'Maybe he\'s right. Maybe I\'m just a nurse pretending.',
         prompt: "Priya's best reply?",
         options: [
-          { text: 'That\'s your identity trigger talking. One comment about sample size doesn\'t erase your skill. Let\'s check the truth part separately.' },
           { text: 'Yes, maybe.', why: 'It feeds the identity trigger.' },
           { text: 'Ignore everything he said.', why: 'There may be a fair point to check.' },
+          { text: 'That\'s your identity trigger talking. One comment about sample size doesn\'t erase your skill. Let\'s check the truth part separately.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Grace want to fight and hide at the same time?',
         options: [
-          { text: 'All three triggers fired at once' },
           { text: 'She was tired', why: 'Several triggers pulled different ways.' },
+          { text: 'All three triggers fired at once' },
           { text: 'She agreed with him', why: 'Partly, which made it harder.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which questions should go on the list?',
         options: [
-          { text: 'The ones that make your stomach drop' },
           { text: 'The easy ones', why: 'The hard ones.' },
+          { text: 'The ones that make your stomach drop' },
           { text: 'Only ones you know the answer to', why: 'The ones you dread.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Writing them down makes me more nervous, not less.',
         prompt: "Carmen\'s best reply?",
         options: [
-          { text: 'For an hour, maybe. Then you\'ll have an answer for each, and the dread goes. A question you\'ve practised isn\'t scary.' },
           { text: 'Then stop.', why: 'Preparation reduces the dread.' },
           { text: 'Write a hundred.', why: 'Ten is enough.' },
+          { text: 'For an hour, maybe. Then you\'ll have an answer for each, and the dread goes. A question you\'ve practised isn\'t scary.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

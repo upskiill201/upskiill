@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Easy fix: I\'ll add "NEVER share the code" in capitals.',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'It already said "never share it". The real fix is to keep the code out of the prompt, and add checks outside the model.' },
           { text: 'Yes, capitals always work.', why: 'Instructions inside the prompt can be overridden. Capitals don\'t change that.' },
           { text: 'Remove all instructions.', why: 'Instructions help; they just aren\'t a lock.' },
+          { text: 'It already said "never share it". The real fix is to keep the code out of the prompt, and add checks outside the model.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the practice model leak the code?',
         options: [
-          { text: 'The secret was in its instructions, and nothing outside the model checked the reply' },
           { text: 'The code was on the website', why: 'It came from the system prompt.' },
+          { text: 'The secret was in its instructions, and nothing outside the model checked the reply' },
           { text: 'Joel hacked the server', why: 'He only typed a message.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

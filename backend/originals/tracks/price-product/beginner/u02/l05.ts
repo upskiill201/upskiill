@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What sets the floor of a price?',
         options: [
-          { text: 'Your cost' },
           { text: 'The customer\'s value', why: 'That sets the ceiling.' },
           { text: 'A poll', why: 'Polls give guesses.' },
+          { text: 'Your cost' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'If value is 3,000 of time, should the price be 3,000?',
         prompt: "David's best reply?",
         options: [
-          { text: 'No: price below the value so customers get a good deal, and above your floor so you do too.' },
           { text: 'Yes, charge the full value.', why: 'Then there\'s no reason to choose you over doing it yourself.' },
+          { text: 'No: price below the value so customers get a good deal, and above your floor so you do too.' },
           { text: 'Charge 1,125, the cost.', why: 'That leaves nothing for him.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

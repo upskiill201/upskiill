@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "one thought, one person" mean?',
         options: [
-          { text: 'Finish a phrase looking at one person, then move to another' },
           { text: 'Talk to only one person all talk', why: 'Move around the room.' },
           { text: 'Think about one person', why: 'It\'s about where you look.' },
+          { text: 'Finish a phrase looking at one person, then move to another' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happened when Lucía talked to the screen?',
         options: [
-          { text: 'People started checking their phones' },
           { text: 'People cheered', why: 'They drifted off.' },
           { text: 'Nothing changed', why: 'They drifted off.' },
+          { text: 'People started checking their phones' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

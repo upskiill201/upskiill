@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which sentence describes machine learning?',
         options: [
-          { text: 'The computer finds rules from examples' },
           { text: 'A person types every rule into the computer', why: 'That\'s normal programming.' },
+          { text: 'The computer finds rules from examples' },
           { text: 'The computer thinks like a human', why: 'It finds patterns in numbers. It doesn\'t think or understand.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         message: 'I\'m a nurse, not a programmer. Can I really do machine learning?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Yes. The hardest part is knowing which examples matter and what the patterns mean. You already know that.' },
           { text: 'Only if you learn advanced maths first.', why: 'This course needs nothing beyond percentages.' },
           { text: 'No, leave it to the engineers.', why: 'The person who knows the problem is the one who builds the most useful model.' },
+          { text: 'Yes. The hardest part is knowing which examples matter and what the patterns mean. You already know that.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -137,11 +137,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Folake says "AI". Miracle says "machine learning". What\'s the link?',
         options: [
-          { text: 'Machine learning is one way of building AI' },
           { text: 'They are two unrelated things', why: 'ML sits inside the bigger idea of AI. Lesson 12 explains.' },
           { text: 'AI is a kind of machine learning', why: 'It\'s the other way round: AI is the umbrella.' },
+          { text: 'Machine learning is one way of building AI' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -155,11 +155,11 @@ const lesson: OriginalLesson = {
         message: 'So the computer will just know who won\'t come?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'It will make a guess from past appointments. We\'ll measure how good the guess is before anyone relies on it.' },
           { text: 'Yes, it will know for certain.', why: 'Nobody, human or model, knows the future for certain.' },
+          { text: 'It will make a guess from past appointments. We\'ll measure how good the guess is before anyone relies on it.' },
           { text: 'No, computers can\'t help at all.', why: 'A good guess can help clinics decide who to remind.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

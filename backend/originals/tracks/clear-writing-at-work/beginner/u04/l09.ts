@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which check is new on v4?',
         options: [
-          { text: 'Do the headings tell the story on their own?' },
           { text: 'Is the ask in the subject line?', why: 'That was v3.' },
           { text: 'Would a 12-year-old understand the words?', why: 'That was an earlier check.' },
+          { text: 'Do the headings tell the story on their own?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should happen to a fact that fails "needed to decide"?',
         options: [
-          { text: 'Move it to the appendix, or cut it' },
           { text: 'Put it in bold', why: 'Appendix or cut.' },
           { text: 'Put it on page one anyway', why: 'Page one is for deciding.' },
+          { text: 'Move it to the appendix, or cut it' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

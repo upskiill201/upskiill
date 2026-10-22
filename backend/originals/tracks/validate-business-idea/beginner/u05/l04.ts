@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What was the CampusEats to WashDay change?',
         options: [
-          { text: 'A pivot: same customers, different problem' },
           { text: 'A stop', why: 'He didn\'t stop; he changed direction.' },
+          { text: 'A pivot: same customers, different problem' },
           { text: 'Persevering', why: 'He changed the idea completely.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'If I persevere, does that mean I change nothing?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'No: you keep the idea and fix what the tests showed. Capacity, the hill and the price are all on your list.' },
           { text: 'Yes, change nothing.', why: 'Persevering includes fixing what you learned.' },
           { text: 'Change everything.', why: 'That would be a pivot or a new idea.' },
+          { text: 'No: you keep the idea and fix what the tests showed. Capacity, the hill and the price are all on your list.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write a stop rule before you need it?',
         options: [
-          { text: 'Once you\'ve invested, it\'s hard to stop honestly' },
           { text: 'Stop rules make tests pass', why: 'They make decisions honest.' },
+          { text: 'Once you\'ve invested, it\'s hard to stop honestly' },
           { text: 'They aren\'t needed', why: 'Without one, many founders never stop.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

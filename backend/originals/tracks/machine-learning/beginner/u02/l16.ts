@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'The distances over 18 km look like outliers. Remove them?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'No! They\'re all Gumel. Rural patients really travel that far, and it\'s probably why Gumel misses so much.' },
           { text: 'Yes, outliers are always errors.', why: 'Unusual isn\'t the same as impossible.' },
+          { text: 'No! They\'re all Gumel. Rural patients really travel that far, and it\'s probably why Gumel misses so much.' },
           { text: 'Remove all of Gumel.', why: 'Gumel is the clinic that needs the most help.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

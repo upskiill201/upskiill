@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'For bigger requests, what changed in the study?',
         options: [
-          { text: 'People thought harder, so an empty reason stopped working' },
           { text: 'Any reason still worked just as well', why: 'Only for small requests.' },
+          { text: 'People thought harder, so an empty reason stopped working' },
           { text: 'Reasons made it worse', why: 'Real reasons still helped.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'The silence after I ask feels like forever.',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'It feels long to you, not to him. He\'s thinking. Count to five, breathe, and let him speak first.' },
           { text: 'Then fill it quickly.', why: 'Filling it often means conceding.' },
           { text: 'Leave the room.', why: 'Just stay quiet and calm.' },
+          { text: 'It feels long to you, not to him. He\'s thinking. Count to five, breathe, and let him speak first.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might "the first to fill the silence" lose?',
         options: [
-          { text: 'They often add a concession or a weaker reason' },
           { text: 'Silence is rude', why: 'A short silence is normal.' },
+          { text: 'They often add a concession or a weaker reason' },
           { text: 'They don\'t lose', why: 'Filling silence often gives something away.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

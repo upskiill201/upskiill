@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'Asking "how did you get there?" feels like letting him off the hook.',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'It\'s the opposite. If £28,000 is based on a smaller app, he has to say so. Then you can talk about scope.' },
           { text: 'You\'re right, attack the number.', why: 'Questions reveal more than attacks.' },
+          { text: 'It\'s the opposite. If £28,000 is based on a smaller app, he has to say so. Then you can talk about scope.' },
           { text: 'Don\'t ask anything.', why: 'Then you learn nothing.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which of these is a loaded question, not a genuine one?',
         options: [
-          { text: '"Don\'t you think £28,000 is insulting?"' },
           { text: '"What\'s driving the deadline?"', why: 'That\'s genuine.' },
           { text: '"What would need to be true for more budget?"', why: 'That\'s genuine.' },
+          { text: '"Don\'t you think £28,000 is insulting?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

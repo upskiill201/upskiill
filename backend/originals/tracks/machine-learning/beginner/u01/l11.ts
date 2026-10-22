@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A rule is right for 9 of 10 patients. What is its accuracy?',
         options: [
-          { text: '90%' },
           { text: '9%', why: '9 ÷ 10 is 0.9, which is 90%.' },
           { text: '10%', why: 'That\'s the share it got wrong.' },
+          { text: '90%' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         code: 'print(f"{7 / 12:.0%}")',
         language: 'python',
         options: [
-          { text: '58%' },
           { text: '0.58', why: ':.0% shows a percentage.' },
+          { text: '58%' },
           { text: '7%', why: '7 ÷ 12 is about 0.58, which is 58%.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         message: '92%! Tell the board it\'s 92% accurate.',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'On the 12 patients I built it from. On new patients it could be lower. Let me test it fairly first.' },
           { text: 'Yes, 92% it is.', why: 'That number came from the same page the rule was made from.' },
           { text: 'Accuracy doesn\'t matter.', why: 'It matters; it just has to be measured fairly.' },
+          { text: 'On the 12 patients I built it from. On new patients it could be lower. Let me test it fairly first.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',

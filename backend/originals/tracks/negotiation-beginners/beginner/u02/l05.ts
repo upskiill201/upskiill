@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll decide my walk-away in the room, when I see his face.',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'In the room, you\'ll move it to please him. Decide it now, from your BATNA, and write it down.' },
           { text: 'Good idea.', why: 'Pressure moves walk-aways.' },
           { text: 'Don\'t have one.', why: 'Then any deal looks acceptable.' },
+          { text: 'In the room, you\'ll move it to please him. Decide it now, from your BATNA, and write it down.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which question best finds an interest?',
         options: [
-          { text: '"What worries you most about this?"' },
           { text: '"Will you accept my number?"', why: 'That\'s about positions.' },
+          { text: '"What worries you most about this?"' },
           { text: '"Final offer?"', why: 'That closes, not explores.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

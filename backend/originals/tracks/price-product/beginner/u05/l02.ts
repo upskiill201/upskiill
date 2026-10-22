@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'If I show the hill fee up front, fewer hill students will book.',
         prompt: "David's best reply?",
         options: [
-          { text: 'Maybe a few. But the ones who book won\'t feel cheated, and they\'ll book again. Surprise fees lose customers for good.' },
           { text: 'Then hide it.', why: 'Surprises destroy trust.' },
+          { text: 'Maybe a few. But the ones who book won\'t feel cheated, and they\'ll book again. Surprise fees lose customers for good.' },
           { text: 'Then drop the fee.', why: 'The fee covers a real cost.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who pays the Mobile Money fees on the new card?',
         options: [
-          { text: 'Clinton: they\'re already inside the price' },
           { text: 'The customer, added at the end', why: 'That would be a hidden fee.' },
           { text: 'Mama Rose', why: 'They\'re Clinton\'s cost.' },
+          { text: 'Clinton: they\'re already inside the price' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

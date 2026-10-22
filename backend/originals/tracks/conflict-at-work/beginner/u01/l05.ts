@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does avoiding an important conflict usually do?',
         options: [
-          { text: 'Makes it grow and spread to the team' },
           { text: 'Solves it', why: 'Nothing has been said.' },
+          { text: 'Makes it grow and spread to the team' },
           { text: 'Nothing', why: 'It quietly costs more.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which mode is "Let\'s find a way that works for both of us"?',
         options: [
-          { text: 'Collaborating' },
           { text: 'Compromising', why: 'That\'s "each give a bit".' },
+          { text: 'Collaborating' },
           { text: 'Accommodating', why: 'That\'s "your way".' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',

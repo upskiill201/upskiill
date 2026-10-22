@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'So they\'re literally scoring me? That\'s scary.',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'It\'s fairer than a gut feeling. And it tells you what to bring: an example, what you did, and what happened.' },
           { text: 'Yes, be scared.', why: 'Knowing helps you prepare.' },
+          { text: 'It\'s fairer than a gut feeling. And it tells you what to bring: an example, what you did, and what happened.' },
           { text: 'They never score anything.', why: 'Many do.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does rambling cost points in a structured interview?',
         options: [
-          { text: 'If the evidence isn\'t clear, the interviewer can\'t score it' },
           { text: 'Interviewers dislike long words', why: 'It\'s about missing evidence.' },
           { text: 'It doesn\'t', why: 'Scores need clear evidence.' },
+          { text: 'If the evidence isn\'t clear, the interviewer can\'t score it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

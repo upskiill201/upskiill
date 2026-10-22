@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask before the meeting if you can?',
         options: [
-          { text: 'No one likes a surprise in front of the CEO' },
           { text: 'To avoid ever disagreeing', why: 'It\'s to avoid surprises.' },
           { text: 'It doesn\'t matter', why: 'Surprises put people on the defensive.' },
+          { text: 'No one likes a surprise in front of the CEO' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'What if Carmen still says October?',
         prompt: "Diego\'s best reply?",
         options: [
-          { text: 'Then you commit and make it work. You said your piece clearly; that\'s your job done. Now help it succeed.' },
           { text: 'Keep arguing until she changes her mind.', why: 'Disagree, then commit.' },
+          { text: 'Then you commit and make it work. You said your piece clearly; that\'s your job done. Now help it succeed.' },
           { text: 'Quietly do spring anyway.', why: 'Commit to the decision.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why open with the shared goal?',
         options: [
-          { text: 'It shows you\'re on the same side' },
           { text: 'To flatter her', why: 'It shows you\'re aligned.' },
           { text: 'To delay the concern', why: 'It frames it.' },
+          { text: 'It shows you\'re on the same side' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

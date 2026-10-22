@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Pryce offers £35,000. Compared with the walk-away?',
         options: [
-          { text: '£2,000 below it: Kinwell would be better' },
           { text: 'Above it', why: '£35,000 is less than £37,000.' },
+          { text: '£2,000 below it: Kinwell would be better' },
           { text: 'Exactly at it', why: 'It\'s £2,000 short.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Kinwell is less exciting than Harlow & Finch.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'True, so I\'d prefer Harlow & Finch at a fair price. But Kinwell means I don\'t have to accept an unfair one.' },
           { text: 'Then forget Kinwell.', why: 'It\'s what gives him power.' },
           { text: 'Then take Kinwell and drop Harlow & Finch.', why: 'He still wants the bigger deal, fairly.' },
+          { text: 'True, so I\'d prefer Harlow & Finch at a fair price. But Kinwell means I don\'t have to accept an unfair one.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

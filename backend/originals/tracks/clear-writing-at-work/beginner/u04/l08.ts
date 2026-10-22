@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Oppenheimer (2006) find about needlessly complex writing?',
         options: [
-          { text: 'It made authors seem less intelligent' },
           { text: 'It made authors seem smarter', why: 'The opposite.' },
+          { text: 'It made authors seem less intelligent' },
           { text: 'It had no effect', why: 'It hurt how the author was judged.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'The board will think a one-pager is lazy.',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: 'The appendices show the work. Page one shows we know what matters. That usually reads as confident, not lazy.' },
           { text: 'Let\'s pad it to twelve pages.', why: 'Length isn\'t credibility.' },
           { text: 'The board doesn\'t care.', why: 'Answer the worry.' },
+          { text: 'The appendices show the work. Page one shows we know what matters. That usually reads as confident, not lazy.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does page one guarantee?',
         options: [
-          { text: 'The decision doesn\'t depend on reading the rest' },
           { text: 'Nobody reads the appendix', why: 'Some will.' },
+          { text: 'The decision doesn\'t depend on reading the rest' },
           { text: 'The report is shorter overall', why: 'The detail is still there.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

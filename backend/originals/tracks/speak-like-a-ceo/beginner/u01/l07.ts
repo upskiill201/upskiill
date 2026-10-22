@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'Lucía, quickly: should Tomás run the next campaign email?',
         prompt: "Lucía\'s best PREP answer?",
         options: [
-          { text: '"Yes. He ran the launch email well: 22% opened it. So yes, with Marta checking it first."' },
           { text: '"Well, Tomás is, um, he\'s been, you know..."', why: 'Point first.' },
           { text: '"I\'d need a week to think."', why: 'Give a point now.' },
+          { text: '"Yes. He ran the launch email well: 22% opened it. So yes, with Marta checking it first."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why repeat the point at the end?',
         options: [
-          { text: 'It reminds listeners of your answer and signals you\'re done' },
           { text: 'To fill time', why: 'It closes the answer.' },
+          { text: 'It reminds listeners of your answer and signals you\'re done' },
           { text: 'You shouldn\'t', why: 'It closes the loop.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

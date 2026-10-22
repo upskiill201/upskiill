@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Miracle tell Clinton not to mention CampusEats?',
         options: [
-          { text: 'So students would talk about their real problems, not react to his idea' },
           { text: 'Because the idea is secret', why: 'Secrecy isn\'t the reason; honest answers are.' },
+          { text: 'So students would talk about their real problems, not react to his idea' },
           { text: 'Because she thinks it\'s a bad idea', why: 'It\'s about getting unbiased answers, whatever the idea.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'Nine people talked about laundry. Should I switch to a laundry business right now?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Not yet. It\'s a strong hint. Now dig: what do they do about it today, and what does it cost them?' },
           { text: 'Yes, launch tomorrow.', why: 'A problem isn\'t yet proof that they\'d pay for your solution.' },
           { text: 'Ignore it; stick with food.', why: 'The evidence is pointing elsewhere.' },
+          { text: 'Not yet. It\'s a strong hint. Now dig: what do they do about it today, and what does it cost them?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

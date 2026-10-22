@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'Thanks for the template! Took me five minutes. Usually these requests take an hour of back and forth.',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: '"Thank you, that\'s exactly what I needed. I\'ll share what Lagos could gain by Monday."' },
           { text: '"Took you long enough."', why: 'He was fast.' },
           { text: 'No reply.', why: 'Thank him and close the loop.' },
+          { text: '"Thank you, that\'s exactly what I needed. I\'ll share what Lagos could gain by Monday."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When is it fair to say what happens if they don\'t reply?',
         options: [
-          { text: 'When there\'s a sensible default that doesn\'t harm them' },
           { text: 'Always, as a threat', why: 'Only as a fair default.' },
+          { text: 'When there\'s a sensible default that doesn\'t harm them' },
           { text: 'Never', why: 'It can help busy readers.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

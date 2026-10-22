@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How long did Lucía\'s update take this time?',
         options: [
-          { text: 'One minute twenty' },
           { text: 'Four minutes', why: 'That was last time.' },
           { text: 'Ten minutes', why: 'One minute twenty.' },
+          { text: 'One minute twenty' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'A recommendation, not a report? What\'s the difference?',
         prompt: "Carmen\'s best reply?",
         options: [
-          { text: 'A report tells me what happened. A recommendation tells me what to do and why. Bring the second.' },
           { text: 'There\'s no difference.', why: 'There is.' },
+          { text: 'A report tells me what happened. A recommendation tells me what to do and why. Bring the second.' },
           { text: 'A recommendation is longer.', why: 'It says what to do.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

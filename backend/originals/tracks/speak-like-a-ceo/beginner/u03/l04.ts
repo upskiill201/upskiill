@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'The after slide has almost nothing on it. People will think you\'re lazy.',
         prompt: "Lucía\'s best reply?",
         options: [
-          { text: 'They\'ll look at the gap and listen to me. That\'s the job. The detail is in the handout.' },
           { text: 'You\'re right, add the bullets back.', why: 'The slide supports the talk.' },
+          { text: 'They\'ll look at the gap and listen to me. That\'s the job. The detail is in the handout.' },
           { text: 'Add more charts to the same slide.', why: 'One idea per slide.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the orange gap show?',
         options: [
-          { text: 'How far sales were above target' },
           { text: 'The stock issue', why: 'The gap above target.' },
           { text: 'Nothing', why: 'The gap above target.' },
+          { text: 'How far sales were above target' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'You only answered three of my seven questions!',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: '"Sorry, they were in different paragraphs. Here are all seven, numbered: 1. Yes. 2. Friday..."' },
           { text: '"Your email was too long."', why: 'True, but answer him first.' },
+          { text: '"Sorry, they were in different paragraphs. Here are all seven, numbered: 1. Yes. 2. Friday..."' },
           { text: '"Which seven?"', why: 'Find them and answer.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the best layout for three asks to one person?',
         options: [
-          { text: 'Numbered, one line each, urgent first' },
           { text: 'One long paragraph', why: 'Asks get lost.' },
           { text: 'Three separate emails at once', why: 'Related asks can share one email.' },
+          { text: 'Numbered, one line each, urgent first' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

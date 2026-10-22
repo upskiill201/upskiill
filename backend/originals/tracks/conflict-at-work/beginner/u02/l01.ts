@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does "calm down" usually fail?',
         options: [
-          { text: 'It sounds like their feelings don\'t count, so they get more upset' },
           { text: 'It works every time', why: 'It usually escalates.' },
           { text: 'It\'s too quiet', why: 'It\'s about what it signals.' },
+          { text: 'It sounds like their feelings don\'t count, so they get more upset' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'My heart was thumping. How did my voice stay calm?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Practice. You did it on the ward for 18 years. Your voice can be calm even when your heart isn\'t.' },
           { text: 'Luck.', why: 'It\'s a trained skill.' },
+          { text: 'Practice. You did it on the ward for 18 years. Your voice can be calm even when your heart isn\'t.' },
           { text: 'You weren\'t really upset.', why: 'Her heart was thumping.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask about "the smallest fix"?',
         options: [
-          { text: 'A small, doable step feels less threatening than a big problem' },
           { text: 'To avoid the issue', why: 'It still addresses step 3.' },
           { text: 'Small fixes are always best', why: 'It\'s about lowering pressure first.' },
+          { text: 'A small, doable step feels less threatening than a big problem' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

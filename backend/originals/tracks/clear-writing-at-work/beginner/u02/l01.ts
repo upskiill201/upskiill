@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'My draft sounds professional, no?',
         prompt: "Zanele's best reply?",
         options: [
-          { text: 'It sounds senior, but the drivers need to know when they work and how they\'re paid. Can I put that first, in plain words?' },
           { text: 'Yes, perfect.', why: 'They won\'t understand it.' },
+          { text: 'It sounds senior, but the drivers need to know when they work and how they\'re paid. Can I put that first, in plain words?' },
           { text: 'It\'s terrible.', why: 'Be kind and specific.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does "going forward" add nothing?',
         options: [
-          { text: 'It\'s filler; the date says when' },
           { text: 'It\'s a legal term', why: 'It\'s just filler.' },
           { text: 'It adds urgency', why: 'It adds nothing.' },
+          { text: 'It\'s filler; the date says when' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

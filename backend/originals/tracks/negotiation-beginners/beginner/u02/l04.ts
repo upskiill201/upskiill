@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Over two years, how much does moving save compared with staying at ₦1,500,000?',
         options: [
-          { text: '₦100,000' },
           { text: '₦300,000', why: 'That forgets the ₦200,000 in fees.' },
           { text: '₦150,000', why: 'That\'s one year\'s rent gap.' },
+          { text: '₦100,000' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         message: 'So should I tell Mr Adeyemi about the new flat?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'You can mention you\'ve looked around, calmly and truthfully. Don\'t use it as a threat, and don\'t exaggerate it.' },
           { text: 'Tell him you\'re leaving tomorrow.', why: 'Untrue, and it damages trust.' },
+          { text: 'You can mention you\'ve looked around, calmly and truthfully. Don\'t use it as a threat, and don\'t exaggerate it.' },
           { text: 'Never mention it.', why: 'A real alternative, said calmly, can help.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Mr Adeyemi offers ₦1,480,000. What should Ada do, based on her walk-away?',
         options: [
-          { text: 'It\'s above her walk-away, so moving is better unless he improves it' },
           { text: 'Accept, it\'s below ₦1,500,000', why: 'Below his ask, but above her walk-away.' },
           { text: 'Walk out angrily', why: 'Say calmly that it doesn\'t work yet.' },
+          { text: 'It\'s above her walk-away, so moving is better unless he improves it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

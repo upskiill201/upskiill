@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In one sentence, what is the real problem?',
         options: [
-          { text: 'Hostel students lose hours to laundry in rainy season, and paying Mama Rose is too slow or costly to do every week' },
           { text: 'Students are hungry at night', why: 'That was CampusEats; the notes say laundry.' },
           { text: 'Students hate their mums doing laundry', why: 'Only Kevin mentions his mum, and he has no problem.' },
+          { text: 'Hostel students lose hours to laundry in rainy season, and paying Mama Rose is too slow or costly to do every week' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Joseph said he\'d use a pickup service. That\'s my strongest evidence, right?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'That\'s an opinion. Your strongest is Brenda: she already pays twice a month and told you exactly what\'s wrong with the current option.' },
           { text: 'Yes, he said he\'d use it.', why: 'Future opinions are the weakest evidence.' },
+          { text: 'That\'s an opinion. Your strongest is Brenda: she already pays twice a month and told you exactly what\'s wrong with the current option.' },
           { text: 'Kevin is your strongest.', why: 'Kevin doesn\'t have the problem.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What two things does Brenda tell Clinton a better service must do?',
         options: [
-          { text: 'Be faster than three days, and collect so she doesn\'t carry the basket' },
           { text: 'Be cheaper than free, and add food', why: 'She didn\'t say either.' },
+          { text: 'Be faster than three days, and collect so she doesn\'t carry the basket' },
           { text: 'Nothing; she\'s happy', why: 'She named two clear frustrations.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

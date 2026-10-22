@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What question does Getting to Yes suggest?',
         options: [
-          { text: '"What would be fair here, and how would we know?"' },
           { text: '"Who wants it more?"', why: 'That\'s a contest of will.' },
           { text: '"Final offer?"', why: 'That closes the talk.' },
+          { text: '"What would be fair here, and how would we know?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'He says "Rents are going up everywhere, that\'s just how it is."',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'Agree, then use the standard: "They are. Similar flats here are ₦1,300,000 to ₦1,450,000. Where should we sit in that range?"' },
           { text: 'Tell him he\'s wrong.', why: 'He\'s partly right; use the market.' },
+          { text: 'Agree, then use the standard: "They are. Similar flats here are ₦1,300,000 to ₦1,450,000. Where should we sit in that range?"' },
           { text: 'Give in.', why: 'The market range supports her.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

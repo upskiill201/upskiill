@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s new on v5?',
         options: [
-          { text: 'The Close and After parts' },
           { text: 'Only the walk-away', why: 'That was on v2.' },
           { text: 'Nothing', why: 'v5 adds closing and follow-through.' },
+          { text: 'The Close and After parts' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'Do I need the whole card for asking a seller for free delivery?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'For small asks, just Notice and Ask. Use the whole card when the stakes are high.' },
           { text: 'Always fill every line.', why: 'Match effort to stakes.' },
+          { text: 'For small asks, just Notice and Ask. Use the whole card when the stakes are high.' },
           { text: 'Never use it for small things.', why: 'The Ask part still helps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which part stops Ada saying yes to a bad deal?',
         options: [
-          { text: 'Prepare: the private walk-away' },
           { text: 'Ask: the silence', why: 'Silence helps the ask; the walk-away stops bad yeses.' },
           { text: 'After: promises', why: 'That\'s follow-through.' },
+          { text: 'Prepare: the private walk-away' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

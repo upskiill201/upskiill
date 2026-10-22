@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Mrs Okon says her budget is ₦100,000. What did Ada do first?',
         options: [
-          { text: 'Asked what mattered most to her' },
           { text: 'Dropped to ₦100,000 for the same work', why: 'That\'s a pure discount.' },
           { text: 'Refused', why: 'She looked for a deal.' },
+          { text: 'Asked what mattered most to her' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ada\'s walk-away was ₦90,000 and her goal ₦150,000. How did ₦120,000 do?',
         options: [
-          { text: 'Well above her walk-away, with less work than the full package' },
           { text: 'Below her walk-away', why: '₦120,000 is above ₦90,000.' },
+          { text: 'Well above her walk-away, with less work than the full package' },
           { text: 'Above her goal', why: 'It\'s below ₦150,000, but for less work.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'Should I have just said ₦100,000 for the full package?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'No. Same work for less teaches her your price is soft. Less work for less keeps your price honest.' },
           { text: 'Yes, it\'s kinder.', why: 'It\'s a discount that devalues her work.' },
           { text: 'You should have said ₦200,000.', why: 'The range was well judged.' },
+          { text: 'No. Same work for less teaches her your price is soft. Less work for less keeps your price honest.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

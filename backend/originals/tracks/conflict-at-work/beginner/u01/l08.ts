@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'Collaborating with Femi has stalled for an hour. Is it OK to compromise?',
         prompt: "Priya's best reply?",
         options: [
-          { text: 'Yes. Switching is part of it. Agree a compromise for launch, and note what you\'ll revisit after.' },
           { text: 'No, keep going for five more hours.', why: 'Stalling has a cost too.' },
+          { text: 'Yes. Switching is part of it. Agree a compromise for launch, and note what you\'ll revisit after.' },
           { text: 'Give up and let him decide.', why: 'A compromise respects both views.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "let it go properly" mean?',
         options: [
-          { text: 'Actually drop it, without holding a grudge' },
           { text: 'Pretend to drop it but keep score', why: 'That\'s avoiding, not letting go.' },
           { text: 'Mention it again next week', why: 'That\'s not letting go.' },
+          { text: 'Actually drop it, without holding a grudge' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

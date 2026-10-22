@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"Tell me about a time you helped a customer." Which story?',
         options: [
-          { text: 'The uncle\'s spreadsheet' },
           { text: 'The Kevin story', why: 'That\'s conflict.' },
+          { text: 'The uncle\'s spreadsheet' },
           { text: 'The coding club', why: 'That\'s leadership.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s new on v3?',
         options: [
-          { text: 'A bank of six STAR stories with tags' },
           { text: 'A salary answer', why: 'That\'s Chapter 4.' },
+          { text: 'A bank of six STAR stories with tags' },
           { text: 'Nothing', why: 'v3 adds the story bank.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

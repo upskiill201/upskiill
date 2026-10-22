@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What range does Remi\'s research show for similar internships?',
         options: [
-          { text: 'KES 25,000 to 40,000 a month' },
           { text: 'KES 5,000 to 10,000', why: 'His research shows 25,000 to 40,000.' },
           { text: 'KES 100,000 plus', why: 'Far above the range.' },
+          { text: 'KES 25,000 to 40,000 a month' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'Won\'t naming a number cost me the job?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'A researched range plus "I\'m flexible for the right role" rarely costs a job. "Anything is fine" can cost you money.' },
           { text: 'Yes, always say anything.', why: 'That invites a low offer.' },
+          { text: 'A researched range plus "I\'m flexible for the right role" rarely costs a job. "Anything is fine" can cost you money.' },
           { text: 'Ask for double the range.', why: 'Stay within research.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

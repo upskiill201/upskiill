@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s Tey\'s test for page one?',
         options: [
-          { text: 'Does the reader need this to decide?' },
           { text: 'How long did it take me?', why: 'Effort isn\'t the test.' },
           { text: 'Is it interesting?', why: 'Is it needed to decide?' },
+          { text: 'Does the reader need this to decide?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'It feels wrong to cut work I spent a week on.',
         prompt: "Tey\'s best reply?",
         options: [
-          { text: 'You\'re not cutting it. One line on page one, the rest in the appendix. The week of work is why that one line is true.' },
           { text: 'Then put the whole survey on page one.', why: 'One line, plus the appendix.' },
+          { text: 'You\'re not cutting it. One line on page one, the rest in the appendix. The week of work is why that one line is true.' },
           { text: 'Effort is all that matters.', why: 'The reader\'s decision matters.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'df["no_show"].value_counts(normalize=True) shows 0.817 and 0.183. What does 0.183 mean?',
         options: [
-          { text: 'About 18% of bookings were missed' },
           { text: '183 bookings were missed', why: 'normalize=True gives shares, not counts.' },
+          { text: 'About 18% of bookings were missed' },
           { text: 'The model is 18% accurate', why: 'There\'s no model yet. It\'s the share of misses.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'So 82% of patients come. Good news?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Good for patients. For the model it\'s a warning: guessing "everyone comes" is already 82% right, so 82% is the score to beat.' },
           { text: 'It means the model will be 82% accurate.', why: 'It means a lazy guess already is.' },
           { text: 'It means no-shows don\'t matter.', why: '439 empty chairs in 12 weeks matter.' },
+          { text: 'Good for patients. For the model it\'s a warning: guessing "everyone comes" is already 82% right, so 82% is the score to beat.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

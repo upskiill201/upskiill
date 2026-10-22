@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '3 hill Standard bags at 775 margin. Total?',
         options: [
-          { text: '2,325 FCFA' },
           { text: '2,025 FCFA', why: '3 × 775 = 2,325.' },
+          { text: '2,325 FCFA' },
           { text: '775 FCFA', why: 'That\'s one bag.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ironing on 2 bags (100 each) plus 4 plan bags (475 each). How much do these add?',
         options: [
-          { text: '2,100 FCFA (200 + 1,900)' },
           { text: '575 FCFA', why: 'Multiply by the number of each.' },
           { text: '1,900 FCFA', why: 'Add the ironing too.' },
+          { text: '2,100 FCFA (200 + 1,900)' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         message: 'Saver only earns 275. Should I drop it?',
         prompt: "David's best reply?",
         options: [
-          { text: 'It earns 275 for about 10 minutes, the best rate per minute on the card, and keeps budget students. Keep it.' },
           { text: 'Yes, drop anything under 500.', why: 'Per minute, Saver is excellent.' },
           { text: 'Make Saver free.', why: 'It must stay above cost.' },
+          { text: 'It earns 275 for about 10 minutes, the best rate per minute on the card, and keeps budget students. Keep it.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

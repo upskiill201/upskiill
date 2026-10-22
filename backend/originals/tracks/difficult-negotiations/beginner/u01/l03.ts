@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What are procurement managers often measured on?',
         options: [
-          { text: 'Savings: how far below the first quote they land' },
           { text: 'How happy suppliers are', why: 'Usually it\'s savings.' },
+          { text: 'Savings: how far below the first quote they land' },
           { text: 'How fast the app ships', why: 'That\'s more the digital director\'s concern.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'He\'s clearly a villain. Why be nice to him?',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'He\'s doing the job he\'s paid for. Be polite to him, firm on the numbers, and find the person who needs the app.' },
           { text: 'You\'re right, attack him.', why: 'Attacking his character gets you nowhere.' },
           { text: 'Be nice and accept his price.', why: 'Polite and firm, not polite and giving in.' },
+          { text: 'He\'s doing the job he\'s paid for. Be polite to him, firm on the numbers, and find the person who needs the app.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might Ms Okafor-Lane be a key person to talk to?',
         options: [
-          { text: 'She needs the app to work and to launch on time, not just to be cheap' },
           { text: 'She\'s nicer', why: 'Her interests differ, which helps the deal.' },
+          { text: 'She needs the app to work and to launch on time, not just to be cheap' },
           { text: 'She isn\'t key', why: 'Her launch date is a real constraint.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

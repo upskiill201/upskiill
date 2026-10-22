@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which hostel earned more for Clinton?',
         options: [
-          { text: 'Hostel A (new price): 9,450 vs 6,375' },
           { text: 'Hostel B: it had more bookings', why: 'More bookings, less money.' },
           { text: 'They were equal', why: 'A earned about 3,000 more.' },
+          { text: 'Hostel A (new price): 9,450 vs 6,375' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Hostel A booked fewer bags. So the new price failed?',
         prompt: "David's best reply?",
         options: [
-          { text: 'It earned 3,075 FCFA more with 3 fewer bags, which is also less cycling. That\'s a win.' },
           { text: 'Yes, fewer bags means it failed.', why: 'Margin is what matters.' },
+          { text: 'It earned 3,075 FCFA more with 3 fewer bags, which is also less cycling. That\'s a win.' },
           { text: 'Tests never mean anything.', why: 'This one is clear.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

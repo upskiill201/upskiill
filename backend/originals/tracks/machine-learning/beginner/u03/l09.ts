@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did adding the reminder as 0 or 1 change nothing?',
         options: [
-          { text: 'A gap of at most 1 is tiny next to gaps of many days or km' },
           { text: 'Reminders don\'t matter', why: 'They matter a lot (26% vs 12% no-shows). The distance just couldn\'t see it.' },
           { text: 'Python ignores 0s and 1s', why: 'It uses them; they\'re just small.' },
+          { text: 'A gap of at most 1 is tiny next to gaps of many days or km' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'Choosing 10 felt like guessing. Is there a fairer way?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Yes: scaling. Squash every feature into the same range, 0 to 1, so none drowns the others. That\'s lesson 11.' },
           { text: 'No, always guess.', why: 'Scaling gives every feature a fair start.' },
+          { text: 'Yes: scaling. Squash every feature into the same range, 0 to 1, so none drowns the others. That\'s lesson 11.' },
           { text: 'Delete the reminder feature.', why: 'It\'s one of the strongest clues. Make it count instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

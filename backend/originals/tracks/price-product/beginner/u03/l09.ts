@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'v3 looks amazing. Let\'s switch everyone tomorrow!',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'It\'s a design, not proof. Test it with one hostel first, and tell your regulars before their price changes. Chapter 4.' },
           { text: 'Yes, switch everyone now.', why: 'Untested changes can lose regulars.' },
+          { text: 'It\'s a design, not proof. Test it with one hostel first, and tell your regulars before their price changes. Chapter 4.' },
           { text: 'Never change prices.', why: 'v1 lost money; change is needed, carefully.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Hill Express: price 3,000, cost 1,425 + 400 rides. What is the margin?',
         options: [
-          { text: '1,175 FCFA' },
           { text: '1,575 FCFA', why: 'Remember the 400 in rides.' },
           { text: '1,075 FCFA', why: 'That\'s nearby Express.' },
+          { text: '1,175 FCFA' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

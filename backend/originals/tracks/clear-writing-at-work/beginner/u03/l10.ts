@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Mr Kamau reply?',
         options: [
-          { text: '"Yes to June and both contracts. Good work."' },
           { text: '"?"', why: 'That was Chapter 1.' },
+          { text: '"Yes to June and both contracts. Good work."' },
           { text: '"Let\'s discuss next month."', why: 'He said yes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Should I thank them both?',
         prompt: "Mrs Achieng\'s best reply?",
         options: [
-          { text: 'A short thanks to each, and say what happens next. Closing the loop builds trust for the next ask.' },
           { text: 'No, they\'re busy.', why: 'One line of thanks is welcome.' },
           { text: 'Send a long thank-you letter.', why: 'One line.' },
+          { text: 'A short thanks to each, and say what happens next. Closing the loop builds trust for the next ask.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Mr Kamau reply so early?',
         options: [
-          { text: 'He could decide from his phone in seconds' },
           { text: 'He had nothing else to do', why: 'He\'s very busy.' },
+          { text: 'He could decide from his phone in seconds' },
           { text: 'Luck', why: 'The email made it easy.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

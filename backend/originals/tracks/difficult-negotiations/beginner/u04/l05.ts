@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the best fix for feeling powerless?',
         options: [
-          { text: 'Actually improve your alternative' },
           { text: 'Act tough on the call', why: 'Acting isn\'t power.' },
+          { text: 'Actually improve your alternative' },
           { text: 'Accept quickly', why: 'Check your alternative first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         message: 'They say "other agencies are cheaper". What do I ask?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: '"Happy to compare like for like. Do they include till integration and launch in 12 weeks?"' },
           { text: '"Prove it."', why: 'Ask, don\'t demand.' },
           { text: '"Then go with them."', why: 'Test the claim first.' },
+          { text: '"Happy to compare like for like. Do they include till integration and launch in 12 weeks?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might a cheaper competitor not be cheaper for Harlow & Finch?',
         options: [
-          { text: 'If they miss spring, the lost season can cost more than the saving' },
           { text: 'Competitors are always more expensive', why: 'They might be cheaper on paper.' },
+          { text: 'If they miss spring, the lost season can cost more than the saving' },
           { text: 'It always is cheaper', why: 'Delay has a cost.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

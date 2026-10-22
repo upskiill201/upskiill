@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which line makes a list?',
         options: [
-          { text: 'members = ["Ada", "Tunde"]' },
           { text: 'members = ("Ada" "Tunde")', why: 'Lists use square brackets and commas.' },
+          { text: 'members = ["Ada", "Tunde"]' },
           { text: 'members = "Ada", "Tunde"', why: 'That makes a tuple; a list needs [ ].' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         code: 'print(type(["Ada"]))',
         language: 'python',
         options: [
-          { text: "<class 'list'>" },
           { text: "<class 'str'>", why: 'The brackets make it a list, even with one item.' },
           { text: 'Ada', why: 'type() shows the type.' },
+          { text: "<class 'list'>" },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -140,11 +140,11 @@ const lesson: OriginalLesson = {
         message: 'Can a list hold names AND amounts together?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'It can hold any mix, but keep each list to one kind of thing. Lesson 13 shows a neat way to pair names with amounts.' },
           { text: 'No, never.', why: 'Python allows mixed lists.' },
+          { text: 'It can hold any mix, but keep each list to one kind of thing. Lesson 13 shows a neat way to pair names with amounts.' },
           { text: 'Only numbers.', why: 'Lists hold any values.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

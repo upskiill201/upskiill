@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'Should I apologise a lot in the message?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Be warm, not sorry. Explain clearly and confidently what changes and why. A fair price for a good service needs no grovelling.' },
           { text: 'Yes, apologise many times.', why: 'Too much apology suggests the price is wrong.' },
+          { text: 'Be warm, not sorry. Explain clearly and confidently what changes and why. A fair price for a good service needs no grovelling.' },
           { text: 'Don\'t send a message.', why: 'Notice is the first rule.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A regular stays at 1,600 for one more month instead of 1,800. How much margin per bag does Clinton give up?',
         options: [
-          { text: '200 FCFA' },
           { text: '675 FCFA', why: 'He still earns 475; he gives up 200.' },
           { text: 'Nothing', why: '1,800 − 1,600 = 200.' },
+          { text: '200 FCFA' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Señora Ibarra say at the end?',
         options: [
-          { text: '"Yes to both. Good recommendation."' },
           { text: '"So what do you want us to do?"', why: 'That was round one.' },
           { text: '"Come back next month."', why: 'She said yes.' },
+          { text: '"Yes to both. Good recommendation."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did finance agree to?',
         options: [
-          { text: 'Testing the price rise in one region first' },
           { text: 'Cancelling chili-lime', why: 'A one-region test.' },
           { text: 'A national launch', why: 'A one-region test.' },
+          { text: 'Testing the price rise in one region first' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "one clear idea" better than five half ones?',
         options: [
-          { text: 'It\'s easier for the group to use and for assessors to notice' },
           { text: 'Five ideas looks lazy', why: 'Quality and clarity matter.' },
+          { text: 'It\'s easier for the group to use and for assessors to notice' },
           { text: 'It isn\'t', why: 'Clarity helps everyone.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: '(after) Thanks for bringing me in. I had the data idea but couldn\'t get a word in.',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'It was the best idea in the room. Checking routes first was yours.' },
           { text: 'You should have spoken louder.', why: 'Not kind or helpful.' },
           { text: 'I took credit for it, sorry.', why: 'He gave her credit.' },
+          { text: 'It was the best idea in the room. Checking routes first was yours.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Someone has to summarise at the end. Why might it help to be that person?',
         options: [
-          { text: 'It shows you listened and can bring ideas together' },
           { text: 'You get the last word over everyone', why: 'It\'s about landing the group\'s plan.' },
+          { text: 'It shows you listened and can bring ideas together' },
           { text: 'It doesn\'t help', why: 'It\'s a visible, useful role.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

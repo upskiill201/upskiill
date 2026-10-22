@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What changed between price card v1 and v2?',
         options: [
-          { text: 'The price is now a value-based range with an anchor, not a cost-plus guess' },
           { text: 'Nothing', why: 'The basis for the price changed completely.' },
           { text: 'It added a hill fee', why: 'That comes in Chapter 3.' },
+          { text: 'The price is now a value-based range with an anchor, not a cost-plus guess' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Can I just put 1,800 to 2,000 on the card for customers?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'The range is for you to test. Customers need one clear price per option. Test, then pick one.' },
           { text: 'Yes, let them choose.', why: 'A range on the card confuses customers.' },
+          { text: 'The range is for you to test. Customers need one clear price per option. Test, then pick one.' },
           { text: 'Never show any price.', why: 'Clear prices build trust.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why say "we carry it" on the card?',
         options: [
-          { text: 'It names the main value students get, in their own words' },
           { text: 'To fill space', why: 'It\'s the reason to pay.' },
           { text: 'It\'s a legal requirement', why: 'It\'s about value.' },
+          { text: 'It names the main value students get, in their own words' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

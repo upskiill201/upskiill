@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "No, I\'m good" a missed chance?',
         options: [
-          { text: 'It ends flat and misses a chance to show interest and learn about the job' },
           { text: 'It\'s rude', why: 'Polite, but a wasted opportunity.' },
+          { text: 'It ends flat and misses a chance to show interest and learn about the job' },
           { text: 'It isn\'t', why: 'Questions help both sides.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'When can I ask about pay?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'If they raise it, answer. Otherwise, the offer stage is the natural time to ask about pay and conditions.' },
           { text: 'First thing in the screen.', why: 'Usually better later, unless they raise it.' },
           { text: 'Never.', why: 'You should ask before accepting.' },
+          { text: 'If they raise it, answer. Otherwise, the offer stage is the natural time to ask about pay and conditions.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

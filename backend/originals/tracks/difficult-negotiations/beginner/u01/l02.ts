@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "go to the balcony" mean?',
         options: [
-          { text: 'Step back mentally and watch the negotiation calmly before acting' },
           { text: 'Leave the meeting', why: 'It\'s a mental step, not a physical one.' },
           { text: 'Shout louder', why: 'The opposite.' },
+          { text: 'Step back mentally and watch the negotiation calmly before acting' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'Naming feelings is soft. We need to be tough.',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'Naming it is what lets you stay tough. Unnamed anger makes you send the email you regret.' },
           { text: 'You\'re right, ignore feelings.', why: 'Ignored feelings leak out.' },
+          { text: 'Naming it is what lets you stay tough. Unnamed anger makes you send the email you regret.' },
           { text: 'Then cry about it.', why: 'Name it, then move on.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Ada offer the seller in return for a lower fee?',
         options: [
-          { text: 'Ordering before Thursday, every week' },
           { text: 'Nothing', why: 'She offered something that helps him plan.' },
           { text: 'A threat to stop ordering', why: 'She stayed friendly.' },
+          { text: 'Ordering before Thursday, every week' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'The lunch place said no. Was that a failure?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'No. You asked, heard no, and nothing bad happened. That\'s exactly the lesson.' },
           { text: 'Yes, never ask there again.', why: 'A no is information, not failure.' },
+          { text: 'No. You asked, heard no, and nothing bad happened. That\'s exactly the lesson.' },
           { text: 'Argue until they agree.', why: 'Some nos should just be accepted.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

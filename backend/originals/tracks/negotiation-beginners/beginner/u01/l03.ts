@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the gap get wider every year?',
         options: [
-          { text: 'Raises are a percentage, so a higher base gets bigger raises' },
           { text: 'It doesn\'t; it stays the same', why: 'Percentage raises make it grow.' },
+          { text: 'Raises are a percentage, so a higher base gets bigger raises' },
           { text: 'Because of tax', why: 'It\'s about how raises are calculated.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'But what if I ask and they say no?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'Then you\'re where you\'d be anyway, and you\'ve shown you know your value. A polite no costs a few awkward seconds.' },
           { text: 'They might fire you.', why: 'A polite, prepared ask very rarely costs a job.' },
           { text: 'Then never ask again.', why: 'One no isn\'t forever.' },
+          { text: 'Then you\'re where you\'d be anyway, and you\'ve shown you know your value. A polite no costs a few awkward seconds.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A 10% raise on ₦374,500, compared with a 10% raise on ₦350,000. Which is bigger, and by how much?',
         options: [
-          { text: 'The first, by ₦2,450 a month' },
           { text: 'They\'re the same', why: '10% of a bigger number is bigger.' },
+          { text: 'The first, by ₦2,450 a month' },
           { text: 'The second', why: 'The second starts lower.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

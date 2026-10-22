@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Señora Ibarra ask?',
         options: [
-          { text: '"So what do you want us to do?"' },
           { text: '"Can you show more charts?"', why: 'She wanted a decision.' },
+          { text: '"So what do you want us to do?"' },
           { text: '"Who are you?"', why: 'She asked "so what?".' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'I thought she\'d want to see all the data first.',
         prompt: "Carmen\'s best reply?",
         options: [
-          { text: 'She trusts us with the data. She wants our judgement: what to do, and why. Data on request.' },
           { text: 'She does. Show more next time.', why: 'She asked for a decision.' },
           { text: 'She doesn\'t care about data.', why: 'She does, as support.' },
+          { text: 'She trusts us with the data. She wants our judgement: what to do, and why. Data on request.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How many decisions does the CEO have to make today?',
         options: [
-          { text: 'Nine' },
           { text: 'One', why: 'Nine.' },
+          { text: 'Nine' },
           { text: 'None', why: 'Nine.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

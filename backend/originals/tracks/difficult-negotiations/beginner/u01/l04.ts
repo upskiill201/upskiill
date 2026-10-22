@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happens when you mix the person and the problem?',
         options: [
-          { text: 'They defend themselves instead of discussing the issue' },
           { text: 'They agree faster', why: 'People dig in when attacked.' },
           { text: 'Nothing', why: 'It usually starts a fight.' },
+          { text: 'They defend themselves instead of discussing the issue' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask "which parts matter most to you?"',
         options: [
-          { text: 'It moves from the price to his interests, where a deal might be' },
           { text: 'To trap him', why: 'It\'s a genuine question.' },
           { text: 'It\'s small talk', why: 'It opens trading on scope.' },
+          { text: 'It moves from the price to his interests, where a deal might be' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

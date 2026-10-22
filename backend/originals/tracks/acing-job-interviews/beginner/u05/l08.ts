@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'Won\'t asking for a few days to decide make them think I\'m not keen?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Say you\'re delighted and ask for a couple of days to read the details. That\'s normal and professional.' },
           { text: 'Yes, accept instantly.', why: 'A short pause to check is normal.' },
+          { text: 'Say you\'re delighted and ask for a couple of days to read the details. That\'s normal and professional.' },
           { text: 'Ask for a month.', why: 'A few days is reasonable.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is a good reply to a rejection?',
         options: [
-          { text: 'Thank them, ask for one improvement, ask to be considered in future' },
           { text: 'Ask them to reconsider', why: 'Accept it gracefully.' },
           { text: 'Ignore it', why: 'A short reply keeps the door open.' },
+          { text: 'Thank them, ask for one improvement, ask to be considered in future' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the two drivers leave?',
         options: [
-          { text: 'They joined a courier firm' },
           { text: 'They were fired', why: 'They left for a courier firm.' },
           { text: 'Nobody knows', why: 'Felix says a courier firm.' },
+          { text: 'They joined a courier firm' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'Can I at least start with all the good results first?',
         prompt: "Mrs Achieng\'s best reply?",
         options: [
-          { text: 'He knows the good results; he approved them today. Lead with the news, then the plan. One line of context is enough.' },
           { text: 'Yes, three paragraphs of good news first.', why: 'That buries the news.' },
+          { text: 'He knows the good results; he approved them today. Lead with the news, then the plan. One line of context is enough.' },
           { text: 'Don\'t mention the good results at all, ever.', why: 'One line of context is fine.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who would Mr Kamau have heard it from on Friday?',
         options: [
-          { text: 'Felix' },
           { text: 'Brian', why: 'Felix sends the weekly numbers.' },
           { text: 'The board', why: 'Felix.' },
+          { text: 'Felix' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Arjun\'s reply achieve?',
         options: [
-          { text: 'It kept the deal alive and brought Ms Okafor-Lane onto the call' },
           { text: 'It accepted £28,000', why: 'It said £28,000 doesn\'t cover the scope.' },
           { text: 'It ended the negotiation', why: 'It opened a call.' },
+          { text: 'It kept the deal alive and brought Ms Okafor-Lane onto the call' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'Why didn\'t we just repeat £48,000 in the reply?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Repeating it starts a tug of war. First I want to know what they need. The price conversation is on the call.' },
           { text: 'Because £48,000 was wrong.', why: 'The quote stands; it\'s about timing.' },
+          { text: 'Repeating it starts a tug of war. First I want to know what they need. The price conversation is on the call.' },
           { text: 'Because we\'ll accept £28,000.', why: 'He said it doesn\'t cover the scope.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

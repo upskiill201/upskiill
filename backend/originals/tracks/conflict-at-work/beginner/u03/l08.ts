@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'Ha. I did notice you went quiet. I thought you were cross about the fix.',
         prompt: "Grace's best reply?",
         options: [
-          { text: '"So we both had stories! Shall we agree: if either of us reads something as off, we just ask?"' },
           { text: '"Well, I was."', why: 'She wasn\'t; she was worried.' },
           { text: '"Let\'s not talk about it."', why: 'They\'re nearly done clearing it.' },
+          { text: '"So we both had stories! Shall we agree: if either of us reads something as off, we just ask?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How long does Tey say the awkward bit lasts?',
         options: [
-          { text: 'About thirty seconds' },
           { text: 'A week', why: 'Much shorter.' },
+          { text: 'About thirty seconds' },
           { text: 'It never ends', why: 'It\'s brief, then a relief.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

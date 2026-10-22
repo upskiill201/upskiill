@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "£28,000 is insulting" a poor reply?',
         options: [
-          { text: 'It turns a negotiation into a fight, and tells him he got a reaction' },
           { text: 'It\'s too polite', why: 'It\'s the opposite.' },
+          { text: 'It turns a negotiation into a fight, and tells him he got a reaction' },
           { text: 'It\'s a great reply', why: 'It feels good but closes doors.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'If we push back, we\'ll lose them!',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'Maybe. But if £28,000 loses you money, saying yes is worse. Work out your numbers first.' },
           { text: 'Yes, never push back on a big client.', why: 'A loss-making yes isn\'t a win.' },
           { text: 'Then insult them first.', why: 'That definitely loses them.' },
+          { text: 'Maybe. But if £28,000 loses you money, saying yes is worse. Work out your numbers first.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

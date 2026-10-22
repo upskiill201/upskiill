@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'Won\'t asking for a hint count against me?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Not if you\'ve shown your thinking first. Many interviewers expect to give hints. Silence counts against you more.' },
           { text: 'Yes, never ask.', why: 'Silence is worse.' },
+          { text: 'Not if you\'ve shown your thinking first. Many interviewers expect to give hints. Silence counts against you more.' },
           { text: 'Ask for the answer straight away.', why: 'Show your approach first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why use a set instead of a list here?',
         options: [
-          { text: 'Checking whether an item is in a set is fast, so one pass works' },
           { text: 'Sets look nicer', why: 'It\'s about speed.' },
           { text: 'Lists can\'t hold IDs', why: 'They can; they\'re slower to search.' },
+          { text: 'Checking whether an item is in a set is fast, so one pass works' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

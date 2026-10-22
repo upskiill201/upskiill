@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The other side anchors first with a high number. What\'s your best move?',
         options: [
-          { text: 'State your own number with evidence soon' },
           { text: 'Argue about their number', why: 'That keeps their anchor in focus.' },
+          { text: 'State your own number with evidence soon' },
           { text: 'Split the difference straight away', why: 'That lets the anchor decide.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         message: 'A client asks my price but I have no idea what this kind of job is worth.',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Ask questions first: what they need, by when, their budget. Then send a quote by a set time.' },
           { text: 'Say ₦5,000 to be safe.', why: 'A guess too low is hard to raise.' },
           { text: 'Say ₦5,000,000 to be safe.', why: 'An extreme guess damages trust.' },
+          { text: 'Ask questions first: what they need, by when, their budget. Then send a quote by a set time.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

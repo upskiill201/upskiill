@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why compete on the wrong-surgery bug?',
         options: [
-          { text: 'Patients could be harmed, so it must be fixed now' },
           { text: 'Grace wants to win', why: 'It\'s about patient safety.' },
           { text: 'Femi was rude', why: 'It\'s about risk.' },
+          { text: 'Patients could be harmed, so it must be fixed now' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         message: 'Can\'t the wrong-surgery bug wait until next sprint?',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'No. Patients could turn up at the wrong surgery. I\'ll help you test the fix today.' },
           { text: 'OK, whatever you think.', why: 'Safety isn\'t the time to accommodate.' },
+          { text: 'No. Patients could turn up at the wrong surgery. I\'ll help you test the fix today.' },
           { text: 'You\'re so careless.', why: 'Firm on the issue, not the person.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "Silence is not peace" mean for the Jayden text?',
         options: [
-          { text: 'Don\'t just let it slide again; talk to him tonight' },
           { text: 'Shout at him by text', why: 'Talk calmly in person.' },
+          { text: 'Don\'t just let it slide again; talk to him tonight' },
           { text: 'Ignore it', why: 'That\'s the silence the rule warns about.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

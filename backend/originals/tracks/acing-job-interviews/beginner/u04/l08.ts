@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which five-year answer works best for an internship?',
         options: [
-          { text: '"Growing as a developer, building products for small businesses."' },
           { text: '"In your job, Mr Njoroge."', why: 'Sounds like a joke or a threat.' },
           { text: '"Running my own company next year."', why: 'Suggests you won\'t stay.' },
+          { text: '"Growing as a developer, building products for small businesses."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: '"Why should we hire you?" feels like bragging.',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'It\'s not bragging if it\'s true and matched to what they need. Give two or three strengths, each with proof.' },
           { text: 'Say "I don\'t know."', why: 'They need a reason.' },
+          { text: 'It\'s not bragging if it\'s true and matched to what they need. Give two or three strengths, each with proof.' },
           { text: 'List every skill you have.', why: 'Pick the ones that match.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should follow a short, honest explanation of a CV gap?',
         options: [
-          { text: 'What you did or learned during it' },
           { text: 'A long apology', why: 'Brief and positive.' },
           { text: 'Nothing; change the subject', why: 'Add what you did.' },
+          { text: 'What you did or learned during it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

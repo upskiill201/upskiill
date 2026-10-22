@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do assessors usually look for in a group exercise?',
         options: [
-          { text: 'How you help the group think and reach a plan' },
           { text: 'Who talks the most', why: 'Dominating usually scores badly.' },
+          { text: 'How you help the group think and reach a plan' },
           { text: 'Who agrees with everyone', why: 'They want contribution.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'My hands are cold. I always freeze in groups.',
         prompt: "Remi's best reply?",
         options: [
-          { text: 'Me too, shaking. Let\'s try to bring each other in. You\'re good with data, right?' },
           { text: 'You\'ll be fine, stop worrying.', why: 'Kind, but brush-off.' },
           { text: 'Then let me do all the talking.', why: 'That hurts both of them.' },
+          { text: 'Me too, shaking. Let\'s try to bring each other in. You\'re good with data, right?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

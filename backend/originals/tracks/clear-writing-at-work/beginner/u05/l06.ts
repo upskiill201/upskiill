@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In which journal was the study published?',
         options: [
-          { text: 'Science' },
           { text: 'A company blog', why: 'It was in Science.' },
+          { text: 'Science' },
           { text: 'It wasn\'t published', why: 'Science, 2023.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'The AI rewrote my ops report. It sounds great, so I sent it.',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: 'Did you check the numbers? Tools can change facts while "improving" the wording. Sounding great isn\'t the same as being right.' },
           { text: 'Perfect, AI is always right.', why: 'It can state wrong facts.' },
           { text: 'Never use AI.', why: 'It helps, with checks.' },
+          { text: 'Did you check the numbers? Tools can change facts while "improving" the wording. Sounding great isn\'t the same as being right.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Zanele do after AI edits her draft?',
         options: [
-          { text: 'Run her plain checklist on the result' },
           { text: 'Send it straight away', why: 'Check it first.' },
+          { text: 'Run her plain checklist on the result' },
           { text: 'Ask AI if it\'s correct', why: 'She checks the facts herself.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

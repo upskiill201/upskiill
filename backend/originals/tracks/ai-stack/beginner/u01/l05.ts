@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: 'Mr Rao asked "how much?" again. What do we know so far?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'That cost depends on tokens per chat and chats per day. We\'ll have a number this week.' },
           { text: 'Nothing, and we never will.', why: 'Tokens and volume make it calculable.' },
+          { text: 'That cost depends on tokens per chat and chats per day. We\'ll have a number this week.' },
           { text: 'It\'s free because the practice model is free.', why: 'The practice model is for learning. A real model charges per token.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which statement is a myth?',
         options: [
-          { text: 'A confident answer is probably right' },
           { text: 'Every answer has a cost', why: 'That\'s a fact.' },
           { text: 'The right document can fix a wrong answer', why: 'That\'s a fact too.' },
+          { text: 'A confident answer is probably right' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

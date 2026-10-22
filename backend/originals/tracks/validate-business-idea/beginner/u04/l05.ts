@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll decide what counts as success after I see the numbers. Keeps it flexible.',
         prompt: "David's best reply?",
         options: [
-          { text: 'Flexible means you\'ll call anything a win. Write it now and send it to us.' },
           { text: 'Good, stay flexible.', why: 'That\'s moving the goalposts.' },
           { text: 'Skip the pass mark entirely.', why: 'Then the test can\'t fail, so it can\'t teach.' },
+          { text: 'Flexible means you\'ll call anything a win. Write it now and send it to us.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the WashDay test take payment up front?',
         options: [
-          { text: 'Payment is the strongest evidence that they\'ll pay' },
           { text: 'To keep the money if no one shows up', why: 'Refunds are promised.' },
+          { text: 'Payment is the strongest evidence that they\'ll pay' },
           { text: 'Because Mobile Money is required by law', why: 'It\'s about evidence.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',

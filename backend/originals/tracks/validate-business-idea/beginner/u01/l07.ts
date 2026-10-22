@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which CampusEats assumption is the riskiest?',
         options: [
-          { text: 'Students will pay 500 FCFA for delivery when food is a five-minute walk away' },
           { text: 'Clinton can ride a bike', why: 'He\'s sure, and it\'s fixable if wrong.' },
           { text: 'The group chats exist', why: 'He already knows that.' },
+          { text: 'Students will pay 500 FCFA for delivery when food is a five-minute walk away' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll start with the delivery-time test. It\'s easy and I\'ll get a quick win.',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'A quick win on something that doesn\'t matter if nobody pays. Test "will they pay" first; it decides everything.' },
           { text: 'Good, easy tests first.', why: 'That feels like progress without testing what matters.' },
+          { text: 'A quick win on something that doesn\'t matter if nobody pays. Test "will they pay" first; it decides everything.' },
           { text: 'Test all eleven at once.', why: 'One at a time, riskiest first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

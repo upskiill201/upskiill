@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the main problem with the generic answer?',
         options: [
-          { text: 'It could fit any company and it\'s all about what Remi gets' },
           { text: 'It\'s too long', why: 'It\'s too generic.' },
+          { text: 'It could fit any company and it\'s all about what Remi gets' },
           { text: 'It\'s rude', why: 'Polite, but empty.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why mention the uncle\'s shop?',
         options: [
-          { text: 'It\'s a true link between his life and their customers' },
           { text: 'To make them feel sorry for him', why: 'It shows genuine connection.' },
+          { text: 'It\'s a true link between his life and their customers' },
           { text: 'It\'s irrelevant', why: 'It connects him to small shop owners.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

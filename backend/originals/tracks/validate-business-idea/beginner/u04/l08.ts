@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does passing this test prove?',
         options: [
-          { text: 'The riskiest card survived one test; it\'s a strong signal, not a proven business' },
           { text: 'WashDay will definitely succeed', why: 'Twelve customers on one weekend can\'t prove that.' },
           { text: 'Nothing at all', why: 'Real payments from strangers are strong evidence.' },
+          { text: 'The riskiest card survived one test; it\'s a strong signal, not a proven business' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         message: 'Should I leave the late bag and the mix-up out of the report? It looks bad.',
         prompt: "David's best reply?",
         options: [
-          { text: 'Put them in. The report is for you. If you hide problems, you\'ll repeat them at 50 bags.' },
           { text: 'Yes, keep it positive.', why: 'Hiding problems only fools him.' },
+          { text: 'Put them in. The report is for you. If you hide problems, you\'ll repeat them at 50 bags.' },
           { text: 'Only mention the bad parts.', why: 'Report everything, good and bad.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

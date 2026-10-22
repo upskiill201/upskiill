@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Tobi\'s "no" actually mean?',
         options: [
-          { text: 'Not ₦480,000, and not this quarter' },
           { text: 'Never', why: 'He said she deserves more.' },
           { text: 'Yes', why: 'He said he can\'t do ₦480,000 now.' },
+          { text: 'Not ₦480,000, and not this quarter' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'He said no. I feel stupid for asking.',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'He said you deserve more. That\'s not a no to you; it\'s a puzzle about money and timing. Solve it with him.' },
           { text: 'You should feel stupid.', why: 'Asking well is never stupid.' },
+          { text: 'He said you deserve more. That\'s not a no to you; it\'s a puzzle about money and timing. Solve it with him.' },
           { text: 'Quit today.', why: 'There\'s a deal still to find.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "Then I\'ll take the other job" a bad move here?',
         options: [
-          { text: 'It\'s a threat in the first minute, and it turns a talk into a standoff' },
           { text: 'It\'s always wrong to mention alternatives', why: 'Calm context can be fine; threats aren\'t.' },
           { text: 'It\'s a good move', why: 'Tobi was open; a threat closes him down.' },
+          { text: 'It\'s a threat in the first minute, and it turns a talk into a standoff' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

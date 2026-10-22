@@ -35,11 +35,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s the best first question to ask about unfair criticism?',
         options: [
-          { text: '"What might be right in this?"' },
           { text: '"How can I prove them wrong?"', why: 'Find the fair part first.' },
+          { text: '"What might be right in this?"' },
           { text: '"Who else agrees with me?"', why: 'Look at the content first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         message: 'My code review said "this is messy". I want to reply "so is yours".',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'Write that in a draft and don\'t send it. Tomorrow, ask what specifically looked messy.' },
           { text: 'Send it.', why: 'That\'s a reaction.' },
           { text: 'Rewrite all your code.', why: 'Find out what they meant first.' },
+          { text: 'Write that in a draft and don\'t send it. Tomorrow, ask what specifically looked messy.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is switchtracking?',
         options: [
-          { text: 'Answering a point about the content with a complaint about the person' },
           { text: 'Changing jobs', why: 'It\'s about two conversations mixing.' },
+          { text: 'Answering a point about the content with a complaint about the person' },
           { text: 'Taking a break', why: 'It\'s mixing truth and relationship.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'They\'re a huge company. The tougher side wins, and that\'s them.',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'Size isn\'t everything. They need an app before the spring sale, and you can build it. Preparation beats toughness.' },
           { text: 'Yes, give up now.', why: 'Arjun has real value to offer.' },
           { text: 'Then be tougher than them.', why: 'Prepared and calm works better.' },
+          { text: 'Size isn\'t everything. They need an app before the spring sale, and you can build it. Preparation beats toughness.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Grace learn from 18 years in hospital?',
         options: [
-          { text: 'You can say no calmly, even to very upset people' },
           { text: 'Always give people what they want', why: 'She said no when she had to.' },
+          { text: 'You can say no calmly, even to very upset people' },
           { text: 'Never talk to upset people', why: 'She talked to them every day.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

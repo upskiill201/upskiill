@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'dists is a list of [distance, name, missed]. What does dists.sort() sort by?',
         options: [
-          { text: 'The distance, because it comes first' },
           { text: 'The name', why: 'Lists are sorted by their first item: the distance.' },
+          { text: 'The distance, because it comes first' },
           { text: 'Whether they missed', why: 'That\'s the last item.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         code: 'votes = sum([1, 0, 1, 1, 0])\nk = 5\nprint(votes > k / 2)',
         language: 'python',
         options: [
-          { text: 'True' },
           { text: 'False', why: '3 > 2.5 is True.' },
+          { text: 'True' },
           { text: '3', why: 'It prints the comparison: True or False.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

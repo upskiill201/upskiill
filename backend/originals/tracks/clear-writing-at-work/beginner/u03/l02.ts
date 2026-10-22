@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does BLUF stand for?',
         options: [
-          { text: 'Bottom line up front' },
           { text: 'Brief letters use few words', why: 'Bottom line up front.' },
+          { text: 'Bottom line up front' },
           { text: 'Big lists up front', why: 'Bottom line up front.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'What if he needs more background to decide?',
         prompt: "Mrs Achieng\'s best reply?",
         options: [
-          { text: 'Give the background after the bottom line, or attach it. He\'ll read on if he needs to; he\'ll stop if he doesn\'t.' },
           { text: 'Put all the background first.', why: 'Then the ask gets buried.' },
           { text: 'Never give background.', why: 'Give it second.' },
+          { text: 'Give the background after the bottom line, or attach it. He\'ll read on if he needs to; he\'ll stop if he doesn\'t.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why include "what happens next"?',
         options: [
-          { text: 'It shows the reader the effect of their decision' },
           { text: 'To fill space', why: 'It closes the loop.' },
+          { text: 'It shows the reader the effect of their decision' },
           { text: 'To threaten them', why: 'It\'s information.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

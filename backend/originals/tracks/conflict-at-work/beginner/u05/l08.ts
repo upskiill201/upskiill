@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         message: 'You\'re being so dramatic. It was one time!',
         prompt: "Grace's best reply?",
         options: [
-          { text: '"I hear you. The keys stay with me this week, like I said. Next week, just ask the day before."' },
           { text: '"Dramatic? Let me tell you about dramatic..."', why: 'That starts a new argument.' },
+          { text: '"I hear you. The keys stay with me this week, like I said. Next week, just ask the day before."' },
           { text: '"Fine, have them."', why: 'The boundary disappears.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why not add new reasons when someone pushes back?',
         options: [
-          { text: 'Each new reason is something new to argue about' },
           { text: 'Reasons are rude', why: 'One clear reason is fine; more invite debate.' },
           { text: 'You should add many', why: 'That reopens the argument.' },
+          { text: 'Each new reason is something new to argue about' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

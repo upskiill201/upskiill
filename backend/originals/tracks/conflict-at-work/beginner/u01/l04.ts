@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did De Dreu and Weingart (2003) find about relationship conflict?',
         options: [
-          { text: 'It was strongly linked to worse performance and lower satisfaction' },
           { text: 'It helped teams', why: 'It hurt them.' },
           { text: 'It had no effect', why: 'Strong negative links.' },
+          { text: 'It was strongly linked to worse performance and lower satisfaction' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'So I shouldn\'t disagree with Grace\'s research at all?',
         prompt: "Priya's best reply?",
         options: [
-          { text: 'Disagree about the research as much as you like. Just keep it about the findings, not about Grace.' },
           { text: 'Right, never disagree.', why: 'Task disagreements can help.' },
           { text: 'Disagree louder.', why: 'Volume pushes it personal.' },
+          { text: 'Disagree about the research as much as you like. Just keep it about the findings, not about Grace.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

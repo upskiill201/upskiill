@@ -83,21 +83,21 @@ const lesson: OriginalLesson = {
         message: 'Why ask the twenty who left? They\'re gone.',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Their reasons are free advice: maybe the price, the timing, or the late bags. Fix those and some come back.' },
           { text: 'You\'re right, forget them.', why: 'Leavers tell you what to fix.' },
+          { text: 'Their reasons are free advice: maybe the price, the timing, or the late bags. Fix those and some come back.' },
           { text: 'Beg them to come back.', why: 'Ask why first; then fix.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'What share of the thirty customers are regulars?',
         options: [
-          { text: 'About 33%' },
           { text: '10%', why: '10 of 30 is a third.' },
           { text: '66%', why: 'That\'s the one-time share.' },
+          { text: 'About 33%' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

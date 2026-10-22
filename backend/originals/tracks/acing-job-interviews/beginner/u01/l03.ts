@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A question surprises you. What should you ask yourself first?',
         options: [
-          { text: '"Which of the five is this really about?"' },
           { text: '"What answer do they want me to say?"', why: 'There\'s no script; find what\'s being checked.' },
+          { text: '"Which of the five is this really about?"' },
           { text: '"How do I avoid this?"', why: 'Answer what\'s being tested.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'So there\'s no secret list of right answers?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'No. They\'re trying to find out five things. Give them true evidence for each, and you\'ve done your job.' },
           { text: 'Yes, memorise the right answers.', why: 'Honest evidence beats memorised scripts.' },
           { text: 'It\'s random.', why: 'Good interviews are structured.' },
+          { text: 'No. They\'re trying to find out five things. Give them true evidence for each, and you\'ve done your job.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"What would your friends say is your best quality?" is mostly testing...',
         options: [
-          { text: 'How you work and get on with others' },
           { text: 'Your technical skills', why: 'It\'s about you as a person to work with.' },
+          { text: 'How you work and get on with others' },
           { text: 'Your salary expectations', why: 'Not related.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

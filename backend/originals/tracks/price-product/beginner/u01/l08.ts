@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'So after 9 bags, I\'m rich?',
         prompt: "David's best reply?",
         options: [
-          { text: 'After 9 bags you\'ve covered the fixed costs. Every bag after that earns 420. To earn 30,000, you need 80 bags a month.' },
           { text: 'Yes, rich after 9.', why: 'Break-even means zero profit, not riches.' },
+          { text: 'After 9 bags you\'ve covered the fixed costs. Every bag after that earns 420. To earn 30,000, you need 80 bags a month.' },
           { text: 'You never break even.', why: 'He breaks even at 9 bags a month.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '80 bags a month is 20 a weekend. Why is that a worry?',
         options: [
-          { text: 'It\'s close to Mama Rose\'s limit of 25 bags on a Saturday' },
           { text: 'It\'s too few to matter', why: 'It\'s near the capacity limit.' },
           { text: 'It isn\'t a worry', why: 'There\'s little room for growth or a bad week.' },
+          { text: 'It\'s close to Mama Rose\'s limit of 25 bags on a Saturday' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

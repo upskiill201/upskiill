@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         code: 'ledger = [["Ada", 30000], ["Tunde", 15000]]\nprint(ledger[1][0])',
         language: 'python',
         options: [
-          { text: 'Tunde' },
           { text: '15000', why: '[1][0] is the first thing in the second row: the name.' },
           { text: "['Tunde', 15000]", why: 'That\'s ledger[1]. The second index picks inside the row.' },
+          { text: 'Tunde' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might a ledger be safer than two lists, members and payments?',
         options: [
-          { text: 'Each name stays next to its own amount, so they can\'t get out of step' },
           { text: 'It\'s faster', why: 'Speed isn\'t the point. Keeping pairs together is.' },
+          { text: 'Each name stays next to its own amount, so they can\'t get out of step' },
           { text: 'Two lists can\'t hold numbers', why: 'They can. The risk is one list being sorted or changed without the other.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

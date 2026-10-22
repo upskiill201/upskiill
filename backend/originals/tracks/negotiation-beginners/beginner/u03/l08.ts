@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Mrs Okon says "That\'s too much." What\'s Ada\'s best first line?',
         options: [
-          { text: '"What part feels too much?"' },
           { text: '"OK, ₦80,000 then."', why: 'An instant discount.' },
           { text: '"It\'s not too much."', why: 'Arguing learns nothing.' },
+          { text: '"What part feels too much?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does "Let me come back to you by Friday" beat "Er... fine"?',
         options: [
-          { text: 'It buys time without agreeing to anything, and promises a real answer' },
           { text: 'It\'s more polite to say fine', why: '"Fine" can become a yes.' },
           { text: 'They\'re the same', why: 'One agrees; one doesn\'t.' },
+          { text: 'It buys time without agreeing to anything, and promises a real answer' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

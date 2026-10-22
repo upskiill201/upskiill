@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Remi hasn\'t used React Native. What should he say if asked?',
         options: [
-          { text: '"Not yet, but I\'ve used JavaScript a lot and I\'m keen to learn it."' },
           { text: '"Yes, loads."', why: 'Never claim skills you don\'t have.' },
           { text: '"No." and stop there', why: 'Add what\'s close and your interest.' },
+          { text: '"Not yet, but I\'ve used JavaScript a lot and I\'m keen to learn it."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'I don\'t have every nice-to-have. Should I have applied?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Yes. Nice-to-haves are a wish list. You have the must-haves and real users. That\'s why you got the interview.' },
           { text: 'No, withdraw.', why: 'Nice-to-haves usually aren\'t required.' },
+          { text: 'Yes. Nice-to-haves are a wish list. You have the must-haves and real users. That\'s why you got the interview.' },
           { text: 'Pretend you have them.', why: 'Honesty matters.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"Real users" appears twice in the ad. What should Remi expect?',
         options: [
-          { text: 'A question about working with real users' },
           { text: 'Nothing; it\'s just filler', why: 'Repeated words signal priorities.' },
           { text: 'A question about his grades', why: 'Repetition points to real users.' },
+          { text: 'A question about working with real users' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

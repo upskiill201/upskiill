@@ -37,11 +37,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How did Zanele add "strategy" without jargon?',
         options: [
-          { text: 'One plain line on why: customers wait less, late deliveries fell from 34% to 21%' },
           { text: 'She added "synergies"', why: 'She kept it plain.' },
+          { text: 'One plain line on why: customers wait less, late deliveries fell from 34% to 21%' },
           { text: 'She refused', why: 'She found a plain way.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Next time, can you check my emails to the board too?',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: 'Happily. I\'ll send you my checklist too; it takes thirty seconds.' },
           { text: 'No, write them yourself.', why: 'Helping and teaching is better.' },
           { text: 'Only if you stop saying synergies.', why: 'Kind, not cutting.' },
+          { text: 'Happily. I\'ll send you my checklist too; it takes thirty seconds.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

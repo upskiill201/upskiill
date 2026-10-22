@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "How much would you pay?" a weak question?',
         options: [
-          { text: 'People guess, often too high, because the money isn\'t real' },
           { text: 'It\'s rude to talk about money', why: 'Asking what they DID pay is fine and useful.' },
           { text: 'It\'s a great question', why: 'Hypothetical prices are unreliable (Chapter 1).' },
+          { text: 'People guess, often too high, because the money isn\'t real' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'But I need to know if they\'d pay. How can I find out without asking?',
         prompt: "David's best reply?",
         options: [
-          { text: 'Ask what they\'ve already paid for it, and later, ask them to actually pay. Past payments and real payments beat guesses.' },
           { text: 'Just ask "would you pay?" anyway.', why: 'That gets the polite guess again.' },
+          { text: 'Ask what they\'ve already paid for it, and later, ask them to actually pay. Past payments and real payments beat guesses.' },
           { text: 'You can\'t ever know.', why: 'Past spending and real payments tell you a lot.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

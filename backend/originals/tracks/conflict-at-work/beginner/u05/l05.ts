@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is a boundary, not an ultimatum?',
         options: [
-          { text: '"I\'ll lend the car when you ask the day before."' },
           { text: '"Do it again and you\'ll regret it."', why: 'A threat.' },
+          { text: '"I\'ll lend the car when you ask the day before."' },
           { text: '"Never again, ever."', why: 'Unkeepable.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is a consequence you control better than a threat?',
         options: [
-          { text: 'You can actually keep it, so it\'s believable' },
           { text: 'It\'s scarier', why: 'It\'s calmer and more believable.' },
+          { text: 'You can actually keep it, so it\'s believable' },
           { text: 'It isn\'t', why: 'Keepable consequences work better.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',

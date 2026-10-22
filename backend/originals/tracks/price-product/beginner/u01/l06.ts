@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '7,500 FCFA for 12 hours. How much per hour?',
         options: [
-          { text: '625 FCFA' },
           { text: '833 FCFA', why: 'That uses the 500 he thought he kept.' },
           { text: '1,000 FCFA', why: 'That\'s the library job.' },
+          { text: '625 FCFA' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'I\'d earn more at the library. Should I just quit WashDay?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Not yet: the problem is the price, not the business. Students value it. Find out what it\'s worth to them before you decide.' },
           { text: 'Yes, quit today.', why: 'Demand is strong; the price is what\'s wrong.' },
+          { text: 'Not yet: the problem is the price, not the business. Students value it. Find out what it\'s worth to them before you decide.' },
           { text: 'Work more hours to earn more.', why: 'More hours at 625 an hour doesn\'t fix the rate.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is 1,725 FCFA not automatically the right price?',
         options: [
-          { text: 'It only covers costs and his time; customers\' view of the value hasn\'t been checked' },
           { text: 'It\'s too low to ever work', why: 'It might be fine; it hasn\'t been tested.' },
           { text: 'Prices must end in 00', why: 'Rounding is a detail; value is the point.' },
+          { text: 'It only covers costs and his time; customers\' view of the value hasn\'t been checked' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

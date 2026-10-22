@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why start by checking you understood their concern?',
         options: [
-          { text: 'You may find the real worry is different from what you thought' },
           { text: 'To waste time', why: 'It aims your answer correctly.' },
           { text: 'To agree with them', why: 'It\'s to understand first.' },
+          { text: 'You may find the real worry is different from what you thought' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why end with a next step?',
         options: [
-          { text: 'It turns a disagreement into a shared plan' },
           { text: 'To win the argument', why: 'It moves forward together.' },
           { text: 'It\'s optional', why: 'Without it, the disagreement just hangs.' },
+          { text: 'It turns a disagreement into a shared plan' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

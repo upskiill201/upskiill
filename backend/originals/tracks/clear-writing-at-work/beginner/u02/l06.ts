@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes the plain version more specific?',
         options: [
-          { text: 'It gives times, the pay rate and a named contact' },
           { text: 'It\'s longer', why: 'It\'s shorter.' },
+          { text: 'It gives times, the pay rate and a named contact' },
           { text: 'It uses more adjectives', why: 'It uses facts.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why bullets for this notice?',
         options: [
-          { text: 'Drivers read on phones; separate facts are easier to scan' },
           { text: 'Bullets look important', why: 'They make facts scannable.' },
+          { text: 'Drivers read on phones; separate facts are easier to scan' },
           { text: 'No reason', why: 'They help phone readers.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',

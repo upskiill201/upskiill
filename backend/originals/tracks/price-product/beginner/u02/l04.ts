@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "what would you pay?" a weak question?',
         options: [
-          { text: 'Guesses cost nothing, so people answer to be nice or to get a lower price' },
           { text: 'It\'s rude', why: 'It\'s fine to ask; it just doesn\'t give reliable answers.' },
+          { text: 'Guesses cost nothing, so people answer to be nice or to get a lower price' },
           { text: 'It\'s the best question there is', why: 'Behaviour is far more reliable.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'My poll says students would pay 1,000. Should I lower the price?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Polls invite low guesses. Many of them pay Mama Rose 2,400. Trust what they do over what they say.' },
           { text: 'Yes, the poll says 1,000.', why: 'A hypothetical answer against real payments.' },
           { text: 'Poll again until it says 3,000.', why: 'That\'s just fishing for a nicer guess.' },
+          { text: 'Polls invite low guesses. Many of them pay Mama Rose 2,400. Trust what they do over what they say.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

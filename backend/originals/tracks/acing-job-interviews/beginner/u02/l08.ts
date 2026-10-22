@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What kind of preparation sounds robotic?',
         options: [
-          { text: 'Memorising scripts word for word' },
           { text: 'Knowing your stories', why: 'That sounds relaxed.' },
           { text: 'Researching the company', why: 'That helps.' },
+          { text: 'Memorising scripts word for word' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'My flatmate says they won\'t care if I know what they do.',
         prompt: "Ada's best reply?",
         options: [
-          { text: '"What do you know about us?" is one of the most common questions. They\'ll care.' },
           { text: 'Your flatmate is right.', why: 'It\'s asked constantly.' },
+          { text: '"What do you know about us?" is one of the most common questions. They\'ll care.' },
           { text: 'Only care if it\'s a big company.', why: 'Startups care too.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

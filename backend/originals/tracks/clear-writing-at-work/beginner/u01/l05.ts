@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s Rogers and Lasky-Fink\'s first principle?',
         options: [
-          { text: 'Less is more' },
           { text: 'More detail is better', why: 'The opposite.' },
           { text: 'Always attach a report', why: 'Less is more.' },
+          { text: 'Less is more' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'A colleague sent me 2,000 words asking for one number.',
         prompt: "Mrs Achieng's best reply?",
         options: [
-          { text: 'Reply with the number in the first line. And maybe send them this course.' },
           { text: 'Reply with 3,000 words.', why: 'Model the short version.' },
+          { text: 'Reply with the number in the first line. And maybe send them this course.' },
           { text: 'Ignore it.', why: 'Answer it simply.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

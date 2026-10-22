@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which check is new on v3?',
         options: [
-          { text: 'A signpost at every change of part?' },
           { text: 'Is it a recommendation?', why: 'That was v2.' },
+          { text: 'A signpost at every change of part?' },
           { text: 'Pause instead of um', why: 'That was v1.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does check 12 ask of each slide?',
         options: [
-          { text: 'One idea, a title that says the point, nothing to read aloud' },
           { text: 'At least six bullets', why: 'One idea, no reading aloud.' },
+          { text: 'One idea, a title that says the point, nothing to read aloud' },
           { text: 'A funny picture', why: 'One idea, a point title.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

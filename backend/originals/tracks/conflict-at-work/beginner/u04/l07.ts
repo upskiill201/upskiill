@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Someone says your work is "not good enough". Best first reply?',
         options: [
-          { text: '"Which part, specifically?"' },
           { text: '"Yes it is."', why: 'Arguing learns nothing.' },
+          { text: '"Which part, specifically?"' },
           { text: '"I\'ll redo all of it."', why: 'Find out what they mean first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Does understanding Callum\'s pressure excuse "just opinions"?',
         options: [
-          { text: 'No, but it explains it, which makes it easier to respond calmly' },
           { text: 'Yes, it excuses everything', why: 'It explains, not excuses.' },
+          { text: 'No, but it explains it, which makes it easier to respond calmly' },
           { text: 'It\'s irrelevant', why: 'It helps Grace respond.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

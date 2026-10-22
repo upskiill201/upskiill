@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'According to Clark and Fox Tree, what does "um" tend to signal?',
         options: [
-          { text: 'A longer delay coming' },
           { text: 'A short delay', why: 'That\'s "uh".' },
+          { text: 'A longer delay coming' },
           { text: 'Nothing at all', why: 'It\'s a signal.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'I\'ll never say "um" again. Starting now.',
         prompt: "Diego\'s best reply?",
         options: [
-          { text: 'Don\'t aim for zero. Aim for fewer: know your first line and pause when you need to think.' },
           { text: 'Perfect, zero ums.', why: 'Banning them can backfire.' },
           { text: 'Say "like" instead.', why: 'Pause instead.' },
+          { text: 'Don\'t aim for zero. Aim for fewer: know your first line and pause when you need to think.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where do many fillers come from?',
         options: [
-          { text: 'Searching for words, especially at the start' },
           { text: 'Speaking too slowly', why: 'Searching for words.' },
+          { text: 'Searching for words, especially at the start' },
           { text: 'Knowing too much', why: 'Searching for words.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

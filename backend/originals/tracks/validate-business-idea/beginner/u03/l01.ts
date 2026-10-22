@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s wrong with "if just 10% of 20,000 students use it"?',
         options: [
-          { text: 'The 10% is a guess, and most of the 20,000 can\'t be reached or don\'t have the problem' },
           { text: 'Nothing: 10% is small and safe', why: 'Small doesn\'t mean evidence-based.' },
           { text: 'It should be 1%', why: 'A different guess is still a guess.' },
+          { text: 'The 10% is a guess, and most of the 20,000 can\'t be reached or don\'t have the problem' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: '20,000 is the real number of students, so my slide is fine.',
         prompt: "David's best reply?",
         options: [
-          { text: 'The 20,000 might be real. The 10% isn\'t. And most of the 20,000 will never be your customers. Let\'s count the ones who could be.' },
           { text: 'True, ship the slide.', why: 'The percentage is invented.' },
+          { text: 'The 20,000 might be real. The 10% isn\'t. And most of the 20,000 will never be your customers. Let\'s count the ones who could be.' },
           { text: 'Use 100% then.', why: 'That makes the guess worse.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why walk the streets and count hostels?',
         options: [
-          { text: 'It turns "students" into a number of real people he could actually serve' },
           { text: 'For exercise', why: 'It\'s for real numbers.' },
           { text: 'To advertise', why: 'They\'re counting, not selling, yet.' },
+          { text: 'It turns "students" into a number of real people he could actually serve' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

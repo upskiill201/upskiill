@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'What if I just say yes to whatever he offers next?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Then you get one thing and give up the rest. Link every move: "If I accept X, then could we agree Y?"' },
           { text: 'That\'s fine.', why: 'She\'d leave value behind.' },
+          { text: 'Then you get one thing and give up the rest. Link every move: "If I accept X, then could we agree Y?"' },
           { text: 'Refuse anything below ₦480,000.', why: 'Rigid; there\'s a good staged deal available.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why keep one move for the end?',
         options: [
-          { text: 'A small final trade can close the deal without giving up something big' },
           { text: 'To trick him', why: 'It\'s about pacing, not tricks.' },
           { text: 'You shouldn\'t', why: 'Keeping a small move helps you close.' },
+          { text: 'A small final trade can close the deal without giving up something big' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

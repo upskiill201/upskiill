@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'Should I leave out the risks? The page looks better without them.',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Keep them. A summary that admits the 25-bag limit and the thin margin is one people trust, and it tells you what to fix.' },
           { text: 'Yes, hide them.', why: 'Hidden risks don\'t go away.' },
           { text: 'Only write risks.', why: 'Evidence and risks both belong.' },
+          { text: 'Keep them. A summary that admits the 25-bag limit and the thin margin is one people trust, and it tells you what to fix.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who is the one-page summary for?',
         options: [
-          { text: 'Anyone who needs the facts fast, including Clinton himself' },
           { text: 'Only investors', why: 'It\'s useful for partners, lenders and himself.' },
+          { text: 'Anyone who needs the facts fast, including Clinton himself' },
           { text: 'Nobody; it\'s a formality', why: 'It\'s how he decides.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',

@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'So should we act more powerful on the call?',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'Don\'t act. Get a real alternative this week. Then you\'ll be calmer without trying.' },
           { text: 'Yes, deepen your voice.', why: 'Acting tough isn\'t power.' },
+          { text: 'Don\'t act. Get a real alternative this week. Then you\'ll be calmer without trying.' },
           { text: 'Pretend you have ten offers.', why: 'Bluffs can be called.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did people primed to feel powerful do more often?',
         options: [
-          { text: 'Start negotiations and make first offers' },
           { text: 'Give in faster', why: 'The opposite.' },
           { text: 'Avoid negotiating', why: 'They negotiated more.' },
+          { text: 'Start negotiations and make first offers' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

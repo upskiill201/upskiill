@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Savanna Bank\'s feedback say?',
         options: [
-          { text: 'His experience was relevant, but his opening answer was too long' },
           { text: 'He wasn\'t qualified', why: 'They said his experience was relevant.' },
           { text: 'Nothing useful', why: 'It was very useful.' },
+          { text: 'His experience was relevant, but his opening answer was too long' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         message: 'Should I even bother asking for feedback? It\'s embarrassing.',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Ask politely for one thing. Many won\'t answer, but when they do, it\'s gold. Savanna Bank\'s answer just fixed your next interview.' },
           { text: 'No, never ask.', why: 'One polite ask can be very useful.' },
+          { text: 'Ask politely for one thing. Many won\'t answer, but when they do, it\'s gold. Savanna Bank\'s answer just fixed your next interview.' },
           { text: 'Demand a full report.', why: 'One thing, politely.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

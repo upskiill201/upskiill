@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'So I\'m not weird for never asking?',
         prompt: "Lucía's best reply?",
         options: [
-          { text: 'You\'re normal. Most people never ask because nobody told them they could. Now you know.' },
           { text: 'Yes, you\'re weird.', why: 'Not asking is very common.' },
+          { text: 'You\'re normal. Most people never ask because nobody told them they could. Now you know.' },
           { text: 'It doesn\'t matter anyway.', why: 'It\'s worth real money.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What warning comes from later research?',
         options: [
-          { text: 'Asking can draw pushback if it seems demanding, so how you ask matters' },
           { text: 'Never ask', why: 'The point is to ask well.' },
           { text: 'Only men should ask', why: 'Everyone can ask; the way matters.' },
+          { text: 'Asking can draw pushback if it seems demanding, so how you ask matters' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

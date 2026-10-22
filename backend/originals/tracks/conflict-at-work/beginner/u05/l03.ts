@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask the manager which task should move?',
         options: [
-          { text: 'Priorities are the manager\'s call; asking makes it a shared decision' },
           { text: 'To avoid work', why: 'It\'s about choosing what matters most.' },
+          { text: 'Priorities are the manager\'s call; asking makes it a shared decision' },
           { text: 'To test the manager', why: 'It\'s an honest question.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'Oh! I didn\'t realise you had all that. Can the survey wait?',
         prompt: "Grace's best reply?",
         options: [
-          { text: '"Yes, if that works for the clinics team. I can send them my template today so they can prepare."' },
           { text: '"It should never have been asked."', why: 'Priya is being helpful.' },
           { text: '"No, I\'ll do it all."', why: 'Back to overload.' },
+          { text: '"Yes, if that works for the clinics team. I can send them my template today so they can prepare."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might Priya not know Grace is overloaded?',
         options: [
-          { text: 'Grace kept saying yes and working late without telling anyone' },
           { text: 'Priya doesn\'t care', why: 'She reacted with concern.' },
+          { text: 'Grace kept saying yes and working late without telling anyone' },
           { text: 'Grace wasn\'t overloaded', why: 'She was working until 10 p.m.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

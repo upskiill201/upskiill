@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'How was I supposed to know about his daughter?',
         prompt: "Priya's best reply?",
         options: [
-          { text: 'You couldn\'t. That\'s why it\'s worth asking before deciding what a message means.' },
           { text: 'You should have guessed.', why: 'She couldn\'t know; she could ask.' },
+          { text: 'You couldn\'t. That\'s why it\'s worth asking before deciding what a message means.' },
           { text: 'It doesn\'t matter.', why: 'It changed the whole meaning.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did "Fine." feel angry to Grace?',
         options: [
-          { text: 'Short text has no tone, so she filled it in with her own worry' },
           { text: 'It was angry', why: 'It wasn\'t; he was distracted.' },
           { text: 'The full stop proves anger', why: 'Punctuation is easy to over-read.' },
+          { text: 'Short text has no tone, so she filled it in with her own worry' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why would the booking ID number make the predictor worse?',
         options: [
-          { text: 'It changes every distance without telling us anything about no-shows' },
           { text: 'IDs are text', why: 'Even as a number, it\'s meaningless for similarity.' },
           { text: 'It wouldn\'t', why: 'Every feature affects the distance, useful or not.' },
+          { text: 'It changes every distance without telling us anything about no-shows' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s one big strength of nearest neighbours for a clinic?',
         options: [
-          { text: 'Its reasons are easy to explain: "most similar past patients missed"' },
           { text: 'It\'s never wrong', why: 'It\'s often wrong. Its strength is that it\'s explainable.' },
           { text: 'It\'s the fastest model there is', why: 'It\'s slow on big data.' },
+          { text: 'Its reasons are easy to explain: "most similar past patients missed"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -139,11 +139,11 @@ const lesson: OriginalLesson = {
         message: 'A patient asked why she got an extra call. What do I say?',
         prompt: "Halima's best reply?",
         options: [
-          { text: '"Patients with a similar booking, like a long wait and no reminder, sometimes find it hard to come, so we check in." Kind, true, and no blame.' },
           { text: '"The AI says you\'re unreliable."', why: 'Untrue and hurtful. The score is about similar bookings, not her character.' },
+          { text: '"Patients with a similar booking, like a long wait and no reminder, sometimes find it hard to come, so we check in." Kind, true, and no blame.' },
           { text: 'Don\'t answer.', why: 'People deserve a simple, honest reason.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

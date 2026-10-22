@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What turns a handshake into a deal?',
         options: [
-          { text: 'A written summary, and both sides keeping their promises' },
           { text: 'A firmer handshake', why: 'Writing and follow-through do it.' },
           { text: 'Nothing, it\'s already done', why: 'Spoken deals are easy to forget.' },
+          { text: 'A written summary, and both sides keeping their promises' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does it matter that Tobi felt good at the end?',
         options: [
-          { text: 'He\'s the one who has to approve the February raise' },
           { text: 'It doesn\'t matter', why: 'He decides her next review.' },
           { text: 'So he gives her a gift', why: 'It\'s about the working relationship.' },
+          { text: 'He\'s the one who has to approve the February raise' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why include an open door?',
         options: [
-          { text: 'It gives them an easy way to come back with a better offer' },
           { text: 'To look weak', why: 'It\'s strength with courtesy.' },
           { text: 'It isn\'t needed', why: 'Doors you close are hard to reopen.' },
+          { text: 'It gives them an easy way to come back with a better offer' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         message: 'Can we at least tell him his offer was insulting?',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'You can feel it. Don\'t write it. The reason is the numbers, and that\'s enough.' },
           { text: 'Yes, be honest.', why: 'Honest about the numbers, not about insults.' },
+          { text: 'You can feel it. Don\'t write it. The reason is the numbers, and that\'s enough.' },
           { text: 'Write it in capitals.', why: 'Burns the bridge.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is a "bluff walk-away" a mistake?',
         options: [
-          { text: 'If they don\'t come back and you reverse it, you lose all credibility' },
           { text: 'It always works', why: 'If called, you\'re stuck.' },
           { text: 'It\'s polite', why: 'It\'s risky, not polite.' },
+          { text: 'If they don\'t come back and you reverse it, you lose all credibility' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

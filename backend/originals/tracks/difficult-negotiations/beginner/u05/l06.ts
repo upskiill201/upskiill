@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Curhan\'s research find about job negotiations?',
         options: [
-          { text: 'How people felt about the process predicted satisfaction a year later, more than the salary' },
           { text: 'Only the salary mattered', why: 'Feelings mattered more for later satisfaction.' },
           { text: 'Nothing mattered', why: 'Subjective value predicted outcomes.' },
+          { text: 'How people felt about the process predicted satisfaction a year later, more than the salary' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'I can\'t pretend I like Pryce.',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'You don\'t have to like his tactics. He was doing his job. Be professional and kind with the person; the deal is done.' },
           { text: 'Then be cold to him.', why: 'That hurts the next deal.' },
+          { text: 'You don\'t have to like his tactics. He was doing his job. Be professional and kind with the person; the deal is done.' },
           { text: 'Tell him you dislike him.', why: 'It helps nobody.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What rebuilds trust fastest after a hard round?',
         options: [
-          { text: 'A good early experience, like a smooth kick-off' },
           { text: 'A long apology letter', why: 'Actions rebuild trust faster.' },
           { text: 'Avoiding them', why: 'That makes it worse.' },
+          { text: 'A good early experience, like a smooth kick-off' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

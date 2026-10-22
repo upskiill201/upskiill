@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'The client says "decide by 5 p.m. or it\'s gone". What do I say?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: '"Thanks. What\'s driving 5 p.m.? I want to give you a considered answer."' },
           { text: '"OK, yes, whatever you want."', why: 'That\'s what the deadline is designed for.' },
           { text: '"That\'s a cheap trick."', why: 'Calling it out rudely backfires.' },
+          { text: '"Thanks. What\'s driving 5 p.m.? I want to give you a considered answer."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does spotting a tactic help?',
         options: [
-          { text: 'It stops working on you once you see it as a move' },
           { text: 'You can accuse them', why: 'It\'s for your own clarity.' },
+          { text: 'It stops working on you once you see it as a move' },
           { text: 'It doesn\'t help', why: 'Recognising it removes most of its power.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

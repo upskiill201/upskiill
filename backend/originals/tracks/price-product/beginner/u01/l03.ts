@@ -35,11 +35,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'At 1,500 FCFA a bag, how much does Clinton really keep per bag?',
         options: [
-          { text: '375 FCFA' },
           { text: '500 FCFA', why: 'That ignores bags, fees and running costs.' },
+          { text: '375 FCFA' },
           { text: '1,125 FCFA', why: 'That\'s the cost, not what he keeps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: '45 francs a bag for repairs and data? That\'s tiny, I\'ll ignore it.',
         prompt: "David's best reply?",
         options: [
-          { text: 'Tiny per bag, 3,600 a month in total. Ignore enough tiny costs and your 500 becomes 375 without you noticing.' },
           { text: 'Yes, ignore small costs.', why: 'Small costs add up.' },
           { text: 'Charge 45 extra only on rainy days.', why: 'It\'s a cost on every bag, rain or shine.' },
+          { text: 'Tiny per bag, 3,600 a month in total. Ignore enough tiny costs and your 500 becomes 375 without you noticing.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the cost of one bag go up in a slow month?',
         options: [
-          { text: 'The same running costs are spread over fewer bags' },
           { text: 'Mama Rose charges more', why: 'Her price stays 1,000.' },
+          { text: 'The same running costs are spread over fewer bags' },
           { text: 'It doesn\'t change', why: 'The running-cost share per bag rises.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

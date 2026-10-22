@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'Why not just copy Mama Rose\'s 2,400 then?',
         prompt: "David's best reply?",
         options: [
-          { text: 'Her price is a good reference, but you\'re offering something different. Value-based asks what YOUR service is worth, using hers as the comparison.' },
           { text: 'Yes, copy her exactly.', why: 'Different service, different value.' },
           { text: 'Never look at competitors.', why: 'They\'re essential context.' },
+          { text: 'Her price is a good reference, but you\'re offering something different. Value-based asks what YOUR service is worth, using hers as the comparison.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does value-based pricing usually earn more?',
         options: [
-          { text: 'It captures more of the value you create for the customer' },
           { text: 'It always means the highest price', why: 'It means the right price for the value.' },
+          { text: 'It captures more of the value you create for the customer' },
           { text: 'It ignores costs', why: 'Cost is still the floor.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

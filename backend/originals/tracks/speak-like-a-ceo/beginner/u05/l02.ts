@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why repeat the question?',
         options: [
-          { text: 'Everyone hears it, and you get a few seconds to think' },
           { text: 'To waste time', why: 'It helps the room and you.' },
           { text: 'To show you\'re annoyed', why: 'It helps the room.' },
+          { text: 'Everyone hears it, and you get a few seconds to think' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: 'What if someone asks a long, rambling question?',
         prompt: "Carmen\'s best reply?",
         options: [
-          { text: 'Repeat the core of it in one line: "So the question is about cost?" It helps them, the room and you.' },
           { text: 'Interrupt and tell them to get to the point.', why: 'Summarise kindly.' },
+          { text: 'Repeat the core of it in one line: "So the question is about cost?" It helps them, the room and you.' },
           { text: 'Answer every part of it.', why: 'Find the core.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

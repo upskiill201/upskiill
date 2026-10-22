@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happens if your bluff is called?',
         options: [
-          { text: 'You back down and lose credibility, or walk from a deal you wanted' },
           { text: 'Nothing', why: 'You lose credibility either way.' },
+          { text: 'You back down and lose credibility, or walk from a deal you wanted' },
           { text: 'They apologise', why: 'Unlikely; you\'re the one exposed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is honest context, not a threat?',
         options: [
-          { text: '"We have another project we could start, so we need the price to work for us."' },
           { text: '"Sign today or we\'re gone forever."', why: 'That\'s an ultimatum.' },
+          { text: '"We have another project we could start, so we need the price to work for us."' },
           { text: '"Ten companies are begging for us."', why: 'Probably a bluff.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

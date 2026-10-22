@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is "draft one" for?',
         options: [
-          { text: 'You, to work out what you mean' },
           { text: 'Sending straight away', why: 'That\'s the mistake.' },
+          { text: 'You, to work out what you mean' },
           { text: 'Your manager to fix', why: 'You fix it in draft two.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'In my third language, short sentences feel too simple. Like a child wrote them.',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Simple isn\'t childish. Mr Kamau writes in short sentences. Clear is what senior people sound like.' },
           { text: 'Then use longer words.', why: 'That makes it harder to read.' },
           { text: 'Ask someone else to write it.', why: 'She can write it clearly.' },
+          { text: 'Simple isn\'t childish. Mr Kamau writes in short sentences. Clear is what senior people sound like.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is short, plain writing helpful for Emeka in Lagos?',
         options: [
-          { text: 'Plain words are easier for everyone to read, in any language or accent' },
           { text: 'He can\'t read long words', why: 'It\'s easier for everyone.' },
+          { text: 'Plain words are easier for everyone to read, in any language or accent' },
           { text: 'It isn\'t', why: 'Plain helps all readers.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

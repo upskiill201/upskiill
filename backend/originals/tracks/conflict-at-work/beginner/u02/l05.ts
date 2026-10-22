@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Someone is flooded and can\'t hear you. Best move?',
         options: [
-          { text: 'Suggest a 20-minute break and agree when to come back' },
           { text: 'Explain your point again, more clearly', why: 'Flooded people can\'t take it in.' },
           { text: 'Leave and never mention it', why: 'Pause, then return.' },
+          { text: 'Suggest a 20-minute break and agree when to come back' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         message: 'I\'m too angry to talk about this right now.',
         prompt: "Grace's best reply?",
         options: [
-          { text: '"That\'s fair. Shall we pick it up at 3, after a break?"' },
           { text: '"No, we\'re doing this now."', why: 'Pushing a flooded person rarely works.' },
+          { text: '"That\'s fair. Shall we pick it up at 3, after a break?"' },
           { text: '"Fine, forget it then."', why: 'Agree a time to come back.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

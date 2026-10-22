@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "I have 18 years of experience" a weak reply here?',
         options: [
-          { text: 'It makes the argument about her, not the evidence' },
           { text: 'It isn\'t true', why: 'It\'s true; it just doesn\'t answer the question.' },
           { text: 'It\'s too humble', why: 'It\'s defensive.' },
+          { text: 'It makes the argument about her, not the evidence' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'He was harsh, but is six people enough?',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'It\'s a fair question. Small tests find most usability problems, but let me check it against our usage data too.' },
           { text: 'Whose side are you on?', why: 'Femi is raising a real question.' },
+          { text: 'It\'s a fair question. Small tests find most usability problems, but let me check it against our usage data too.' },
           { text: 'Of course it is.', why: 'Answer the question with evidence.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

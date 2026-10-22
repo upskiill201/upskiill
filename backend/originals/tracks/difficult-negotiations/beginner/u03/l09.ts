@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is still open on v3?',
         options: [
-          { text: 'The price for phase one' },
           { text: 'The scope', why: 'Phase one scope is agreed.' },
+          { text: 'The price for phase one' },
           { text: 'Payment terms', why: '40/30/30 is on the sheet.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write "and the rest" in phase two?',
         options: [
-          { text: 'So every remaining feature has a clear home, not an open door into phase one' },
           { text: 'To be vague', why: 'It\'s explicit: they\'re out of phase one.' },
+          { text: 'So every remaining feature has a clear home, not an open door into phase one' },
           { text: 'No reason', why: 'It prevents creep.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

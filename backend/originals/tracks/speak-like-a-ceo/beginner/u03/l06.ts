@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why use signposts?',
         options: [
-          { text: 'Listeners can\'t see your outline' },
           { text: 'To fill time', why: 'They guide listeners.' },
           { text: 'They\'re just filler', why: 'They guide listeners.' },
+          { text: 'Listeners can\'t see your outline' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Saying "the second lesson is" feels so obvious.',
         prompt: "Carmen\'s best reply?",
         options: [
-          { text: 'To you, it is. To 300 people hearing it once, it\'s a handrail. Keep it.' },
           { text: 'Then cut it.', why: 'Listeners need it.' },
+          { text: 'To you, it is. To 300 people hearing it once, it\'s a handrail. Keep it.' },
           { text: 'Say it three times each.', why: 'Once is enough.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

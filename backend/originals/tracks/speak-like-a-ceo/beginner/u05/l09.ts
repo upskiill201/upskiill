@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which check is new on v5?',
         options: [
-          { text: 'Tough question: acknowledge, one fact, bridge?' },
           { text: '"I am excited", then my first line?', why: 'That was v4.' },
+          { text: 'Tough question: acknowledge, one fact, bridge?' },
           { text: 'One message, short enough to repeat?', why: 'That was v3.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: '25 checks? I can\'t remember 25 things on stage.',
         prompt: "Lucía\'s best reply?",
         options: [
-          { text: 'You don\'t, on stage. You use them while preparing. On stage you just need your first line and your message.' },
           { text: 'Read them all on stage.', why: 'They\'re for preparing.' },
           { text: 'Skip the card.', why: 'Use it to prepare.' },
+          { text: 'You don\'t, on stage. You use them while preparing. On stage you just need your first line and your message.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

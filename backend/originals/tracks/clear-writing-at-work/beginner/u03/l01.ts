@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where were the asks in Zanele\'s drafts?',
         options: [
-          { text: 'In the last line' },
           { text: 'In the subject line', why: 'That\'s where they should go.' },
           { text: 'Nowhere', why: 'They were there, at the end.' },
+          { text: 'In the last line' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Isn\'t it rude to start with what I want?',
         prompt: "Mrs Achieng's best reply?",
         options: [
-          { text: 'It\'s considerate. He has 200 emails. Telling him what you need first saves his time.' },
           { text: 'Yes, warm up for three paragraphs.', why: 'He won\'t get to the ask.' },
+          { text: 'It\'s considerate. He has 200 emails. Telling him what you need first saves his time.' },
           { text: 'Skip the greeting too.', why: 'A greeting is fine; then the ask.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

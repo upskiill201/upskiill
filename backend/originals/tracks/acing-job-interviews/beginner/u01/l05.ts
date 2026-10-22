@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "tell me about yourself" really ask?',
         options: [
-          { text: 'Why you fit this role' },
           { text: 'Your full life story', why: 'That costs time.' },
+          { text: 'Why you fit this role' },
           { text: 'Your salary', why: 'Not at all.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s a good sign after your answer?',
         options: [
-          { text: 'They ask you more about something you mentioned' },
           { text: 'They say "we\'re short on time"', why: 'That\'s what happened to Remi.' },
+          { text: 'They ask you more about something you mentioned' },
           { text: 'Total silence', why: 'You want follow-up questions.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

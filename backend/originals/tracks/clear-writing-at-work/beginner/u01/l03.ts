@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'But the method is the best part. It took me days!',
         prompt: "Mrs Achieng's best reply?",
         options: [
-          { text: 'Then attach it for anyone who wants it. Mr Kamau wants the result. Your work is why the result is true.' },
           { text: 'Put it first.', why: 'He wants the result first.' },
+          { text: 'Then attach it for anyone who wants it. Mr Kamau wants the result. Your work is why the result is true.' },
           { text: 'Delete it forever.', why: 'Attach it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why cut the history of the pilot?',
         options: [
-          { text: 'Mr Kamau approved it; he already knows' },
           { text: 'History is never useful', why: 'It\'s just not new to him.' },
           { text: 'To hide something', why: 'It\'s about relevance.' },
+          { text: 'Mr Kamau approved it; he already knows' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

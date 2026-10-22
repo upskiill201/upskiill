@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the snow-shovel rise feel unfair?',
         options: [
-          { text: 'It took advantage of people\'s sudden need, not a rise in cost' },
           { text: 'The shovels were bad', why: 'Same shovel; the reason for the price was the problem.' },
+          { text: 'It took advantage of people\'s sudden need, not a rise in cost' },
           { text: '$20 is too much for anything', why: 'The same $20 might feel fine with a cost reason.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'But on the rainiest days, demand doubles. Isn\'t charging more just business?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'It might earn more for one weekend. Then every student remembers you charged double when they were stuck. Your hill fee already covers the real cost.' },
           { text: 'Yes, charge whatever you can.', why: 'Short-term gain, long-term distrust.' },
           { text: 'Close on rainy days.', why: 'Those are the days students need him.' },
+          { text: 'It might earn more for one weekend. Then every student remembers you charged double when they were stuck. Your hill fee already covers the real cost.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the hill fee the same in all weather?',
         options: [
-          { text: 'It\'s predictable and tied to a real cost, not to bad weather' },
           { text: 'Weather has no effect on costs', why: 'Rain matters; a steady fee is fairer and simpler.' },
+          { text: 'It\'s predictable and tied to a real cost, not to bad weather' },
           { text: 'To confuse customers', why: 'It\'s meant to be clear.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         message: 'Honestly, laundry takes my whole Saturday.',
         prompt: 'Clinton\'s best follow-up?',
         options: [
-          { text: '"What happened last Saturday? Walk me through it."' },
           { text: '"I\'m starting a laundry service, want it?"', why: 'That\'s a pitch; the interview stops here.' },
           { text: '"Same! It\'s the worst."', why: 'Agreeing is friendly but learns nothing.' },
+          { text: '"What happened last Saturday? Walk me through it."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When is it OK to describe your idea?',
         options: [
-          { text: 'At the very end, followed by asking for a commitment' },
           { text: 'In the first minute', why: 'Then everything after is shaped by it.' },
           { text: 'Never, under any circumstances', why: 'At the end it can be useful, with a commitment ask.' },
+          { text: 'At the very end, followed by asking for a commitment' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

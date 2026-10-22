@@ -68,11 +68,11 @@ const lesson: OriginalLesson = {
         message: 'They offered £28,000 for a £48,000 job. Do I just meet them in the middle at £38,000?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Don\'t split yet. What\'s your walk-away and BATNA? What do they really need? Then trade scope, timing and payment.' },
           { text: 'Yes, £38,000 is fair.', why: 'Splitting lets their low anchor decide.' },
           { text: 'Accept £28,000; it\'s a big client.', why: 'Check it against his walk-away first.' },
+          { text: 'Don\'t split yet. What\'s your walk-away and BATNA? What do they really need? Then trade scope, timing and payment.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -96,11 +96,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which response to "my budget is lower" did Ada use with Mrs Okon?',
         options: [
-          { text: 'Keep the price honest and change what\'s included' },
           { text: 'Same work, lower price', why: 'That\'s a discount.' },
+          { text: 'Keep the price honest and change what\'s included' },
           { text: 'Refuse to talk', why: 'She found a deal.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

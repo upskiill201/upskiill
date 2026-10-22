@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why didn\'t Lucía feel defensive?',
         options: [
-          { text: 'She\'d practised the question before' },
           { text: 'Diego was being nice', why: 'She\'d practised it.' },
+          { text: 'She\'d practised the question before' },
           { text: 'She didn\'t answer', why: 'She\'d practised it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should you do with a rambling question?',
         options: [
-          { text: 'Repeat its core in one line, then answer' },
           { text: 'Answer every part', why: 'Find the core.' },
+          { text: 'Repeat its core in one line, then answer' },
           { text: 'Tell them to be quicker', why: 'Summarise kindly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does £28,000 mean for Arjun?',
         options: [
-          { text: 'It\'s far below his walk-away; he\'d earn very little for four months' },
           { text: 'It\'s a good deal', why: 'Only £6,000 left for 16 weeks.' },
+          { text: 'It\'s far below his walk-away; he\'d earn very little for four months' },
           { text: 'It\'s exactly his walk-away', why: 'His walk-away is £36,000.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         message: 'Should we put our walk-away in the reply so they know our limit?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'No. It\'s private. If they know £36,000 is our limit, that\'s where they\'ll land.' },
           { text: 'Yes, be transparent.', why: 'Share interests, not your limit.' },
           { text: 'Say £20,000 is our limit to trick them.', why: 'Lying destroys trust.' },
+          { text: 'No. It\'s private. If they know £36,000 is our limit, that\'s where they\'ll land.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

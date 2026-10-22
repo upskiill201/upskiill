@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How does good cop / bad cop work?',
         options: [
-          { text: 'The kind one\'s smaller ask feels like a favour after the tough one' },
           { text: 'They argue with each other for real', why: 'It\'s usually a coordinated routine.' },
+          { text: 'The kind one\'s smaller ask feels like a favour after the tough one' },
           { text: 'The kind one always gives you a better deal', why: 'Often it\'s the same deal, delivered warmly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When does good cop / bad cop work best?',
         options: [
-          { text: 'When the other side doesn\'t notice it' },
           { text: 'When everyone knows it\'s happening', why: 'Then it loses its power.' },
+          { text: 'When the other side doesn\'t notice it' },
           { text: 'Never', why: 'Research found it can work.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

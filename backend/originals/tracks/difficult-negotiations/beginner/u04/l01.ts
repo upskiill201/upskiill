@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'They\'re huge. We have no power.',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'Size isn\'t power. Alternatives are. They need an app by spring, and their board has seen your demo. What\'s yours if you walk?' },
           { text: 'You\'re right, accept.', why: 'Power depends on alternatives.' },
           { text: 'Then threaten them.', why: 'Threats without alternatives are bluffs.' },
+          { text: 'Size isn\'t power. Alternatives are. They need an app by spring, and their board has seen your demo. What\'s yours if you walk?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why was Arjun "thinking about them" a problem?',
         options: [
-          { text: 'He was focused on their power and forgot to look at his own alternatives' },
           { text: 'It wasn\'t a problem', why: 'Focusing only on them made him feel powerless.' },
+          { text: 'He was focused on their power and forgot to look at his own alternatives' },
           { text: 'He should ignore them completely', why: 'He needs both views.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

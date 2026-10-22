@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Priya actually want to talk about?',
         options: [
-          { text: 'Making sure Grace isn\'t overloaded in launch week' },
           { text: 'A complaint about Grace', why: 'That was the top of the ladder.' },
+          { text: 'Making sure Grace isn\'t overloaded in launch week' },
           { text: 'Firing her', why: 'Nothing like that.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'Should I check Femi\'s "OK." too?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'You agreed: short means busy, and you ask if something really feels off. Does it? If not, let it be.' },
           { text: 'Yes, check every message.', why: 'Checking everything gets tiring; use the agreed habit.' },
           { text: 'Assume he\'s angry.', why: 'That\'s the old ladder.' },
+          { text: 'You agreed: short means busy, and you ask if something really feels off. Does it? If not, let it be.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

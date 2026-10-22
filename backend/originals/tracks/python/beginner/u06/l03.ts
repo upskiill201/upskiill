@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         code: 'print(len(["Ada", "Tunde", "Bisi"]))',
         language: 'python',
         options: [
-          { text: '3' },
           { text: '2', why: 'len counts items; the last position is 2.' },
+          { text: '3' },
           { text: '14', why: 'len counts items in the list, not letters.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         message: 'Why is len(members) better than a MEMBERS constant here?',
         prompt: "Ada's best answer?",
         options: [
-          { text: 'Because the list already knows how many members there are. Two numbers that should match will one day drift apart.' },
           { text: 'Constants are always wrong.', why: 'Constants are great for rules. This is a count.' },
+          { text: 'Because the list already knows how many members there are. Two numbers that should match will one day drift apart.' },
           { text: 'It\'s shorter.', why: 'The real win is never being out of date.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

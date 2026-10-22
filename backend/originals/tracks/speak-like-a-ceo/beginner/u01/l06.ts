@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s wrong with the build-up answer?',
         options: [
-          { text: 'The answer comes last, and sounds unsure' },
           { text: 'It\'s too short', why: 'It\'s too long.' },
           { text: 'It has no facts', why: 'It has facts, in the wrong order.' },
+          { text: 'The answer comes last, and sounds unsure' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'What if I don\'t know the answer for sure?',
         prompt: "Diego\'s best reply?",
         options: [
-          { text: 'Then that\'s your answer first: "Probably not, but I\'ll confirm by Thursday." Uncertainty said clearly still sounds in control.' },
           { text: 'Pretend you\'re sure.', why: 'Say what you know.' },
+          { text: 'Then that\'s your answer first: "Probably not, but I\'ll confirm by Thursday." Uncertainty said clearly still sounds in control.' },
           { text: 'Talk until you work it out.', why: 'That\'s the build-up.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How long did the second answer take?',
         options: [
-          { text: 'About ten seconds' },
           { text: 'About 90 seconds', why: 'That was the first.' },
           { text: 'About five minutes', why: 'About ten seconds.' },
+          { text: 'About ten seconds' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

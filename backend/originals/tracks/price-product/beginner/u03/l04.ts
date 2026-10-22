@@ -35,11 +35,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A Standard hill bag: price 2,300, cost 1,525. What is the margin?',
         options: [
-          { text: '775 FCFA' },
           { text: '675 FCFA', why: 'That\'s a nearby Standard bag.' },
+          { text: '775 FCFA' },
           { text: '500 FCFA', why: 'That\'s the zone fee, not the margin.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         message: 'Why not charge the hill fee only when it rains?',
         prompt: "David's best reply?",
         options: [
-          { text: 'A rain-only fee feels like taking advantage of bad weather. A small all-year fee is predictable and easier to explain. Lesson 7 of Chapter 4 looks at fairness.' },
           { text: 'Yes, rain-only is fairer.', why: 'Price jumps in bad weather often feel unfair.' },
           { text: 'Charge 2,000 when it rains.', why: 'That would feel like price gouging.' },
+          { text: 'A rain-only fee feels like taking advantage of bad weather. A small all-year fee is predictable and easier to explain. Lesson 7 of Chapter 4 looks at fairness.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happens to the ride cost per bag if 6 bags share the hill run?',
         options: [
-          { text: 'It drops to 200 FCFA a bag' },
           { text: 'It stays 400', why: '1,200 ÷ 6 = 200.' },
+          { text: 'It drops to 200 FCFA a bag' },
           { text: 'It rises to 600', why: 'More bags share it, so it falls.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

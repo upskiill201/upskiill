@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'You\'re still nervous after five weeks of practice? Maybe you\'re not ready.',
         prompt: "Lucía\'s best reply?",
         options: [
-          { text: 'Nerves don\'t mean not ready. I know my message, my first line and my ten questions. That\'s ready.' },
           { text: 'You\'re right, I should cancel.', why: 'Prepared is ready.' },
+          { text: 'Nerves don\'t mean not ready. I know my message, my first line and my ten questions. That\'s ready.' },
           { text: 'I\'m not nervous at all.', why: 'Nerves are normal.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What can build more trust than a bluff?',
         options: [
-          { text: 'An honest "I don\'t know yet" with a follow-up' },
           { text: 'A confident made-up number', why: 'Bluffs can backfire.' },
           { text: 'Changing the subject', why: 'Honest uncertainty.' },
+          { text: 'An honest "I don\'t know yet" with a follow-up' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

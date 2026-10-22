@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why are silent bugs worse than crashes?',
         options: [
-          { text: 'The numbers look fine, so nobody checks them' },
           { text: 'They\'re slower', why: 'Speed isn\'t the problem. Wrong answers are.' },
+          { text: 'The numbers look fine, so nobody checks them' },
           { text: 'They aren\'t', why: 'A crash gets fixed straight away. A silent bug reaches the board.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         message: 'My script ran without errors, so it\'s correct.',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Running isn\'t the same as right. Your drop_duplicates did nothing and your "rates" are counts. Check the numbers against what you expect.' },
           { text: 'Yes, no errors means correct.', why: 'Two of the five bugs were silent.' },
           { text: 'Scripts are never correct.', why: 'They can be, once checked.' },
+          { text: 'Running isn\'t the same as right. Your drop_duplicates did nothing and your "rates" are counts. Check the numbers against what you expect.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What order do rambling answers usually follow?',
         options: [
-          { text: 'Time order: from the start of your life' },
           { text: 'Relevance to the role', why: 'That\'s the shaped answer.' },
           { text: 'Alphabetical', why: 'Time order.' },
+          { text: 'Time order: from the start of your life' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'The shaped answer leaves out drama club. Isn\'t that hiding things?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'No. You choose what\'s relevant. If they ask about hobbies, tell them then.' },
           { text: 'Yes, include everything.', why: 'Relevance isn\'t hiding.' },
+          { text: 'No. You choose what\'s relevant. If they ask about hobbies, tell them then.' },
           { text: 'Pretend drama club was coding.', why: 'Never change facts.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why end on "why this employer"?',
         options: [
-          { text: 'It shows motivation and leads into the next question' },
           { text: 'It flatters them', why: 'It\'s about fit, not flattery.' },
           { text: 'No reason', why: 'It links you to the job.' },
+          { text: 'It shows motivation and leads into the next question' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

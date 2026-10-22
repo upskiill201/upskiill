@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"We can\'t do that this year." What\'s the best reply?',
         options: [
-          { text: '"Is it the amount or the timing? What could work this year?"' },
           { text: '"OK, never mind."', why: 'That gives up.' },
           { text: '"Then I\'m leaving."', why: 'A threat closes the talk.' },
+          { text: '"Is it the amount or the timing? What could work this year?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         message: 'He offered ₦430,000. Should I just say yes?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Link it: "If we agree ₦430,000 now, could we put ₦480,000 after the goals in writing?"' },
           { text: 'Yes, and say nothing else.', why: 'She can get the review terms too.' },
+          { text: 'Link it: "If we agree ₦430,000 now, could we put ₦480,000 after the goals in writing?"' },
           { text: 'No, demand ₦480,000.', why: 'A staged deal works for both.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

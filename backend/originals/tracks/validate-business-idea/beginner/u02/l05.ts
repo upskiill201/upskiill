@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is one of the three Mom Test rules?',
         options: [
-          { text: 'Ask about specifics in the past, not opinions about the future' },
           { text: 'Always describe your idea first', why: 'Rule 1 says the opposite.' },
+          { text: 'Ask about specifics in the past, not opinions about the future' },
           { text: 'Only interview strangers online', why: 'Not a rule; talk to people with the problem.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A student talked for 9 minutes and Clinton for 6. Was that a good balance?',
         options: [
-          { text: 'Not great: Clinton talked 40% of the time; aim for much less' },
           { text: 'Perfect balance', why: 'In discovery, the customer should do most of the talking.' },
+          { text: 'Not great: Clinton talked 40% of the time; aim for much less' },
           { text: 'Clinton should talk more', why: 'The opposite.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',

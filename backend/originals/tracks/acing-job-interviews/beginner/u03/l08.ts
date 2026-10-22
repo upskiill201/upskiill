@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Remi has never had a paid tech job. Which stories can he use?',
         options: [
-          { text: 'Projects, clubs, volunteering and his uncle\'s shop' },
           { text: 'None', why: 'Real experience counts wherever it happened.' },
           { text: 'Invented job stories', why: 'Never invent.' },
+          { text: 'Projects, clubs, volunteering and his uncle\'s shop' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is a common follow-up to a STAR story?',
         options: [
-          { text: '"What would you do differently?"' },
           { text: '"What\'s your star sign?"', why: 'Not that kind of STAR.' },
           { text: '"Can you repeat it?"', why: 'They usually go deeper.' },
+          { text: '"What would you do differently?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

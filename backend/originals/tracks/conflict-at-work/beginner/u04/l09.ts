@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Rule 17 is the hardest. I hate admitting critics might be right.',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'Me too. But it\'s what turned "just opinions" into a meeting with data. It\'s a weapon, not a surrender.' },
           { text: 'Then skip it.', why: 'It\'s one of the most useful rules.' },
           { text: 'Critics are always right.', why: 'Only some parts may be.' },
+          { text: 'Me too. But it\'s what turned "just opinions" into a meeting with data. It\'s a weapon, not a surrender.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which trigger does Rule 16 help with most when criticism is public?',
         options: [
-          { text: 'Identity: it feels like a verdict on who you are' },
           { text: 'None', why: 'Identity is strongest with an audience.' },
+          { text: 'Identity: it feels like a verdict on who you are' },
           { text: 'Only truth', why: 'Public settings fire identity especially.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

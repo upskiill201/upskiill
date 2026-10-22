@@ -35,11 +35,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does 45% "very disappointed" suggest?',
         options: [
-          { text: 'Above the 40% rule of thumb: a sign of real pull' },
           { text: 'Below 40%: no pull', why: '45 is above 40.' },
           { text: 'Proof the business will succeed', why: 'It\'s a signal, not proof.' },
+          { text: 'Above the 40% rule of thumb: a sign of real pull' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         message: 'Only 9 people said very disappointed. That\'s not many.',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'It\'s 45% of everyone who replied, above the 40% line. And all 9 told you the same benefit: their Saturday. That\'s your message.' },
           { text: 'You\'re right, quit.', why: '45% is a good score.' },
+          { text: 'It\'s 45% of everyone who replied, above the 40% line. And all 9 told you the same benefit: their Saturday. That\'s your message.' },
           { text: 'Survey again until it\'s 100%.', why: 'Re-asking until you like the result is cheating.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did the "very disappointed" group mostly say was the main benefit?',
         options: [
-          { text: '"I get my Saturday back"' },
           { text: '"It\'s cheap"', why: 'Price wasn\'t their main point.' },
           { text: '"Nice bags"', why: 'They talked about time.' },
+          { text: '"I get my Saturday back"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

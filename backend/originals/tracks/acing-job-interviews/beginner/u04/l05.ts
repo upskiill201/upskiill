@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"What are your salary expectations?" Best answer?',
         options: [
-          { text: 'A researched range, starting at a fair target, plus flexibility' },
           { text: '"Anything is fine."', why: 'Invites a low offer.' },
+          { text: 'A researched range, starting at a fair target, plus flexibility' },
           { text: 'A random high number', why: 'Base it on research.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'They asked me to estimate how many shops are in Nairobi. I have no idea!',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Nobody knows exactly. Think out loud: population, people per shop, a rough number, and say your assumptions.' },
           { text: 'Say "I don\'t know" and stop.', why: 'They want your reasoning.' },
           { text: 'Guess a number silently.', why: 'Show the steps.' },
+          { text: 'Nobody knows exactly. Think out loud: population, people per shop, a rough number, and say your assumptions.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Is it OK to ask for a hint in a technical interview?',
         options: [
-          { text: 'Yes, after showing your thinking' },
           { text: 'Never', why: 'Silence is worse.' },
+          { text: 'Yes, after showing your thinking' },
           { text: 'Only at the very start', why: 'After showing your approach.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

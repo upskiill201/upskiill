@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s new on v3?',
         options: [
-          { text: 'Checks about asks, subjects and replies' },
           { text: 'Checks about plain words', why: 'That was v2.' },
           { text: 'Nothing', why: 'v3 adds point-first checks.' },
+          { text: 'Checks about asks, subjects and replies' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'Fifteen checks? For one email?',
         prompt: "Zanele\'s best reply?",
         options: [
-          { text: 'Only for emails that matter. And most checks take a second once they\'re a habit.' },
           { text: 'Yes, every email, even "thanks".', why: 'Match effort to stakes.' },
+          { text: 'Only for emails that matter. And most checks take a second once they\'re a habit.' },
           { text: 'You\'re right, I\'ll stop.', why: 'It\'s working.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

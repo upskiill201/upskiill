@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Brooks (2014) find helped before stressful tasks?',
         options: [
-          { text: 'Saying "I am excited"' },
           { text: 'Saying "I am calm"', why: 'Excitement worked better.' },
           { text: 'Power posing', why: 'That\'s a different study, which didn\'t replicate.' },
+          { text: 'Saying "I am excited"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'Everyone will see my hands shaking.',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'They\'ll notice much less than you think. That\'s the illusion of transparency. And knowing it actually helps.' },
           { text: 'Yes, they\'ll all see.', why: 'Research says much less than you think.' },
+          { text: 'They\'ll notice much less than you think. That\'s the illusion of transparency. And knowing it actually helps.' },
           { text: 'Sit on your hands.', why: 'Just breathe and carry on.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

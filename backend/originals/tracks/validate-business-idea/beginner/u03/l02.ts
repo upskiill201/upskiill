@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'My top-down number is 2,000 and the bottom-up one is 800. I\'ll use 2,000; it looks better.',
         prompt: "David's best reply?",
         options: [
-          { text: 'The 800 is the one you can defend. If someone asks where 2,000 came from, the answer is "a guess".' },
           { text: 'Use the biggest number; that\'s business.', why: 'An inflated number misleads you most of all.' },
           { text: 'Average them: 1,400.', why: 'Averaging a guess with evidence just hides the guess.' },
+          { text: 'The 800 is the one you can defend. If someone asks where 2,000 came from, the answer is "a guess".' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is 60% of 2,000?',
         options: [
-          { text: '1,200' },
           { text: '600', why: '60% of 1,000 is 600; of 2,000 it\'s 1,200.' },
+          { text: '1,200' },
           { text: '1,600', why: 'That would be 80%.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

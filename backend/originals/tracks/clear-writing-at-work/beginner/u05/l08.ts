@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did senders expect in Kruger\'s study?',
         options: [
-          { text: 'About 78% of readers to get their tone right' },
           { text: 'Nobody to get it right', why: 'They were overconfident.' },
+          { text: 'About 78% of readers to get their tone right' },
           { text: 'Exactly 56%', why: 'That was the actual result.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does feedback sometimes make things worse?',
         options: [
-          { text: 'It can focus attention on the person instead of the task' },
           { text: 'It\'s always too short', why: 'Focus is the issue.' },
+          { text: 'It can focus attention on the person instead of the task' },
           { text: 'It never does', why: 'About a third backfired.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

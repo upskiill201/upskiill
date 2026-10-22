@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which three costs do people forget most?',
         options: [
-          { text: 'Payment fees, running costs and their own time' },
           { text: 'The main direct cost', why: 'That one is hard to miss.' },
           { text: 'None; people count everything', why: 'Clinton counted only one of six.' },
+          { text: 'Payment fees, running costs and their own time' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'My time is free. I\'m a student. I\'d be on my phone anyway.',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Your time could earn money elsewhere or go into your studies. If WashDay doesn\'t pay for it, the business is borrowing from you.' },
           { text: 'True, students\' time is worthless.', why: 'Time always has a value.' },
+          { text: 'Your time could earn money elsewhere or go into your studies. If WashDay doesn\'t pay for it, the business is borrowing from you.' },
           { text: 'Then work more hours.', why: 'More unpaid hours makes it worse.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

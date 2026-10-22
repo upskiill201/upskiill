@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why say "nothing is agreed until everything is agreed"?',
         options: [
-          { text: 'So nobody pockets one concession and then reopens another' },
           { text: 'To slow things down', why: 'It protects the package.' },
           { text: 'It\'s a legal phrase only', why: 'It\'s practical in any negotiation.' },
+          { text: 'So nobody pockets one concession and then reopens another' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Support costs us £2,000. Why include it?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'It\'s worth £4,000 to them, costs us £2,000, and lifts the deal from £37,000 to £42,000. We keep £15,000, not £12,000.' },
           { text: 'You\'re right, remove it.', why: 'It\'s what makes the package better for both.' },
+          { text: 'It\'s worth £4,000 to them, costs us £2,000, and lifts the deal from £37,000 to £42,000. We keep £15,000, not £12,000.' },
           { text: 'Give it free.', why: 'Price it into the package.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

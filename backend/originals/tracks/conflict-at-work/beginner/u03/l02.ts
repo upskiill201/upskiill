@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do writers overestimate how clear they are?',
         options: [
-          { text: 'They hear their own tone in their head; the reader doesn\'t' },
           { text: 'Readers are careless', why: 'The tone just isn\'t in the words.' },
+          { text: 'They hear their own tone in their head; the reader doesn\'t' },
           { text: 'They don\'t', why: 'The study found they do.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         message: 'I didn\'t think "Fine." could sound angry. I meant "OK, will do."',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'And I read it as furious. Turns out neither of us can hear tone in a chat. Shall we both add a few words next time?' },
           { text: 'It did sound angry.', why: 'It sounded angry to her; it wasn\'t.' },
           { text: 'You should always use emojis.', why: 'A few words of context work well.' },
+          { text: 'And I read it as furious. Turns out neither of us can hear tone in a chat. Shall we both add a few words next time?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

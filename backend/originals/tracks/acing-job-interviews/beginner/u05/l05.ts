@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'An interviewer uses a phrase you don\'t understand. Best move?',
         options: [
-          { text: 'Ask a short clarifying question' },
           { text: 'Guess and hope', why: 'You may answer the wrong question.' },
+          { text: 'Ask a short clarifying question' },
           { text: 'Change the subject', why: 'Clarify first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which final-round question is strongest?',
         options: [
-          { text: '"What would make someone really successful in this internship?"' },
           { text: '"Do you have a canteen?"', why: 'Fine later; not your best.' },
+          { text: '"What would make someone really successful in this internship?"' },
           { text: '"Did I get it?"', why: 'Too soon; ask about next steps instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

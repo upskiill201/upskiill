@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In the study, which label helped people perform better under stress?',
         options: [
-          { text: '"I\'m excited"' },
           { text: '"I\'m calm"', why: 'Trying to calm down worked less well.' },
           { text: '"I\'m anxious"', why: 'That made it worse.' },
+          { text: '"I\'m excited"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Tey suggest relabelling, not calming down?',
         options: [
-          { text: 'Nerves and excitement feel similar in the body, so relabelling is easier than switching off' },
           { text: 'Calm people never succeed', why: 'Calm is fine; it\'s just hard to force.' },
           { text: 'It sounds nicer', why: 'There\'s a research reason.' },
+          { text: 'Nerves and excitement feel similar in the body, so relabelling is easier than switching off' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

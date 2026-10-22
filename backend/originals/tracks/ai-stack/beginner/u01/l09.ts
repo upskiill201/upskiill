@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         message: 'Twelve lines? Real AI apps can\'t be that simple.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'The shape is the same; real ones add care at every step: better search, tools, guardrails, tests. That\'s the rest of the course.' },
           { text: 'They are exactly this, nothing more.', why: 'Real ones need far more care in every layer.' },
           { text: 'Real apps don\'t use search.', why: 'Many real assistants work exactly this way.' },
+          { text: 'The shape is the same; real ones add care at every step: better search, tools, guardrails, tests. That\'s the rest of the course.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why give the model only 2 lines instead of the whole help page?',
         options: [
-          { text: 'Fewer tokens: cheaper and faster, and less to get confused by' },
           { text: 'The model can only read 2 lines', why: 'It could read more. It\'s about cost and focus.' },
+          { text: 'Fewer tokens: cheaper and faster, and less to get confused by' },
           { text: 'No reason', why: 'Every token in the prompt costs money and time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

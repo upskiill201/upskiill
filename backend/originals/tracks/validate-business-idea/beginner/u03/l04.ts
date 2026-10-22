@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '240 bags a month at 1,500 FCFA each. How much is that?',
         options: [
-          { text: '360,000 FCFA' },
           { text: '36,000 FCFA', why: '240 × 1,500 = 360,000.' },
+          { text: '360,000 FCFA' },
           { text: '2,400,000 FCFA', why: 'That\'s the whole reachable market, not what he can win.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'Why plan with 360,000 when the market is 2.4 million?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Because 360,000 is what one person with a bicycle can actually earn. 2.4 million is what\'s out there if you grow.' },
           { text: 'Plan with 2.4 million; think big.', why: 'Then he\'d plan to earn money he can\'t physically collect.' },
           { text: 'Plan with zero to be safe.', why: 'Be realistic, not pessimistic.' },
+          { text: 'Because 360,000 is what one person with a bicycle can actually earn. 2.4 million is what\'s out there if you grow.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

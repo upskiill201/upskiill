@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why keep your walk-away to yourself?',
         options: [
-          { text: 'Once they know your limit, they\'ll aim for it' },
           { text: 'It\'s rude to share numbers', why: 'It\'s strategic, not about manners.' },
           { text: 'You don\'t need one', why: 'You need it; you just don\'t announce it.' },
+          { text: 'Once they know your limit, they\'ll aim for it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Just go in and feel it out. Planning makes you robotic.',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'I\'ll be relaxed because I\'ve planned. I know my numbers, so I can listen properly.' },
           { text: 'You\'re right, I\'ll wing it.', why: 'Then she\'ll guess under pressure.' },
+          { text: 'I\'ll be relaxed because I\'ve planned. I know my numbers, so I can listen properly.' },
           { text: 'I\'ll read from a script word for word.', why: 'Plan the numbers, not every word.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

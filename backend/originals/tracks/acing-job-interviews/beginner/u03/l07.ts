@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do interviewers ask about what you actually did?',
         options: [
-          { text: 'Real past behaviour tells them more than promises about the future' },
           { text: 'To fill time', why: 'It\'s one of the strongest signals.' },
+          { text: 'Real past behaviour tells them more than promises about the future' },
           { text: 'To trick you', why: 'It\'s to see real examples.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         message: '"What would you do if a teammate stopped replying?" How do I answer that?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Give your approach, then a real example: "I\'d message them directly. That\'s what I did in the coding club when..."' },
           { text: 'Just say "I\'d stay calm."', why: 'Too general.' },
           { text: '"That would never happen."', why: 'It dodges the question.' },
+          { text: 'Give your approach, then a real example: "I\'d message them directly. That\'s what I did in the coding club when..."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who developed the behaviour description interview?',
         options: [
-          { text: 'Tom Janz and colleagues' },
           { text: 'Fisher and Ury', why: 'They wrote Getting to Yes.' },
+          { text: 'Tom Janz and colleagues' },
           { text: 'Tversky and Kahneman', why: 'They studied judgement and anchoring.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

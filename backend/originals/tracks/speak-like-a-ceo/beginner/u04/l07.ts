@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Ranehill et al. (2015) find?',
         options: [
-          { text: 'No hormone or risk-taking effects, though people felt a bit more powerful' },
           { text: 'Power poses double confidence hormones', why: 'That didn\'t replicate.' },
+          { text: 'No hormone or risk-taking effects, though people felt a bit more powerful' },
           { text: 'Power poses make people nervous', why: 'They felt a bit more powerful.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should hands do when you\'re not gesturing?',
         options: [
-          { text: 'Rest at your sides or lightly together' },
           { text: 'Hide in pockets', why: 'Rest them openly.' },
+          { text: 'Rest at your sides or lightly together' },
           { text: 'Hold a pen to click', why: 'That distracts.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

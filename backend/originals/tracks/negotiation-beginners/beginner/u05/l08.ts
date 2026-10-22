@@ -29,11 +29,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why send a short update every two weeks?',
         options: [
-          { text: 'Tobi sees the progress, so February\'s decision is easy' },
           { text: 'To annoy him', why: 'Three short lines aren\'t annoying.' },
+          { text: 'Tobi sees the progress, so February\'s decision is easy' },
           { text: 'It\'s not needed', why: 'Visible progress makes the raise easy to justify.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should go in the late-January review pack?',
         options: [
-          { text: 'Both goals, done, with links, and the agreed ₦480,000' },
           { text: 'A new, bigger ask', why: 'First, close the deal you made.' },
+          { text: 'Both goals, done, with links, and the agreed ₦480,000' },
           { text: 'Nothing; he\'ll remember', why: 'Make the decision easy.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What counts as a competitor?',
         options: [
-          { text: 'Anything customers could do instead of paying you' },
           { text: 'Only businesses selling the same thing', why: 'Buckets and habits compete too.' },
+          { text: 'Anything customers could do instead of paying you' },
           { text: 'Only apps', why: 'Most of WashDay\'s competition isn\'t an app.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         message: 'There\'s no laundry app in Buea, so I have no competition!',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Every student who washes in a bucket is choosing a competitor. Free and familiar is hard to beat.' },
           { text: 'Great, easy win.', why: 'Habits and Mama Rose are real competition.' },
           { text: 'Then nobody needs it.', why: 'No app doesn\'t mean no need; it means other solutions.' },
+          { text: 'Every student who washes in a bucket is choosing a competitor. Free and familiar is hard to beat.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "doing nothing new" often the toughest competitor?',
         options: [
-          { text: 'It\'s free, familiar and already a habit' },
           { text: 'It\'s the most advertised', why: 'Nobody advertises a bucket.' },
+          { text: 'It\'s free, familiar and already a habit' },
           { text: 'It\'s the best solution', why: 'It\'s often worse; it\'s just easy to keep doing.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

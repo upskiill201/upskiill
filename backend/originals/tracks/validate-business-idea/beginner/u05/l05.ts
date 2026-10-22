@@ -31,11 +31,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is the strongest evidence of value?',
         options: [
-          { text: 'Customers paying a second and third time' },
           { text: 'Many first-time sign-ups', why: 'First orders can be curiosity.' },
           { text: 'Likes on the post', why: 'The weakest evidence.' },
+          { text: 'Customers paying a second and third time' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask happy customers for names instead of buying ads now?',
         options: [
-          { text: 'It\'s free, trusted, and he\'s near his capacity limit anyway' },
           { text: 'Ads are illegal', why: 'They\'re just premature here.' },
           { text: 'Customers like being asked for money', why: 'He asks for names, not money.' },
+          { text: 'It\'s free, trusted, and he\'s near his capacity limit anyway' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

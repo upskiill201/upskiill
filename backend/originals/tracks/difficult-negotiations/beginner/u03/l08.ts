@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why agree the change rate in the contract?',
         options: [
-          { text: 'So nobody has to haggle over the price of each change' },
           { text: 'To charge more later', why: 'It\'s about avoiding repeated haggling.' },
           { text: 'It\'s not needed', why: 'It saves arguments.' },
+          { text: 'So nobody has to haggle over the price of each change' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why include "effect on date"?',
         options: [
-          { text: 'Changes can push the launch; the client should see that before approving' },
           { text: 'To scare them', why: 'It\'s honest information.' },
           { text: 'It\'s optional decoration', why: 'Dates matter as much as cost.' },
+          { text: 'Changes can push the launch; the client should see that before approving' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why "name it to tame it, as a guess"?',
         options: [
-          { text: 'A guess ("it sounds like...") invites correction; a verdict invites defence' },
           { text: 'Guessing is lazy', why: 'Tentative labels work better.' },
           { text: 'To avoid naming it', why: 'You still name it, gently.' },
+          { text: 'A guess ("it sounds like...") invites correction; a verdict invites defence' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Can I borrow your rules? I think I\'m the voice that rises.',
         prompt: "Grace's best reply?",
         options: [
-          { text: 'Of course. Rule 9 might be your favourite: twenty minutes, then come back.' },
           { text: 'No, they\'re mine.', why: 'Sharing helps the team.' },
+          { text: 'Of course. Rule 9 might be your favourite: twenty minutes, then come back.' },
           { text: 'You definitely need them.', why: 'Kind, not cutting.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a soft start include?',
         options: [
-          { text: 'One moment, my feeling, their pressure, a request' },
           { text: 'A list of everything they\'ve done wrong', why: 'That\'s a harsh start.' },
           { text: 'An apology for raising it', why: 'No need to apologise.' },
+          { text: 'One moment, my feeling, their pressure, a request' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

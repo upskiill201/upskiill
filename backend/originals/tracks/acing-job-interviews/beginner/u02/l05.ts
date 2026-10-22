@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: 'What if they ask about something I didn\'t research?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'Say what you do know, and ask about it: "I didn\'t see much about that; how does it work here?"' },
           { text: 'Make something up.', why: 'It gets found out.' },
           { text: 'Panic.', why: 'Curiosity is a good answer.' },
+          { text: 'Say what you do know, and ask about it: "I didn\'t see much about that; how does it work here?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why use the product before the interview?',
         options: [
-          { text: 'It gives real, specific things to talk about' },
           { text: 'To find faults to criticise', why: 'It\'s for understanding.' },
+          { text: 'It gives real, specific things to talk about' },
           { text: 'It\'s not useful', why: 'It\'s the fastest research.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

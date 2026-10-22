@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What\'s Lucía\'s new pace?',
         options: [
-          { text: '150 words a minute' },
           { text: '190', why: 'That was before.' },
+          { text: '150 words a minute' },
           { text: '90', why: '150.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         message: 'I\'m presenting the email results on Monday and I\'m shaking already.',
         prompt: "Lucía\'s best reply?",
         options: [
-          { text: 'Same for me. Say "I am excited", then your first line, which you\'ll know by heart. Then pause at every full stop.' },
           { text: 'Just calm down.', why: 'Reframe instead.' },
           { text: 'Talk fast to get it over with.', why: 'Slow down.' },
+          { text: 'Same for me. Say "I am excited", then your first line, which you\'ll know by heart. Then pause at every full stop.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Diego say the new recording sounds like?',
         options: [
-          { text: 'Someone who knows what they\'re talking about' },
           { text: 'Too slow', why: 'It sounds confident.' },
+          { text: 'Someone who knows what they\'re talking about' },
           { text: 'Robotic', why: 'It sounds confident.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which part of a STAR answer should be longest?',
         options: [
-          { text: 'Action' },
           { text: 'Situation', why: 'Keep the set-up short.' },
           { text: 'Result', why: 'Short and specific.' },
+          { text: 'Action' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Should I explain the whole project first so they understand?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'One or two sentences of situation is enough. They want to hear what you did.' },
           { text: 'Yes, explain it all for two minutes.', why: 'That buries the action.' },
+          { text: 'One or two sentences of situation is enough. They want to hear what you did.' },
           { text: 'Skip the situation entirely.', why: 'A little context helps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why add "what you learned" at the end?',
         options: [
-          { text: 'It shows you grow from experience, one of the things interviewers check' },
           { text: 'To pad the answer', why: 'One line shows growth.' },
           { text: 'It\'s required by law', why: 'It\'s a good habit.' },
+          { text: 'It shows you grow from experience, one of the things interviewers check' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

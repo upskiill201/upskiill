@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does the reaction mainly defend?',
         options: [
-          { text: 'Grace herself' },
           { text: 'The patients', why: 'That\'s the response.' },
           { text: 'The launch', why: 'It\'s mostly about her.' },
+          { text: 'Grace herself' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'Should I mention that he was rude to say it in public?',
         prompt: "Priya's best reply?",
         options: [
-          { text: 'Yes, but not in this email. Answer the content in writing; raise the public delivery in person, softly.' },
           { text: 'Put it in capitals at the top.', why: 'It would bury the evidence.' },
+          { text: 'Yes, but not in this email. Answer the content in writing; raise the public delivery in person, softly.' },
           { text: 'Never mention it.', why: 'It\'s worth raising, privately.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

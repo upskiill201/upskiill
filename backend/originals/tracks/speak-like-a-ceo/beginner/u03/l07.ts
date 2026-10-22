@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What did Doña Rosa\'s customers ask for?',
         options: [
-          { text: '"Something spicy with lime"' },
           { text: 'Bigger bags', why: 'Spicy with lime.' },
+          { text: '"Something spicy with lime"' },
           { text: 'Cheaper chips', why: 'Spicy with lime.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Isn\'t one shop owner\'s story too small for 300 people?',
         prompt: "Tey\'s best reply?",
         options: [
-          { text: 'Small stories are easy to picture. The 140 of 200 shows it\'s big. Together they\'re stronger than either.' },
           { text: 'Yes, use only numbers.', why: 'Stories make people care.' },
           { text: 'Tell ten stories instead.', why: 'One story, one number.' },
+          { text: 'Small stories are easy to picture. The 140 of 200 shows it\'s big. Together they\'re stronger than either.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How long is Doña Rosa\'s story?',
         options: [
-          { text: 'About 40 seconds' },
           { text: 'About ten minutes', why: 'About 40 seconds.' },
+          { text: 'About 40 seconds' },
           { text: 'An hour', why: 'About 40 seconds.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

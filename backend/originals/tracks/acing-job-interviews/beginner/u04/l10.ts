@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         message: 'Second place feels worse than a clear no.',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'It hurts, but it means you\'re nearly there, and you know exactly what to work on. That\'s a gift before Synergix.' },
           { text: 'Yes, give up on startups.', why: 'He was close.' },
+          { text: 'It hurts, but it means you\'re nearly there, and you know exactly what to work on. That\'s a gift before Synergix.' },
           { text: 'Argue with their choice.', why: 'Accept it gracefully.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What made Remi\'s weakness answer better in the end?',
         options: [
-          { text: 'The real deadline story with what he changed' },
           { text: 'Saying he was a perfectionist', why: 'That sounded rehearsed.' },
           { text: 'Skipping it', why: 'The real story worked.' },
+          { text: 'The real deadline story with what he changed' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
