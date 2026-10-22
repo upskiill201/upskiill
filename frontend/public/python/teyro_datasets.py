@@ -218,6 +218,36 @@ def __teyro_build_clinic_visits():
 __teyro_clinic_visits_header = 'clinic_id,patients_per_week,avg_wait_days,sms_rate,avg_distance_km,no_show_rate'
 
 
+# clinic_weeks.csv: last year's weekly booking totals for the 8 pilot clinics
+# (Machine Learning for Beginners, Chapter 5: predicting a number). Its own
+# seed, so adding it changed none of the files above. Planted: each opening
+# hour adds about half a booking; nurses help a lot at first, then level off
+# (the curve a straight line can't follow); public-holiday weeks lose about 7;
+# each rainy day costs a little under 1.
+def __teyro_build_clinic_weeks():
+    rng = __teyro_random.Random(52)
+    base = {'Yaba': -5, 'Surulere': -6, 'Ikeja': -6, 'Lekki': -8, 'Ibadan North': -8, 'Wuse': -8,
+            'Kano City': -7, 'Gumel': -14}
+    hours = {'Yaba': 50, 'Surulere': 48, 'Ikeja': 48, 'Lekki': 44, 'Ibadan North': 42, 'Wuse': 44,
+             'Kano City': 45, 'Gumel': 32}
+    holidays = {1, 14, 15, 22, 40, 52}
+    rows = []
+    for clinic in __teyro_clinics:
+        for week in range(1, 53):
+            open_hours = hours[clinic] + rng.choice([-10, -5, 0, 0, 0, 5, 10])
+            nurses = rng.randint(2, 6)
+            holiday = 1 if week in holidays else 0
+            rain_days = rng.randint(1, 5) if 15 <= week <= 40 else rng.randint(0, 2)
+            staff = 18 * (1 - __teyro_math.exp(-1.1 * (nurses - 1)))
+            mean = base[clinic] + 0.5 * open_hours + staff - 7 * holiday - 0.8 * rain_days
+            bookings = max(0, int(round(rng.gauss(mean, 2.5))))
+            rows.append([clinic, week, open_hours, nurses, holiday, rain_days, bookings])
+    return rows
+
+
+__teyro_clinic_weeks_header = 'clinic,week,open_hours,nurses,holiday,rain_days,bookings'
+
+
 # ---------------------------------------------------------------------------
 # The AI Stack: Mr Rao's online clothing shop in Pune (made-up data).
 #
@@ -374,6 +404,8 @@ def __teyro_files():
             __teyro_appointments_header, __teyro_make_messy_appointments(appointments))
         __teyro_cache['clinic_visits.csv'] = __teyro_csv_with(
             __teyro_clinic_visits_header, __teyro_build_clinic_visits())
+        __teyro_cache['clinic_weeks.csv'] = __teyro_csv_with(
+            __teyro_clinic_weeks_header, __teyro_build_clinic_weeks())
         products, orders = __teyro_build_rao()
         __teyro_cache['rao_products.csv'] = __teyro_csv_rows(
             ['product_id', 'name', 'category', 'gender', 'occasion', 'price_rupees', 'sizes', 'in_stock', 'description'],
