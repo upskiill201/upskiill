@@ -1,7 +1,7 @@
 import { CATEGORIES } from '@/lib/onboarding/catalog';
 import type { LearningInterest } from '@/lib/onboarding/types';
-import { calculateCoursePricingLadder } from '@/lib/pricing-engine';
-import { EXAMPLE_PRICE_USD, TEACH_PLACES, getTeachPlace, nearby, teachPath } from '@/lib/seo/teach';
+import { TEACH_PLACES, getTeachPlace, nearby, teachPath } from '@/lib/seo/teach';
+import { PRO_MONTHLY_USD, PRO_YEARLY_PER_MONTH_USD, PRO_YEARLY_USD } from '@/lib/launch';
 import type { TeachPlace, TeachSkill } from '@/lib/seo/teach';
 
 /**
@@ -454,13 +454,12 @@ export function topicCards(track: LearnTrack) {
 export const learnNearby = (subject: LearnSubject, place: TeachPlace) => nearby(place, subject.track);
 export { teachPath };
 
-/* ── The learner's local number: what an example course costs ───────── */
+/* ── The learner's local number: what Teyro Pro costs (lib/launch.ts) ── */
 
-const LADDER = calculateCoursePricingLadder(EXAMPLE_PRICE_USD);
-export const EXAMPLE_YEARLY_USD = LADDER.yearly.price;
-export const EXAMPLE_MONTHLY_PLAN_USD = LADDER.monthly.price;
+export const EXAMPLE_YEARLY_USD = PRO_YEARLY_USD;
+export const EXAMPLE_MONTHLY_PLAN_USD = PRO_MONTHLY_USD;
 /** Yearly plan, per month — the number a learner compares to their budget. */
-export const EXAMPLE_YEARLY_PER_MONTH_USD = Math.round((EXAMPLE_YEARLY_USD / 12) * 100) / 100;
+export const EXAMPLE_YEARLY_PER_MONTH_USD = PRO_YEARLY_PER_MONTH_USD;
 
 export function learnerPrice(place: TeachPlace) {
   const c = place.country;

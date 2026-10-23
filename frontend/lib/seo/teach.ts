@@ -30,8 +30,6 @@ export const APPLY_LABEL = STUDIO_ENTRY.gated ? 'Apply as a Founding Creator' : 
 export const EXAMPLE_PRO_MONTH_USD = PRO_YEARLY_PER_MONTH_USD;
 export const EXAMPLE_KEEP_USD = POOL_PER_YEARLY_LEARNER_USD;
 
-/** The learner pages' example price (lib/seo/learn.ts): the yearly plan. */
-export const EXAMPLE_PRICE_USD = 60;
 
 export const SKILL_COPY: Record<
   TeachSkill,
