@@ -37,7 +37,14 @@ export type OnboardingCue =
   | 'pathReveal'
   | 'notificationOptIn'
   | 'completion'
-  | 'validationError';
+  | 'validationError'
+  // Onboarding v3
+  | 'projection'
+  | 'commitTick'
+  | 'commitLocked'
+  | 'planTick'
+  | 'planReady'
+  | 'quitWarn';
 
 /**
  * Per-cue cooldowns. The big moments get long ones so a double-tap can't
@@ -58,9 +65,21 @@ const COOLDOWN_MS: Record<OnboardingCue, number> = {
   notificationOptIn: 600,
   completion: 3000,
   validationError: 400,
+  projection: 1500,
+  commitTick: 70,
+  commitLocked: 1500,
+  planTick: 150,
+  planReady: 2000,
+  quitWarn: 800,
 };
 
 type CueFn = (bus: NonNullable<ReturnType<typeof getBus>>) => void;
+
+/** Climbs one note per commitTick so a hold sounds like it's building. */
+let commitStep = -1;
+export function resetCommitTicks(): void {
+  commitStep = -1;
+}
 
 const CUES: Record<OnboardingCue, CueFn> = {
   // Bright rising third — "hello", not "achievement".
@@ -167,6 +186,43 @@ const CUES: Record<OnboardingCue, CueFn> = {
     scheduleTone(bus, { freq: PENTATONIC[7], at: 0.38, dur: 0.5, type: 'sine', gain: 0.18 });
     scheduleNoise(bus, { at: 0.34, dur: 0.5, gain: 0.05, filterFrom: 6000, filterTo: 1200 });
     scheduleSparkleDust(bus, 0.42);
+  },
+
+  // The projection curve draws itself: a rising glide that lands on the date.
+  projection: (bus) => {
+    scheduleTone(bus, { freq: PENTATONIC[0], dur: 0.9, type: 'sine', gain: 0.12, slideTo: PENTATONIC[5] });
+    scheduleTone(bus, { freq: PENTATONIC[5], at: 0.85, dur: 0.3, type: 'triangle', gain: 0.15 });
+    scheduleSparkleDust(bus, 0.9);
+  },
+
+  // Hold-to-commit: one rising tick per step of the hold (index set by caller).
+  commitTick: (bus) => {
+    scheduleTone(bus, { freq: PENTATONIC[(commitStep = (commitStep + 1) % 8)], dur: 0.06, type: 'triangle', gain: 0.1 });
+  },
+
+  // The pledge locks in: a firm, warm chord. A promise, not a jackpot.
+  commitLocked: (bus) => {
+    [0, 2, 4].forEach((i) => scheduleTone(bus, { freq: PENTATONIC[i], dur: 0.5, type: 'sine', gain: 0.12 }));
+    scheduleTone(bus, { freq: PENTATONIC[7], at: 0.12, dur: 0.4, type: 'triangle', gain: 0.1 });
+  },
+
+  // Each line of the plan builder ticking off.
+  planTick: (bus) => {
+    scheduleTone(bus, { freq: PENTATONIC[4], dur: 0.07, type: 'sine', gain: 0.12 });
+    scheduleTone(bus, { freq: PENTATONIC[6], at: 0.04, dur: 0.08, type: 'sine', gain: 0.08 });
+  },
+
+  // The plan is ready: the suspension resolves.
+  planReady: (bus) => {
+    scheduleNoise(bus, { dur: 0.35, gain: 0.04, filterFrom: 800, filterTo: 7000 });
+    [2, 4, 5, 7].forEach((i, n) => scheduleTone(bus, { freq: PENTATONIC[i], at: 0.12 + n * 0.06, dur: 0.35, type: 'sine', gain: 0.13 }));
+    scheduleSparkleDust(bus, 0.5);
+  },
+
+  // The "wait, don't go" sheet: concerned, never alarming.
+  quitWarn: (bus) => {
+    scheduleTone(bus, { freq: PENTATONIC[3], dur: 0.16, type: 'sine', gain: 0.1 });
+    scheduleTone(bus, { freq: PENTATONIC[1], at: 0.12, dur: 0.22, type: 'sine', gain: 0.1 });
   },
 
   // Informative, never harsh. Two soft equal tones, no dissonance, no buzz.

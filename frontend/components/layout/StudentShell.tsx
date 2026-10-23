@@ -188,7 +188,7 @@ export default function StudentShell({
   // the dashboard page needs the same record, and because child effects run
   // before parent effects the two raw fetches went out in the same tick as two
   // identical authenticated round trips on every dashboard entry.
-  const { me, avatarUrl: resolvedAvatarUrl, error: meError } = useMe();
+  const { me, avatarUrl: resolvedAvatarUrl, error: meError, isValidating: meValidating } = useMe();
 
   // Role flags: live from /me, falling back to the local cache so the More
   // menu is right before the network answers. (Only read on a tap, so the
@@ -197,11 +197,14 @@ export default function StudentShell({
   const hasStudentAccess = me?.hasStudentAccess ?? cachedUser?.hasStudentAccess ?? false;
   const hasCreatorAccess = me?.hasCreatorAccess ?? cachedUser?.hasCreatorAccess ?? false;
 
+  // Only a 401 from a settled fetch means signed out. The cache can still
+  // hold one from before sign-in (onboarding runs signed out until "save
+  // your progress"), and acting on it bounced brand-new learners to /login.
   useEffect(() => {
-    if (meError?.status === 401) {
+    if (meError?.status === 401 && !meValidating) {
       router.push('/login');
     }
-  }, [meError, router]);
+  }, [meError, meValidating, router]);
 
   useEffect(() => {
     if (!me) return;
