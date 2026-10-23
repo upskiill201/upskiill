@@ -13,6 +13,7 @@
  *   GET /api/payment/my-subscriptions, POST /api/payment/cancel-subscription
  */
 
+import { proApi, ProApiError, type ProStatus } from '@/lib/pro/api';
 import React, { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import useSWR from 'swr';
@@ -608,8 +609,80 @@ function NotificationsSection() {
 
 // ─── Subscriptions ────────────────────────────────────────────────────────
 
+/** Teyro Pro: the plan itself, how it renews, and where to manage it. */
+function ProPlanRow() {
+  const { data: pro } = useSWR<ProStatus>('/api/pro/status', fetcher);
+  const [opening, setOpening] = useState(false);
+  const [portalError, setPortalError] = useState<string | null>(null);
+  if (!pro?.enabled) return null;
+  const fmt = (iso: string | null) =>
+    iso ? new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+
+  const openPortal = async (flow?: 'payment_method_update') => {
+    setOpening(true);
+    setPortalError(null);
+    try {
+      const { url } = await proApi.portal(flow, '/dashboard/settings');
+      window.location.assign(url);
+    } catch (err) {
+      setPortalError(err instanceof ProApiError ? err.message : 'Billing is unavailable right now.');
+      setOpening(false);
+    }
+  };
+
+  if (!pro.isPro) {
+    return (
+      <div className={styles.subRow}>
+        <span className={styles.rowText}>
+          <span className={styles.rowTitle}>Teyro Pro</span>
+          <span className={styles.rowSub}>Every course, no daily limit, unlimited hearts.</span>
+        </span>
+        <Link href="/pro?m=SETTINGS&returnTo=%2Fdashboard%2Fsettings" className={styles.primaryBtn} onClick={() => playSound('navTap', 2)}>
+          See plans
+        </Link>
+      </div>
+    );
+  }
+
+  const line =
+    pro.status === 'PAST_DUE'
+      ? `Payment failed · access until ${fmt(pro.graceUntil)}`
+      : pro.status === 'TRIALING'
+        ? `Free trial until ${fmt(pro.trialEndsAt)}${pro.cancelAtPeriodEnd ? ' · cancelled' : ''}`
+        : pro.provider === 'MESOMB'
+          ? `Paid with Mobile Money · access until ${fmt(pro.currentPeriodEnd)}`
+          : pro.cancelAtPeriodEnd
+            ? `Cancelled · access until ${fmt(pro.currentPeriodEnd)}`
+            : `Renews ${fmt(pro.currentPeriodEnd)}`;
+
+  return (
+    <div className={styles.subRow}>
+      <span className={styles.rowText}>
+        <span className={styles.rowTitle}>Teyro Pro · {pro.plan === 'YEARLY' ? 'Yearly' : 'Monthly'}</span>
+        <span className={styles.rowSub}>{line}</span>
+        {portalError && <span className={styles.inlineError} role="alert">{portalError}</span>}
+      </span>
+      {pro.provider === 'MESOMB' ? (
+        <Link href="/pro?m=SETTINGS&returnTo=%2Fdashboard%2Fsettings" className={styles.secondaryBtn} onClick={() => playSound('navTap', 2)}>
+          Renew
+        </Link>
+      ) : (
+        <button
+          type="button"
+          className={styles.secondaryBtn}
+          disabled={opening}
+          onClick={() => void openPortal(pro.status === 'PAST_DUE' ? 'payment_method_update' : undefined)}
+        >
+          {pro.status === 'PAST_DUE' ? 'Update card' : 'Manage'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function SubscriptionsSection() {
   const { data, error, isLoading, mutate } = useSWR<Subscription[]>('/api/payment/my-subscriptions', fetcher);
+  const { data: pro } = useSWR<ProStatus>('/api/pro/status', fetcher);
   const [cancelTarget, setCancelTarget] = useState<Subscription | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
@@ -651,11 +724,12 @@ function SubscriptionsSection() {
         <h2 id="subscriptions-h" className={styles.sectionTitle}>Subscriptions</h2>
       </div>
       <div className={styles.card}>
+        <ProPlanRow />
         {isLoading ? (
           <SkeletonRows count={2} />
         ) : error ? (
           <SectionError what="subscriptions" onRetry={() => void mutate()} />
-        ) : subs.length === 0 ? (
+        ) : subs.length === 0 && pro?.enabled ? null : subs.length === 0 ? (
           <div className={styles.empty}>
             <CreditCard size={28} strokeWidth={2.25} aria-hidden="true" />
             <p className={styles.emptyTitle}>No subscriptions</p>

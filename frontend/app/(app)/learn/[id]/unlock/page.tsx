@@ -21,6 +21,9 @@ import {
   calculateCoursePricingLadder,
 } from '@/lib/pricing-engine';
 import styles from '@/components/features/course-unlock/unlock.module.css';
+import ProPaywall from '@/components/pro/ProPaywall';
+import { proApi, type PaywallMoment } from '@/lib/pro/api';
+import { usePaywallContext } from '@/lib/pro/usePaywallContext';
 
 /**
  * Full-page stepped-scene unlock experience (celebrate → wall → plans).
@@ -30,6 +33,71 @@ import styles from '@/components/features/course-unlock/unlock.module.css';
  * state initializers during FIRST render — before any effect can clean the
  * URL (StrictMode-safe, same trick usePostPaymentUnlock uses for `payment`).
  */
+
+/**
+ * With Teyro Pro on, every locked lesson opens the Pro paywall here; the
+ * per-course journey below stays for what it still serves: a Stripe
+ * checkout returning (?payment=…) and renewals of plans bought before Pro.
+ */
+export default function LearnUnlockPage() {
+  const [mode, setMode] = useState<'loading' | 'pro' | 'legacy'>('loading');
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('payment') || q.get('renew') === '1') {
+      setMode('legacy');
+      return;
+    }
+    proApi
+      .plans()
+      .then((p) => setMode(p.enabled ? 'pro' : 'legacy'))
+      .catch(() => setMode('legacy'));
+  }, []);
+
+  if (mode === 'loading') {
+    return (
+      <StudentShell isWide hideMobileChrome>
+        <div className={styles.centerShell}>
+          <TeyroBrandedLoader suppressConnectionCheck />
+        </div>
+      </StudentShell>
+    );
+  }
+  return mode === 'pro' ? <ProUnlock /> : <LegacyUnlockPage />;
+}
+
+const LOCK_MOMENTS: PaywallMoment[] = ['LOCKED_LESSON', 'DAILY_LIMIT', 'OUT_OF_HEARTS', 'AFTER_SUCCESS'];
+
+function ProUnlock() {
+  const params = useParams<{ id: string }>();
+  const router = useRouter();
+  const courseId = params.id;
+  const [q] = useState(() => new URLSearchParams(typeof window !== 'undefined' ? window.location.search : ''));
+  const returnTo = sanitizeReturnTo(q.get('returnTo'), courseId);
+  const moment = (LOCK_MOMENTS as string[]).includes(q.get('m') ?? '') ? (q.get('m') as PaywallMoment) : 'LOCKED_LESSON';
+  const [courseTitle, setCourseTitle] = useState<string | null>(null);
+  const context = usePaywallContext(courseTitle);
+
+  useEffect(() => {
+    fetch(`/api/courses/${courseId}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((c) => setCourseTitle(typeof c?.title === 'string' ? c.title : null))
+      .catch(() => undefined);
+    // Already Pro (paid in another tab): nothing to sell.
+    proApi
+      .status()
+      .then((st) => st.isPro && router.replace(returnTo))
+      .catch(() => undefined);
+  }, [courseId, returnTo, router]);
+
+  return (
+    <ProPaywall
+      moment={moment}
+      context={context}
+      onDismiss={() => router.replace(returnTo)}
+      onPro={() => router.replace(returnTo)}
+    />
+  );
+}
 
 type Phase = 'loading' | 'error' | 'journey' | 'waiting' | 'success';
 type SceneKey = 'celebrate' | 'wall' | 'plans';
@@ -65,7 +133,7 @@ function countLessons(course: UnlockCourse | null): number {
   );
 }
 
-export default function LearnUnlockPage() {
+function LegacyUnlockPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const courseId = params.id;

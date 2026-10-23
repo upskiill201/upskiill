@@ -140,7 +140,8 @@ export class ProPaywallService {
       return { ok: true, next: answered ? { type: 'LEAVE' } : { type: 'EXIT_SURVEY' } };
     }
 
-    if (e.type === 'SHEET_CLOSE' && e.attemptId) {
+    // Backing out of the sheet, with or without having pressed pay.
+    if (e.type === 'SHEET_CLOSE') {
       return { ok: true, next: await this.checkoutRecovery(who.userId, e.attemptId, e.plan) };
     }
     return { ok: true };
@@ -151,8 +152,10 @@ export class ProPaywallService {
    * a smaller plan as the alternative, and (once ever, yearly only) the real
    * first-year discount.
    */
-  private async checkoutRecovery(userId: string, attemptId: string, plan?: string) {
-    const attempt = await this.prisma.proCheckoutAttempt.findUnique({ where: { id: attemptId } });
+  private async checkoutRecovery(userId: string, attemptId: string | undefined, plan?: string) {
+    const attempt = attemptId
+      ? await this.prisma.proCheckoutAttempt.findUnique({ where: { id: attemptId } })
+      : null;
     if (attempt && attempt.userId === userId && ['CREATED', 'REQUIRES_ACTION'].includes(attempt.status)) {
       await this.prisma.proCheckoutAttempt.update({
         where: { id: attemptId },

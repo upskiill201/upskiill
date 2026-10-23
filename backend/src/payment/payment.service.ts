@@ -3,6 +3,7 @@ import {
   Injectable,
   BadRequestException,
   ConflictException,
+  GoneException,
   Logger,
   NotFoundException,
   ServiceUnavailableException,
@@ -26,6 +27,7 @@ import {
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EnrollmentCreatedEvent } from '../common/events/enrollment-created.event';
 import { PRO_MESOMB_SENTINEL, ProGrantService } from '../pro/pro-grant.service';
+import { isProEnabled } from '../pro/pro.config';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const StripeSDK = require('stripe');
@@ -377,6 +379,24 @@ export class PaymentService {
         status: 'ACTIVE',
         message: 'This course is free — you are enrolled!',
       };
+    }
+
+    // Teyro Pro replaced per-course plans. The one sale left is renewing a
+    // course plan someone already holds over Mobile Money (it never renews
+    // by itself), at full price: no coupon.
+    if (isProEnabled() && !isAdmin) {
+      const held = await this.prisma.courseAccessEntitlement.findUnique({
+        where: { userId_courseId: { userId, courseId: course.id } },
+        select: { id: true },
+      });
+      const momoRenewal = provider === 'MESOMB' && !!held && !extra?.couponCode;
+      if (!momoRenewal) {
+        throw new GoneException({
+          code: 'PER_COURSE_RETIRED',
+          requiresPro: true,
+          message: 'Every course is now part of Teyro Pro.',
+        });
+      }
     }
 
     // One Originals subscription covers every Original. Someone who already

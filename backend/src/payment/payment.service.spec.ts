@@ -100,6 +100,10 @@ describe('PaymentService', () => {
 });
 
 describe('PaymentService — free (100%) coupon bypass', () => {
+  // Per-course checkout as it worked before Teyro Pro (Pro switched off).
+  const OLD_PRO = process.env.PRO_ENABLED;
+  beforeAll(() => (process.env.PRO_ENABLED = 'false'));
+  afterAll(() => (process.env.PRO_ENABLED = OLD_PRO));
   let service: PaymentService;
   let prismaMock: any;
   let couponsMock: any;
@@ -448,5 +452,50 @@ describe('PaymentService — Stripe webhook verification and refund revocation',
     expect(earnings.recordStripeRefund).toHaveBeenCalled();
     expect(stripe.invoices.retrieve).not.toHaveBeenCalled();
     expect(prisma.courseAccessEntitlement.updateMany).not.toHaveBeenCalled();
+  });
+});
+
+describe('PaymentService — per-course sales with Teyro Pro on', () => {
+  const OLD_PRO = process.env.PRO_ENABLED;
+  beforeAll(() => (process.env.PRO_ENABLED = 'true'));
+  afterAll(() => (process.env.PRO_ENABLED = OLD_PRO));
+
+  const build = async (held: boolean) => {
+    const prisma: any = {
+      course: {
+        findUnique: jest.fn().mockResolvedValue({
+          id: 'course-1', title: 'Course', price: 20, published: true, instructorId: 'creator', isOriginal: false,
+        }),
+      },
+      user: { findUnique: jest.fn().mockResolvedValue({ id: 'u1', email: 'a@b.com', fullName: 'A' }) },
+      courseAccessEntitlement: { findUnique: jest.fn().mockResolvedValue(held ? { id: 'e1' } : null) },
+    };
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        PaymentService,
+        { provide: ProGrantService, useValue: {} },
+        { provide: PrismaService, useValue: prisma },
+        { provide: StripeProvider, useValue: { createSubscription: jest.fn() } },
+        { provide: MesombProvider, useValue: { createSubscription: jest.fn() } },
+        { provide: EarningsService, useValue: {} },
+        { provide: EventEmitter2, useValue: { emit: jest.fn() } },
+        { provide: CouponsService, useValue: {} },
+      ],
+    }).compile();
+    return module.get(PaymentService);
+  };
+
+  it('refuses a new course purchase: every course is part of Pro', async () => {
+    const service = await build(false);
+    await expect(service.subscribeCourse('u1', 'course-1', 'YEARLY', 'STRIPE')).rejects.toMatchObject({
+      response: expect.objectContaining({ code: 'PER_COURSE_RETIRED', requiresPro: true }),
+    });
+  });
+
+  it('refuses a coupon on a Mobile Money renewal', async () => {
+    const service = await build(true);
+    await expect(
+      service.subscribeCourse('u1', 'course-1', 'MONTHLY', 'MESOMB', { couponCode: 'X' }),
+    ).rejects.toMatchObject({ response: expect.objectContaining({ code: 'PER_COURSE_RETIRED' }) });
   });
 });

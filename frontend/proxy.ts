@@ -14,7 +14,7 @@ const LEARNER_DOORS = [
   // Not /courses: the catalog and course pages are public marketing pages.
   '/explore', '/learn', '/dashboard', '/cart', '/checkout',
   '/my-courses', '/my-learning', '/leaderboards', '/quests', '/shop',
-  '/profile', '/certificates', '/student',
+  '/profile', '/certificates', '/student', '/pro',
 ];
 
 const underAny = (path: string, prefixes: string[]) =>
@@ -115,6 +115,8 @@ function route(request: NextRequest): NextResponse {
   // /learn-coding and /learn-ai pages share the prefix and must stay crawlable.
   const isLearn = path === '/learn' || path.startsWith('/learn/');
   const isAdmin = path.startsWith('/admin');
+  // Teyro Pro: paywall deep links (push, email) and the 3D Secure return page.
+  const isPro = path === '/pro' || path.startsWith('/pro/');
   // Exactly /creator and /creator/… — a bare prefix match also walled off the
   // PUBLIC creator pages (/creator-profile/:username) from logged-out visitors.
   const isCreatorStudio =
@@ -122,7 +124,7 @@ function route(request: NextRequest): NextResponse {
 
   // 1. No token → enforce login walls on protected routes only
   if (!token) {
-    if (isDashboard || isLearn || isAdmin) {
+    if (isDashboard || isLearn || isAdmin || isPro) {
       // Preserve the destination. Without this, a learner whose 7-day JWT has
       // expired taps a streak reminder and lands on a generic login → dashboard,
       // with the lesson they were sent to silently discarded.
