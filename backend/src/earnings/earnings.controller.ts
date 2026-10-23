@@ -17,6 +17,7 @@ import { Role } from '@prisma/client';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { EarningsService } from './earnings.service';
+import { ProPoolService } from '../pro/pool/pro-pool.service';
 
 /**
  * Creator-facing earnings API. Every route requires a session and every
@@ -29,7 +30,16 @@ import { EarningsService } from './earnings.service';
 @Roles(Role.INSTRUCTOR, Role.ADMIN)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 export class EarningsController {
-  constructor(private readonly earnings: EarningsService) {}
+  constructor(
+    private readonly earnings: EarningsService,
+    private readonly pool: ProPoolService,
+  ) {}
+
+  /** The Teyro Pro pool: this creator's monthly share, per course. */
+  @Get('pool')
+  async getPool(@Req() req: any) {
+    return this.pool.creatorPool(req.user.id as string);
+  }
 
   @Get('summary')
   async getSummary(@Req() req: any) {

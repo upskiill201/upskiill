@@ -7,6 +7,7 @@
  *   review checklist      components/course-workspace/ReviewTab.tsx
  *   pricing               lib/pricing-engine.ts (monthly = base/10×4×0.7, yearly = base×0.8)
  *   share / payouts       backend earnings.service (70%, 14-day clearing, $50 minimum)
+ *   Teyro Pro pool        backend pro/pool (50% per subscriber, by capped minutes, first completion only)
  *   nudges                backend analytics/course-pulse.service (72h / 24h cooldowns, 50 max)
  *   community             learners join after 2 lessons; mute 1 / 7 / 30 days
  *
@@ -597,6 +598,24 @@ export const GUIDE: GuideArticle[] = [
           {
             t: 'p',
             text: 'You keep **70%** of every payment for your course: the first subscription payment and every renewal after it. Each sale shows up in Earnings straight away.',
+          },
+        ],
+      },
+      {
+        heading: 'Teyro Pro learners',
+        blocks: [
+          {
+            t: 'p',
+            text: 'Teyro Pro learners don’t buy courses one by one: one subscription opens every course. Each month, **half of every Pro learner’s payment** (after tax, card fees and refunds) is shared among the creators whose courses they learned in, **by the minutes they spent in each**.',
+          },
+          {
+            t: 'list',
+            items: [
+              'A lesson counts once per learner, the first time they finish it.',
+              'Learning time is capped, so a tab left open never moves money.',
+              'Your share lands in Earnings as **Teyro Pro pool** once the month is finished and checked, then clears like a sale.',
+              'If a refund comes in later, the next posting corrects it, up or down, and you’ll see exactly why.',
+            ],
           },
         ],
       },

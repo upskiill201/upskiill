@@ -10,6 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Matches } from 'class-validator';
 import { SiteSettingsService } from '../site/site-settings.service';
 import { Role } from '@prisma/client';
 import { GetUser } from '../auth/decorator/get-user.decorator';
@@ -40,9 +41,15 @@ import {
 } from './admin-coupons.service';
 import { AdminInsightsService, toRange } from './admin-insights.service';
 import { AdminGrowthService } from './admin-growth.service';
+import { ProPoolService, parseMonth } from '../pro/pool/pro-pool.service';
 
 interface AuthedUser {
   id: string;
+}
+
+class PoolRunDto {
+  @Matches(/^\d{4}-(0[1-9]|1[0-2])$/, { message: 'month must look like 2026-10' })
+  month: string;
 }
 
 /**
@@ -71,6 +78,7 @@ export class AdminController {
     private readonly adminCoupons: AdminCouponsService,
     private readonly insights: AdminInsightsService,
     private readonly growth: AdminGrowthService,
+    private readonly pool: ProPoolService,
     private readonly site: SiteSettingsService,
   ) {}
 
@@ -139,6 +147,22 @@ export class AdminController {
   @Get('insights/pro')
   insightPro(@Query('range') range?: string) {
     return this.growth.pro(toRange(range));
+  }
+
+  /** Work a finished month's creator pool out as a draft (body: { month: '2026-10' }). */
+  @Post('pro/pool/runs')
+  async computePoolRun(@Body() body: PoolRunDto) {
+    const run = await this.pool.computeRun(parseMonth(body.month));
+    this.growth.forget();
+    return run;
+  }
+
+  /** Approve a draft: write the POOL_SHARE ledger rows. */
+  @Post('pro/pool/runs/:id/post')
+  async postPoolRun(@GetUser() actor: AuthedUser, @Param('id', new ParseUUIDPipe()) id: string) {
+    const out = await this.pool.postRun(id, actor.id);
+    this.growth.forget();
+    return out;
   }
 
   @Get('insights/pro/users/:id')

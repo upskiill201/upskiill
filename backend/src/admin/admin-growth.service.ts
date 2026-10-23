@@ -70,6 +70,11 @@ export class AdminGrowthService {
 
   constructor(private readonly prisma: PrismaService) {}
 
+  /** Drop cached pages (after a pool run is worked out or posted). */
+  forget() {
+    this.cache.clear();
+  }
+
   private q<T>(sql: Prisma.Sql): Promise<T[]> {
     return this.prisma.$queryRaw<T[]>(sql);
   }

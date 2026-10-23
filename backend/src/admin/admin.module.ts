@@ -15,6 +15,7 @@ import { AdminPayoutsService } from './admin-payouts.service';
 import { AdminCouponsService } from './admin-coupons.service';
 import { AdminInsightsService } from './admin-insights.service';
 import { AdminGrowthService } from './admin-growth.service';
+import { ProPoolModule } from '../pro/pool/pro-pool.module';
 
 @Module({
   // CourseModule is imported (not reimplemented) so publish/unpublish reuse
@@ -28,7 +29,7 @@ import { AdminGrowthService } from './admin-growth.service';
   // re-deriving coupon status — see admin-courses.service.ts,
   // admin-creators.service.ts, admin-payments.service.ts,
   // admin-payouts.service.ts, admin-coupons.service.ts.
-  imports: [PrismaModule, CourseModule, CourseReviewModule, EarningsModule, CouponsModule, SiteModule],
+  imports: [PrismaModule, CourseModule, CourseReviewModule, EarningsModule, CouponsModule, SiteModule, ProPoolModule],
   controllers: [AdminController],
   providers: [
     AdminService,

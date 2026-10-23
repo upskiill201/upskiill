@@ -13,7 +13,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Glyph } from '@/components/art/Glyph';
-import { useAdminData } from '@/components/admin/AdminUI';
+import { Banner, Button, ConfirmDialog, adminMutate, useAdminData } from '@/components/admin/AdminUI';
 import {
   Bars,
   Hero,
@@ -123,9 +123,49 @@ const statusTone = (s: string) =>
 const date = (iso: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '–';
 
+const monthName = (iso: string) => new Date(iso).toLocaleDateString(undefined, { month: 'long', year: 'numeric', timeZone: 'UTC' });
+
 export function ProInsights() {
   const [range, setRange] = useState<Range>(30);
   const { data, error, mutate } = useAdminData<ProInsights>(`/api/admin/insights/pro?range=${range}`);
+  const [poolBusy, setPoolBusy] = useState(false);
+  const [poolError, setPoolError] = useState<string | null>(null);
+  const [confirmRun, setConfirmRun] = useState<ProInsights['poolRuns'][number] | null>(null);
+
+  // The month that just finished: the one the pool can be worked out for.
+  const [lastMonth] = useState(() => {
+    const now = new Date();
+    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
+  });
+  const lastMonthName = lastMonth.toLocaleDateString(undefined, { month: 'long', timeZone: 'UTC' });
+
+  const workOut = async () => {
+    setPoolBusy(true);
+    setPoolError(null);
+    try {
+      await adminMutate('/api/admin/pro/pool/runs', { body: { month: lastMonth.toISOString().slice(0, 7) } });
+      await mutate();
+    } catch (err) {
+      setPoolError(err instanceof Error ? err.message : 'Could not work the pool out.');
+    } finally {
+      setPoolBusy(false);
+    }
+  };
+
+  const post = async (id: string) => {
+    setPoolBusy(true);
+    setPoolError(null);
+    try {
+      await adminMutate(`/api/admin/pro/pool/runs/${id}/post`);
+      setConfirmRun(null);
+      await mutate();
+    } catch (err) {
+      setPoolError(err instanceof Error ? err.message : 'Could not post the pool.');
+      setConfirmRun(null);
+    } finally {
+      setPoolBusy(false);
+    }
+  };
 
   if (error && !data) return <LoadError onRetry={() => void mutate()} />;
   if (!data) return <Skeleton />;
@@ -422,9 +462,19 @@ export function ProInsights() {
 
       <Panel
         title="Creator pool"
-        note="Each month half of every Pro learner's net payment goes to the creators whose courses they learned, split by minutes. Originals' share and unused learners' share stay with Teyro."
+        note="Each month half of every Pro learner's net payment goes to the creators whose courses they learned, split by minutes. Originals' share and unused learners' share stay with Teyro. Work a month out, check it, then post it to creators' earnings."
+        action={
+          <Button size="sm" variant="secondary" disabled={poolBusy} onClick={() => void workOut()}>
+            {poolBusy ? 'Working…' : `Work out ${lastMonthName}`}
+          </Button>
+        }
         flush
       >
+        {poolError && (
+          <div style={{ padding: '0 20px 12px' }}>
+            <Banner tone="warn">{poolError}</Banner>
+          </div>
+        )}
         {data.poolRuns.length === 0 ? (
           <p className={h.empty}>No pool has been worked out yet. The first runs after the first full month of Pro.</p>
         ) : (
@@ -441,16 +491,38 @@ export function ProInsights() {
                     {money(r.unallocatedMinor)} unused · {r.learners} learners
                   </span>
                 </span>
-                <span className={h.rowSide}>
+                <span className={h.rowSide} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <span className={`${g.pill} ${r.status === 'POSTED' ? g.good : r.status === 'DRAFT' ? g.warn : ''}`}>
                     {r.status === 'POSTED' ? `Posted ${date(r.postedAt)}` : r.status === 'DRAFT' ? 'Draft' : 'Replaced'}
                   </span>
+                  {r.status === 'DRAFT' && (
+                    <Button size="sm" disabled={poolBusy} onClick={() => setConfirmRun(r)}>
+                      Post
+                    </Button>
+                  )}
                 </span>
               </li>
             ))}
           </ul>
         )}
       </Panel>
+
+      {confirmRun && (
+        <ConfirmDialog
+          title={`Post ${monthName(confirmRun.month)}'s pool?`}
+          description={
+            <>
+              {money(confirmRun.allocatedMinor, true)} goes into creators&apos; earnings now, and each creator is told.
+              {confirmRun.revision > 1 ? ' This is a revision: only the difference from the last posted run is written.' : ''} This
+              can&apos;t be undone, only corrected by a later revision.
+            </>
+          }
+          confirmLabel="Post to creators"
+          busy={poolBusy}
+          onCancel={() => setConfirmRun(null)}
+          onConfirm={() => void post(confirmRun.id)}
+        />
+      )}
     </div>
   );
 }

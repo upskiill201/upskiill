@@ -131,6 +131,11 @@ export const NOTIFY_KINDS = {
     audience: 'creator', pref: 'creatorActivity', throttleMinutes: 0,
     ttlSeconds: 48 * HOUR, tag: 'studio-course', teyState: 'CELEBRATING',
   },
+  // The month's Teyro Pro pool share landed in their earnings.
+  STUDIO_POOL: {
+    audience: 'creator', pref: 'creatorActivity', throttleMinutes: 0,
+    ttlSeconds: 72 * HOUR, tag: 'studio-pool', teyState: 'CELEBRATING',
+  },
 } as const satisfies Record<string, NotifySpec>;
 
 export type NotifyKind = keyof typeof NOTIFY_KINDS;

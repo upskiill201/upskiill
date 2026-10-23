@@ -72,6 +72,25 @@ const PATHS = {
   minus: <path d="M5 12h14" />,
   upRight: <path d="M7 17L17 7M8.6 7H17v8.4" />,
   downRight: <path d="M7 7l10 10M17 8.6V17H8.6" />,
+  downLeft: <path d="M17 7L7 17M15.4 17H7V8.6" />,
+  download: (
+    <>
+      <path d="M12 3.6v11M7.4 10.4L12 15l4.6-4.6" />
+      <path d="M4 15.6v2.6A2.2 2.2 0 0 0 6.2 20.4h11.6a2.2 2.2 0 0 0 2.2-2.2v-2.6" />
+    </>
+  ),
+  pencil: (
+    <>
+      <path d="M14.6 5.4l4 4L8.4 19.6H4.4v-4Z" />
+      <path d="M12.6 7.4l4 4" />
+    </>
+  ),
+  bank: (
+    <>
+      <path d="M3 9.4L12 4l9 5.4Z" fill="currentColor" />
+      <path d="M5.6 11.4v6.2M10 11.4v6.2M14 11.4v6.2M18.4 11.4v6.2M3.4 20.4h17.2" />
+    </>
+  ),
   refresh: (
     <>
       <path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" />
