@@ -4,16 +4,17 @@
  * creator gets, what their learners get, and what it could earn.
  *
  * Copy rule (same as the homepage): only claim what ships. The facts every
- * line leans on: creators keep 70% (earnings.service default agreement);
- * paid courses keep the first 2 lessons free, then learners subscribe yearly
- * (the creator's price) or monthly (a sixth of it) (pricing-engine); payouts go to bank or mobile money after a
- * 14-day clearing window, from $50; launch tracks are Coding and AI.
+ * line leans on: learners start free, then Teyro Pro opens every course;
+ * creators are paid from the Pro pool, 50% of each Pro learner's payment shared
+ * by minutes, the same for Founding Creators (lib/launch.ts, backend
+ * src/pro/pool); payouts go to bank or mobile money after a 14-day clearing
+ * window, from $50; launch tracks are Coding and AI.
  * No invented platform numbers, ratings or testimonials.
  */
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, BrainCircuit, Check, Clapperboard, CodeXml, GraduationCap, X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Accordion from '@/components/ui/Accordion';
 import { Reveal } from '@/components/homepage/v3/Visuals';
 import s from '@/components/homepage/v3/Home.module.css';
@@ -27,7 +28,7 @@ import {
   StudioHeroVisual,
 } from './TeachVisuals';
 import { EarningsCalculator } from './EarningsCalculator';
-import { APP_LAUNCHES, FOUNDING_OPEN, FOUNDING_SHARE_PCT, STANDARD_SHARE_PCT, STUDIO_ENTRY, STUDIO_OPENS } from '@/lib/launch';
+import { APP_LAUNCHES, CREATOR_POOL_PCT, FOUNDING_OPEN, PRO_MONTHLY_USD, PRO_YEARLY_USD, STUDIO_ENTRY, STUDIO_OPENS } from '@/lib/launch';
 import t from './Teach.module.css';
 
 // While Teyro Studio is closed (lib/launch.ts) these point at the apply form.
@@ -50,9 +51,9 @@ export function TeachHero() {
             Teach coding or AI. <em>Earn every month</em> they keep learning.
           </h1>
           <p className={s.lead}>
-            Build your course in Teyro Studio. Learners try two lessons free, then subscribe, and our streaks, leagues and
-            community keep them coming back. More of them finish, and you keep {STANDARD_SHARE_PCT}% of every payment
-            {FOUNDING_OPEN ? ` — ${FOUNDING_SHARE_PCT}% if you join as a Founding Creator` : ''}.
+            Build your course in Teyro Studio. Learners start free, then Teyro Pro opens every course, and our streaks,
+            leagues and community keep them coming back. Each month {CREATOR_POOL_PCT}% of every Pro learner’s payment is
+            shared among the creators they learn with, by minutes, so the longer they learn with you, the more you earn.
           </p>
           <div className={s.heroActions}>
             <Link href={TEACH_HREF} className={s.btn}>
@@ -70,13 +71,13 @@ export function TeachHero() {
           </div>
           <div className={s.heroNote}>
             <span>
-              <Check size={16} strokeWidth={4} aria-hidden="true" /> Free to publish
+              <Glyph name="check" size={16} strokeWidth={3.6} /> Free to publish
             </span>
             <span>
-              <Check size={16} strokeWidth={4} aria-hidden="true" /> You keep {FOUNDING_OPEN ? `${FOUNDING_SHARE_PCT}% as a Founding Creator` : `${STANDARD_SHARE_PCT}%`}
+              <Glyph name="check" size={16} strokeWidth={3.6} /> {CREATOR_POOL_PCT}% creator pool
             </span>
             <span>
-              <Check size={16} strokeWidth={4} aria-hidden="true" /> Paid to bank or mobile money
+              <Glyph name="check" size={16} strokeWidth={3.6} /> Paid to bank or mobile money
             </span>
           </div>
         </div>
@@ -93,7 +94,7 @@ const COMPARE = [
   ['Most learners drift off after a few videos', 'Streaks, leagues and reminders bring them back daily'],
   ['You can’t tell who’s stuck, or where', 'See the lesson they stop at, and nudge them in one tap'],
   ['A comment box under each video', 'A course community you run, with your learners in it'],
-  ['Learners pay up front, before they trust you', 'Two free lessons first, so they subscribe once they’re hooked'],
+  ['Learners pay up front, before they trust you', 'They start free, so they reach your lessons before they ever pay'],
 ];
 
 export function WhyTeyro() {
@@ -119,14 +120,14 @@ export function WhyTeyro() {
               <li key={us} className={t.compareRow}>
                 <span className={t.them}>
                   <span className={t.xDot} aria-hidden="true">
-                    <X size={14} strokeWidth={4} />
+                    <Glyph name="close" size={14} strokeWidth={3.6} />
                   </span>
                   <span className={t.srOnly}>Elsewhere: </span>
                   {them}
                 </span>
                 <span className={t.us}>
                   <span className={s.tick} aria-hidden="true">
-                    <Check size={16} strokeWidth={4} />
+                    <Glyph name="check" size={16} strokeWidth={3.6} />
                   </span>
                   <span className={t.srOnly}>On Teyro: </span>
                   {us}
@@ -156,7 +157,7 @@ const LOOP = [
   {
     art: '/User onbarding Assets/tey/badge.webp',
     title: 'You keep earning',
-    line: 'Every month a learner stays subscribed, you’re paid again. Finished learners come back for your next course.',
+    line: 'Every month learners keep learning with you, you’re paid again from Teyro Pro. Finished learners come back for your next course.',
   },
 ];
 
@@ -219,7 +220,7 @@ function Split({
             {points.map((p) => (
               <li key={p}>
                 <span className={s.tick} aria-hidden="true">
-                  <Check size={16} strokeWidth={4} />
+                  <Glyph name="check" size={16} strokeWidth={3.6} />
                 </span>
                 {p}
               </li>
@@ -245,8 +246,8 @@ export function Features() {
             Get paid again <em>every month.</em>
           </>
         }
-        copy="Set your course's yearly price. Learners take the first two lessons free, then subscribe yearly or monthly to keep going, so your income grows with every learner who stays."
-        points={['You keep 70% of every payment (80% for Founding Creators)', 'Your price is the yearly plan; monthly is one sixth of it, set for you', 'Free courses welcome too, to grow your audience first']}
+        copy={`Learners pay one subscription, Teyro Pro, for every course. Each month ${CREATOR_POOL_PCT}% of every Pro learner's payment is shared among the creators they learned with, by the minutes they spent in each, so your income grows with every learner who keeps learning with you.`}
+        points={[`${CREATOR_POOL_PCT}% of every Pro learner's payment goes to creators, by minutes`, 'The same deal for every creator, Founding Creators included', 'Free courses welcome too, to grow your audience first']}
         visual={<RecurringVisual />}
       />
       <Split
@@ -309,7 +310,7 @@ export function Features() {
             Your money, <em>where you want it.</em>
           </>
         }
-        copy="Watch every sale land in your earnings. Once it clears, request a payout to your bank or mobile money and follow it from requested to paid."
+        copy="Watch your monthly Teyro Pro share land in your earnings, course by course. Once it clears, request a payout to your bank or mobile money and follow it from requested to paid."
         points={['Bank or mobile money payouts', 'Sales clear after 14 days, then they’re yours to withdraw', 'Withdraw from $50, with statements to download']}
         visual={<PayoutVisual />}
         flip
@@ -330,7 +331,7 @@ export function Calculator() {
           <h2 id="calc-title" className={`${s.display} ${s.h2}`}>
             Do the maths <em>on your course.</em>
           </h2>
-          <p className={s.lead}>Pick your yearly price and how many learners stay subscribed. These are Teyro’s real plan prices.</p>
+          <p className={s.lead}>Pick how many Pro learners take your course and how much of their learning happens in it. These are Teyro Pro’s real prices.</p>
         </Reveal>
         <Reveal>
           <EarningsCalculator />
@@ -348,7 +349,7 @@ const SIDES = [
     who: 'Your learners get',
     tone: t.sideLearners,
     items: [
-      'Two lessons free before they pay a thing',
+      'A free start before they pay a thing',
       'Short daily lessons they can finish',
       'Streaks, leagues and quests that make practice fun',
       'A community and a creator who answers',
@@ -360,7 +361,7 @@ const SIDES = [
     who: 'You get',
     tone: t.sideYou,
     items: [
-      '70% of every payment, every month they stay',
+      `A share of the Teyro Pro pool every month they learn with you`,
       'A studio to build, review and publish',
       'Analytics that show who’s stuck and why',
       'Your own community and public creator page',
@@ -390,7 +391,7 @@ export function BothSides() {
                 {side.items.map((it) => (
                   <li key={it}>
                     <span className={s.tick} aria-hidden="true">
-                      <Check size={16} strokeWidth={4} />
+                      <Glyph name="check" size={16} strokeWidth={3.6} />
                     </span>
                     {it}
                   </li>
@@ -434,7 +435,7 @@ export function Steps() {
         </ol>
         <Reveal className={t.stepsCta}>
           <Link href={TEACH_HREF} className={s.btn}>
-            {TEACH_LABEL} <ArrowRight size={18} strokeWidth={3} aria-hidden="true" />
+            {TEACH_LABEL} <Glyph name="arrow" size={18} strokeWidth={2.8} />
           </Link>
           <Link href="/teach/how-it-works" className={s.btnGhost}>
             See every step in detail
@@ -449,25 +450,25 @@ export function Steps() {
 
 const PERSONAS = [
   {
-    icon: <CodeXml size={28} strokeWidth={2.5} />,
+    icon: <Glyph name="code" size={28} strokeWidth={2.3} />,
     title: 'Developers',
     line: 'Turn what you do every day into a course, from your first language to shipping real apps.',
     outcome: 'Income from skills you already use.',
   },
   {
-    icon: <BrainCircuit size={28} strokeWidth={2.5} />,
+    icon: <Glyph name="sparkle" size={28} strokeWidth={2.3} />,
     title: 'AI builders',
     line: 'Teach people to use AI tools, build agents and automate their work while demand is exploding.',
     outcome: 'Be the teacher people find first.',
   },
   {
-    icon: <GraduationCap size={28} strokeWidth={2.5} />,
+    icon: <Glyph name="cap" size={28} strokeWidth={2.3} />,
     title: 'Teachers and trainers',
     line: 'Take what works in your classroom or bootcamp online, with practice built into every lesson.',
     outcome: 'Reach learners beyond your room.',
   },
   {
-    icon: <Clapperboard size={28} strokeWidth={2.5} />,
+    icon: <Glyph name="video" size={28} strokeWidth={2.3} />,
     title: 'Content creators',
     line: 'Already teaching on YouTube or social? Give your audience a course they finish, and a reason to pay.',
     outcome: 'Monthly income beyond ads.',
@@ -507,26 +508,26 @@ export const TEACH_FAQ = [
     question: 'When does Teyro Studio open?',
     answer: STUDIO_ENTRY.gated
       ? `Teyro Studio opens to creators in ${STUDIO_OPENS}, a month before the learner app launches in ${APP_LAUNCHES}. Apply as a Founding Creator on this page and we’ll invite you the day it opens.`
-      : `Teyro Studio is open. Everyone who joins before the learner app launches in ${APP_LAUNCHES} is a Founding Creator and keeps ${FOUNDING_SHARE_PCT}% of every payment.`,
+      : `Teyro Studio is open. Everyone who joins before the learner app launches in ${APP_LAUNCHES} is a Founding Creator, with a Founding badge and founding benefits in Studio.`,
   },
   {
     question: 'Does it cost anything to teach on Teyro?',
-    answer: 'No. Building and publishing a course is free. Teyro earns only when you do, from its share of each payment.',
+    answer: 'No. Building and publishing a course is free. Teyro earns from Teyro Pro subscriptions, and shares them with creators every month.',
   },
   {
     question: 'How much do I earn?',
     answer:
-      'You keep 70% of every payment a learner makes for your course, and Founding Creators, the first creators on Teyro, keep 80%. Paid courses are subscriptions: learners pay monthly or yearly, so you’re paid again for as long as they keep learning.',
+      `Each month, ${CREATOR_POOL_PCT}% of every Pro learner’s payment (after card fees, tax and refunds) is shared among the creators whose courses they learned in, by the minutes they spent in each. Every creator is paid this way, Founding Creators included. You’re paid again every month for as long as learners keep learning with you.`,
   },
   {
     question: 'How do learners pay for my course?',
     answer:
-      'You set your course’s yearly price, and Teyro adds a monthly plan at one sixth of it, so paying yearly saves learners 50%. For example, $60 a year or $10 a month. Learners take the first two lessons free, then subscribe to continue. You can also publish free courses, and create coupons for launches and your audience.',
+      `They don’t pay per course: learners start free, then Teyro Pro opens every course, yours included, at ${PRO_MONTHLY_USD} a month or ${PRO_YEARLY_USD} a year, with a 7-day free trial. You can also publish free courses.`,
   },
   {
     question: 'When and how do I get paid?',
     answer:
-      'Each sale shows in your earnings straight away and clears after 14 days. From $50 available, you can request a payout to your bank account or mobile money and follow it until it’s paid.',
+      'Your Teyro Pro pool share lands in your earnings every month and clears after 14 days. From $50 available, you can request a payout to your bank account or mobile money and follow it until it’s paid.',
   },
   {
     question: 'What can I teach?',

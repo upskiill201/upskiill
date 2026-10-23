@@ -10,12 +10,7 @@ Everything on `feat/onboarding-pro-rebuild` is built and committed locally, not 
 
 ## 0. Decisions still open (*Decide* before launch)
 
-- [ ] **Founding Creators under Pro.** The teach pages promise "keep 80% of every payment" (standard 70%). Under Pro, learners don't buy courses one by one: creators are paid from the monthly pool (50% of each Pro learner's net payment, split by minutes). Choose one:
-  - (a) Founding Creators get a bigger pool weight;
-  - (b) the 80% applies only to legacy course sales;
-  - (c) something else.
-
-  The public copy (`frontend/lib/launch.ts` share constants, `components/teach/*`, `components/launch/LaunchSections.tsx`, `app/teach/[skill]/[place]`) is **unchanged** until this is decided, and must be updated **the same day** Pro goes live. The in-studio Creator Guide already explains the pool.
+- [x] **Founding Creators under Pro** (decided 2026-10-23): paid exactly like every creator, from the same 50% pool; they keep the Founding badge and founding benefits. All public and in-studio copy now describes the pool. Ship it the same day Pro goes live, because it no longer mentions per-course prices or 70/80%.
 - [ ] **Refund policy wording**, for Stripe receipts and `/terms`.
 - [ ] **Tax:** turn on Stripe Tax (or not) and choose where you're registered.
 

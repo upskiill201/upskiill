@@ -6,8 +6,9 @@
  *   lesson rules          lib/lesson/blocks.ts (cards ≤30, exercises ≤20, video ≤15 min)
  *   review checklist      components/course-workspace/ReviewTab.tsx
  *   pricing               lib/pricing-engine.ts (monthly = base/10×4×0.7, yearly = base×0.8)
- *   share / payouts       backend earnings.service (70%, 14-day clearing, $50 minimum)
- *   Teyro Pro pool        backend pro/pool (50% per subscriber, by capped minutes, first completion only)
+ *   payouts               backend earnings.service (14-day clearing, $50 minimum)
+ *   Teyro Pro pool        backend pro/pool (50% per subscriber, by capped minutes, first completion only),
+ *                         the same for every creator, Founding Creators included
  *   nudges                backend analytics/course-pulse.service (72h / 24h cooldowns, 50 max)
  *   community             learners join after 2 lessons; mute 1 / 7 / 30 days
  *
@@ -420,10 +421,10 @@ export const GUIDE: GuideArticle[] = [
       {
         heading: 'Pricing',
         blocks: [
-          { t: 'visual', v: 'pricing', caption: 'A $60 course is $60 a year or $10 a month. You keep 70%.' },
+          { t: 'visual', v: 'pricing', caption: 'A yearly Pro learner pays $5.00 a month; half of it is shared among creators by minutes.' },
           {
             t: 'p',
-            text: 'Set a course **free**, or give it a **yearly price**: what a learner pays for a full year. Teyro adds a **monthly** plan at one sixth of it, so paying yearly saves learners 50%. Learners take the first two lessons free, then subscribe to keep going, so you’re paid again every time they renew.',
+            text: 'Set a course **free**, open to everyone, or **paid**, which makes it part of **Teyro Pro**: one subscription ($12.99 a month or $59.99 a year) that opens every course. Anyone can try your first two lessons. You’re paid from the Pro pool every month, for the minutes Pro learners spend in your course.',
           },
           { t: 'tip', text: 'A free first course is a great way to build an audience. Your next course can be paid, and your learners will already trust you.' },
         ],
@@ -597,16 +598,16 @@ export const GUIDE: GuideArticle[] = [
         blocks: [
           {
             t: 'p',
-            text: 'You keep **70%** of every payment for your course: the first subscription payment and every renewal after it. Each sale shows up in Earnings straight away.',
+            text: 'Learners don’t buy courses one by one: **Teyro Pro** opens every course. You’re paid from the Pro pool every month, for the minutes Pro learners spend in your courses. Every creator is paid this way, Founding Creators included. Learners who bought your course before Teyro Pro keep their plan until it ends, and you keep your share of each renewal.',
           },
         ],
       },
       {
-        heading: 'Teyro Pro learners',
+        heading: 'How the Teyro Pro pool works',
         blocks: [
           {
             t: 'p',
-            text: 'Teyro Pro learners don’t buy courses one by one: one subscription opens every course. Each month, **half of every Pro learner’s payment** (after tax, card fees and refunds) is shared among the creators whose courses they learned in, **by the minutes they spent in each**.',
+            text: 'Each month, **half of every Pro learner’s payment** (after tax, card fees and refunds) is shared among the creators whose courses they learned in, **by the minutes they spent in each**.',
           },
           {
             t: 'list',
@@ -627,7 +628,7 @@ export const GUIDE: GuideArticle[] = [
             t: 'steps',
             items: [
               { title: 'Add a payout method', text: 'A bank account or mobile money, in Earnings.' },
-              { title: 'Wait for sales to clear', text: 'Each sale clears after 14 days, then it’s available to withdraw.' },
+              { title: 'Wait for earnings to clear', text: 'Each pool share or sale clears after 14 days, then it’s available to withdraw.' },
               { title: 'Request a payout', text: 'Once $50 or more is available, request it and follow it until it’s paid.' },
             ],
           },

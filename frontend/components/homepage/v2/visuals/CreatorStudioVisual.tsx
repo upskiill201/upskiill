@@ -113,7 +113,7 @@ function EarningsBody() {
             className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-extrabold"
             style={{ backgroundColor: '#FFF4CC', color: '#B45309' }}
           >
-            <Crown size={12} /> Founding &middot; 70%
+            <Crown size={12} /> Founding creator
           </span>
         </div>
         <p className="mt-1 text-[2rem] font-extrabold leading-none" style={{ color: '#58A700' }}>$18,240.00</p>

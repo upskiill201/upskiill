@@ -198,7 +198,7 @@ export function EarningsHub() {
           <span className={e.walletChips}>
             <Pill tone={sum.agreement.isFounding ? 'var(--warning)' : 'var(--color-brand)'}>
               <Glyph name={sum.agreement.isFounding ? 'crown' : 'sparkle'} size={11} strokeWidth={2.4} />
-              You keep {sum.agreement.creatorSharePct}%{sum.agreement.isFounding ? ' · Founding creator' : ''}
+              Paid from the Teyro Pro pool{sum.agreement.isFounding ? ' · Founding creator' : ''}
             </Pill>
           </span>
           <button
@@ -229,8 +229,8 @@ export function EarningsHub() {
       </div>
 
       {sum.isEmpty ? (
-        <EmptyCard pose="tablet" title="Your first sale is on its way">
-          When learners unlock your course, every sale shows up here, with exactly what you keep ({sum.agreement.creatorSharePct}% of net).
+        <EmptyCard pose="tablet" title="Your first pool share is on its way">
+          When Teyro Pro learners spend time in your course, your monthly share of the pool shows up here, course by course.
         </EmptyCard>
       ) : (
         <>
