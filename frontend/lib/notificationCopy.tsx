@@ -1,5 +1,5 @@
 import React from 'react';
-import { AtSign, Bell, BellRing, Flame, Heart, LifeBuoy, LockOpen, MessageCircle, Megaphone, PartyPopper, Snowflake, Trophy, UserPlus } from 'lucide-react';
+import { AtSign, Bell, BellRing, CreditCard, Crown, Flame, Heart, LifeBuoy, LockOpen, MessageCircle, Megaphone, PartyPopper, Snowflake, Trophy, UserPlus } from 'lucide-react';
 import type { AppNotification } from './communityApi';
 
 /**
@@ -40,6 +40,8 @@ const TYPE_PHRASES: Record<string, string> = {
   TEY_LEAGUE_RESULT: 'Your league results are in',
   TEY_COURSE_UNLOCK: 'Your course is waiting for you',
   TEY_REACH: 'Install Teyro and turn on reminders',
+  TEY_PRO_BILLING: 'An update about your Teyro Pro',
+  TEY_PRO_OFFER: 'Teyro Pro is waiting for you',
 };
 
 /**
@@ -57,6 +59,8 @@ const TEY_EVENT_TYPES = new Set([
   'TEY_COURSE_UNLOCK',
   'TEY_FIRST_LESSON',
   'TEY_REACH',
+  'TEY_PRO_BILLING',
+  'TEY_PRO_OFFER',
   'TEY_COMMUNITY_REPLY',
   'TEY_COMMUNITY_COMMENT',
   'TEY_COMMUNITY_MENTION',
@@ -96,6 +100,8 @@ export function typeIcon(type: string, size = 12): React.ReactNode {
   if (type.startsWith('TEY_LEAGUE_')) return <Trophy size={size} />;
   if (type === 'TEY_STREAK_FREEZE_USED') return <Snowflake size={size} />;
   if (type === 'TEY_COURSE_UNLOCK') return <LockOpen size={size} />;
+  if (type === 'TEY_PRO_BILLING') return <CreditCard size={size} />;
+  if (type === 'TEY_PRO_OFFER') return <Crown size={size} />;
   if (type === 'TEY_COMMUNITY_MENTION') return <AtSign size={size} />;
   if (type === 'TEY_COMMUNITY_ANNOUNCEMENT') return <Megaphone size={size} />;
   if (type.startsWith('TEY_COMMUNITY_')) return <MessageCircle size={size} />;

@@ -178,11 +178,12 @@ export class TeyNotifyService {
     ]);
     if (!user) return { allow: false, reason: 'NO_USER' };
     if (!prefs.pushEnabled) return { allow: false, reason: 'PUSH_OPTED_OUT' };
-    if (!prefs[spec.pref]) return { allow: false, reason: `CATEGORY_OPTED_OUT:${spec.pref}` };
+    const transactional = 'transactional' in spec && spec.transactional === true;
+    if (!transactional && !prefs[spec.pref]) return { allow: false, reason: `CATEGORY_OPTED_OUT:${spec.pref}` };
     if (this.policy.isQuietNow(user, prefs)) return { allow: false, reason: 'QUIET_HOURS' };
 
     const sent = { userId: input.userId, channel: 'PUSH', status: 'SENT' };
-    if (spec.throttleMinutes > 0) {
+    if (!transactional && spec.throttleMinutes > 0) {
       const recent = await this.prisma.teyDelivery.findFirst({
         where: {
           ...sent,
@@ -194,11 +195,13 @@ export class TeyNotifyService {
       if (recent) return { allow: false, reason: 'KIND_THROTTLED' };
     }
 
-    const midnight = localTimeToday(resolveLocalNow(user), 0, 0);
-    const today = await this.prisma.teyDelivery.count({
-      where: { ...sent, ruleId: { in: kindsFor(spec.audience) }, sentAt: { gte: midnight } },
-    });
-    if (today >= DAILY_EVENT_PUSH_CAP[spec.audience]) return { allow: false, reason: 'DAILY_CAP' };
+    if (!transactional) {
+      const midnight = localTimeToday(resolveLocalNow(user), 0, 0);
+      const today = await this.prisma.teyDelivery.count({
+        where: { ...sent, ruleId: { in: kindsFor(spec.audience) }, sentAt: { gte: midnight } },
+      });
+      if (today >= DAILY_EVENT_PUSH_CAP[spec.audience]) return { allow: false, reason: 'DAILY_CAP' };
+    }
 
     const devices = await this.prisma.pushSubscription.count({
       where: { userId: input.userId, isActive: true },

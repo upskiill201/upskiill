@@ -4,6 +4,11 @@ import {
   EmailChannel,
   TemplateMeta,
 } from '../types';
+import {
+  PRO_BILLING_EMAIL_KINDS,
+  PRO_MARKETING_EMAILS,
+  type ProBillingEmailKind,
+} from './pro/pro-billing.template';
 
 /**
  * Explicit registry of every template — implemented or not (spec §46).
@@ -288,6 +293,8 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateMeta> = {
     description: 'Unlock journey stage 3 (final), day 7 — says it is the last one.',
   },
 
+  ...proBillingTemplates(),
+
   'creator.welcome': {
     templateKey: 'creator.welcome',
     category: EmailCategory.CREATOR,
@@ -359,6 +366,44 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateMeta> = {
       'Fired from EarningsService.transitionPayout() on FAILED/REJECTED.',
   },
 };
+
+/**
+ * Teyro Pro billing (templates/pro/pro-billing.template.ts), queued by the
+ * Pro billing journey in tey/notify. Money emails are transactional; only the
+ * two nudges (checkout recovery, "decide later") are conversion mail.
+ */
+function proBillingTemplates(): Record<string, TemplateMeta> {
+  const what: Record<ProBillingEmailKind, string> = {
+    'trial-started': 'Trial started: end date, reminder date, the exact charge after it.',
+    'trial-reminder': 'Two days before the trial ends (48–24h window), with the real amount. Skipped if cancelled.',
+    'trial-ended': 'Trial ended without a charge (cancelled or no card).',
+    converted: 'First paid invoice after the trial.',
+    'payment-failed': 'invoice.payment_failed: update-card link, grace date when there is one.',
+    'action-required': 'invoice.payment_action_required: the bank wants a 3D Secure yes.',
+    'access-ended': 'Grace ran out after failed payments; Pro has ended.',
+    'renewal-upcoming': 'Yearly plan renews soon (invoice.upcoming).',
+    'cancel-confirmed': 'Cancellation scheduled: Pro stays on until the period end, no more charges.',
+    refunded: 'A full refund ended Pro.',
+    'prepaid-paid': 'Mobile Money Pro paid: the end date, and that it will not renew by itself.',
+    'prepaid-ending': 'Mobile Money Pro ends in 3 days / tomorrow (daily scan).',
+    'prepaid-ended': 'Mobile Money Pro ended.',
+    'checkout-recovery': 'Backed out of the payment sheet: at most one every 7 days.',
+    'decide-later': 'Exit survey "I\'ll decide later": the reminder they asked for.',
+  };
+  return Object.fromEntries(
+    PRO_BILLING_EMAIL_KINDS.map((kind) => [
+      `pro.${kind}`,
+      {
+        templateKey: `pro.${kind}`,
+        category: PRO_MARKETING_EMAILS.has(kind) ? EmailCategory.CONVERSION : EmailCategory.TRANSACTIONAL,
+        audience: EmailAudience.STUDENT,
+        channel: EmailChannel.EMAIL,
+        enabled: true,
+        description: what[kind],
+      },
+    ]),
+  );
+}
 
 export function getTemplateMeta(templateKey: string): TemplateMeta | undefined {
   return TEMPLATE_REGISTRY[templateKey];

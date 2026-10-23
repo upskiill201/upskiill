@@ -122,6 +122,7 @@ export class ProWebhookService {
         this.events.emit('pro.payment_failed', {
           userId: synced.userId,
           invoiceId: obj.id,
+          amountMinor: obj.amount_due ?? null,
           attempt: obj.attempt_count ?? null,
           nextAttemptAt: obj.next_payment_attempt ? new Date(obj.next_payment_attempt * 1000) : null,
           firstChargeAfterTrial: obj.billing_reason === 'subscription_cycle' && !(await this.hasPaid(subId)),
@@ -137,6 +138,7 @@ export class ProWebhookService {
         this.events.emit('pro.action_required', {
           userId: synced.userId,
           invoiceId: obj.id,
+          amountMinor: obj.amount_due ?? null,
           hostedInvoiceUrl: obj.hosted_invoice_url ?? null,
         });
         return;
