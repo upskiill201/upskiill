@@ -1,23 +1,10 @@
-'use client';
+import { redirect } from 'next/navigation';
 
 /**
- * The old cart checkout. It charged course prices without ever granting
- * access, and the backend now refuses it (410). Every course is part of
- * Teyro Pro, so anyone landing here goes to the Pro plans.
+ * /checkout — retired 2026-10-23.
+ * Teyro Pro (one subscription, every course) replaced per-course buying, so
+ * this old marketplace page is retired and sends people on.
  */
-
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
-
-export default function CheckoutPage() {
-  const router = useRouter();
-  useEffect(() => {
-    router.replace('/pro?m=DEEP_LINK');
-  }, [router]);
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <TeyroBrandedLoader suppressConnectionCheck />
-    </div>
-  );
+export default function Retired() {
+  redirect('/pro');
 }

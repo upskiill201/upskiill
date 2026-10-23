@@ -157,7 +157,6 @@ export const metadata: Metadata = {
 import { SWRProvider } from "../components/providers/SWRProvider";
 import { ServiceWorkerRegistrar } from "../components/providers/ServiceWorkerRegistrar";
 import { TeyPushNavigation } from "../components/providers/TeyPushProvider";
-import { CartProvider } from "../context/CartContext";
 import { PostHogProvider } from "../components/PostHogProvider";
 import ReferralCapture from "../components/referral/ReferralCapture";
 
@@ -174,8 +173,6 @@ import ReferralCapture from "../components/referral/ReferralCapture";
  * What stays here, and why:
  *  - ServiceWorkerRegistrar — PWA install has to work from the landing page.
  *  - SWRProvider — small, and NotificationBell/AdminUI need it outside (app).
- *  - CartProvider — Header and CourseCard call useCart, which THROWS without a
- *    provider, and both render on public routes.
  *  - PostHogProvider — removing it from marketing would delete the top of the
  *    acquisition funnel.
  *  - TeyPushNavigation — a notification tap must route from whatever page the
@@ -202,13 +199,11 @@ export default function RootLayout({
         <TeyPushNavigation />
         <SWRProvider>
           <PostHogProvider>
-            <CartProvider>
-              <HeaderWrapper />
-              <main className="flex-1" style={{ overflow: 'visible' }}>
-                {children}
-              </main>
-              <FooterWrapper />
-            </CartProvider>
+            <HeaderWrapper />
+            <main className="flex-1" style={{ overflow: 'visible' }}>
+              {children}
+            </main>
+            <FooterWrapper />
           </PostHogProvider>
         </SWRProvider>
       </body>
