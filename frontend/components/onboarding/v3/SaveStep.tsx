@@ -13,8 +13,8 @@ import { FaGoogle } from 'react-icons/fa';
 import { signInWithGoogle } from '@/lib/firebase';
 import { playHaptic } from '@/lib/haptics';
 import type { AnswersV3 } from '@/lib/onboarding/v3/flow';
-import { Art, type ArtName } from './art/Art';
-import { Glyph } from './art/Glyph';
+import { Art, type ArtName } from '@/components/art/Art';
+import { Glyph } from '@/components/art/Glyph';
 import { Btn, kitCss as css } from './ui/Kit';
 
 function messageOf(data: unknown, fallback: string): string {

@@ -23,7 +23,7 @@ import { saveSpot } from '@/lib/lesson/resume';
 import type { CatalogCourse } from '@/lib/onboarding/v3/catalog';
 import type { PlacementResult } from '@/lib/onboarding/v3/flow';
 import type { PlacementTest } from '@/lib/path/testOut';
-import { Art } from './art/Art';
+import { Art } from '@/components/art/Art';
 import { TASTE_MINUTES, TASTE_QUESTIONS } from './PathSteps';
 import { Btn, Hero, kitCss as css } from './ui/Kit';
 

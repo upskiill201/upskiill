@@ -55,6 +55,8 @@ const PATHS = {
     />
   ),
   arrow: <path d="M4.5 12h14M13 6.5l5.5 5.5-5.5 5.5" />,
+  menu: <path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h15" />,
+  chevronLeft: <path d="M14.5 5.5L8 12l6.5 6.5" />,
 } satisfies Record<string, ReactNode>;
 
 export type GlyphName = keyof typeof PATHS;

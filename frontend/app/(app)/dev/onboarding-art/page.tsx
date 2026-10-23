@@ -6,9 +6,11 @@
  * like the other /dev benches; visit /dev/onboarding-art directly.
  */
 
-import { Art, type ArtName } from '@/components/onboarding/v3/art/Art';
+import { Art, type ArtName } from '@/components/art/Art';
 
 const NAMES: ArtName[] = [
+  'home', 'notebook', 'compass', 'code', 'people', 'trophy', 'target', 'shop', 'avatar', 'more',
+  'gear', 'lifebuoy', 'map', 'clapper', 'easel', 'door',
   'laptop', 'chart', 'rocket', 'piggy', 'team', 'mic', 'chip', 'brain',
   'code', 'spark', 'bubbles', 'mountain', 'briefcase', 'coins', 'pie', 'book',
   'seed', 'sprout', 'tree', 'pace5', 'pace10', 'pace20', 'pace30',

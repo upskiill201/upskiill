@@ -710,6 +710,175 @@ const DRAWINGS = {
       <rect x="22" y="42" width="20" height="7" rx="3.5" className={f('w')} />
     </>
   ),
+  // ── The app's menu and bottom bar ──────────────────────────────────────
+  home: (
+    <>
+      <Ground rx={20} />
+      <rect x="43" y="10" width="7" height="14" rx="1.6" className={f('rd')} />
+      <rect x="12" y="28" width="40" height="28" rx="4" className={f('stl')} />
+      <rect x="12" y="27" width="40" height="27" rx="4" className={f('w')} />
+      <rect x="13" y="28" width="38" height="25" rx="3" className={s('stl')} strokeWidth="2" />
+      <path className={f('bd')} d="M5 33L32 10l27 23a3 3 0 0 1-2 5.2H7A3 3 0 0 1 5 33Z" />
+      <path className={f('b')} d="M5 31L32 8l27 23a3 3 0 0 1-2 5.2H7A3 3 0 0 1 5 31Z" />
+      <path className={f('hi')} d="M14 28L32 13l4 3.4-20 16Z" opacity="0.35" />
+      <rect x="26" y="38" width="12" height="16" rx="3" className={f('y')} />
+      <circle cx="35" cy="46.5" r="1.4" className={f('yd')} />
+      <rect x="17" y="40" width="6" height="6" rx="1.5" className={f('sky')} />
+      <rect x="41" y="40" width="6" height="6" rx="1.5" className={f('sky')} />
+    </>
+  ),
+  notebook: (
+    <>
+      <Ground rx={18} />
+      <rect x="13" y="7" width="40" height="49" rx="6" className={f('gd')} />
+      <rect x="16" y="7" width="37" height="46" rx="5" className={f('g')} />
+      <rect x="13" y="7" width="8" height="49" rx="4" className={f('gd')} />
+      <rect x="16" y="53" width="36" height="3" rx="1.5" className={f('w')} opacity="0.9" />
+      <rect x="26" y="15" width="21" height="10" rx="3" className={f('w')} />
+      <rect x="29" y="18.5" width="15" height="3" rx="1.5" className={f('gl')} />
+      <path className={f('r')} d="M40 44v16l4.5-3.4L49 60V44Z" />
+      <rect x="23" y="11" width="3" height="38" rx="1.5" className={f('hi')} />
+    </>
+  ),
+  trophy: (
+    <>
+      <Ground rx={16} />
+      <path className={s('yd')} strokeWidth="5" d="M18 15h-5.5a7 7 0 0 0 8 12M46 15h5.5a7 7 0 0 1-8 12" />
+      <path className={f('yd')} d="M17 9h30v13a15 15 0 0 1-30 0Z" />
+      <path className={f('y')} d="M17 7h30v13a15 15 0 0 1-30 0Z" />
+      <rect x="28" y="34" width="8" height="11" className={f('yd')} />
+      <rect x="18" y="43" width="28" height="11" rx="3.4" className={f('kl')} />
+      <rect x="24" y="47" width="16" height="3" rx="1.5" className={f('y')} />
+      <Sparkle x={32} y={18} r={6.5} k="w" />
+      <rect x="20.5" y="10" width="3.4" height="12" rx="1.7" className={f('hi')} />
+    </>
+  ),
+  shop: (
+    <>
+      <Ground rx={22} />
+      <rect x="9" y="25" width="46" height="31" rx="4" className={f('stl')} />
+      <rect x="9" y="24" width="46" height="30" rx="4" className={f('w')} />
+      <rect x="10" y="25" width="44" height="28" rx="3" className={s('stl')} strokeWidth="2" />
+      <rect x="14" y="33" width="16" height="13" rx="3" className={f('sky')} />
+      <rect x="35" y="33" width="14" height="21" rx="3" className={f('b')} />
+      <circle cx="45" cy="44" r="1.4" className={f('w')} />
+      {[0, 1, 2, 3, 4].map((i) => (
+        <g key={i} className={f(i % 2 ? 'w' : 'r')}>
+          <rect x={6 + i * 10.4} y="12" width="10.4" height="12" />
+          <circle cx={11.2 + i * 10.4} cy="24" r="5.2" />
+        </g>
+      ))}
+      <rect x="6" y="9" width="52" height="5" rx="2.5" className={f('rd')} />
+      <circle cx="32" cy="7" r="5" className={f('y')} />
+    </>
+  ),
+  avatar: (
+    <>
+      <Ground rx={18} />
+      <circle cx="32" cy="32" r="24" className={f('vd')} />
+      <circle cx="32" cy="30" r="24" className={f('v')} />
+      <circle cx="32" cy="24" r="9" className={f('w')} />
+      <path className={f('w')} d="M15 46c2-8 9-12 17-12s15 4 17 12a24 24 0 0 1-34 0Z" />
+      <circle cx="28.6" cy="23.5" r="1.4" className={f('vd')} />
+      <circle cx="35.4" cy="23.5" r="1.4" className={f('vd')} />
+      <path className={s('vd')} strokeWidth="1.8" d="M29.5 27.5q2.5 2 5 0" />
+    </>
+  ),
+  more: (
+    <>
+      <Ground rx={16} />
+      <circle cx="32" cy="32" r="23" className={f('td')} />
+      <circle cx="32" cy="30" r="23" className={f('t')} />
+      <circle cx="21" cy="30" r="4.6" className={f('w')} />
+      <circle cx="32" cy="30" r="4.6" className={f('w')} />
+      <circle cx="43" cy="30" r="4.6" className={f('w')} />
+    </>
+  ),
+  gear: (
+    <>
+      <Ground rx={16} />
+      <g className={f('std')}>
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+          <rect key={i} x="27" y="6" width="10" height="12" rx="2.6" transform={`rotate(${i * 45} 32 31)`} />
+        ))}
+      </g>
+      <circle cx="32" cy="32" r="18" className={f('std')} />
+      <circle cx="32" cy="31" r="17" className={f('st')} />
+      <circle cx="32" cy="31" r="8.4" className={f('b')} />
+      <circle cx="32" cy="31" r="3.6" className={f('w')} />
+    </>
+  ),
+  lifebuoy: (
+    <>
+      <Ground rx={16} />
+      <circle cx="32" cy="33" r="22" className={f('rd')} />
+      <circle cx="32" cy="31" r="22" className={f('r')} />
+      <circle cx="32" cy="31" r="16" className={s('w')} strokeWidth="12" strokeDasharray="12.57 12.57" transform="rotate(-22 32 31)" />
+      <circle cx="32" cy="31" r="10" className={f('w')} />
+      <circle cx="32" cy="31" r="10" className={s('rd')} strokeWidth="2" />
+    </>
+  ),
+  map: (
+    <>
+      <Ground rx={22} />
+      <path className={f('gl')} d="M6 15l17-5v40L6 55Z" />
+      <path className={f('g')} d="M23 10l18 5v40l-18-5Z" />
+      <path className={f('gl')} d="M41 15l17-5v40l-17 5Z" />
+      <path className={s('w')} strokeWidth="2.8" strokeDasharray="1 5.5" d="M11 46c6-8 13-4 17-11s12-12 20-11" />
+      <path className={f('r')} d="M48 32c-5-6-7-9-7-12a7 7 0 0 1 14 0c0 3-2 6-7 12Z" />
+      <circle cx="48" cy="19.6" r="2.7" className={f('w')} />
+    </>
+  ),
+  clapper: (
+    <>
+      <Ground rx={20} />
+      <rect x="8" y="26" width="48" height="30" rx="5" className={f('k')} />
+      <path className={f('w')} d="M12 26h7l-4 8H8v-3Zm14 0h7l-4 8h-7Zm14 0h7l-4 8h-7Z" opacity="0.9" />
+      <g transform="rotate(-14 9 25)">
+        <rect x="8" y="13" width="48" height="10" rx="3" className={f('kl')} />
+        <path className={f('w')} d="M14 13h6l-5 10H9Zm14 0h6l-5 10h-6Zm14 0h6l-5 10h-6Z" opacity="0.9" />
+      </g>
+      <path className={f('y')} d="M27 38l13 7.5L27 53Z" />
+    </>
+  ),
+  easel: (
+    <>
+      <Ground rx={18} />
+      <path className={s('yd')} strokeWidth="4" d="M21 44l-6 14M43 44l6 14M32 44v13" />
+      <rect x="7" y="9" width="50" height="36" rx="4" className={f('stl')} />
+      <rect x="7" y="8" width="50" height="35" rx="4" className={f('w')} />
+      <rect x="8" y="9" width="48" height="33" rx="3" className={s('stl')} strokeWidth="2" />
+      <rect x="15" y="27" width="7" height="10" rx="1.6" className={f('g')} />
+      <rect x="26" y="21" width="7" height="16" rx="1.6" className={f('b')} />
+      <rect x="37" y="15" width="7" height="22" rx="1.6" className={f('v')} />
+      <Sparkle x={50} y={16} r={4.4} k="y" />
+      <rect x="27" y="4" width="10" height="6" rx="3" className={f('yd')} />
+    </>
+  ),
+  door: (
+    <>
+      <Ground rx={18} />
+      <rect x="9" y="6" width="32" height="51" rx="4" className={f('std')} />
+      <rect x="12" y="9" width="26" height="46" rx="3" className={f('r')} />
+      <rect x="15" y="13" width="20" height="16" rx="2" className={f('rd')} opacity="0.55" />
+      <circle cx="33" cy="34" r="2.4" className={f('y')} />
+      <path className={s('g')} strokeWidth="5.4" d="M36 33h20M49 25.5L56.5 33 49 40.5" />
+    </>
+  ),
+  people: (
+    <>
+      <Ground rx={22} />
+      <path className={f('b')} d="M7 55a13 13 0 0 1 26 0Z" />
+      <circle cx="20" cy="30" r="8" className={f('bl')} />
+      <circle cx="17.4" cy="29.4" r="1.3" className={f('k')} />
+      <circle cx="22.6" cy="29.4" r="1.3" className={f('k')} />
+      <path className={f('g')} d="M29 55a14 14 0 0 1 28 0Z" />
+      <circle cx="43" cy="28" r="9" className={f('gl')} />
+      <circle cx="40.2" cy="27.4" r="1.4" className={f('k')} />
+      <circle cx="45.8" cy="27.4" r="1.4" className={f('k')} />
+      <path className={f('r')} d="M32 17c-5-3-7-5.6-7-8.2a3.6 3.6 0 0 1 7-1.2 3.6 3.6 0 0 1 7 1.2c0 2.6-2 5.2-7 8.2Z" />
+    </>
+  ),
   ice: (
     <>
       <Ground rx={16} />

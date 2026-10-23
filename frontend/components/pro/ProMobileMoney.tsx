@@ -6,8 +6,8 @@
  * renewal, and the screen says both before anyone types a number.
  */
 
-import { Art } from '@/components/onboarding/v3/art/Art';
-import { Glyph } from '@/components/onboarding/v3/art/Glyph';
+import { Art } from '@/components/art/Art';
+import { Glyph } from '@/components/art/Glyph';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import CountryOperatorPicker from '@/components/features/course-unlock/CountryOperatorPicker';
 import PhoneField from '@/components/features/course-unlock/PhoneField';

@@ -71,8 +71,8 @@
 .f-sh { fill: var(--a-shadow); }
 .f-hi { fill: var(--a-white); opacity: 0.55; }
 
-.s-b, .s-bd, .s-bl, .s-sky, .s-g, .s-gd, .s-y, .s-yd, .s-yl, .s-o, .s-r, .s-p, .s-pd,
-.s-v, .s-vd, .s-k, .s-st, .s-std, .s-stl, .s-w, .s-t {
+.s-b, .s-bd, .s-bl, .s-sky, .s-g, .s-gd, .s-gl, .s-y, .s-yd, .s-yl, .s-o, .s-od, .s-r, .s-rd, .s-p, .s-pd,
+.s-v, .s-vd, .s-vl, .s-k, .s-kl, .s-st, .s-std, .s-stl, .s-w, .s-t, .s-td {
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -98,6 +98,12 @@
 .s-stl { stroke: var(--a-steel-l); }
 .s-w { stroke: var(--a-white); }
 .s-t { stroke: var(--a-teal); }
+.s-td { stroke: var(--a-teal-d); }
+.s-gl { stroke: var(--a-green-l); }
+.s-od { stroke: var(--a-orange-d); }
+.s-rd { stroke: var(--a-red-d); }
+.s-vl { stroke: var(--a-purple-l); }
+.s-kl { stroke: var(--a-ink-l); }
 
 /* Small life: a selected drawing does a happy wiggle. */
 .wiggle {

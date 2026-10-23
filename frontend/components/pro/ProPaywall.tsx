@@ -16,8 +16,8 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Art, type ArtName } from '@/components/onboarding/v3/art/Art';
-import { Glyph } from '@/components/onboarding/v3/art/Glyph';
+import { Art, type ArtName } from '@/components/art/Art';
+import { Glyph } from '@/components/art/Glyph';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { captureEvent } from '@/lib/analytics';
@@ -77,7 +77,7 @@ type View =
   | 'success';
 
 const TEY = '/User onbarding Assets/tey';
-/** Teyro's own illustrations (components/onboarding/v3/art), never a stock icon. */
+/** Teyro's own illustrations (components/art), never a stock icon. */
 const BENEFIT_ART: Record<string, ArtName> = {
   courses: 'books',
   limit: 'infinity',

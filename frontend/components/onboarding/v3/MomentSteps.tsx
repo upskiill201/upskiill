@@ -8,8 +8,8 @@
 
 import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { Art, type ArtName } from '@/components/onboarding/v3/art/Art';
-import { Glyph } from '@/components/onboarding/v3/art/Glyph';
+import { Art, type ArtName } from '@/components/art/Art';
+import { Glyph } from '@/components/art/Glyph';
 import { playOnboardingCue, resetCommitTicks } from '@/lib/audio/onboardingAudio';
 import { duckOnboardingMusic } from '@/lib/audio/onboardingMusic';
 import { celebrationHaptic, playHaptic } from '@/lib/haptics';

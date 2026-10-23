@@ -17,7 +17,7 @@
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { loadStripe, type Stripe, type StripeElementsOptions } from '@stripe/stripe-js';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Glyph } from '@/components/onboarding/v3/art/Glyph';
+import { Glyph } from '@/components/art/Glyph';
 import { useMemo, useRef, useState } from 'react';
 import { newId, proApi, ProApiError, type PaywallMoment, type ProPlan, type ProStatus } from '@/lib/pro/api';
 import { formatDay, formatPrice } from '@/lib/pro/copy';

@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useEffect } from 'react';
 import { playOnboardingCue } from '@/lib/audio/onboardingAudio';
 import { playHaptic } from '@/lib/haptics';
-import { Art, type ArtName } from './art/Art';
+import { Art, type ArtName } from '@/components/art/Art';
 import { Btn, kitCss as css } from './ui/Kit';
 
 export function SplashStep({ onDone }: { onDone: () => void }) {

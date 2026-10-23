@@ -10,7 +10,7 @@
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 import { FaAppStoreIos, FaGoogle, FaInstagram, FaLinkedinIn, FaTiktok, FaYoutube } from 'react-icons/fa';
-import { Art, topicArt, type ArtName } from '@/components/onboarding/v3/art/Art';
+import { Art, topicArt, type ArtName } from '@/components/art/Art';
 import { GOALS } from '@/lib/onboarding/goals';
 import type { CatalogCourse } from '@/lib/onboarding/v3/catalog';
 import { DAILY_OPTIONS, EXPERIENCE_OPTIONS, SOURCE_OPTIONS, TIME_OPTIONS } from '@/lib/onboarding/v3/flow';

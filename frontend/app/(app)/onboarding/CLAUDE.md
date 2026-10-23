@@ -150,12 +150,12 @@ INSTALL, PUSH, COMPLETE.
 ## Art and icons: ours, never stock (founder, 2026-10-23)
 
 - Every answer, reward and moment uses **Teyro's own drawings**:
-  `components/onboarding/v3/art/Art.tsx` (flat, chunky, a darker underside
+  `components/art/Art.tsx` (shared app-wide) (flat, chunky, a darker underside
   and a highlight, on a 64-unit grid). Colours come from `art.module.css`,
   derived from the brand tokens; no hex. Check new drawings on the
   `/dev/onboarding-art` bench, on white, before using them.
 - Small UI icons (back, sound, check, chevron, mail, eye, lock, close) are
-  `art/Glyph.tsx`, also ours. **No lucide icons in onboarding or the
+  `components/art/Glyph.tsx`, also ours. **No lucide icons in onboarding or the
   paywall.** (Brand logos on "How did you hear" use `react-icons/fa`, as the
   repo rule allows; iOS install guides keep the OS's own share icon.)
 - Look and pieces: `ui/Kit.tsx` + `ui/v3.module.css` (top bar, Tey and his
