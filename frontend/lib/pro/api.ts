@@ -41,6 +41,8 @@ export interface ProPlans {
   trialEligible: boolean;
   plans: PlanView[];
   offer: OfferView | null;
+  /** Old per-course plans that stop renewing once Pro is paid for (you keep each to its end). */
+  courseRenewals?: { title: string; renewsAt: string }[];
   mobileMoney: { enabled: boolean; trial: boolean; autoRenew: boolean };
 }
 

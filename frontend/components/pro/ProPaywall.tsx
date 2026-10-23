@@ -154,6 +154,14 @@ export default function ProPaywall({ moment, context = {}, onDismiss, onPro, clo
   const monthly = planOf('MONTHLY');
   const trialEligible = !!plans?.trialEligible;
   const trialDays = plans?.trialDays ?? 7;
+  // Pro covers every course, so an old course plan stops renewing once Pro is paid for.
+  const renewals = plans?.courseRenewals ?? [];
+  const renewalNote =
+    renewals.length === 1
+      ? `Your ${renewals[0].title} plan stops renewing once Pro is paid for. You keep it until ${new Date(renewals[0].renewsAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}, at no extra charge.`
+      : renewals.length > 1
+        ? `Your ${renewals.length} course plans stop renewing once Pro is paid for. You keep each one until it ends, at no extra charge.`
+        : null;
   const headline = headlineFor(moment, context);
   const benefits = benefitsFor(moment);
 
@@ -443,6 +451,7 @@ export default function ProPaywall({ moment, context = {}, onDismiss, onPro, clo
                 )}
               </div>
 
+              {renewalNote && <p className={styles.fine}>{renewalNote}</p>}
               <p className={styles.fine}>
                 Teyro Pro renews automatically until you cancel. Manage or cancel anytime in Settings.{' '}
                 <a href="/terms" target="_blank" rel="noreferrer">

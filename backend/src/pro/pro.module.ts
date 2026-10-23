@@ -4,6 +4,7 @@ import { ProAccessModule } from './pro-access.module';
 import { ProCatalogService } from './pro-catalog.service';
 import { ProCheckoutService } from './pro-checkout.service';
 import { ProController } from './pro.controller';
+import { ProLegacyRenewalsListener } from './pro-legacy-renewals.listener';
 import { ProMaintenanceService } from './pro-maintenance.service';
 import { ProMesombService } from './pro-mesomb.service';
 import { ProPaywallService } from './pro-paywall.service';
@@ -28,6 +29,7 @@ import { StripeProClient } from './stripe/stripe-pro.client';
     ProWebhookService,
     ProMesombService,
     ProMaintenanceService,
+    ProLegacyRenewalsListener,
   ],
   exports: [ProPaywallService, StripeProClient, ProCatalogService],
 })

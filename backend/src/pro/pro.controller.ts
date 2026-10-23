@@ -78,9 +78,20 @@ export class ProController {
   @Get('plans')
   async plans(@Req() req: Request & { user?: { id: string } | null }) {
     const userId = req.user?.id ?? null;
-    const [trialEligible, offer] = userId
-      ? await Promise.all([this.checkout.trialEligibleForUser(userId), this.paywall.activeOffer(userId)])
-      : [true, null];
+    const [trialEligible, offer, renewals] = userId
+      ? await Promise.all([
+          this.checkout.trialEligibleForUser(userId),
+          this.paywall.activeOffer(userId),
+          // Old per-course plans that stop renewing once Pro is paid for
+          // (ProLegacyRenewalsListener): the paywall says so up front.
+          this.prisma.courseSubscription.findMany({
+            where: { userId, status: 'ACTIVE', autoRenew: true },
+            select: { currentPeriodEnd: true, course: { select: { title: true } } },
+            orderBy: { currentPeriodEnd: 'asc' },
+            take: 10,
+          }),
+        ])
+      : [true, null, []];
     return {
       enabled: isProEnabled(),
       checkoutReady: this.client.ready,
@@ -89,6 +100,7 @@ export class ProController {
       trialEligible,
       plans: plansView(),
       offer: offer ? offerView(offer) : null,
+      courseRenewals: renewals.map((r) => ({ title: r.course.title, renewsAt: r.currentPeriodEnd })),
       mobileMoney: { enabled: true, trial: false, autoRenew: false },
     };
   }
