@@ -26,12 +26,27 @@ class LessonStatsDto {
   @IsOptional() @IsInt() @Min(0) @Max(50) bestCombo?: number;
 }
 
+class PlacementResultDto {
+  @IsUUID() targetSectionId: string;
+  @IsInt() @Min(0) @Max(200) correct: number;
+  @IsInt() @Min(0) @Max(200) total: number;
+}
+
 export class LessonClaimDto {
   @IsUUID()
   courseId: string;
 
   @IsUUID()
   lessonId: string;
+
+  @IsOptional()
+  @IsIn(['LESSON', 'TASTE', 'PLACEMENT'])
+  mode?: 'LESSON' | 'TASTE' | 'PLACEMENT';
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PlacementResultDto)
+  placement?: PlacementResultDto;
 
   @ValidateNested()
   @Type(() => LessonStatsDto)
@@ -100,6 +115,12 @@ export class OnboardingFlowController {
   @Get('courses/:id/first-lesson')
   firstLesson(@Param('id') id: string) {
     return this.flow.firstLesson(id);
+  }
+
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
+  @Get('courses/:id/placement')
+  placement(@Param('id') id: string) {
+    return this.flow.placementTest(id);
   }
 
   @Throttle({ default: { limit: 10, ttl: 900_000 } })

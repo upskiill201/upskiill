@@ -1,30 +1,30 @@
 'use client';
 
 /**
- * Onboarding v3 (founder, 2026-10-22): Duolingo's shape, built for finishing.
+ * Onboarding v3 (founder, 2026-10-22; Duolingo's order and look 2026-10-23).
  *
- *   splash → welcome → Tey → name → goal → category → course → experience →
- *   situation → source → daily goal → projection → reminder time → commit →
- *   first lesson (the real one) → streak day 1 → gift chest → save progress
+ *   splash → welcome → Tey → "I want to learn…" → name → how did you hear →
+ *   why → how much do you know → daily goal → what you'll get → projection →
+ *   reminder time → commit → "New to it, or already know some?" →
+ *   (lesson hero → 3-minute taste of lesson 1 → great start) or
+ *   (jump-ahead hero → placement test) → gift chest → save your progress
  *   (signup) → building your plan → Pro paywall → result → install +
- *   reminders → the app.
+ *   reminders → the app (straight back into lesson 1, or the placed chapter).
  *
  * What keeps people going, all honest: a progress bar with a head start, Tey
- * answering every tap with a line, a sound and a haptic, music that fills out
- * as the bar fills, a real lesson within ~90 seconds, rewards they can see
- * and lose (nothing is saved before signup), exact resume, and a "wait,
- * don't go" sheet only when leaving would really lose something.
+ * typing every line to them by name with keyboard clicks, a sound and a
+ * haptic on every tap, Teyro's own illustrations on every answer, music that
+ * fills out as the bar fills, a real lesson within a couple of minutes,
+ * rewards they can see and lose (nothing is saved before signup), exact
+ * resume, and a "wait, don't go" sheet only when leaving would lose something.
  */
 
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSWRConfig } from 'swr';
-import { OnboardingFooter } from '@/components/onboarding/OnboardingFooter';
-import { OnboardingLayout } from '@/components/onboarding/OnboardingLayout';
-import { NameScreen } from '@/components/onboarding/screens/NameScreen';
-import RemindersScreen from '@/components/onboarding/screens/RemindersScreen';
 import ProPaywall from '@/components/pro/ProPaywall';
 import { useAudioContext } from '@/context/AudioContext';
+import { lessonHref } from '@/hooks/useCourse';
 import { ME_KEY } from '@/hooks/useMe';
 import { identifyUser } from '@/lib/analytics';
 import { playOnboardingCue, playTeyReaction } from '@/lib/audio/onboardingAudio';
@@ -38,36 +38,42 @@ import { celebrationHaptic, playHaptic } from '@/lib/haptics';
 import { courseHomeHref } from '@/lib/homeCourse';
 import { goalById } from '@/lib/onboarding/goals';
 import type { Beat } from '@/lib/onboarding/dialogue/types';
-import { categoriesFor, fetchCatalog, type CatalogCourse } from '@/lib/onboarding/v3/catalog';
+import { fetchCatalog, type CatalogCourse } from '@/lib/onboarding/v3/catalog';
 import {
-  EXPERIENCE_OPTIONS,
-  LOSS_FROM,
-  SITUATION_OPTIONS,
-  SOURCE_OPTIONS,
-  STEPS,
+  STEP_DEF,
   STEP_INDEX,
+  TIME_OPTIONS,
+  losesProgress,
+  nextOf,
+  prevOf,
   progressFor,
   type AnswersV3,
+  type LessonPath,
   type StepId,
 } from '@/lib/onboarding/v3/flow';
-import { lineFor, reactionFor, teyArt } from '@/lib/onboarding/v3/lines';
+import { firstName, lineFor, reactionFor, teyArt, topicOf } from '@/lib/onboarding/v3/lines';
 import { clearV3, furthestOf, loadV3, saveV3, type OnboardingV3State } from '@/lib/onboarding/v3/store';
 import { trackOnboarding } from '@/lib/onboarding/v3/track';
 import { clearClientSession } from '@/lib/user-cache';
+import { Art } from './art/Art';
+import { InstallStep } from './InstallStep';
 import { SplashStep, WelcomeStep } from './IntroSteps';
-import { ChestStep, LessonStep } from './LessonSteps';
-import { CommitStep, PlanStep, ProjectionStep } from './MomentSteps';
-import { CategoryStep, ChoiceList, CourseStep, DailyStep, GoalStep, TimeStep } from './QuestionSteps';
+import { ChestStep, LessonStep, PlacementStep } from './LessonSteps';
+import { CommitStep, OutcomeStep, PlanStep, ProjectionStep } from './MomentSteps';
+import { LessonIntroStep, PathStep, PlacementIntroStep, TasteDoneStep } from './PathSteps';
+import { DailyStep, ExperienceStep, GoalStep, LearnStep, NameStep, SourceStep, TimeStep } from './QuestionSteps';
 import { QuitSheet } from './QuitSheet';
-import { SaveStep } from './SaveStep';
+import { SaveStep, type HeldReward } from './SaveStep';
+import { Btn, Footer, Hero, Screen, TeyHero, TeyLine, TopBar, kitCss as css } from './ui/Kit';
 
-const TRANSITION_MS = 450;
+const TRANSITION_MS = 380;
+const TEY = (pose: string) => `/User onbarding Assets/tey/${pose}.webp`;
 
 /** Which soundtrack mood each step sits in. */
 function moodFor(step: StepId) {
-  if (step === 'chest' || step === 'save' || step === 'result') return 'reward' as const;
+  if (step === 'taste-done' || step === 'chest' || step === 'save' || step === 'result') return 'reward' as const;
   if (step === 'plan' || step === 'paywall') return 'tension' as const;
-  if (step === 'splash' || step === 'welcome' || step === 'intro' || step === 'name' || step === 'install') return 'intro' as const;
+  if (step === 'splash' || step === 'welcome' || step === 'intro' || step === 'install') return 'intro' as const;
   return 'build' as const;
 }
 
@@ -84,6 +90,7 @@ export default function OnboardingV3() {
   const [quitOpen, setQuitOpen] = useState(false);
   const [resumeShown, setResumeShown] = useState(false);
   const [pro, setPro] = useState(false);
+  const [taste, setTaste] = useState<{ right: number; questions: number; bestCombo: number } | null>(null);
   const viewedAt = useRef(Date.now());
   const musicStarted = useRef(false);
 
@@ -96,14 +103,18 @@ export default function OnboardingV3() {
       setResumeShown(true);
       trackOnboarding(loaded.anonymousId, loaded.step, 'RESUME', { stepIndex: STEP_INDEX[loaded.step] });
     }
+    if (loaded.answers.lesson?.taste) setTaste(loaded.answers.lesson.taste);
   }, []);
 
   const step = state?.step ?? 'splash';
-  const def = STEPS[STEP_INDEX[step]];
+  const def = STEP_DEF[step];
   const answers = useMemo(() => state?.answers ?? {}, [state?.answers]);
+  const path = answers.path;
   const course = useMemo(() => catalog?.find((c) => c.id === answers.courseId) ?? null, [catalog, answers.courseId]);
+  const topic = topicOf(course?.title) ?? 'it';
   const minutes = Number(answers.dailyCommitment ?? 10);
   const goal = goalById(answers.goal);
+  const name = firstName(answers.name) ?? undefined;
 
   const update = useCallback((fn: (s: OnboardingV3State) => OnboardingV3State) => {
     setState((prev) => {
@@ -114,15 +125,15 @@ export default function OnboardingV3() {
     });
   }, []);
 
-  // Catalog: fetched early so the category and course screens never wait.
+  // The catalog is the first question now, so it loads straight away.
   useEffect(() => {
-    if (!state || catalog || STEP_INDEX[step] < STEP_INDEX.name) return;
+    if (!state || catalog || catalogError) return;
     fetchCatalog()
       .then(setCatalog)
       .catch(() => setCatalogError(true));
-  }, [state, catalog, step]);
+  }, [state, catalog, catalogError]);
 
-  // Analytics: one VIEW per screen, with how long they spent on the last one.
+  // Analytics: one VIEW per screen.
   useEffect(() => {
     if (!state) return;
     trackOnboarding(state.anonymousId, step, 'VIEW', { stepIndex: STEP_INDEX[step] });
@@ -130,21 +141,21 @@ export default function OnboardingV3() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, state?.anonymousId]);
 
-  // Music follows the journey; the lesson brings its own.
+  // Music follows the journey; the lesson and the test bring their own.
   useEffect(() => {
     if (!musicStarted.current) return;
-    if (step === 'lesson') {
+    if (step === 'lesson' || step === 'placement') {
       stopOnboardingMusic(0.5);
       return;
     }
     startOnboardingMusic(moodFor(step));
     setOnboardingMood(moodFor(step));
-    setOnboardingProgress(progressFor(step));
-  }, [step]);
+    setOnboardingProgress(progressFor(step, path));
+  }, [step, path]);
   useEffect(() => () => stopOnboardingMusic(0.4), []);
 
   // Leaving the tab after earning something they'd lose: the browser's own prompt.
-  const hasProgress = !!state && STEP_INDEX[step] > LOSS_FROM && !state.signedUp;
+  const hasProgress = !!state && losesProgress(step) && !state.signedUp;
   useEffect(() => {
     if (!hasProgress) return;
     const onBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -162,36 +173,42 @@ export default function OnboardingV3() {
       setDirection(dir);
       setReaction(null);
       update((s) => ({ ...s, step: next, furthest: furthestOf(s.furthest, next) }));
+      window.scrollTo({ top: 0 });
       window.setTimeout(() => setBusy(false), TRANSITION_MS);
     },
     [update],
   );
 
-  const nextOf = (id: StepId): StepId => STEPS[Math.min(STEPS.length - 1, STEP_INDEX[id] + 1)].id;
+  const startMusic = () => {
+    if (musicStarted.current) return;
+    musicStarted.current = true;
+    startOnboardingMusic('intro');
+  };
 
-  const advance = useCallback(() => {
-    if (!state || busy) return;
-    const ms = Date.now() - viewedAt.current;
-    const key = def.answerKey;
-    const value = key ? answers[key] : undefined;
-    // Personal answers (name) never leave the device as analytics.
-    trackOnboarding(state.anonymousId, step, 'ANSWER', {
-      stepIndex: STEP_INDEX[step],
-      ms,
-      ...(key && key !== 'name' && typeof value !== 'object' ? { answerKey: String(key), answerValue: String(value) } : {}),
-    });
-    playOnboardingCue('continue');
-    playHaptic('light');
-    go(nextOf(step));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, busy, def, answers, step, go]);
+  const advance = useCallback(
+    (from: StepId = step, s: OnboardingV3State | null = state) => {
+      if (!s || busy) return;
+      const key = STEP_DEF[from].answerKey;
+      const value = key ? s.answers[key] : undefined;
+      // Personal answers (name) never leave the device as analytics.
+      trackOnboarding(s.anonymousId, from, 'ANSWER', {
+        stepIndex: STEP_INDEX[from],
+        ms: Date.now() - viewedAt.current,
+        ...(key && key !== 'name' && typeof value !== 'object' ? { answerKey: String(key), answerValue: String(value) } : {}),
+      });
+      playOnboardingCue('continue');
+      playHaptic('light');
+      go(nextOf(from, s.answers.path));
+    },
+    [step, state, busy, go],
+  );
 
   const back = useCallback(() => {
     if (!state) return;
     playHaptic('light');
     playOnboardingCue('back');
-    // After the lesson, going back would mean losing it: ask instead.
-    if (STEP_INDEX[step] > LOSS_FROM && !state.signedUp) {
+    // After the lesson or test, going back would mean losing it: ask instead.
+    if (losesProgress(step) && !state.signedUp) {
       setQuitOpen(true);
       playOnboardingCue('quitWarn');
       trackOnboarding(state.anonymousId, step, 'QUIT_PROMPT', { stepIndex: STEP_INDEX[step] });
@@ -199,9 +216,9 @@ export default function OnboardingV3() {
     }
     if (def.postSignup) return;
     trackOnboarding(state.anonymousId, step, 'BACK', { stepIndex: STEP_INDEX[step] });
-    const prev = STEPS[Math.max(0, STEP_INDEX[step] - 1)].id;
+    const prev = prevOf(step, path);
     go(prev === 'splash' ? 'welcome' : prev, -1);
-  }, [state, step, def, go]);
+  }, [state, step, def, path, go]);
 
   const answer = useCallback(
     <K extends keyof AnswersV3>(key: K, value: AnswersV3[K], reactValue?: string) => {
@@ -209,14 +226,14 @@ export default function OnboardingV3() {
       playOnboardingCue('optionSelect');
       playHaptic('selection');
       if (reactValue !== undefined && state) {
-        const beat = reactionFor(step, reactValue, { ...answers, [key]: value });
-        if (beat) {
-          setReaction(beat);
-          playTeyReaction(beat.poseFamily);
+        const b = reactionFor(step, reactValue, { ...answers, [key]: value }, { courseTitle: course?.title });
+        if (b) {
+          setReaction(b);
+          playTeyReaction(b.poseFamily);
         }
       }
     },
-    [update, state, step, answers],
+    [update, state, step, answers, course],
   );
 
   /** Server copy of the answers (after signup only; before, there is no account). */
@@ -240,92 +257,159 @@ export default function OnboardingV3() {
 
   if (!state) return <div className="h-[100dvh] bg-[var(--bg-page)]" aria-busy="true" />;
 
-  const startMusic = () => {
-    if (musicStarted.current) return;
-    musicStarted.current = true;
-    startOnboardingMusic('intro');
-  };
+  const quitSheet = (
+    <QuitSheet
+      open={quitOpen}
+      hasProgress={hasProgress || step === 'lesson' || step === 'placement'}
+      onStay={() => {
+        setQuitOpen(false);
+        trackOnboarding(state.anonymousId, step, 'QUIT_STAY');
+      }}
+      onLeave={(reason) => {
+        trackOnboarding(state.anonymousId, step, 'QUIT', { reason: reason ?? undefined });
+        setQuitOpen(false);
+        if (step === 'lesson') return go('lesson-intro', -1);
+        if (step === 'placement') return go('path', -1);
+        stopOnboardingMusic(0.3);
+        router.push('/');
+      }}
+    />
+  );
 
   // ── Full-screen steps ─────────────────────────────────────────────────────
-  if (step === 'splash' || step === 'welcome') {
+  if (step === 'splash') return <SplashStep onDone={() => go('welcome')} />;
+  if (step === 'welcome') {
     return (
-      step === 'splash' ? (
-        <SplashStep onDone={() => go('welcome')} />
-      ) : (
-        <WelcomeStep
-          onStart={() => {
-            startMusic();
-            go('intro');
-          }}
-          onLogin={() => router.push('/login')}
-        />
-      )
+      <WelcomeStep
+        onStart={() => {
+          startMusic();
+          go('intro');
+        }}
+        onLogin={() => router.push('/login')}
+      />
     );
   }
 
-  if (step === 'lesson' && answers.courseId) {
+  if (step === 'lesson' && course) {
     return (
       <>
         <LessonStep
-          courseId={answers.courseId}
+          course={course}
           onStart={(lessonId) => {
             trackOnboarding(state.anonymousId, step, 'LESSON_START', { stepIndex: STEP_INDEX[step] });
-            update((s) => ({ ...s, answers: { ...s.answers, lesson: { courseId: answers.courseId, lessonId } } }));
+            update((s) => ({ ...s, answers: { ...s.answers, lesson: { courseId: course.id, lessonId } } }));
           }}
           onQuit={() => {
             trackOnboarding(state.anonymousId, step, 'LESSON_EXIT', { stepIndex: STEP_INDEX[step] });
             setQuitOpen(true);
           }}
-          onDone={(claim, lessonId) => {
-            trackOnboarding(state.anonymousId, step, 'LESSON_DONE', { stepIndex: STEP_INDEX[step], ms: Date.now() - viewedAt.current });
+          onDone={(r) => {
+            trackOnboarding(state.anonymousId, step, 'LESSON_DONE', {
+              stepIndex: STEP_INDEX[step],
+              ms: Date.now() - viewedAt.current,
+              answerKey: 'right',
+              answerValue: `${r.right}/${r.questions}`,
+            });
+            const t = { questions: r.questions, right: r.right, bestCombo: r.bestCombo };
+            setTaste(t);
             update((s) => ({
               ...s,
-              rewards: claim
-                ? { lessonXp: claim.lessonXp, chestCoins: claim.chest.coins, streakFreezes: claim.chest.streakFreezes }
+              rewards: r.claim
+                ? { lessonXp: r.claim.lessonXp, chestCoins: r.claim.chest.coins, streakFreezes: r.claim.chest.streakFreezes }
                 : s.rewards,
               answers: {
                 ...s.answers,
-                lesson: { courseId: answers.courseId, lessonId, claimToken: claim?.claimToken, done: true },
+                lesson: { courseId: course.id, lessonId: r.lessonId, claimToken: r.claim?.claimToken, done: false, taste: t },
+              },
+            }));
+            musicStarted.current = true;
+            go('taste-done');
+          }}
+        />
+        {quitSheet}
+      </>
+    );
+  }
+
+  if (step === 'placement' && course) {
+    return (
+      <>
+        <PlacementStep
+          course={course}
+          onExit={() => {
+            trackOnboarding(state.anonymousId, step, 'LESSON_EXIT', { stepIndex: STEP_INDEX[step] });
+            setQuitOpen(true);
+          }}
+          onPlaced={({ claim, placement }) => {
+            trackOnboarding(state.anonymousId, step, 'LESSON_DONE', {
+              stepIndex: STEP_INDEX[step],
+              ms: Date.now() - viewedAt.current,
+              answerKey: 'placedChapter',
+              answerValue: String(placement.chapter),
+            });
+            update((s) => ({
+              ...s,
+              rewards: claim ? { lessonXp: 0, chestCoins: claim.chest.coins, streakFreezes: claim.chest.streakFreezes } : s.rewards,
+              answers: {
+                ...s.answers,
+                placement,
+                lesson: { courseId: course.id, lessonId: course.firstLesson.id, claimToken: claim?.claimToken, done: false },
               },
             }));
             musicStarted.current = true;
             go('chest');
           }}
         />
-        <QuitSheet
-          open={quitOpen}
-          hasProgress={false}
-          onStay={() => {
-            setQuitOpen(false);
-            trackOnboarding(state.anonymousId, step, 'QUIT_STAY');
-          }}
-          onLeave={(reason) => {
-            trackOnboarding(state.anonymousId, step, 'QUIT', { reason: reason ?? undefined });
-            setQuitOpen(false);
-            go('lesson-intro', -1);
-          }}
-        />
+        {quitSheet}
+      </>
+    );
+  }
+
+  if (step === 'taste-done') {
+    const t = taste ?? answers.lesson?.taste ?? { right: 0, questions: 0, bestCombo: 0 };
+    return (
+      <>
+        <Screen
+          stepKey={step}
+          direction={direction}
+          center
+          footer={
+            <Footer>
+              <Btn variant="green" onClick={() => go('chest')}>
+                Continue
+              </Btn>
+            </Footer>
+          }
+        >
+          <TasteDoneStep right={t.right} questions={t.questions} bestCombo={t.bestCombo} name={name} />
+        </Screen>
+        {quitSheet}
       </>
     );
   }
 
   if (step === 'chest') {
     return (
-      <ChestStep
-        coins={state.rewards?.chestCoins ?? 20}
-        streakFreezes={state.rewards?.streakFreezes ?? 1}
-        onContinue={() => go('save')}
-      />
+      <>
+        <ChestStep
+          coins={state.rewards?.chestCoins ?? 20}
+          streakFreezes={state.rewards?.streakFreezes ?? 1}
+          onContinue={() => go('save')}
+        />
+        {quitSheet}
+      </>
     );
   }
 
   if (step === 'plan') {
+    const when = TIME_OPTIONS.find((t) => t.id === answers.preferredTime)?.label.toLowerCase();
     return (
       <PlanStep
-        name={answers.name}
+        name={name}
         goalPhrase={goal?.phrase}
         courseTitle={course?.title}
         minutes={minutes}
+        when={when && answers.preferredTime !== 'no-preference' ? `every ${when}` : undefined}
         onDone={() => go('paywall')}
       />
     );
@@ -335,7 +419,7 @@ export default function OnboardingV3() {
     return (
       <ProPaywall
         moment="ONBOARDING"
-        context={{ name: answers.name, goal: goal?.phrase, courseTitle: course?.title }}
+        context={{ name, goal: goal?.phrase, courseTitle: course?.title }}
         onDismiss={() => {
           trackOnboarding(state.anonymousId, step, 'PAYWALL', { answerKey: 'outcome', answerValue: 'free' });
           setPro(false);
@@ -352,123 +436,173 @@ export default function OnboardingV3() {
 
   if (step === 'result') {
     return (
-      <ResultFree
-        name={answers.name}
-        courseTitle={course?.title}
-        onContinue={() => {
-          celebrationHaptic('soft');
-          go('install');
+      <Screen
+        stepKey={step}
+        direction={direction}
+        center
+        footer={
+          <Footer>
+            <Btn
+              variant="green"
+              onClick={() => {
+                celebrationHaptic('soft');
+                go('install');
+              }}
+            >
+              Continue
+            </Btn>
+          </Footer>
+        }
+      >
+        <Hero
+          art={<TeyHero teySrc={TEY('cheering')} size={170} />}
+          title={`You're in${name ? `, ${name}` : ''}!`}
+          body={
+            course
+              ? `Chapter ${answers.placement?.chapter ?? 1} of ${course.title} is yours, free. Two lessons a day, every day. Go Pro any time for everything.`
+              : 'Your first chapter is yours, free. Two lessons a day, every day. Go Pro any time for everything.'
+          }
+        />
+      </Screen>
+    );
+  }
+
+  if (step === 'enter') {
+    return (
+      <Entering
+        onEnter={async () => {
+          await syncServer(true, { ...state, step: 'enter' });
+          trackOnboarding(state.anonymousId, step, 'COMPLETE', { answerKey: 'pro', answerValue: String(pro) });
+          update((s) => ({ ...s, completedAt: new Date().toISOString() }));
+          clearV3();
+          stopOnboardingMusic(0.6);
+          // Straight back into lesson 1 at the next card, or to the chapter they placed into.
+          const lessonId = answers.lesson?.lessonId;
+          router.replace(
+            answers.courseId && answers.path !== 'placement' && lessonId
+              ? lessonHref(answers.courseId, 0, lessonId)
+              : answers.courseId
+                ? courseHomeHref(answers.courseId)
+                : '/dashboard',
+          );
         }}
       />
     );
   }
 
-  if (step === 'enter') {
-    return <Entering onEnter={async () => {
-      await syncServer(true, { ...state, step: 'enter' });
-      trackOnboarding(state.anonymousId, step, 'COMPLETE', { answerKey: 'pro', answerValue: String(pro) });
-      update((s) => ({ ...s, completedAt: new Date().toISOString() }));
-      clearV3();
-      stopOnboardingMusic(0.6);
-      router.replace(answers.courseId ? courseHomeHref(answers.courseId) : '/dashboard');
-    }} />;
-  }
-
-  // ── Chrome steps: Tey, the question, the answers, Continue ───────────────
-  const line = lineFor(step, answers, {
-    courseTitle: course?.title,
-    minutes,
-    lessonMinutes: course?.firstLesson.durationMinutes,
-  });
+  // ── Screens with the top bar, Tey, the answers and a footer ──────────────
+  const line = lineFor(step, answers, { courseTitle: course?.title, topic, lessonMinutes: course?.firstLesson.durationMinutes });
   const pose = (reaction ?? line)?.pose ?? 'idle';
+  const needsCatalog = step === 'learn' || STEP_INDEX[step] > STEP_INDEX.learn;
+
+  const held: HeldReward[] = [
+    answers.path === 'placement' && answers.placement
+      ? { art: 'cap', label: `Your place: Chapter ${answers.placement.chapter}` }
+      : { art: 'cards', label: course ? `Lesson 1 of ${course.title}, under way` : 'Your first lesson, under way' },
+    { art: 'coins', label: `+${state.rewards?.chestCoins ?? 20} Coins` },
+    { art: 'ice', label: `+${state.rewards?.streakFreezes ?? 1} streak freeze` },
+    { art: 'calendar', label: `Your ${minutes}-minute daily plan` },
+  ];
 
   const content = (() => {
+    if (needsCatalog && !catalog) {
+      return catalogError ? <CatalogError onRetry={() => setCatalogError(false)} /> : <ListSkeleton />;
+    }
     switch (step) {
       case 'intro':
         return null;
-      case 'name':
+      case 'learn':
         return (
-          <NameScreen
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            answers={answers as any}
-            saveAnswer={(_k, v) => update((s) => ({ ...s, answers: { ...s.answers, name: String(v ?? '') } }))}
-            react={() => undefined}
-            onNext={advance}
-            goToStep={() => undefined}
-          />
-        );
-      case 'goal':
-        return <GoalStep selected={answers.goal} onPick={(id) => answer('goal', id, id)} />;
-      case 'category':
-        if (catalogError) return <CatalogError onRetry={() => setCatalogError(false)} />;
-        if (!catalog) return <ListSkeleton />;
-        return (
-          <CategoryStep
-            categories={categoriesFor(catalog, answers.goal)}
-            selected={answers.category}
-            onPick={(name) => {
-              answer('category', name, name);
-              // A different category clears a course picked from the old one.
-              if (course && course.category !== name) update((s) => ({ ...s, answers: { ...s.answers, courseId: undefined } }));
+          <LearnStep
+            courses={catalog ?? []}
+            selected={answers.courseId}
+            onPick={(c) => {
+              update((s) => ({ ...s, answers: { ...s.answers, courseId: c.id, category: c.category } }));
+              playOnboardingCue('optionSelect');
+              playHaptic('selection');
+              // Duolingo: picking what you want to learn is the answer. Straight on.
+              window.setTimeout(() => {
+                const s = loadV3();
+                advance('learn', s);
+              }, 280);
             }}
           />
         );
-      case 'course':
-        if (!catalog) return <ListSkeleton />;
+      case 'name':
         return (
-          <CourseStep
-            courses={catalog.filter((c) => c.category === answers.category)}
-            selected={answers.courseId}
-            onPick={(id) => answer('courseId', id, id)}
+          <NameStep
+            value={answers.name}
+            onChange={(v) => update((s) => ({ ...s, answers: { ...s.answers, name: v } }))}
+            onSubmit={() => advance()}
           />
-        );
-      case 'experience':
-        return (
-          <ChoiceList
-            legend="How much do you already know?"
-            options={EXPERIENCE_OPTIONS}
-            selected={answers.experienceLevel}
-            onPick={(id) => answer('experienceLevel', id, id)}
-          />
-        );
-      case 'situation':
-        return (
-          <ChoiceList legend="What's going on for you?" options={SITUATION_OPTIONS} selected={answers.situation} onPick={(id) => answer('situation', id, id)} />
         );
       case 'source':
+        return <SourceStep selected={answers.source} onPick={(id) => answer('source', id, id)} />;
+      case 'goal':
+        return <GoalStep topic={topic} selected={answers.goal} onPick={(id) => answer('goal', id, id)} />;
+      case 'experience':
         return (
-          <ChoiceList legend="How did you hear about Teyro?" columns={2} options={SOURCE_OPTIONS} selected={answers.source} onPick={(id) => answer('source', id, id)} />
+          <ExperienceStep
+            topic={topic}
+            selected={answers.experienceLevel}
+            onPick={(id) => answer('experienceLevel', id as AnswersV3['experienceLevel'], id)}
+          />
         );
       case 'daily':
         return <DailyStep selected={answers.dailyCommitment} onPick={(id) => answer('dailyCommitment', id as AnswersV3['dailyCommitment'], id)} />;
+      case 'outcome':
+        return course ? <OutcomeStep course={course} minutes={minutes} /> : <ListSkeleton />;
       case 'projection':
-        return course ? <ProjectionStep course={course} minutes={minutes} name={answers.name} /> : <ListSkeleton />;
+        return course ? <ProjectionStep course={course} minutes={minutes} /> : <ListSkeleton />;
       case 'reminder-time':
-        return <TimeStep selected={answers.preferredTime} onPick={(id) => answer('preferredTime', id as AnswersV3['preferredTime'], id)} />;
+        return (
+          <TimeStep
+            selected={answers.preferredTime}
+            onPick={(id) => answer('preferredTime', id as AnswersV3['preferredTime'], id)}
+            name={name}
+            courseTitle={course?.title}
+            minutes={minutes}
+          />
+        );
       case 'commit':
         return (
           <CommitStep
             minutes={minutes}
             goalPhrase={goal?.phrase}
+            topic={topic}
             committed={answers.committed}
             onCommitted={() => update((s) => ({ ...s, answers: { ...s.answers, committed: true } }))}
           />
         );
-      case 'lesson-intro':
+      case 'path':
         return course ? (
-          <div className="rounded-[20px] border-2 border-[var(--border)] bg-white p-5 text-center" style={{ boxShadow: '0 4px 0 var(--border)' }}>
-            <p className="text-[13px] font-extrabold uppercase tracking-wider text-[var(--color-brand)]">{course.title}</p>
-            <p className="mt-1 text-[20px] font-extrabold text-[var(--color-ink)]">Lesson 1: {course.firstLesson.title}</p>
-            <p className="mt-2 text-[14px] font-semibold text-[var(--text-secondary)]">
-              About {course.firstLesson.durationMinutes} min · {course.firstLesson.exercises} quick exercises
-            </p>
-          </div>
+          <PathStep
+            course={course}
+            topic={topic}
+            experience={answers.experienceLevel}
+            selected={answers.path}
+            knowsSome={answers.knowsSome}
+            onPick={(p: LessonPath, knowsSome: boolean) => {
+              update((s) => ({ ...s, answers: { ...s.answers, path: p, knowsSome } }));
+              playOnboardingCue('optionSelect');
+              playHaptic('selection');
+              const b = reactionFor('path', p, answers, { courseTitle: course.title });
+              if (b) {
+                setReaction(b);
+                playTeyReaction(b.poseFamily);
+              }
+            }}
+          />
         ) : null;
+      case 'lesson-intro':
+        return course ? <LessonIntroStep course={course} name={name} /> : null;
+      case 'placement-intro':
+        return course ? <PlacementIntroStep course={course} topic={topic} /> : null;
       case 'save':
         return (
           <SaveStep
             answers={answers}
-            rewards={state.rewards}
+            held={held}
             onLogin={() => router.push('/login')}
             onSaved={async (how) => {
               trackOnboarding(state.anonymousId, step, 'SIGNUP', { answerKey: 'method', answerValue: how });
@@ -496,8 +630,11 @@ export default function OnboardingV3() {
         );
       case 'install':
         return (
-          <RemindersScreen
-            onNext={() => go('enter')}
+          <InstallStep
+            name={name}
+            minutes={minutes}
+            courseTitle={course?.title}
+            onDone={() => go('enter')}
             onNotificationsAnswer={(value) => {
               trackOnboarding(state.anonymousId, step, 'PUSH', { answerKey: 'permission', answerValue: value.permission ?? String(value.enabled) });
               update((s) => ({ ...s, answers: { ...s.answers, notifications: value } }));
@@ -515,71 +652,91 @@ export default function OnboardingV3() {
       ? !!answers.committed
       : step === 'name'
         ? !!answers.name?.trim()
-        : def.answerKey
-          ? answers[def.answerKey] !== undefined && answers[def.answerKey] !== ''
-          : true;
+        : step === 'path'
+          ? !!answers.path
+          : def.answerKey
+            ? answers[def.answerKey] !== undefined && answers[def.answerKey] !== ''
+            : true;
+  const hero = step === 'intro' || step === 'lesson-intro' || step === 'placement-intro';
+
+  const cta = (() => {
+    if (step === 'intro') return "Let's go";
+    if (step === 'lesson-intro') return 'Start lesson';
+    if (step === 'placement-intro') return 'Start the test';
+    return 'Continue';
+  })();
 
   return (
     <>
-      <OnboardingLayout
-        step={STEP_INDEX[step]}
-        total={STEPS.length - 1}
-        percent={progressFor(step) * 100}
+      <Screen
+        stepKey={step}
         direction={direction}
-        pose={pose}
-        mascot={teyArt(pose)}
-        layout={step === 'intro' || step === 'lesson-intro' ? 'hero' : 'row'}
-        mascotSize={step === 'goal' || step === 'source' || step === 'course' || step === 'situation' ? 'md' : 'lg'}
-        reactKey={reaction?.text ?? null}
-        beat={line}
-        onBack={back}
-        backDisabled={busy}
-        muted={isMuted}
-        onToggleSound={toggleMute}
-        bare={false}
+        center={hero}
+        top={
+          <TopBar
+            progress={progressFor(step, path)}
+            onBack={back}
+            backHidden={busy || def.postSignup}
+            muted={isMuted}
+            onToggleSound={toggleMute}
+          />
+        }
         footer={
           ownsCta ? null : (
-            <OnboardingFooter
-              onContinue={() => {
-                startMusic();
-                if (step === 'lesson-intro') {
-                  playHaptic('heavy');
-                  go('lesson');
-                  return;
-                }
-                advance();
-              }}
-              canContinue={canContinue}
-              busy={busy}
-              label={step === 'intro' ? "Let's go" : step === 'lesson-intro' ? 'Start lesson' : 'Continue'}
-              feedback={reaction}
-              disabledReason={step === 'commit' ? 'Hold the button to commit' : 'Choose an option to continue'}
-            />
+            <Footer reaction={reaction?.text ?? null}>
+              <Btn
+                disabled={!canContinue || busy}
+                aria-describedby={!canContinue ? 'ob-why-disabled' : undefined}
+                onClick={() => {
+                  startMusic();
+                  if (step === 'lesson-intro') {
+                    playHaptic('heavy');
+                    trackOnboarding(state.anonymousId, step, 'ANSWER', { stepIndex: STEP_INDEX[step] });
+                    go('lesson');
+                    return;
+                  }
+                  if (step === 'placement-intro') {
+                    playHaptic('heavy');
+                    trackOnboarding(state.anonymousId, step, 'ANSWER', { stepIndex: STEP_INDEX[step] });
+                    go('placement');
+                    return;
+                  }
+                  advance();
+                }}
+              >
+                {cta}
+              </Btn>
+              {step === 'placement-intro' && (
+                <Btn variant="ghost" onClick={() => go('path', -1)}>
+                  Maybe later
+                </Btn>
+              )}
+              {!canContinue && (
+                <span id="ob-why-disabled" className={css.srOnly}>
+                  {step === 'commit' ? 'Hold the button to commit' : 'Choose an answer to continue'}
+                </span>
+              )}
+            </Footer>
           )
         }
-        footerActive={!!reaction && !ownsCta}
       >
-        {content}
-      </OnboardingLayout>
+        {step === 'intro' ? (
+          <Hero art={<TeyHero teySrc={teyArt("greeting")} text={line?.text} size={190} />} />
+        ) : step === 'lesson-intro' || step === 'placement-intro' || step === 'install' ? (
+          content
+        ) : (
+          <>
+            {line && <TeyLine teySrc={teyArt(pose)} text={line.text} hopKey={reaction?.text ?? null} />}
+            {content}
+          </>
+        )}
+      </Screen>
 
-      <QuitSheet
-        open={quitOpen}
-        hasProgress={hasProgress}
-        onStay={() => {
-          setQuitOpen(false);
-          trackOnboarding(state.anonymousId, step, 'QUIT_STAY');
-        }}
-        onLeave={(reason) => {
-          trackOnboarding(state.anonymousId, step, 'QUIT', { reason: reason ?? undefined });
-          setQuitOpen(false);
-          stopOnboardingMusic(0.3);
-          router.push('/');
-        }}
-      />
+      {quitSheet}
 
       {resumeShown && (
         <ResumeCard
-          name={answers.name}
+          name={name}
           lessonWaiting={STEP_INDEX[step] <= STEP_INDEX.lesson}
           onContinue={() => {
             setResumeShown(false);
@@ -595,7 +752,7 @@ function ListSkeleton() {
   return (
     <div className="flex flex-col gap-3" aria-busy="true" aria-label="Loading">
       {[0, 1, 2, 3].map((i) => (
-        <div key={i} className="h-[64px] rounded-[16px] bg-[var(--bg-section)] animate-pulse" />
+        <div key={i} className="h-[76px] rounded-[18px] bg-[var(--bg-section)] animate-pulse" />
       ))}
     </div>
   );
@@ -603,11 +760,14 @@ function ListSkeleton() {
 
 function CatalogError({ onRetry }: { onRetry: () => void }) {
   return (
-    <div className="rounded-[16px] border-2 border-[var(--border)] p-5 text-center">
+    <div className="flex flex-col items-center gap-3 rounded-[18px] border-2 border-[var(--border)] p-6 text-center">
+      <Art name="planet" size={80} />
       <p className="font-extrabold text-[var(--color-ink)]">I couldn&apos;t load the courses.</p>
-      <button type="button" onClick={onRetry} className="mt-3 font-extrabold text-[var(--color-brand)]">
-        Try again
-      </button>
+      <div className="w-full max-w-[260px]">
+        <Btn variant="outline" onClick={onRetry}>
+          Try again
+        </Btn>
+      </div>
     </div>
   );
 }
@@ -615,46 +775,19 @@ function CatalogError({ onRetry }: { onRetry: () => void }) {
 function ResumeCard(props: { name?: string; lessonWaiting: boolean; onContinue: () => void }) {
   return (
     <div className="fixed inset-0 z-[100400] flex items-center justify-center px-6" style={{ background: 'color-mix(in srgb, var(--ink-fixed) 40%, transparent)' }}>
-      <div className="w-full max-w-[380px] rounded-[24px] bg-white p-6 text-center">
-        <p className="text-[22px] font-extrabold text-[var(--color-ink)]">Welcome back{props.name ? `, ${props.name.split(' ')[0]}` : ''}!</p>
+      <div className="w-full max-w-[380px] rounded-[24px] bg-[var(--bg-page)] p-6 text-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={TEY('waving')} alt="" width={110} height={110} className="mx-auto" />
+        <p className="mt-2 text-[22px] font-extrabold text-[var(--color-ink)]" style={{ fontFamily: 'var(--font-celebration), var(--font-jakarta), sans-serif' }}>
+          Welcome back{props.name ? `, ${props.name}` : ''}!
+        </p>
         <p className="mt-2 text-[15px] font-semibold text-[var(--text-secondary)]">
           {props.lessonWaiting ? 'Your first lesson is waiting right where you left it.' : 'Your progress is right where you left it.'}
         </p>
-        <button
-          type="button"
-          onClick={props.onContinue}
-          className="mt-5 w-full min-h-[56px] rounded-[16px] font-extrabold uppercase tracking-wider text-white bg-[var(--color-brand)]"
-          style={{ boxShadow: '0 6px 0 var(--color-brand-deep)' }}
-        >
-          Pick up where I left off
-        </button>
+        <div className="mt-5">
+          <Btn onClick={props.onContinue}>Pick up where I left off</Btn>
+        </div>
       </div>
-    </div>
-  );
-}
-
-function ResultFree(props: { name?: string; courseTitle?: string; onContinue: () => void }) {
-  return (
-    <div className="min-h-[100dvh] w-full flex flex-col items-center justify-between px-6 py-10 text-center bg-[var(--bg-page)]">
-      <div className="flex-1 flex flex-col items-center justify-center gap-4">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/User onbarding Assets/tey/cheering.webp" alt="" width={150} height={150} />
-        <h1 className="text-[28px] font-extrabold text-[var(--color-ink)]" style={{ fontFamily: 'var(--font-celebration), var(--font-jakarta), sans-serif' }}>
-          You&apos;re in{props.name ? `, ${props.name.split(' ')[0]}` : ''}!
-        </h1>
-        <p className="max-w-[360px] text-[16px] font-semibold text-[var(--text-secondary)]">
-          {props.courseTitle ? `Chapter 1 of ${props.courseTitle} is yours, free.` : 'Your first chapter is yours, free.'} Two lessons a day, every day.
-          Go Pro any time for everything.
-        </p>
-      </div>
-      <button
-        type="button"
-        onClick={props.onContinue}
-        className="w-full max-w-[420px] min-h-[56px] rounded-[16px] font-extrabold uppercase tracking-wider text-white"
-        style={{ background: 'var(--success-green)', boxShadow: '0 6px 0 color-mix(in srgb, var(--success-green) 72%, black)' }}
-      >
-        Continue
-      </button>
     </div>
   );
 }
@@ -669,8 +802,8 @@ function Entering({ onEnter }: { onEnter: () => Promise<void> }) {
     void onEnter();
   }, [onEnter]);
   return (
-    <div className="h-[100dvh] flex items-center justify-center bg-[var(--bg-page)]">
-      <p className="text-[20px] font-extrabold text-[var(--color-ink)]">Let&apos;s go!</p>
+    <div className={css.screen}>
+      <Hero art={<TeyHero teySrc={TEY('cheering')} size={160} />} title="Let's go!" />
     </div>
   );
 }

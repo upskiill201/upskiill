@@ -69,23 +69,30 @@ export class LessonAccessService {
   }
 
   /**
-   * Which lessons of a course are free for this learner. Chapter 1 = the
-   * first section that has a published lesson.
+   * Which lessons of a course are free for this learner: the free chapter is
+   * Chapter 1, or, for a learner placed further in (the placement test or
+   * Jump ahead), the first chapter they haven't tested out of. One free
+   * chapter either way, at the learner's level (founder, 2026-10-23).
    */
   async courseScope(userId: string, course: AccessCourse): Promise<CourseScope> {
-    const [ordered, profile] = await Promise.all([
+    const [ordered, profile, enrollment] = await Promise.all([
       this.lessonOrder(course.id),
       this.prisma.studentProfile.findUnique({ where: { userId }, select: { freeCourseId: true } }),
+      this.prisma.enrollment.findUnique({
+        where: { userId_courseId: { userId, courseId: course.id } },
+        select: { testedOutLessons: true },
+      }),
     ]);
-    return this.scopeFrom(course, ordered, profile?.freeCourseId ?? null);
+    return this.scopeFrom(course, ordered, profile?.freeCourseId ?? null, idSet(enrollment?.testedOutLessons));
   }
 
   private scopeFrom(
     course: AccessCourse,
     ordered: { id: string; isFreePreview: boolean; sectionId: string }[],
     freeCourseId: string | null,
+    testedOut: Set<string> = new Set(),
   ): CourseScope {
-    const firstChapter = ordered[0]?.sectionId ?? null;
+    const firstChapter = (ordered.find((l) => !testedOut.has(l.id)) ?? ordered[0])?.sectionId ?? null;
     const isFreeCourseForLearner = freeCourseId === null || freeCourseId === course.id;
     const priced0 = isFreeCourse({ isOriginal: course.isOriginal, trackLevel: course.trackLevel, price: course.price });
     const ids = ordered
@@ -151,12 +158,12 @@ export class LessonAccessService {
         ? Promise.resolve(null)
         : this.prisma.enrollment.findUnique({
             where: { userId_courseId: { userId, courseId: course.id } },
-            select: { completedLessons: true },
+            select: { completedLessons: true, testedOutLessons: true },
           }),
     ]);
 
     const index = ordered.findIndex((l) => l.id === lessonId);
-    const scope = this.scopeFrom(course, ordered, profile?.freeCourseId ?? null);
+    const scope = this.scopeFrom(course, ordered, profile?.freeCourseId ?? null, idSet(enrollment?.testedOutLessons));
     const completed = Array.isArray(enrollment?.completedLessons)
       ? (enrollment!.completedLessons as unknown[]).includes(lessonId)
       : false;
@@ -286,4 +293,8 @@ export class LessonAccessService {
     });
     return true;
   }
+}
+
+function idSet(json: unknown): Set<string> {
+  return new Set(Array.isArray(json) ? json.filter((x): x is string => typeof x === 'string') : []);
 }

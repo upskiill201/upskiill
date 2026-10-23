@@ -4,8 +4,6 @@
  * Categories are derived from it, so a category with no course never shows.
  */
 
-import { goalById } from '@/lib/onboarding/goals';
-
 export interface CatalogCourse {
   id: string;
   slug: string;
@@ -17,6 +15,10 @@ export interface CatalogCourse {
   chapterOneLessons: number;
   chapterOneMinutes: number;
   totalLessons: number;
+  /** Chapters with at least one published lesson. */
+  chapters: number;
+  /** Offers the placement test ("I already know some"). */
+  placement: boolean;
   firstLesson: { id: string; title: string; durationMinutes: number; exercises: number };
 }
 
@@ -32,23 +34,6 @@ export function fetchCatalog(): Promise<CatalogCourse[]> {
       });
   }
   return cache;
-}
-
-/** Categories with courses, the goal's best matches first and flagged. */
-export function categoriesFor(courses: CatalogCourse[], goalId?: string) {
-  const counts = new Map<string, number>();
-  for (const c of courses) counts.set(c.category, (counts.get(c.category) ?? 0) + 1);
-  const preferred = goalById(goalId)?.categories ?? [];
-  const rank = (name: string) => {
-    const i = preferred.findIndex((p) => p.toLowerCase() === name.toLowerCase());
-    return i === -1 ? 99 : i;
-  };
-  const sorted = [...counts.entries()]
-    .map(([name, count]) => ({ name, count, recommended: false }))
-    .sort((a, b) => rank(a.name) - rank(b.name) || b.count - a.count);
-  // Only the single best live match for their goal gets the badge.
-  if (sorted.length > 0 && rank(sorted[0].name) < 99) sorted[0].recommended = true;
-  return sorted;
 }
 
 /**

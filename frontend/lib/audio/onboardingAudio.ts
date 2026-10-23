@@ -267,3 +267,58 @@ export function playTeyReaction(family: PoseFamily): void {
 export function playCategoryCue(category: 'coding' | 'ai'): void {
   playOnboardingCue(category === 'coding' ? 'categoryCoding' : 'categoryAi');
 }
+
+/**
+ * Keystrokes while Tey types his line, like dialogue in a game. Each one is a
+ * tiny filtered noise click with a soft low "body", nudged in pitch, level
+ * and filter every time so a run of them sounds like real keys rather than a
+ * metronome. Quieter than every other cue, and silent when sound is off (the
+ * bus is null). The noise is cut once and reused.
+ */
+let keyNoise: AudioBuffer | null = null;
+export function playTypingKey(): void {
+  try {
+    const bus = getBus();
+    if (!bus) return;
+    const { ctx, output } = bus;
+    if (!keyNoise || keyNoise.sampleRate !== ctx.sampleRate) {
+      const len = Math.floor(ctx.sampleRate * 0.05);
+      keyNoise = ctx.createBuffer(1, len, ctx.sampleRate);
+      const d = keyNoise.getChannelData(0);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+    }
+    const t0 = ctx.currentTime;
+
+    const src = ctx.createBufferSource();
+    src.buffer = keyNoise;
+    src.playbackRate.value = 0.85 + Math.random() * 0.4;
+    const band = ctx.createBiquadFilter();
+    band.type = 'bandpass';
+    band.frequency.value = 2200 + Math.random() * 1600;
+    band.Q.value = 1.2;
+    const click = ctx.createGain();
+    click.gain.setValueAtTime(0.0001, t0);
+    click.gain.exponentialRampToValueAtTime(0.08 + Math.random() * 0.04, t0 + 0.002);
+    click.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.045);
+    src.connect(band);
+    band.connect(click);
+    click.connect(output);
+    src.start(t0);
+    src.stop(t0 + 0.06);
+
+    const body = ctx.createOscillator();
+    body.type = 'triangle';
+    body.frequency.setValueAtTime(170 + Math.random() * 70, t0);
+    body.frequency.exponentialRampToValueAtTime(90, t0 + 0.03);
+    const thump = ctx.createGain();
+    thump.gain.setValueAtTime(0.0001, t0);
+    thump.gain.exponentialRampToValueAtTime(0.045, t0 + 0.003);
+    thump.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.04);
+    body.connect(thump);
+    thump.connect(output);
+    body.start(t0);
+    body.stop(t0 + 0.05);
+  } catch {
+    // Decoration only.
+  }
+}

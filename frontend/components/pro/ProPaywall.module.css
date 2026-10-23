@@ -167,14 +167,11 @@
 
 .benefitIcon {
   flex: none;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--pw-blue-wash);
-  color: var(--pw-blue);
 }
 
 /* ─── Plan cards ─────────────────────────────────────────────────────────── */
@@ -312,8 +309,8 @@
 .timelineStep:not(:last-child)::after {
   content: '';
   position: absolute;
-  left: 15px;
-  top: 34px;
+  left: 19px;
+  top: 42px;
   bottom: -14px;
   width: 2px;
   background: var(--pw-line);
@@ -333,21 +330,19 @@
 
 .timelineDot {
   flex: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: var(--pw-bg);
   border: 2px solid var(--pw-line);
-  color: var(--pw-soft);
 }
 
 .timelineDotNow {
-  background: var(--pw-green);
-  border-color: var(--pw-green);
-  color: var(--pw-on);
+  border-color: color-mix(in srgb, var(--pw-green) 60%, var(--pw-bg));
+  background: color-mix(in srgb, var(--pw-green) 10%, var(--pw-bg));
 }
 
 /* ─── CTA ────────────────────────────────────────────────────────────────── */
@@ -663,27 +658,18 @@
   font-weight: 600;
 }
 
-.benefitsCompact svg {
-  color: var(--pw-green);
+.benefitsCompact li {
+  gap: 10px;
 }
 
 .noteIcon,
 .failIcon {
   align-self: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--pw-blue-wash);
-  color: var(--pw-blue);
 }
 
-.failIcon {
-  background: color-mix(in srgb, var(--pw-red) 10%, var(--pw-bg));
-  color: var(--pw-red);
-}
 
 /* ─── Mobile Money ──────────────────────────────────────────────────────── */
 

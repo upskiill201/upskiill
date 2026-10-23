@@ -1,25 +1,62 @@
 'use client';
 
 /**
- * The emotional beats of onboarding v3: the projection (a personalised result
- * before any ask), the hold-to-commit pledge (commitment and consistency),
- * and "building your plan" (it names their answers right before the paywall).
+ * The emotional beats of onboarding v3: what the course gives them (real
+ * facts), the projection (a personal result before any ask), the
+ * hold-to-commit pledge, and "building your plan" right before the paywall.
  */
 
 import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'framer-motion';
-import { Check, Flame, Target, Timer } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { Art, type ArtName } from '@/components/onboarding/v3/art/Art';
+import { Glyph } from '@/components/onboarding/v3/art/Glyph';
 import { playOnboardingCue, resetCommitTicks } from '@/lib/audio/onboardingAudio';
 import { duckOnboardingMusic } from '@/lib/audio/onboardingMusic';
 import { celebrationHaptic, playHaptic } from '@/lib/haptics';
 import { chapterOneFinish, type CatalogCourse } from '@/lib/onboarding/v3/catalog';
+import { kitCss as css } from './ui/Kit';
 
 function day(d: Date) {
   return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
+/** "Here's what you'll get": only things the course really has. */
+export function OutcomeStep(props: { course: CatalogCourse; minutes: number }) {
+  const reduce = useReducedMotion();
+  const c = props.course;
+  const facts: { art: ArtName; title: string; sub: string }[] = [
+    {
+      art: 'cards',
+      title: `${c.totalLessons} bite-size lessons`,
+      sub: `${c.chapters} ${c.chapters === 1 ? 'chapter' : 'chapters'}, about ${c.firstLesson.durationMinutes} minutes each`,
+    },
+    { art: 'target', title: 'Learn by doing', sub: 'Real questions and practice in every lesson' },
+    { art: 'calendar', title: 'A habit that sticks', sub: `${props.minutes} minutes a day, reminders at your time, a streak to keep` },
+    { art: 'certificate', title: 'A certificate when you finish', sub: 'With your name on it, ready to share' },
+  ];
+  return (
+    <ul className={css.facts}>
+      {facts.map((f, i) => (
+        <motion.li
+          key={f.title}
+          className={css.fact}
+          initial={reduce ? false : { opacity: 0, x: -16 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.15 + i * 0.12, duration: 0.3 }}
+        >
+          <Art name={f.art} size={52} />
+          <span>
+            <span className={`${css.factTitle} block`}>{f.title}</span>
+            <span className={`${css.factSub} block`}>{f.sub}</span>
+          </span>
+        </motion.li>
+      ))}
+    </ul>
+  );
+}
+
 /** "At 10 min a day you finish Chapter 1 by Fri, Nov 6", drawn as a rising curve. */
-export function ProjectionStep(props: { course: CatalogCourse; minutes: number; name?: string }) {
+export function ProjectionStep(props: { course: CatalogCourse; minutes: number }) {
   const reduce = useReducedMotion();
   const { days, date } = chapterOneFinish(props.course, props.minutes);
   const [drawn, setDrawn] = useState(false);
@@ -34,49 +71,72 @@ export function ProjectionStep(props: { course: CatalogCourse; minutes: number; 
   }, [reduce]);
 
   return (
-    <div className="w-full rounded-[20px] border-2 border-[var(--border)] bg-white p-4" style={{ boxShadow: '0 4px 0 var(--border)' }}>
-      <svg viewBox="0 0 320 150" className="w-full h-auto" role="img" aria-label={`Chapter 1 done in ${days} days`}>
-        <line x1="16" y1="130" x2="304" y2="130" stroke="var(--border)" strokeWidth="2" />
-        <motion.path
-          d="M16 128 C 90 124, 150 100, 200 72 S 280 22, 300 18"
-          fill="none"
-          stroke="var(--color-brand)"
-          strokeWidth="6"
-          strokeLinecap="round"
-          initial={reduce ? false : { pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1.1, ease: 'easeOut' }}
-        />
-        <motion.circle
-          cx="300"
-          cy="18"
-          r="10"
-          fill="var(--success-green)"
-          initial={reduce ? false : { scale: 0 }}
-          animate={{ scale: drawn ? 1 : 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 12 }}
-        />
-        <text x="16" y="146" fontSize="12" fontWeight="700" fill="var(--text-secondary)">Today</text>
-        <text x="304" y="146" fontSize="12" fontWeight="700" fill="var(--text-secondary)" textAnchor="end">
-          {day(date)}
-        </text>
-      </svg>
+    <div className="flex flex-col gap-4">
+      <div className="w-full rounded-[20px] border-2 border-[var(--border)] bg-[var(--bg-page)] p-4" style={{ boxShadow: '0 4px 0 var(--border)' }}>
+        <svg viewBox="0 0 320 160" className="w-full h-auto" role="img" aria-label={`Chapter 1 done in ${days} days`}>
+          <defs>
+            <linearGradient id="ob-area" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stopColor="var(--color-brand)" stopOpacity="0.22" />
+              <stop offset="1" stopColor="var(--color-brand)" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {[40, 75, 110].map((y) => (
+            <line key={y} x1="16" y1={y} x2="304" y2={y} stroke="var(--border)" strokeWidth="1.5" strokeDasharray="4 6" />
+          ))}
+          <line x1="16" y1="136" x2="304" y2="136" stroke="var(--border)" strokeWidth="2" />
+          <motion.path
+            d="M16 134 C 90 130, 150 106, 200 78 S 280 28, 300 24 L300 136 L16 136 Z"
+            fill="url(#ob-area)"
+            initial={reduce ? false : { opacity: 0 }}
+            animate={{ opacity: drawn ? 1 : 0 }}
+            transition={{ duration: 0.5 }}
+          />
+          <motion.path
+            d="M16 134 C 90 130, 150 106, 200 78 S 280 28, 300 24"
+            fill="none"
+            stroke="var(--color-brand)"
+            strokeWidth="7"
+            strokeLinecap="round"
+            initial={reduce ? false : { pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.1, ease: 'easeOut' }}
+          />
+          <circle cx="16" cy="134" r="7" fill="var(--color-brand)" />
+          <motion.g
+            initial={reduce ? false : { scale: 0, opacity: 0 }}
+            animate={{ scale: drawn ? 1 : 0, opacity: drawn ? 1 : 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 12 }}
+            style={{ transformOrigin: '300px 24px' }}
+          >
+            <circle cx="300" cy="24" r="13" fill="var(--success-green)" />
+            <path d="M294 24l4 4 8-9" stroke="var(--bg-page)" strokeWidth="3.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          </motion.g>
+          <text x="16" y="154" fontSize="12" fontWeight="800" fill="var(--text-secondary)">
+            Today
+          </text>
+          <text x="304" y="154" fontSize="12" fontWeight="800" fill="var(--text-secondary)" textAnchor="end">
+            {day(date)}
+          </text>
+        </svg>
+      </div>
       <motion.p
-        className="mt-3 text-center text-[17px] font-extrabold text-[var(--color-ink)]"
+        className="text-center text-[19px] leading-snug font-extrabold text-[var(--color-ink)]"
+        style={{ fontFamily: 'var(--font-celebration), var(--font-jakarta), sans-serif' }}
         initial={reduce ? false : { opacity: 0, y: 8 }}
         animate={{ opacity: drawn ? 1 : 0, y: drawn ? 0 : 8 }}
       >
-        {props.minutes} min a day = Chapter 1 of {props.course.title} done by {day(date)}
+        At {props.minutes} min a day, you finish Chapter 1 by {day(date)}
       </motion.p>
-      <p className="mt-1 text-center text-[13px] font-semibold text-[var(--text-secondary)]">
-        {props.course.chapterOneLessons} lessons, about {props.course.chapterOneMinutes} minutes in all.
+      <p className="text-center text-[14px] font-semibold text-[var(--text-secondary)]">
+        {props.course.chapterOneLessons} lessons, about {props.course.chapterOneMinutes} minutes in all. That&apos;s {days}{' '}
+        {days === 1 ? 'day' : 'days'} from now.
       </p>
     </div>
   );
 }
 
 /** Hold to commit: 1.5s of pressure turns a tap into a promise. */
-export function CommitStep(props: { minutes: number; goalPhrase?: string; committed?: boolean; onCommitted: () => void }) {
+export function CommitStep(props: { minutes: number; goalPhrase?: string; topic?: string; committed?: boolean; onCommitted: () => void }) {
   const reduce = useReducedMotion();
   const progress = useMotionValue(props.committed ? 1 : 0);
   const width = useTransform(progress, (p) => `${Math.round(p * 100)}%`);
@@ -117,20 +177,34 @@ export function CommitStep(props: { minutes: number; goalPhrase?: string; commit
     if (ticker.current) window.clearInterval(ticker.current);
   }, []);
 
+  const lines: { art: ArtName; text: string }[] = [
+    { art: 'pace10', text: `I'll learn ${props.minutes} minutes a day` },
+    { art: 'target', text: props.goalPhrase ? `to ${props.goalPhrase}` : props.topic ? `to learn ${props.topic}` : 'one lesson at a time' },
+    { art: 'calendar', text: 'and keep my streak alive' },
+  ];
+
   return (
-    <div className="flex flex-col items-center gap-5 pt-2">
-      <ul className="w-full flex flex-col gap-2">
-        {[
-          { icon: Timer, text: `${props.minutes} minutes a day` },
-          { icon: Target, text: props.goalPhrase ? `To ${props.goalPhrase}` : 'One small lesson at a time' },
-          { icon: Flame, text: 'Keep my streak alive' },
-        ].map(({ icon: Icon, text }) => (
-          <li key={text} className="flex items-center gap-3 rounded-[14px] bg-[var(--bg-section)] px-4 py-3 text-[16px] font-bold text-[var(--color-ink)]">
-            <Icon className="w-5 h-5 text-[var(--color-brand)]" aria-hidden="true" />
-            {text}
-          </li>
-        ))}
-      </ul>
+    <div className="flex flex-col items-center gap-6 pt-1">
+      <motion.div
+        className="w-full rounded-[22px] border-2 p-4"
+        style={{
+          borderColor: done ? 'color-mix(in srgb, var(--success-green) 60%, white)' : 'var(--border)',
+          background: done ? 'color-mix(in srgb, var(--success-green) 8%, white)' : 'var(--bg-page)',
+          boxShadow: `0 4px 0 ${done ? 'color-mix(in srgb, var(--success-green) 60%, white)' : 'var(--border)'}`,
+        }}
+        animate={done && !reduce ? { scale: [1, 1.03, 1] } : undefined}
+        transition={{ duration: 0.4 }}
+      >
+        <p className="mb-3 text-[12px] font-extrabold uppercase tracking-[0.12em] text-[var(--text-muted)]">My promise</p>
+        <ul className="flex flex-col gap-3">
+          {lines.map((l) => (
+            <li key={l.text} className="flex items-center gap-3 text-[17px] font-extrabold text-[var(--color-ink)]">
+              <Art name={l.art} size={40} />
+              {l.text}
+            </li>
+          ))}
+        </ul>
+      </motion.div>
       <button
         type="button"
         onPointerDown={start}
@@ -141,22 +215,18 @@ export function CommitStep(props: { minutes: number; goalPhrase?: string; commit
         onKeyUp={(e) => (e.key === ' ' || e.key === 'Enter') && stop()}
         onContextMenu={(e) => e.preventDefault()}
         aria-label={done ? 'Committed' : 'Press and hold to commit'}
-        className="relative w-full h-[64px] overflow-hidden rounded-[16px] select-none touch-none font-extrabold uppercase tracking-wider text-[16px]"
+        className="relative w-full h-[64px] overflow-hidden rounded-[18px] select-none touch-none font-extrabold uppercase tracking-wider text-[16px]"
         style={{
           background: done ? 'var(--success-green)' : 'var(--color-brand)',
           color: 'var(--bg-page)',
-          boxShadow: `0 6px 0 ${done ? 'color-mix(in srgb, var(--success-green) 72%, black)' : 'var(--color-brand-deep)'}`,
+          boxShadow: `0 5px 0 ${done ? 'color-mix(in srgb, var(--success-green) 68%, black)' : 'var(--color-brand-deep)'}`,
         }}
       >
-        <motion.span
-          aria-hidden="true"
-          className="absolute inset-y-0 left-0"
-          style={{ width, background: 'color-mix(in srgb, var(--success-green) 85%, white)' }}
-        />
+        <motion.span aria-hidden="true" className="absolute inset-y-0 left-0" style={{ width, background: 'var(--success-green)' }} />
         <span className="relative z-10 inline-flex items-center gap-2">
           {done ? (
             <>
-              <Check className="w-5 h-5" aria-hidden="true" /> I&apos;m in
+              <Glyph name="check" size={22} strokeWidth={3.6} /> I&apos;m in!
             </>
           ) : (
             'Press and hold to commit'
@@ -168,13 +238,13 @@ export function CommitStep(props: { minutes: number; goalPhrase?: string; commit
 }
 
 /** "Building your plan": names their answers, one by one, then resolves. */
-export function PlanStep(props: { name?: string; goalPhrase?: string; courseTitle?: string; minutes: number; onDone: () => void }) {
+export function PlanStep(props: { name?: string; goalPhrase?: string; courseTitle?: string; minutes: number; when?: string; onDone: () => void }) {
   const reduce = useReducedMotion();
   const lines = [
-    props.goalPhrase ? `Your goal: ${props.goalPhrase}` : 'Your goal',
-    props.courseTitle ? `Your course: ${props.courseTitle}` : 'Your course',
-    `Your pace: ${props.minutes} min a day`,
-    'Your reminders and streak',
+    props.courseTitle ? `Course: ${props.courseTitle}` : 'Your course',
+    props.goalPhrase ? `Goal: ${props.goalPhrase}` : 'Your goal',
+    `Pace: ${props.minutes} min a day`,
+    props.when ? `Reminders: ${props.when}` : 'Your reminders and streak',
   ];
   const [shown, setShown] = useState(0);
   const pct = useMotionValue(0);
@@ -195,7 +265,7 @@ export function PlanStep(props: { name?: string; goalPhrase?: string; courseTitl
       playOnboardingCue('planReady');
       celebrationHaptic('soft');
       props.onDone();
-    }, total + 300);
+    }, total + 400);
     return () => {
       timers.forEach((t) => window.clearTimeout(t));
       window.clearTimeout(end);
@@ -205,10 +275,17 @@ export function PlanStep(props: { name?: string; goalPhrase?: string; courseTitl
 
   return (
     <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center px-6 text-center bg-[var(--bg-page)]">
-      <motion.p className="text-[56px] font-extrabold text-[var(--color-brand)] tabular-nums" aria-live="polite">
+      <motion.div
+        initial={reduce ? false : { scale: 0.7, rotate: -8, opacity: 0 }}
+        animate={{ scale: 1, rotate: 0, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 220, damping: 14 }}
+      >
+        <Art name="clipboard" size={120} />
+      </motion.div>
+      <motion.p className="mt-2 text-[44px] font-extrabold text-[var(--color-brand)] tabular-nums" aria-live="polite">
         {pctText}
       </motion.p>
-      <h1 className="mt-2 text-[24px] font-extrabold text-[var(--color-ink)]" style={{ fontFamily: 'var(--font-celebration), var(--font-jakarta), sans-serif' }}>
+      <h1 className="text-[24px] font-extrabold text-[var(--color-ink)]" style={{ fontFamily: 'var(--font-celebration), var(--font-jakarta), sans-serif' }}>
         Building {props.name ? `${props.name}'s` : 'your'} plan…
       </h1>
       <ul className="mt-6 w-full max-w-[360px] flex flex-col gap-3 text-left">
@@ -219,12 +296,14 @@ export function PlanStep(props: { name?: string; goalPhrase?: string; courseTitl
             animate={{ opacity: i < shown ? 1 : 0.35 }}
             className="flex items-center gap-3 text-[16px] font-bold text-[var(--color-ink)]"
           >
-            <span
+            <motion.span
               className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center"
               style={{ background: i < shown ? 'var(--success-green)' : 'var(--border)', color: 'var(--bg-page)' }}
+              animate={i < shown && !reduce ? { scale: [1, 1.25, 1] } : undefined}
+              transition={{ duration: 0.3 }}
             >
-              {i < shown && <Check className="w-4 h-4" strokeWidth={3} aria-hidden="true" />}
-            </span>
+              {i < shown && <Glyph name="check" size={16} strokeWidth={3.6} />}
+            </motion.span>
             {l}
           </motion.li>
         ))}

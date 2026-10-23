@@ -6,7 +6,8 @@
  * renewal, and the screen says both before anyone types a number.
  */
 
-import { ArrowLeft, Smartphone } from 'lucide-react';
+import { Art } from '@/components/onboarding/v3/art/Art';
+import { Glyph } from '@/components/onboarding/v3/art/Glyph';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import CountryOperatorPicker from '@/components/features/course-unlock/CountryOperatorPicker';
 import PhoneField from '@/components/features/course-unlock/PhoneField';
@@ -95,7 +96,7 @@ export default function ProMobileMoney({ plans, initialPlan, onBack, onPro }: Pr
     return (
       <div className={styles.panel}>
         <div className={styles.momoWaitIcon}>
-          <Smartphone size={34} aria-hidden />
+          <Art name="phone" size={34} />
         </div>
         <h2 className={styles.panelTitle}>Approve it on your phone</h2>
         <p className={styles.panelBody}>
@@ -113,7 +114,7 @@ export default function ProMobileMoney({ plans, initialPlan, onBack, onPro }: Pr
   return (
     <div className={styles.panel}>
       <button type="button" className={styles.backLink} onClick={onBack}>
-        <ArrowLeft size={16} aria-hidden /> Back
+        <Glyph name="back" size={16} strokeWidth={3} /> Back
       </button>
       <h2 className={styles.panelTitle}>Pay with Mobile Money</h2>
       <p className={styles.panelBody}>

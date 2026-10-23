@@ -49,11 +49,15 @@ export interface TestOutPlayerProps {
   onFinish: (outcome: TestOutOutcome) => Promise<void>;
   /** After a saved result: go to the chapter (or the course start). */
   onContinue: (outcome: TestOutOutcome) => void;
+  /** Skip the intro: the host already introduced the test (onboarding). */
+  skipIntro?: boolean;
+  /** Overrides the result screen's button ("Continue" in onboarding). */
+  continueLabel?: string;
 }
 
 type Stage = 'intro' | 'question' | 'saving' | 'result';
 
-export function TestOutPlayer({ test, heading, onExit, onFinish, onContinue }: TestOutPlayerProps) {
+export function TestOutPlayer({ test, heading, onExit, onFinish, onContinue, skipIntro = false, continueLabel }: TestOutPlayerProps) {
   const reducedMotion = useReducedMotion();
   const placement = test.mode === 'placement';
 
@@ -64,7 +68,7 @@ export function TestOutPlayer({ test, heading, onExit, onFinish, onContinue }: T
   );
   const totalPlanned = chapters.reduce((n, c) => n + c.exercises.length, 0);
 
-  const [stage, setStage] = useState<Stage>('intro');
+  const [stage, setStage] = useState<Stage>(skipIntro ? 'question' : 'intro');
   const [chapter, setChapter] = useState(0);
   const [pos, setPos] = useState(0);
   const [response, setResponse] = useState<ExerciseResponse | null>(null);
@@ -266,7 +270,9 @@ export function TestOutPlayer({ test, heading, onExit, onFinish, onContinue }: T
               onClick={() => (test.mode === 'jump' && !outcome.passed ? onExit() : onContinue(outcome))}
               autoFocus
             >
-              {test.mode === 'jump'
+              {continueLabel
+                ? continueLabel
+                : test.mode === 'jump'
                 ? outcome.passed
                   ? `Start ${test.targetTitle || 'the chapter'}`
                   : 'Keep learning'

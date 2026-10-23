@@ -20,6 +20,7 @@ function makeService(over: Record<string, any> = {}) {
           thumbnailUrl: null,
           isOriginal: true,
           createdAt: new Date(),
+          track: { slug: 'python-for-beginners' },
           sections: [
             { lessons: [{ id: L1, title: 'Hello', durationMinutes: 3 }, { id: L2, title: 'Next', durationMinutes: 4 }] },
           ],
@@ -53,7 +54,8 @@ function makeService(over: Record<string, any> = {}) {
   };
   prisma.$transaction = jest.fn((fn: (tx: unknown) => unknown) => fn(prisma));
   const events = { emitAsync: jest.fn().mockResolvedValue([]) };
-  return { svc: new OnboardingFlowService(prisma, events as any), prisma, events };
+  const testOut = { placementTest: jest.fn().mockResolvedValue({ mode: 'placement', units: [] }) };
+  return { svc: new OnboardingFlowService(prisma, events as any, testOut as any), prisma, events, testOut };
 }
 
 describe('OnboardingFlowService', () => {
@@ -103,6 +105,62 @@ describe('OnboardingFlowService', () => {
       ONBOARDING_LESSON_SETTLED,
       expect.objectContaining({ userId: 'user-1', courseId: C1, lessonId: L1, timezoneOffsetMinutes: -60 }),
     );
+  });
+
+  it('a taste earns no lesson XP and settles as TASTE', async () => {
+    const { svc, prisma, events } = makeService();
+    const claim = await svc.issueLessonClaim({ courseId: C1, lessonId: L1, mode: 'TASTE', stats: { correctAnswers: 3 } });
+    expect(claim.lessonXp).toBe(0);
+    expect(prisma.onboardingChallengeClaim.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ stats: expect.objectContaining({ mode: 'TASTE' }) }) }),
+    );
+    const token = 'd'.repeat(64);
+    prisma.onboardingChallengeClaim.findUnique.mockResolvedValue({
+      tokenHash: createHash('sha256').update(token).digest('hex'),
+      kind: 'LESSON',
+      courseId: C1,
+      lessonId: L1,
+      stats: { mode: 'TASTE' },
+    });
+    prisma.onboardingChallengeClaim.updateMany.mockResolvedValue({ count: 1 });
+    await svc.settleLessonClaim('user-3', token);
+    expect(events.emitAsync).toHaveBeenCalledWith(ONBOARDING_LESSON_SETTLED, expect.objectContaining({ mode: 'TASTE' }));
+  });
+
+  it('a placement claim must name a chapter of this course', async () => {
+    const { svc, prisma } = makeService({ section: { findFirst: jest.fn().mockResolvedValue(null) } });
+    await expect(
+      svc.issueLessonClaim({
+        courseId: C1,
+        lessonId: L1,
+        mode: 'PLACEMENT',
+        placement: { targetSectionId: '44444444-4444-4444-8444-444444444444', correct: 6, total: 9 },
+        stats: {},
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    prisma.section.findFirst.mockResolvedValue({ id: 'sec-3' });
+    const claim = await svc.issueLessonClaim({
+      courseId: C1,
+      lessonId: L1,
+      mode: 'PLACEMENT',
+      placement: { targetSectionId: 'sec-3', correct: 99, total: 9 },
+      stats: {},
+    });
+    expect(claim.lessonXp).toBe(0);
+    expect(prisma.onboardingChallengeClaim.create).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          stats: expect.objectContaining({ placement: { targetSectionId: 'sec-3', correct: 9, total: 9 } }),
+        }),
+      }),
+    );
+  });
+
+  it('serves the placement test only for courses that offer one', async () => {
+    const { svc, testOut } = makeService();
+    await svc.placementTest(C1);
+    expect(testOut.placementTest).toHaveBeenCalledWith(C1);
+    await expect(svc.placementTest('c-video-only')).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('a token already settled (or expired) pays nothing', async () => {

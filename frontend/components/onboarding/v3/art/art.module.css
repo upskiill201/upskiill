@@ -1,0 +1,122 @@
+/*
+ * The onboarding illustration palette. Every colour is derived from the
+ * brand tokens (docs/08-color-system.md), so the drawings move with the
+ * brand and nothing hardcodes a hex. Drawings use the f-* (fill) and s-*
+ * (stroke) classes below instead of colour attributes.
+ */
+.art {
+  --a-blue: var(--color-brand);
+  --a-blue-d: var(--color-brand-deep);
+  --a-blue-l: color-mix(in srgb, var(--color-brand) 42%, white);
+  --a-sky: color-mix(in srgb, var(--color-brand) 16%, white);
+  --a-green: var(--success-green);
+  --a-green-d: color-mix(in srgb, var(--success-green) 68%, black);
+  --a-green-l: color-mix(in srgb, var(--success-green) 45%, white);
+  --a-gold: color-mix(in srgb, var(--warning) 82%, white);
+  --a-gold-d: color-mix(in srgb, var(--warning) 80%, black);
+  --a-gold-l: color-mix(in srgb, var(--warning) 38%, white);
+  --a-orange: color-mix(in srgb, var(--warning) 52%, var(--error-red));
+  --a-orange-d: color-mix(in srgb, var(--a-orange) 72%, black);
+  --a-red: var(--error-red);
+  --a-red-d: color-mix(in srgb, var(--error-red) 70%, black);
+  --a-pink: color-mix(in srgb, var(--error-red) 30%, color-mix(in srgb, var(--brand-violet) 60%, white));
+  --a-pink-d: color-mix(in srgb, var(--error-red) 55%, var(--brand-violet));
+  --a-purple: var(--brand-purple);
+  --a-purple-d: color-mix(in srgb, var(--brand-purple) 68%, black);
+  --a-purple-l: var(--brand-violet);
+  --a-teal: color-mix(in srgb, var(--success-green) 50%, var(--color-brand));
+  --a-teal-d: color-mix(in srgb, var(--a-teal) 70%, black);
+  --a-ink: var(--color-ink);
+  --a-ink-l: color-mix(in srgb, var(--color-ink) 72%, var(--color-brand));
+  --a-steel: color-mix(in srgb, var(--color-ink-soft) 38%, white);
+  --a-steel-d: color-mix(in srgb, var(--color-ink-soft) 80%, white);
+  --a-steel-l: color-mix(in srgb, var(--color-ink-soft) 16%, white);
+  --a-white: var(--bg-page);
+  --a-cloud: var(--bg-section);
+  --a-night: color-mix(in srgb, var(--color-brand-deep) 55%, var(--color-ink));
+  --a-shadow: color-mix(in srgb, var(--ink-fixed) 12%, transparent);
+  display: block;
+  overflow: visible;
+}
+
+.f-b { fill: var(--a-blue); }
+.f-bd { fill: var(--a-blue-d); }
+.f-bl { fill: var(--a-blue-l); }
+.f-sky { fill: var(--a-sky); }
+.f-g { fill: var(--a-green); }
+.f-gd { fill: var(--a-green-d); }
+.f-gl { fill: var(--a-green-l); }
+.f-y { fill: var(--a-gold); }
+.f-yd { fill: var(--a-gold-d); }
+.f-yl { fill: var(--a-gold-l); }
+.f-o { fill: var(--a-orange); }
+.f-od { fill: var(--a-orange-d); }
+.f-r { fill: var(--a-red); }
+.f-rd { fill: var(--a-red-d); }
+.f-p { fill: var(--a-pink); }
+.f-pd { fill: var(--a-pink-d); }
+.f-v { fill: var(--a-purple); }
+.f-vd { fill: var(--a-purple-d); }
+.f-vl { fill: var(--a-purple-l); }
+.f-t { fill: var(--a-teal); }
+.f-td { fill: var(--a-teal-d); }
+.f-k { fill: var(--a-ink); }
+.f-kl { fill: var(--a-ink-l); }
+.f-st { fill: var(--a-steel); }
+.f-std { fill: var(--a-steel-d); }
+.f-stl { fill: var(--a-steel-l); }
+.f-w { fill: var(--a-white); }
+.f-c { fill: var(--a-cloud); }
+.f-n { fill: var(--a-night); }
+.f-sh { fill: var(--a-shadow); }
+.f-hi { fill: var(--a-white); opacity: 0.55; }
+
+.s-b, .s-bd, .s-bl, .s-sky, .s-g, .s-gd, .s-y, .s-yd, .s-yl, .s-o, .s-r, .s-p, .s-pd,
+.s-v, .s-vd, .s-k, .s-st, .s-std, .s-stl, .s-w, .s-t {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.s-b { stroke: var(--a-blue); }
+.s-bd { stroke: var(--a-blue-d); }
+.s-bl { stroke: var(--a-blue-l); }
+.s-sky { stroke: var(--a-sky); }
+.s-g { stroke: var(--a-green); }
+.s-gd { stroke: var(--a-green-d); }
+.s-y { stroke: var(--a-gold); }
+.s-yd { stroke: var(--a-gold-d); }
+.s-yl { stroke: var(--a-gold-l); }
+.s-o { stroke: var(--a-orange); }
+.s-r { stroke: var(--a-red); }
+.s-p { stroke: var(--a-pink); }
+.s-pd { stroke: var(--a-pink-d); }
+.s-v { stroke: var(--a-purple); }
+.s-vd { stroke: var(--a-purple-d); }
+.s-k { stroke: var(--a-ink); }
+.s-st { stroke: var(--a-steel); }
+.s-std { stroke: var(--a-steel-d); }
+.s-stl { stroke: var(--a-steel-l); }
+.s-w { stroke: var(--a-white); }
+.s-t { stroke: var(--a-teal); }
+
+/* Small life: a selected drawing does a happy wiggle. */
+.wiggle {
+  animation: art-wiggle 520ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: 50% 85%;
+}
+@keyframes art-wiggle {
+  0% { transform: scale(1) rotate(0); }
+  30% { transform: scale(1.14) rotate(-7deg); }
+  60% { transform: scale(0.97) rotate(5deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.float {
+  animation: art-float 3.2s ease-in-out infinite;
+}
+@keyframes art-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wiggle, .float { animation: none; }
+}

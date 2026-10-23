@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { OriginalsModule } from '../originals/originals.module';
 import { OnboardingFlowController } from './onboarding-flow.controller';
 import { OnboardingFlowService } from './onboarding-flow.service';
 
@@ -8,6 +9,8 @@ import { OnboardingFlowService } from './onboarding-flow.service';
  * this never imports CourseModule (which would close an Auth cycle).
  */
 @Module({
+  // The placement test (TestOutService); Originals depends on Prisma only.
+  imports: [OriginalsModule],
   controllers: [OnboardingFlowController],
   providers: [OnboardingFlowService],
   exports: [OnboardingFlowService],

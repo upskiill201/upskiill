@@ -16,21 +16,8 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import {
-  BellRing,
-  BookOpen,
-  Check,
-  CircleHelp,
-  Clock,
-  CreditCard,
-  Flame,
-  Heart,
-  Infinity as InfinityIcon,
-  MessageSquare,
-  Sparkles,
-  Wallet,
-  X,
-} from 'lucide-react';
+import { Art, type ArtName } from '@/components/onboarding/v3/art/Art';
+import { Glyph } from '@/components/onboarding/v3/art/Glyph';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { captureEvent } from '@/lib/analytics';
@@ -90,19 +77,20 @@ type View =
   | 'success';
 
 const TEY = '/User onbarding Assets/tey';
-const BENEFIT_ICONS: Record<string, typeof BookOpen> = {
-  courses: BookOpen,
-  limit: InfinityIcon,
-  hearts: Heart,
-  streak: Flame,
+/** Teyro's own illustrations (components/onboarding/v3/art), never a stock icon. */
+const BENEFIT_ART: Record<string, ArtName> = {
+  courses: 'books',
+  limit: 'infinity',
+  hearts: 'heart',
+  streak: 'shield',
 };
 
-const REASONS: { reason: ExitReason; label: string; icon: typeof Wallet }[] = [
-  { reason: 'TOO_EXPENSIVE', label: "It's too expensive", icon: Wallet },
-  { reason: 'NOT_SURE', label: "I'm not sure it's for me", icon: CircleHelp },
-  { reason: 'JUST_LOOKING', label: "I'm just looking around", icon: Sparkles },
-  { reason: 'DECIDE_LATER', label: "I'll decide later", icon: Clock },
-  { reason: 'OTHER', label: 'Something else', icon: MessageSquare },
+const REASONS: { reason: ExitReason; label: string; art: ArtName }[] = [
+  { reason: 'TOO_EXPENSIVE', label: "It's too expensive", art: 'wallet' },
+  { reason: 'NOT_SURE', label: "I'm not sure it's for me", art: 'question' },
+  { reason: 'JUST_LOOKING', label: "I'm just looking around", art: 'compass' },
+  { reason: 'DECIDE_LATER', label: "I'll decide later", art: 'hourglass' },
+  { reason: 'OTHER', label: 'Something else', art: 'bubbles' },
 ];
 
 export default function ProPaywall({ moment, context = {}, onDismiss, onPro, closeDelaySeconds = 3 }: Props) {
@@ -372,7 +360,7 @@ export default function ProPaywall({ moment, context = {}, onDismiss, onPro, clo
 
               <ul className={styles.benefits}>
                 {benefits.map((b, i) => {
-                  const Icon = BENEFIT_ICONS[b.key] ?? Check;
+                  const art = BENEFIT_ART[b.key] ?? 'spark';
                   return (
                     <motion.li
                       key={b.key}
@@ -382,7 +370,7 @@ export default function ProPaywall({ moment, context = {}, onDismiss, onPro, clo
                       transition={{ delay: 0.15 + i * 0.07 }}
                     >
                       <span className={styles.benefitIcon}>
-                        <Icon size={16} aria-hidden />
+                        <Art name={art} size={34} />
                       </span>
                       <strong title={b.body}>{b.title}</strong>
                     </motion.li>
@@ -450,7 +438,7 @@ export default function ProPaywall({ moment, context = {}, onDismiss, onPro, clo
                       void track('MOBILE_MONEY_OPEN', { plan: selected });
                     }}
                   >
-                    <Wallet size={15} aria-hidden /> Pay with Mobile Money instead
+                    <Art name="wallet" size={22} /> Pay with Mobile Money instead
                   </button>
                 )}
               </div>
@@ -473,7 +461,7 @@ export default function ProPaywall({ moment, context = {}, onDismiss, onPro, clo
               <Image src={`${TEY}/thinking.webp`} alt="" width={96} height={96} className={styles.panelTey} />
               <h2 className={styles.panelTitle}>Before you go, what&apos;s holding you back?</h2>
               <div className={styles.reasons}>
-                {REASONS.map(({ reason, label, icon: Icon }) => (
+                {REASONS.map(({ reason, label, art }) => (
                   <button
                     key={reason}
                     type="button"
@@ -481,7 +469,7 @@ export default function ProPaywall({ moment, context = {}, onDismiss, onPro, clo
                     disabled={surveyBusy}
                     onClick={() => answer(reason)}
                   >
-                    <Icon size={18} aria-hidden />
+                    <Art name={art} size={36} />
                     {label}
                   </button>
                 ))}
@@ -572,7 +560,7 @@ export default function ProPaywall({ moment, context = {}, onDismiss, onPro, clo
               <ul className={styles.benefitsCompact}>
                 {benefits.slice(0, 3).map((b) => (
                   <li key={b.key}>
-                    <Check size={16} aria-hidden /> {b.title}
+                    <Art name={BENEFIT_ART[b.key] ?? 'spark'} size={26} /> {b.title}
                   </li>
                 ))}
               </ul>
@@ -588,7 +576,7 @@ export default function ProPaywall({ moment, context = {}, onDismiss, onPro, clo
           {view === 'note' && note && (
             <div className={styles.panel}>
               <span className={styles.noteIcon}>
-                <BellRing size={28} aria-hidden />
+                <Art name="bell" size={72} />
               </span>
               <h2 className={styles.panelTitle}>{note.title}</h2>
               <p className={styles.panelBody}>{note.body}</p>
@@ -658,7 +646,7 @@ export default function ProPaywall({ moment, context = {}, onDismiss, onPro, clo
           {view === 'failed' && failure && (
             <div className={styles.panel}>
               <span className={styles.failIcon}>
-                <CreditCard size={28} aria-hidden />
+                <Art name="card" size={72} />
               </span>
               <h2 className={styles.panelTitle}>That payment didn&apos;t go through</h2>
               <p className={styles.panelBody}>{failure.message}</p>
@@ -679,7 +667,7 @@ export default function ProPaywall({ moment, context = {}, onDismiss, onPro, clo
           {view === 'trialUsed' && (
             <div className={styles.panel}>
               <span className={styles.noteIcon}>
-                <CreditCard size={28} aria-hidden />
+                <Art name="card" size={72} />
               </span>
               <h2 className={styles.panelTitle}>This card already had a free trial</h2>
               <p className={styles.panelBody}>
@@ -771,7 +759,7 @@ function Shell({ children, onClose, showClose }: { children: React.ReactNode; on
             exit={{ opacity: 0 }}
             onClick={onClose}
           >
-            <X size={20} />
+            <Glyph name="close" size={20} strokeWidth={3.2} />
           </motion.button>
         )}
       </AnimatePresence>
@@ -799,7 +787,7 @@ function PlanCard(props: {
     >
       {props.badge && <span className={styles.planBadge}>{props.badge}</span>}
       <span className={styles.planRadio} aria-hidden>
-        {props.active && <Check size={14} strokeWidth={3} />}
+        {props.active && <Glyph name="check" size={14} strokeWidth={3.8} />}
       </span>
       <span className={styles.planText}>
         <span className={styles.planLabel}>{props.label}</span>
@@ -820,16 +808,16 @@ function PlanCard(props: {
 /** Playbook: remove the fear of forgetting to cancel, right on the paywall. */
 function TrialTimeline(props: { trialDays: number; reminder: Date; charge: Date; amount: string; interval: string }) {
   const steps = [
-    { icon: Sparkles, title: 'Today', body: 'Every course opens. No limits, unlimited hearts.' },
-    { icon: BellRing, title: formatDay(props.reminder), body: 'We remind you your trial ends in 2 days.' },
-    { icon: CreditCard, title: formatDay(props.charge), body: `You're charged ${props.amount}/${props.interval}. Cancel anytime before.` },
+    { art: 'gift' as ArtName, title: 'Today', body: 'Every course opens. No limits, unlimited hearts.' },
+    { art: 'bell' as ArtName, title: formatDay(props.reminder), body: 'We remind you your trial ends in 2 days.' },
+    { art: 'card' as ArtName, title: formatDay(props.charge), body: `You're charged ${props.amount}/${props.interval}. Cancel anytime before.` },
   ];
   return (
     <ol className={styles.timeline} aria-label="How your free trial works">
       {steps.map((s, i) => (
         <li key={s.title} className={styles.timelineStep}>
           <span className={`${styles.timelineDot} ${i === 0 ? styles.timelineDotNow : ''}`}>
-            <s.icon size={16} aria-hidden />
+            <Art name={s.art} size={30} />
           </span>
           <span>
             <strong>{s.title}</strong>

@@ -2,6 +2,8 @@ import { BadRequestException, Injectable, Logger, NotFoundException } from '@nes
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Prisma } from '@prisma/client';
 import { createHash, randomBytes } from 'crypto';
+import { hasPlacementTest } from '../originals/originals.policy';
+import { TestOutService } from '../originals/test-out.service';
 import { PrismaService } from '../prisma/prisma.service';
 
 /** How long a pre-signup lesson claim stays redeemable. */
@@ -10,13 +12,24 @@ export const LESSON_CLAIM_TTL_DAYS = 30;
 /** The gift chest opened after the onboarding lesson (real, paid at signup). */
 export const ONBOARDING_CHEST = { coins: 20, streakFreezes: 1 } as const;
 
-/** Event the course module settles: enrol + complete lesson 1 for the new account. */
+/**
+ * What the learner did before signing up (founder, 2026-10-23):
+ *   TASTE      the start of lesson 1 (first card + a few questions); lesson 1
+ *              is started, not finished, and opens at card 2 after signup
+ *   PLACEMENT  the course's placement test; the result places them at signup
+ *   LESSON     the whole of lesson 1 (older clients)
+ */
+export type OnboardingClaimMode = 'LESSON' | 'TASTE' | 'PLACEMENT';
+
+/** Event the course module settles into the new account. */
 export const ONBOARDING_LESSON_SETTLED = 'onboarding.lesson_settled';
 export interface OnboardingLessonSettledEvent {
   userId: string;
   courseId: string;
   lessonId: string;
   timezoneOffsetMinutes: number;
+  mode: OnboardingClaimMode;
+  placement?: { targetSectionId: string; correct: number; total: number };
   timeSpentSeconds?: number;
   correctAnswers?: number;
   quizScorePct?: number;
@@ -37,6 +50,10 @@ export interface CatalogCourse {
   chapterOneLessons: number;
   chapterOneMinutes: number;
   totalLessons: number;
+  /** Chapters with at least one published lesson. */
+  chapters: number;
+  /** Offers the placement test ("I already know some"). */
+  placement: boolean;
   firstLesson: { id: string; title: string; durationMinutes: number; exercises: number };
 }
 
@@ -63,6 +80,7 @@ export class OnboardingFlowService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly events: EventEmitter2,
+    private readonly testOut: TestOutService,
   ) {}
 
   /**
@@ -88,6 +106,7 @@ export class OnboardingFlowService {
         thumbnailUrl: true,
         isOriginal: true,
         createdAt: true,
+        track: { select: { slug: true } },
         sections: {
           orderBy: { orderIndex: 'asc' },
           select: {
@@ -130,6 +149,8 @@ export class OnboardingFlowService {
         chapterOneLessons: chapterOne.length,
         chapterOneMinutes: chapterOne.reduce((m, l) => m + Math.max(1, l.durationMinutes || 3), 0),
         totalLessons: c.sections.reduce((n, s) => n + s.lessons.length, 0),
+        chapters: c.sections.filter((s) => s.lessons.length > 0).length,
+        placement: hasPlacementTest(c.track?.slug),
         firstLesson: {
           id: first.id,
           title: first.title,
@@ -166,6 +187,17 @@ export class OnboardingFlowService {
     return { course, lesson };
   }
 
+  /**
+   * "I already know some": the course's placement test, before an account
+   * exists (Duolingo's "Take a test to jump ahead"). Only for catalog
+   * courses that offer one. Graded on the device, like the in-app test.
+   */
+  async placementTest(courseId: string) {
+    const course = (await this.catalog()).find((c) => c.id === courseId || c.slug === courseId);
+    if (!course?.placement) throw new NotFoundException('This course has no placement test');
+    return { course: { id: course.id, title: course.title }, test: await this.testOut.placementTest(course.id) };
+  }
+
   private hash(token: string): string {
     return createHash('sha256').update(token).digest('hex');
   }
@@ -178,11 +210,25 @@ export class OnboardingFlowService {
   async issueLessonClaim(input: {
     courseId: string;
     lessonId: string;
+    mode?: OnboardingClaimMode;
+    placement?: { targetSectionId: string; correct: number; total: number };
     stats: { timeSpentSeconds?: number; correctAnswers?: number; quizScorePct?: number; bestCombo?: number };
   }) {
+    const mode: OnboardingClaimMode = input.mode ?? 'LESSON';
     const course = (await this.catalog()).find((c) => c.id === input.courseId);
     if (!course || course.firstLesson.id !== input.lessonId) {
       throw new BadRequestException('Only a course’s first lesson can be claimed in onboarding.');
+    }
+    let placement: { targetSectionId: string; correct: number; total: number } | undefined;
+    if (mode === 'PLACEMENT') {
+      if (!course.placement || !input.placement) throw new BadRequestException('This course has no placement test.');
+      const section = await this.prisma.section.findFirst({
+        where: { id: input.placement.targetSectionId, courseId: course.id },
+        select: { id: true },
+      });
+      if (!section) throw new BadRequestException('That chapter is not part of this course.');
+      const total = clampInt(input.placement.total, 0, 200);
+      placement = { targetSectionId: section.id, total, correct: Math.min(total, clampInt(input.placement.correct, 0, 200)) };
     }
     const lesson = await this.prisma.lesson.findUnique({
       where: { id: input.lessonId },
@@ -196,6 +242,8 @@ export class OnboardingFlowService {
         courseId: course.id,
         lessonId: input.lessonId,
         stats: {
+          mode,
+          ...(placement ? { placement } : {}),
           timeSpentSeconds: clampInt(input.stats.timeSpentSeconds, 0, 3600),
           correctAnswers: clampInt(input.stats.correctAnswers, 0, 50),
           quizScorePct: clampInt(input.stats.quizScorePct, 0, 100),
@@ -208,7 +256,8 @@ export class OnboardingFlowService {
       status: 'PENDING_SIGNUP' as const,
       claimToken: raw,
       // What the celebration shows; the server pays the same amounts at signup.
-      lessonXp: lesson?.xpReward ?? 10,
+      // Only a finished lesson earns its XP; a taste or a placement test doesn't.
+      lessonXp: mode === 'LESSON' ? lesson?.xpReward ?? 10 : 0,
       chest: ONBOARDING_CHEST,
     };
   }
@@ -265,12 +314,21 @@ export class OnboardingFlowService {
       });
       if (!outcome) return { settled: false };
 
-      const stats = (outcome.stats ?? {}) as Record<string, number>;
+      const stats = (outcome.stats ?? {}) as Record<string, unknown> as {
+        mode?: OnboardingClaimMode;
+        placement?: { targetSectionId: string; correct: number; total: number };
+        timeSpentSeconds?: number;
+        correctAnswers?: number;
+        quizScorePct?: number;
+        bestCombo?: number;
+      };
       await this.events.emitAsync(ONBOARDING_LESSON_SETTLED, {
         userId,
         courseId: outcome.courseId!,
         lessonId: outcome.lessonId!,
         timezoneOffsetMinutes,
+        mode: stats.mode ?? 'LESSON',
+        placement: stats.placement,
         timeSpentSeconds: stats.timeSpentSeconds,
         correctAnswers: stats.correctAnswers,
         quizScorePct: stats.quizScorePct,

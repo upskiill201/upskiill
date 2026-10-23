@@ -8,6 +8,6 @@ import { TestOutService } from './test-out.service';
   imports: [PrismaModule],
   controllers: [OriginalsController],
   providers: [OriginalsService, TestOutService],
-  exports: [OriginalsService],
+  exports: [OriginalsService, TestOutService],
 })
 export class OriginalsModule {}
