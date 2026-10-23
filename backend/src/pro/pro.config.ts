@@ -3,7 +3,7 @@
  *
  * Every number the paywall shows comes from here or from Stripe's live
  * prices, never from copy. Founder decisions, 2026-10-22: $12.99/month,
- * $59.99/year, 7-day trial with a card, 3 free lessons a day, a one-time
+ * $59.99/year, 7-day trial with a card, 2 free lessons a day, a one-time
  * 30% first-year offer only for "too expensive", creators paid from a 50%
  * per-subscriber pool.
  */
@@ -43,9 +43,10 @@ export function proGraceDays(): number {
   return Number.isFinite(n) && n >= 0 ? n : 7;
 }
 
+/** Free lessons a day (founder, 2026-10-22: 2, changed from 3). */
 export function proFreeDailyCap(): number {
-  const n = Number(process.env.PRO_FREE_DAILY_CAP ?? 3);
-  return Number.isInteger(n) && n > 0 ? n : 3;
+  const n = Number(process.env.PRO_FREE_DAILY_CAP ?? 2);
+  return Number.isInteger(n) && n > 0 ? n : 2;
 }
 
 export function proPoolSharePct(): number {

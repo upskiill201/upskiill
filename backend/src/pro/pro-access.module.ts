@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { LessonAccessService } from './lesson-access.service';
 import { ProAccessService } from './pro-access.service';
 import { ProGrantService } from './pro-grant.service';
 
@@ -8,7 +9,7 @@ import { ProGrantService } from './pro-grant.service';
  * (ProModule), which would close a dependency cycle.
  */
 @Module({
-  providers: [ProAccessService, ProGrantService],
-  exports: [ProAccessService, ProGrantService],
+  providers: [ProAccessService, ProGrantService, LessonAccessService],
+  exports: [ProAccessService, ProGrantService, LessonAccessService],
 })
 export class ProAccessModule {}

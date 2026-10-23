@@ -15,6 +15,8 @@ import { OriginalsService } from '../originals/originals.service';
 import { CommunityService } from '../community/community.service';
 import { ShopService } from '../shop/shop.service';
 import { CourseReviewService } from '../course-review/course-review.service';
+import { LessonAccessService } from '../pro/lesson-access.service';
+import { ProAccessService } from '../pro/pro-access.service';
 
 const mockPrismaService = {
   course: {
@@ -127,6 +129,19 @@ describe('CourseService', () => {
             describe: jest.fn().mockResolvedValue(null),
             levelCompletion: jest.fn().mockResolvedValue(null),
           },
+        },
+        {
+          provide: LessonAccessService,
+          // Access is decided in lesson-access.policy (its own spec); here every lesson is open.
+          useValue: {
+            check: jest.fn().mockResolvedValue({ allowed: true, isPro: false, freeTier: null }),
+            courseScope: jest.fn().mockResolvedValue({ freeLessonIds: [], isFreeCourseForLearner: true }),
+            freeTierStatus: jest.fn().mockResolvedValue(null),
+          },
+        },
+        {
+          provide: ProAccessService,
+          useValue: { getAccess: jest.fn().mockResolvedValue({ isPro: false }) },
         },
       ],
     }).compile();

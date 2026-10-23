@@ -1,9 +1,10 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Optional } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { XpAwardedEvent } from '../league/events/xp-awarded.event';
 import { ShopService } from '../shop/shop.service';
 import { StreakService } from '../streak/streak.service';
+import { ProAccessService } from '../pro/pro-access.service';
 import { DAILY_REWARD_SCHEDULE, dailyRewardFor } from './daily-reward';
 
 @Injectable()
@@ -15,7 +16,13 @@ export class GamificationService {
     private shopService: ShopService,
     // Streaks reconcile (and repair) in exactly one place.
     private streakService: StreakService,
+    // Teyro Pro: unlimited hearts. Optional so specs can construct the service bare.
+    @Optional() private proAccess?: ProAccessService,
   ) {}
+
+  private async unlimitedHearts(userId: string): Promise<boolean> {
+    return this.proAccess ? this.proAccess.hasPro(userId) : false;
+  }
 
   /**
    * Returns the student's current gamification state.
@@ -98,6 +105,7 @@ export class GamificationService {
     return {
       ...this.buildResponse(profile, timezoneOffsetMinutes, streakStatus, lostStreakCount, daysSinceLastLesson),
       streakRepair,
+      unlimitedHearts: await this.unlimitedHearts(userId),
     };
   }
 
@@ -110,6 +118,11 @@ export class GamificationService {
       create: { userId },
       update: {},
     });
+
+    // Teyro Pro: mistakes never cost a heart.
+    if (await this.unlimitedHearts(userId)) {
+      return { ...this.buildResponse(profile), shieldAbsorbed: false, unlimitedHearts: true };
+    }
 
     // Perfect Lesson Protection spends itself, the way a streak freeze does.
     // Asking the learner to remember they own a shield mid-question would
