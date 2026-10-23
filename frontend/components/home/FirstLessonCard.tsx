@@ -13,7 +13,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Clock, Play } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { lessonHref, type LearningPath } from '@/hooks/useCourse';
 import { buildPathModel } from '@/lib/path/model';
 import { playHaptic } from '@/lib/haptics';
@@ -88,12 +88,12 @@ export function FirstLessonCard({
           className="flex-1 inline-flex items-center justify-center gap-2 h-12 rounded-[14px] bg-[var(--success-green)] text-white text-[16px] font-extrabold uppercase tracking-wide active:translate-y-[2px] transition-transform"
           style={{ boxShadow: '0 4px 0 color-mix(in srgb, var(--success-green) 70%, var(--color-ink))' }}
         >
-          <Play className="w-5 h-5 fill-current" aria-hidden="true" />
+          <Glyph name="play" size={20} strokeWidth={2.4} />
           {opened ? 'Continue lesson 1' : 'Start lesson 1'}
         </Link>
         {minutes && (
           <span className="inline-flex items-center gap-1.5 text-[14px] font-bold text-[var(--text-secondary)]">
-            <Clock className="w-4 h-4" aria-hidden="true" />
+            <Glyph name="clock" size={16} strokeWidth={2.4} />
             {minutes} min
           </span>
         )}

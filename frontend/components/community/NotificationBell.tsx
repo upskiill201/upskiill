@@ -5,7 +5,7 @@ import useSWR from 'swr';
 import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Bell, BellOff } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Avatar from '@/components/ui/Avatar';
 import {
   AppNotification,
@@ -179,7 +179,7 @@ export default function NotificationBell({ panelAlign = 'right' }: NotificationB
         type="button"
       >
         <motion.span animate={bell} style={{ display: 'inline-flex', transformOrigin: '50% 10%' }}>
-          <Bell size={20} strokeWidth={2.5} />
+          <Glyph name="bell" size={22} strokeWidth={2.2} />
         </motion.span>
         {unreadCount > 0 && (
           <motion.span
@@ -245,7 +245,7 @@ export default function NotificationBell({ panelAlign = 'right' }: NotificationB
             {!loading && !error && items.length === 0 && (
               <div className={styles.emptyPanel}>
                 <span className={styles.emptyIcon}>
-                  <BellOff size={20} />
+                  <Glyph name="bellOff" size={20} strokeWidth={2.4} />
                 </span>
                 {filter === 'unread'
                   ? "Nothing unread. You're all caught up."

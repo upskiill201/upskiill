@@ -7,7 +7,7 @@
  */
 
 import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { useMonthlyQuest } from '@/hooks/useMonthlyQuest';
 import { monthBadge, monthName } from '@/lib/quests/monthBadges';
 import { MonthBadge } from './MonthBadge';
@@ -56,7 +56,7 @@ export default function MonthlyQuestWidget() {
                 : `${quest.goalDays} / ${quest.targetDays} days · ${quest.daysRemaining}d left`}
           </p>
         </div>
-        <ChevronRight className="w-5 h-5 shrink-0 text-[var(--text-muted)]" aria-hidden="true" />
+        <Glyph name="chevron" size={20} className="shrink-0 text-[var(--text-muted)]" />
       </div>
     </Link>
   );

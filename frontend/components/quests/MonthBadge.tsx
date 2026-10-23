@@ -9,38 +9,24 @@
  *   missed   greyed, no ring (a past month that wasn't completed)
  */
 
-import {
-  BookOpen,
-  CloudSun,
-  Flame,
-  Flower2,
-  Heart,
-  Leaf,
-  Mountain,
-  Sparkles,
-  Sprout,
-  Sun,
-  Trophy,
-  Waves,
-  type LucideIcon,
-} from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import { monthBadge, type MonthGlyph } from '@/lib/quests/monthBadges';
 import styles from './MonthBadge.module.css';
 import tokens from './MonthTokens.module.css';
 
-const GLYPH: Record<MonthGlyph, LucideIcon> = {
-  sparkles: Sparkles,
-  heart: Heart,
-  sprout: Sprout,
-  cloudSun: CloudSun,
-  flower: Flower2,
-  sun: Sun,
-  flame: Flame,
-  waves: Waves,
-  book: BookOpen,
-  leaf: Leaf,
-  mountain: Mountain,
-  trophy: Trophy,
+const GLYPH: Record<MonthGlyph, GlyphName> = {
+  sparkles: 'sparkle',
+  heart: 'heart',
+  sprout: 'sprout',
+  cloudSun: 'cloudSun',
+  flower: 'flower',
+  sun: 'sun',
+  flame: 'flame',
+  waves: 'waves',
+  book: 'book',
+  leaf: 'leaf',
+  mountain: 'mountain',
+  trophy: 'trophy',
 };
 
 const HEX = 'M50 4 L90 27 L90 73 L50 96 L10 73 L10 27 Z';
@@ -58,7 +44,7 @@ export function MonthBadge({
   size?: number;
 }) {
   const b = monthBadge(monthKey);
-  const Icon = GLYPH[b.glyph];
+  const glyph = GLYPH[b.glyph];
   const earned = state === 'earned';
   const face = earned ? b.color : 'var(--badge-locked)';
   const rim = earned ? `color-mix(in srgb, ${b.color} 72%, black)` : 'var(--badge-locked-dark)';
@@ -110,7 +96,7 @@ export function MonthBadge({
         className="absolute flex items-center justify-center"
         style={{ left: 0, right: 0, top: size * 0.26, height: size * 0.42 }}
       >
-        <Icon style={{ width: size * 0.36, height: size * 0.36, color: 'white', strokeWidth: 2.4 }} />
+        <Glyph name={glyph} size={size * 0.36} strokeWidth={2.4} style={{ color: 'white' }} />
       </span>
     </span>
   );

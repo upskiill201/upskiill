@@ -15,7 +15,7 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { Flame } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Image from 'next/image';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -158,7 +158,7 @@ export function DailyChestCard() {
                 <QuestChest state="ready" size={40} />
                 <span className="flex-1 min-w-0">
                   <span className="flex items-center gap-1 text-[14.5px] font-extrabold text-ink">
-                    <Flame className="w-4 h-4 fill-current" style={{ color: 'var(--warning)' }} aria-hidden="true" />
+                    <Glyph name="flame" size={16} strokeWidth={2} style={{ color: 'var(--warning)' }} />
                     {c.streakDays ? `${c.streakDays}-day streak chest` : 'Streak chest'}
                   </span>
                   <span className="text-[12.5px] font-bold text-[var(--text-secondary)]">Tap to open</span>

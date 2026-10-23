@@ -4,7 +4,7 @@
  * They take the text colour, so a button or link colours them.
  */
 
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 const PATHS = {
   back: <path d="M19.5 12H5.5M11.5 5.5L5 12l6.5 6.5" />,
@@ -64,11 +64,261 @@ const PATHS = {
     </>
   ),
   chevronLeft: <path d="M14.5 5.5L8 12l6.5 6.5" />,
+  chevronDown: <path d="M5.5 9.5L12 16l6.5-6.5" />,
+  chevronsUp: <path d="M6.5 12.5L12 7l5.5 5.5M6.5 18L12 12.5l5.5 5.5" />,
+  arrowUp: <path d="M12 19.5v-14M6.5 11L12 5.5l5.5 5.5" />,
+  arrowDown: <path d="M12 4.5v14M6.5 13l5.5 5.5 5.5-5.5" />,
+  plus: <path d="M12 5v14M5 12h14" />,
+  refresh: (
+    <>
+      <path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" />
+      <path d="M19.6 4.2v4.4h-4.4" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 2" />
+    </>
+  ),
+  play: <path d="M8.5 5.8v12.4L18.4 12Z" fill="currentColor" />,
+  hourglass: (
+    <>
+      <path d="M6.4 3.4h11.2M6.4 20.6h11.2" />
+      <path d="M7.6 3.4c0 4.2 4.4 5.4 4.4 8.6s-4.4 4.4-4.4 8.6h8.8c0-4.2-4.4-5.4-4.4-8.6s4.4-4.4 4.4-8.6Z" />
+      <path d="M9.6 18.6h4.8L12 15.6Z" fill="currentColor" />
+    </>
+  ),
+
+  // ── Solid silhouettes: path nodes and chips (the stroke rounds them) ────
+  star: (
+    <path
+      d="M12 3L14.6 9L21.1 9.6L16.2 14L17.6 20.4L12 17L6.4 20.4L7.8 14L2.9 9.6L9.4 9Z"
+      fill="currentColor"
+    />
+  ),
+  book: (
+    <>
+      <path d="M3.5 6c3-1.3 5.8-1.1 8.5 1v12.5c-2.7-2-5.5-2.2-8.5-1Z" fill="currentColor" />
+      <path d="M20.5 6c-3-1.3-5.8-1.1-8.5 1v12.5c2.7-2 5.5-2.2 8.5-1Z" fill="currentColor" />
+    </>
+  ),
+  dumbbell: (
+    <>
+      <rect x="2.6" y="9.2" width="2.6" height="5.6" rx="1" fill="currentColor" />
+      <rect x="5.8" y="6.4" width="3.2" height="11.2" rx="1.2" fill="currentColor" />
+      <rect x="15" y="6.4" width="3.2" height="11.2" rx="1.2" fill="currentColor" />
+      <rect x="18.8" y="9.2" width="2.6" height="5.6" rx="1" fill="currentColor" />
+      <path d="M9 12h6" />
+    </>
+  ),
+  bulb: (
+    <>
+      <path
+        d="M12 3a6.4 6.4 0 0 0-3.9 11.5c.9.7 1.4 1.5 1.4 2.5h5c0-1 .5-1.8 1.4-2.5A6.4 6.4 0 0 0 12 3Z"
+        fill="currentColor"
+      />
+      <path d="M10 20.6h4" />
+    </>
+  ),
+  trophy: (
+    <>
+      <path d="M7 4h10v5.2a5 5 0 0 1-10 0Z" fill="currentColor" />
+      <path d="M7 6.2H4.6c0 2.4 1.2 3.8 3 4.2M17 6.2h2.4c0 2.4-1.2 3.8-3 4.2M12 14.4v3.4" />
+      <rect x="7.6" y="18.4" width="8.8" height="2.6" rx="1.2" fill="currentColor" />
+    </>
+  ),
+  medal: (
+    <>
+      <path d="M6.6 2.8h3.6l2.4 5.6H9Z" fill="currentColor" />
+      <path d="M17.4 2.8h-3.6l-1.2 2.8 1.6 2.8H15Z" fill="currentColor" />
+      <circle cx="12" cy="15.2" r="5.6" />
+      <path
+        d="M12 12.2l.9 1.9 2.1.2-1.6 1.4.5 2-1.9-1.1-1.9 1.1.5-2-1.6-1.4 2.1-.2Z"
+        fill="currentColor"
+        strokeWidth="1.2"
+      />
+    </>
+  ),
+  headphones: (
+    <>
+      <path d="M4.6 15.5v-3a7.4 7.4 0 0 1 14.8 0v3" />
+      <rect x="3" y="13.6" width="4.6" height="7" rx="2" fill="currentColor" />
+      <rect x="16.4" y="13.6" width="4.6" height="7" rx="2" fill="currentColor" />
+    </>
+  ),
+  code: <path d="M8.5 6.8L3.6 12l4.9 5.2M15.5 6.8l4.9 5.2-4.9 5.2" />,
+  compass: (
+    <>
+      <circle cx="12" cy="12" r="8.8" />
+      <path d="M15.6 8.4l-2 5.2-5.2 2 2-5.2Z" fill="currentColor" />
+    </>
+  ),
+  flag: (
+    <>
+      <path d="M6 21V4" />
+      <path d="M6 4.6h11l-2.4 4.2L17 13H6Z" fill="currentColor" />
+    </>
+  ),
+  sprout: (
+    <>
+      <path d="M12 20.5v-8" />
+      <path d="M12 12.6C12 8.4 9 6 4.6 6c0 4.4 2.8 6.6 7.4 6.6Z" fill="currentColor" />
+      <path d="M12 10.6c.2-3.6 2.8-5.8 7.4-5.6-.2 3.8-2.8 5.8-7.4 5.6Z" fill="currentColor" />
+    </>
+  ),
+  trees: (
+    <>
+      <path d="M8 3.6L3 13h10Z" fill="currentColor" />
+      <path d="M8 13v7" />
+      <path d="M16.4 7.4L12.4 15h8Z" fill="currentColor" />
+      <path d="M16.4 15v5.2" />
+    </>
+  ),
+  mountain: <path d="M2.6 19.4L9 8.2l3.4 5.4 2.4-3.4 6.6 9.2Z" fill="currentColor" />,
+  mountainSnow: (
+    <>
+      <path d="M2.6 19.4L10 6.4l7.4 13Z" />
+      <path d="M7.4 11l2.6-4.6 2.6 4.6-1.4.9-1.2-1-1.2 1Z" fill="currentColor" />
+      <path d="M15.4 12.2l1.6-2.2 4.4 9.4" />
+    </>
+  ),
+  flame: (
+    <path
+      d="M13 2.6c.4 3.4-1.8 5-3.4 6.8C8 11.2 6 13 6 15.6a6 6 0 0 0 12 0c0-2.6-1.2-4.6-2.6-6-.2 1.8-1 2.8-2 3.2.8-3.8-.2-7.2-.4-10.2Z"
+      fill="currentColor"
+    />
+  ),
+  heart: (
+    <path
+      d="M12 20s-8-4.6-8-10.4A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8 2.6C20 15.4 12 20 12 20Z"
+      fill="currentColor"
+    />
+  ),
+  bell: (
+    <>
+      <path d="M6 16.6V11a6 6 0 0 1 12 0v5.6l1.4 1.4H4.6Z" fill="currentColor" />
+      <path d="M10 20.8a2.3 2.3 0 0 0 4 0" />
+    </>
+  ),
+  bellRing: (
+    <>
+      <path d="M7 16.6V11.4a5 5 0 0 1 10 0v5.2l1.2 1.4H5.8Z" fill="currentColor" />
+      <path d="M10.4 20.8a2 2 0 0 0 3.2 0M3.4 9a8.6 8.6 0 0 1 2.4-4.6M20.6 9a8.6 8.6 0 0 0-2.4-4.6" />
+    </>
+  ),
+  bellOff: (
+    <>
+      <path d="M6 16.6V11a6 6 0 0 1 12 0v5.6l1.4 1.4H4.6Z" />
+      <path d="M10 20.8a2.3 2.3 0 0 0 4 0M3.6 3.6l16.8 16.8" />
+    </>
+  ),
+  snowflake: <path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.6 4.6L12 6.6l2.4-2M9.6 19.4l2.4-2 2.4 2" />,
+  unlock: (
+    <>
+      <rect x="4.5" y="10.5" width="15" height="10" rx="3" fill="currentColor" stroke="none" />
+      <path d="M8 10.5V8a4 4 0 0 1 7.6-1.8" />
+    </>
+  ),
+  card: (
+    <>
+      <rect x="2.8" y="5.4" width="18.4" height="13.2" rx="3" />
+      <path d="M3 10h18M6.6 14.6h3.6" />
+    </>
+  ),
+  crown: <path d="M3.6 18.4L2.8 7.6l5 4.2L12 5l4.2 6.8 5-4.2-.8 10.8Z" fill="currentColor" />,
+  at: (
+    <>
+      <circle cx="12" cy="12" r="3.4" />
+      <path d="M15.4 8.6V13a2.6 2.6 0 0 0 5.2 0V12a8.6 8.6 0 1 0-3.4 6.9" />
+    </>
+  ),
+  megaphone: (
+    <>
+      <path d="M3.6 10v4h3.4L17 19V5L7 10Z" fill="currentColor" />
+      <path d="M7.4 14.2l1.4 5.2M20.4 9.6v4.8" />
+    </>
+  ),
+  bubble: (
+    <path d="M4 6.6A2.6 2.6 0 0 1 6.6 4h10.8A2.6 2.6 0 0 1 20 6.6v7.8a2.6 2.6 0 0 1-2.6 2.6H11l-5 3.6V17A2.6 2.6 0 0 1 4 14.4Z" fill="currentColor" />
+  ),
+  party: (
+    <>
+      <path d="M4 20l4.6-12.4 7.8 7.8Z" fill="currentColor" />
+      <path d="M13.6 4.2c.4 1.6-.2 2.8-1.6 3.6M19.8 10.4c-1.6-.4-2.8.2-3.6 1.6M16.6 3.4v1.4M20.6 7.4h-1.4" />
+    </>
+  ),
+  userPlus: (
+    <>
+      <circle cx="9.5" cy="8" r="4" fill="currentColor" />
+      <path d="M2.8 20.4a6.8 6.8 0 0 1 13.4 0Z" fill="currentColor" />
+      <path d="M19 7.6v6M16 10.6h6" />
+    </>
+  ),
+  lifebuoy: (
+    <>
+      <circle cx="12" cy="12" r="8.6" />
+      <circle cx="12" cy="12" r="3.6" />
+      <path d="M5.9 5.9l3.6 3.6M18.1 5.9l-3.6 3.6M5.9 18.1l3.6-3.6M18.1 18.1l-3.6-3.6" />
+    </>
+  ),
+  target: (
+    <>
+      <circle cx="12" cy="12" r="8.6" />
+      <circle cx="12" cy="12" r="4.6" />
+      <circle cx="12" cy="12" r="1.4" fill="currentColor" />
+    </>
+  ),
+
+  // ── Month badges: the season's mark ────────────────────────────────────
+  sun: (
+    <>
+      <circle cx="12" cy="12" r="4.4" fill="currentColor" />
+      <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.5 1.5M17.1 17.1l1.5 1.5M5.4 18.6l1.5-1.5M17.1 6.9l1.5-1.5" />
+    </>
+  ),
+  cloudSun: (
+    <>
+      <path d="M9 3.4v1.4M3.4 9h1.4M5 5l1 1M13 5l-1 1" />
+      <path d="M6.2 11.4a3.4 3.4 0 0 1 5.8-2.6" />
+      <path d="M7.4 20.4a3.8 3.8 0 0 1-.4-7.6 5.2 5.2 0 0 1 10-1.2 4.4 4.4 0 0 1 .4 8.8Z" fill="currentColor" />
+    </>
+  ),
+  flower: (
+    <>
+      <path d="M12 21v-7.4M12 17.4c-1.4-2-3.6-2.6-5.8-2.2.4 2.4 2.6 3.6 5.8 2.2Z" />
+      <path d="M6.6 4.6l2.8 2.2L12 3.4l2.6 3.4 2.8-2.2v4.8a5.4 5.4 0 0 1-10.8 0Z" fill="currentColor" />
+    </>
+  ),
+  waves: (
+    <path d="M2.8 8c1.5-1.4 3.1-1.4 4.6 0s3.1 1.4 4.6 0 3.1-1.4 4.6 0 3.1 1.4 4.6 0M2.8 13c1.5-1.4 3.1-1.4 4.6 0s3.1 1.4 4.6 0 3.1-1.4 4.6 0 3.1 1.4 4.6 0M2.8 18c1.5-1.4 3.1-1.4 4.6 0s3.1 1.4 4.6 0 3.1-1.4 4.6 0 3.1 1.4 4.6 0" />
+  ),
+  leaf: (
+    <>
+      <path d="M5 19C4.4 10.4 9.6 5 20 4.4 19.6 14.4 14 19.8 5 19Z" fill="currentColor" />
+      <path d="M3.6 20.6L9 15" />
+    </>
+  ),
 } satisfies Record<string, ReactNode>;
 
 export type GlyphName = keyof typeof PATHS;
 
-export function Glyph({ name, size = 24, strokeWidth = 3, className }: { name: GlyphName; size?: number; strokeWidth?: number; className?: string }) {
+/** Every glyph's name, for the dev bench. */
+export const GLYPH_NAMES = Object.keys(PATHS) as GlyphName[];
+
+export function Glyph({
+  name,
+  size = 24,
+  strokeWidth = 3,
+  className,
+  style,
+}: {
+  name: GlyphName;
+  size?: number;
+  strokeWidth?: number;
+  className?: string;
+  style?: CSSProperties;
+}) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -82,6 +332,7 @@ export function Glyph({ name, size = 24, strokeWidth = 3, className }: { name: G
       aria-hidden="true"
       focusable="false"
       className={className}
+      style={style}
     >
       {PATHS[name]}
     </svg>

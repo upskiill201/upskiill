@@ -1,5 +1,5 @@
 import React from 'react';
-import { AtSign, Bell, BellRing, CreditCard, Crown, Flame, Heart, LifeBuoy, LockOpen, MessageCircle, Megaphone, PartyPopper, Snowflake, Trophy, UserPlus } from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import type { AppNotification } from './communityApi';
 
 /**
@@ -96,25 +96,29 @@ export function secondaryLine(n: AppNotification): string | null {
   return n.title ?? null;
 }
 
+function typeGlyph(type: string): GlyphName {
+  if (type.startsWith('TEY_LEAGUE_')) return 'trophy';
+  if (type === 'TEY_STREAK_FREEZE_USED') return 'snowflake';
+  if (type === 'TEY_COURSE_UNLOCK') return 'unlock';
+  if (type === 'TEY_PRO_BILLING') return 'card';
+  if (type === 'TEY_PRO_OFFER') return 'crown';
+  if (type === 'TEY_COMMUNITY_MENTION') return 'at';
+  if (type === 'TEY_COMMUNITY_ANNOUNCEMENT') return 'megaphone';
+  if (type.startsWith('TEY_COMMUNITY_')) return 'bubble';
+  if (type.startsWith('TEY_')) return 'flame';
+  if (type === 'ANNOUNCEMENT') return 'megaphone';
+  if (type === 'CREATOR_NUDGE') return 'bellRing';
+  if (type === 'CREATOR_CHEER') return 'party';
+  if (type === 'MENTION') return 'at';
+  if (type === 'POST_LIKE' || type === 'COMMENT_LIKE') return 'heart';
+  if (type === 'REPLY' || type === 'COMMENT') return 'bubble';
+  if (type === 'FOLLOW') return 'userPlus';
+  if (type === 'SUPPORT_REPLY') return 'lifebuoy';
+  return 'bell';
+}
+
 export function typeIcon(type: string, size = 12): React.ReactNode {
-  if (type.startsWith('TEY_LEAGUE_')) return <Trophy size={size} />;
-  if (type === 'TEY_STREAK_FREEZE_USED') return <Snowflake size={size} />;
-  if (type === 'TEY_COURSE_UNLOCK') return <LockOpen size={size} />;
-  if (type === 'TEY_PRO_BILLING') return <CreditCard size={size} />;
-  if (type === 'TEY_PRO_OFFER') return <Crown size={size} />;
-  if (type === 'TEY_COMMUNITY_MENTION') return <AtSign size={size} />;
-  if (type === 'TEY_COMMUNITY_ANNOUNCEMENT') return <Megaphone size={size} />;
-  if (type.startsWith('TEY_COMMUNITY_')) return <MessageCircle size={size} />;
-  if (type.startsWith('TEY_')) return <Flame size={size} />;
-  if (type === 'ANNOUNCEMENT') return <Megaphone size={size} />;
-  if (type === 'CREATOR_NUDGE') return <BellRing size={size} />;
-  if (type === 'CREATOR_CHEER') return <PartyPopper size={size} />;
-  if (type === 'MENTION') return <AtSign size={size} />;
-  if (type === 'POST_LIKE' || type === 'COMMENT_LIKE') return <Heart size={size} />;
-  if (type === 'REPLY' || type === 'COMMENT') return <MessageCircle size={size} />;
-  if (type === 'FOLLOW') return <UserPlus size={size} />;
-  if (type === 'SUPPORT_REPLY') return <LifeBuoy size={size} />;
-  return <Bell size={size} />;
+  return <Glyph name={typeGlyph(type)} size={size} strokeWidth={2.6} />;
 }
 
 /** CSS-module class name for the type chip's colour. */

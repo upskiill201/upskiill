@@ -15,7 +15,7 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Compass, Lock } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -51,7 +51,7 @@ function ExploreButton() {
       className="w-full h-[52px] rounded-[14px] bg-brand text-white text-[16px] font-extrabold uppercase tracking-wide flex items-center justify-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/40"
       style={{ boxShadow: '0 4px 0 var(--color-brand-dark)', fontFamily: 'var(--font-jakarta)' }}
     >
-      <Compass className="w-5 h-5 stroke-[2.6]" aria-hidden="true" />
+      <Glyph name="compass" size={20} strokeWidth={2.6} />
       Explore courses
     </motion.button>
   );
@@ -144,7 +144,7 @@ export function ComingSoonPath({ track, stickyTop = '0px' }: { track: LearningCa
                 boxShadow: '0 7px 0 var(--border-strong)',
               }}
             >
-              <Lock className="w-8 h-8 stroke-[2.75] text-[var(--text-muted)]" aria-hidden="true" />
+              <Glyph name="lock" size={32} strokeWidth={2.75} className="text-[var(--text-muted)]" />
             </button>
             <AnimatePresence>
               {tapped === i && (
@@ -176,7 +176,7 @@ export function ComingSoonTeaser({ track }: { track: LearningCategory }) {
       className="mt-4 rounded-[18px] border-2 border-dashed border-[var(--border-strong)] bg-white p-5 text-center"
     >
       <span className="mx-auto w-12 h-12 rounded-full flex items-center justify-center bg-[var(--border)]">
-        <Lock className="w-6 h-6 stroke-[2.75] text-[var(--text-muted)]" aria-hidden="true" />
+        <Glyph name="lock" size={24} strokeWidth={2.75} className="text-[var(--text-muted)]" />
       </span>
       <p className="mt-3 text-[17px] font-extrabold text-ink">{`More ${label} lessons are on the way`}</p>
       <p className="mt-1 text-[14.5px] font-semibold text-ink-soft">
