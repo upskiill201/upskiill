@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { plainToInstance, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   ArrayUnique,
@@ -8,18 +8,23 @@ import {
   IsInt,
   IsOptional,
   IsString,
+  IsUUID,
   Length,
   Max,
   Min,
   ValidateNested,
+  validateSync,
 } from 'class-validator';
 import {
   AI_INTERESTS,
   CODING_INTERESTS,
   DAILY_COMMITMENTS,
   EXPERIENCE_LEVELS,
+  GOAL_IDS,
+  SITUATIONS,
+  SOURCES,
+  V3_EXPERIENCE,
   LEARNING_BARRIERS,
-  LEARNING_CATEGORIES,
   LEARNING_GOALS,
   LEARNING_INTERESTS,
   PREFERRED_TIMES,
@@ -58,6 +63,33 @@ class ChallengeAnswerDto {
   claimToken?: string;
 }
 
+/** The pre-signup lesson: its claim token settles it into the new account. */
+class LessonAnswerDto {
+  @IsOptional()
+  @IsString()
+  @Length(32, 128)
+  claimToken?: string;
+
+  @IsOptional()
+  @IsUUID()
+  courseId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  lessonId?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  done?: boolean;
+
+  /** Minutes from UTC (Date#getTimezoneOffset), so streak day 1 is the learner's day. */
+  @IsOptional()
+  @IsInt()
+  @Min(-840)
+  @Max(840)
+  timezoneOffset?: number;
+}
+
 class NotificationsAnswerDto {
   @IsOptional()
   @IsBoolean()
@@ -79,8 +111,10 @@ export class OnboardingAnswersDto {
   @Length(1, 40)
   name?: string;
 
+  /** v2: coding | ai. v3: a Course.category such as "Personal Finance". */
   @IsOptional()
-  @IsIn(LEARNING_CATEGORIES as unknown as string[])
+  @IsString()
+  @Length(1, 40)
   category?: string;
 
   @IsOptional()
@@ -98,7 +132,7 @@ export class OnboardingAnswersDto {
   goals?: string[];
 
   @IsOptional()
-  @IsIn(EXPERIENCE_LEVELS as unknown as string[])
+  @IsIn([...EXPERIENCE_LEVELS, ...V3_EXPERIENCE] as string[])
   experienceLevel?: string;
 
   @IsOptional()
@@ -129,22 +163,57 @@ export class OnboardingAnswersDto {
   @ValidateNested()
   @Type(() => NotificationsAnswerDto)
   notifications?: NotificationsAnswerDto;
+
+  // ─── v3 ────────────────────────────────────────────────────────────────
+  @IsOptional()
+  @IsIn(GOAL_IDS as unknown as string[])
+  goal?: string;
+
+  @IsOptional()
+  @IsUUID()
+  courseId?: string;
+
+  @IsOptional()
+  @IsIn(SITUATIONS as unknown as string[])
+  situation?: string;
+
+  @IsOptional()
+  @IsIn(SOURCES as unknown as string[])
+  source?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  committed?: boolean;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => LessonAnswerDto)
+  lesson?: LessonAnswerDto;
+
+  /** This device's onboarding id, so its analytics join the new account. */
+  @IsOptional()
+  @IsUUID('4')
+  anonymousId?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  installed?: boolean;
 }
 
 export class UpsertOnboardingSessionDto {
   @IsOptional()
   @IsInt()
-  @Min(1)
-  @Max(15)
+  @Min(0)
+  @Max(40)
   currentStep?: number;
 
   @IsOptional()
   @IsArray()
   @ArrayUnique()
-  @ArrayMaxSize(15)
+  @ArrayMaxSize(40)
   @IsInt({ each: true })
-  @Min(1, { each: true })
-  @Max(15, { each: true })
+  @Min(0, { each: true })
+  @Max(40, { each: true })
   completedSteps?: number[];
 
   @IsOptional()
@@ -168,4 +237,23 @@ export class UpsertOnboardingSessionDto {
   @IsInt()
   @Min(1)
   schemaVersion?: number;
+}
+
+/**
+ * Learner answers that arrive with signup or Google sign-in (where the DTO
+ * is a loose object, because creator signups send a different shape).
+ * Validated against the same rules as PUT /user-onboarding: unknown keys are
+ * stripped and any field that fails is dropped, so nothing invalid reaches
+ * the profile or settles a reward.
+ */
+export function sanitizeLearnerAnswers(raw: unknown): OnboardingAnswersDto {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const instance = plainToInstance(OnboardingAnswersDto, raw);
+  const errors = validateSync(instance, { whitelist: true });
+  const bad = new Set(errors.map((e) => e.property));
+  const clean: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(instance)) {
+    if (!bad.has(key) && value !== undefined) clean[key] = value;
+  }
+  return clean as OnboardingAnswersDto;
 }

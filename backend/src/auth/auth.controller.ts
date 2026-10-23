@@ -260,8 +260,25 @@ export class AuthController {
     });
     if (enrichedUser) {
       delete (enrichedUser as any).password;
+      // Never send secrets back, even to their owner.
+      delete (enrichedUser as any).verifyToken;
+      delete (enrichedUser as any).tokenExpiry;
     }
-    return enrichedUser;
+
+    // Onboarding v3 progress, so the app can send a learner who signed up
+    // mid-flow back to their step instead of dropping them in the app.
+    // Only v3 sessions (they have a goal) are routed; older flows are done.
+    const session = await this.prisma.onboardingSession.findUnique({
+      where: { userId: user.id },
+      select: { onboardingComplete: true, currentStep: true, answers: true },
+    });
+    const isV3 = !!(session?.answers as { goal?: unknown } | null)?.goal;
+    return {
+      ...enrichedUser,
+      onboarding: session
+        ? { complete: session.onboardingComplete, step: session.currentStep, version: isV3 ? 3 : 2 }
+        : null,
+    };
   }
 
   @UseGuards(AuthGuard('jwt'))

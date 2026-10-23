@@ -43,6 +43,7 @@ import { SupportModule } from './support/support.module';
 import { CouponsModule } from './coupons/coupons.module';
 import { EmailModule } from './email/email.module';
 import { ProModule } from './pro/pro.module';
+import { OnboardingFlowModule } from './onboarding-flow/onboarding-flow.module';
 
 @Module({
   imports: [
@@ -92,6 +93,7 @@ import { ProModule } from './pro/pro.module';
     SupportModule,
     EmailModule,
     ProModule,
+    OnboardingFlowModule,
   ],
   controllers: [AppController],
   providers: [

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { CourseController } from './course.controller';
 import { CourseService } from './course.service';
 import { CourseSlugService } from './course-slug.service';
+import { OnboardingLessonListener } from './onboarding-lesson.listener';
 import { PrismaModule } from '../prisma/prisma.module';
 import { MissionsModule } from '../missions/missions.module';
 import { ChestModule } from '../chest/chest.module';
@@ -31,7 +32,7 @@ import { ProAccessModule } from '../pro/pro-access.module';
     ProAccessModule,
   ],
   controllers: [CourseController],
-  providers: [CourseService, CourseSlugService],
+  providers: [CourseService, CourseSlugService, OnboardingLessonListener],
   // The Admin Center (Courses phase) reuses publishCourse/unpublishCourse
   // rather than duplicating the quality-gate validation in admin code.
   exports: [CourseService],

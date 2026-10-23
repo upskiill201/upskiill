@@ -1,3 +1,4 @@
+import { OnboardingFlowService } from '../onboarding-flow/onboarding-flow.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Prisma } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -49,6 +50,7 @@ describe('UserOnboardingService — challenge reward claim', () => {
         UserOnboardingService,
         { provide: PrismaService, useValue: prisma },
         { provide: EventEmitter2, useValue: eventEmitter },
+        { provide: OnboardingFlowService, useValue: { linkAnonymousEvents: jest.fn(), settleLessonClaim: jest.fn() } },
       ],
     }).compile();
 
@@ -172,6 +174,7 @@ describe('UserOnboardingService — deferred claim settlement', () => {
         UserOnboardingService,
         { provide: PrismaService, useValue: prisma },
         { provide: EventEmitter2, useValue: eventEmitter },
+        { provide: OnboardingFlowService, useValue: { linkAnonymousEvents: jest.fn(), settleLessonClaim: jest.fn() } },
       ],
     }).compile();
 
