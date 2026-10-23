@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Query,
@@ -38,6 +39,7 @@ import {
   type ListCouponsQuery,
 } from './admin-coupons.service';
 import { AdminInsightsService, toRange } from './admin-insights.service';
+import { AdminGrowthService } from './admin-growth.service';
 
 interface AuthedUser {
   id: string;
@@ -68,6 +70,7 @@ export class AdminController {
     private readonly adminPayouts: AdminPayoutsService,
     private readonly adminCoupons: AdminCouponsService,
     private readonly insights: AdminInsightsService,
+    private readonly growth: AdminGrowthService,
     private readonly site: SiteSettingsService,
   ) {}
 
@@ -111,6 +114,36 @@ export class AdminController {
       page: page ? Math.max(1, parseInt(page, 10) || 1) : 1,
       range: toRange(range),
     });
+  }
+
+  // ── Teyro HQ growth: onboarding and Pro ──────────────────────────────
+
+  @Get('insights/onboarding')
+  insightOnboarding(@Query('range') range?: string) {
+    return this.growth.onboarding(toRange(range));
+  }
+
+  @Get('insights/onboarding/journeys')
+  insightOnboardingJourneys(@Query('status') status?: string, @Query('page') page?: string) {
+    return this.growth.onboardingJourneys({
+      status: ['completed', 'stopped', 'signed_up'].includes(status ?? '') ? status : undefined,
+      page: page ? Math.max(1, Math.min(200, parseInt(page, 10) || 1)) : 1,
+    });
+  }
+
+  @Get('insights/onboarding/journeys/:anonymousId')
+  insightOnboardingJourney(@Param('anonymousId', new ParseUUIDPipe({ version: '4' })) anonymousId: string) {
+    return this.growth.onboardingJourney(anonymousId);
+  }
+
+  @Get('insights/pro')
+  insightPro(@Query('range') range?: string) {
+    return this.growth.pro(toRange(range));
+  }
+
+  @Get('insights/pro/users/:id')
+  insightProTimeline(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.growth.proTimeline(id);
   }
 
   // ── Users ────────────────────────────────────────────────────────────

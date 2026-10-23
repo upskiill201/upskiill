@@ -69,6 +69,9 @@ const PATHS = {
   arrowUp: <path d="M12 19.5v-14M6.5 11L12 5.5l5.5 5.5" />,
   arrowDown: <path d="M12 4.5v14M6.5 13l5.5 5.5 5.5-5.5" />,
   plus: <path d="M12 5v14M5 12h14" />,
+  minus: <path d="M5 12h14" />,
+  upRight: <path d="M7 17L17 7M8.6 7H17v8.4" />,
+  downRight: <path d="M7 7l10 10M17 8.6V17H8.6" />,
   refresh: (
     <>
       <path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" />
@@ -269,6 +272,101 @@ const PATHS = {
       <circle cx="12" cy="12" r="1.4" fill="currentColor" />
     </>
   ),
+
+  // ── Teyro HQ menu ──────────────────────────────────────────────────────
+  gauge: (
+    <>
+      <path d="M3.6 16.6a8.6 8.6 0 1 1 16.8 0" />
+      <path d="M12 14l4.2-4.6" />
+      <circle cx="12" cy="14.2" r="1.9" fill="currentColor" />
+    </>
+  ),
+  cap: (
+    <>
+      <path d="M2.6 9.4L12 5l9.4 4.4L12 13.8Z" fill="currentColor" />
+      <path d="M6.6 11.8v4c1.6 1.6 3.4 2.4 5.4 2.4s3.8-.8 5.4-2.4v-4M20.4 10.2v5.2" />
+    </>
+  ),
+  users: (
+    <>
+      <circle cx="9" cy="8" r="3.6" fill="currentColor" />
+      <path d="M2.6 20a6.4 6.4 0 0 1 12.8 0Z" fill="currentColor" />
+      <path d="M15.8 4.8a3.4 3.4 0 0 1 0 6.4M17.8 13.8a6.2 6.2 0 0 1 3.6 5.8" />
+    </>
+  ),
+  userCheck: (
+    <>
+      <circle cx="9" cy="8" r="3.8" fill="currentColor" />
+      <path d="M2.4 20.2a6.6 6.6 0 0 1 13.2 0Z" fill="currentColor" />
+      <path d="M16.4 10.6l2 2 3.6-4" />
+    </>
+  ),
+  wallet: (
+    <>
+      <path d="M4 7.6A2.4 2.4 0 0 1 6.4 5.2h11.2v2.4" />
+      <rect x="3.4" y="7.6" width="17.6" height="12" rx="2.6" />
+      <circle cx="16.4" cy="13.6" r="1.5" fill="currentColor" />
+    </>
+  ),
+  chart: (
+    <>
+      <rect x="4" y="12.4" width="3.6" height="7.6" rx="1" fill="currentColor" />
+      <rect x="10.2" y="7.4" width="3.6" height="12.6" rx="1" fill="currentColor" />
+      <rect x="16.4" y="3.8" width="3.6" height="16.2" rx="1" fill="currentColor" />
+    </>
+  ),
+  folderIn: (
+    <>
+      <path d="M3.4 7.2A2.2 2.2 0 0 1 5.6 5h3.8l2 2.2h7a2.2 2.2 0 0 1 2.2 2.2v8.4a2.2 2.2 0 0 1-2.2 2.2H5.6a2.2 2.2 0 0 1-2.2-2.2Z" />
+      <path d="M12 10.4v5.4M9.6 13.4l2.4 2.4 2.4-2.4" />
+    </>
+  ),
+  tag: (
+    <>
+      <path d="M3.6 12.2V4.6a1 1 0 0 1 1-1h7.6l8.4 8.4a1.6 1.6 0 0 1 0 2.2l-6.4 6.4a1.6 1.6 0 0 1-2.2 0Z" />
+      <circle cx="8.2" cy="8.2" r="1.6" fill="currentColor" />
+    </>
+  ),
+  video: (
+    <>
+      <rect x="2.8" y="6" width="13" height="12" rx="2.6" />
+      <path d="M15.8 10.4l5.4-3v9.2l-5.4-3Z" fill="currentColor" />
+    </>
+  ),
+  bot: (
+    <>
+      <rect x="4" y="7.4" width="16" height="12.6" rx="4" />
+      <circle cx="9" cy="13.6" r="1.6" fill="currentColor" />
+      <circle cx="15" cy="13.6" r="1.6" fill="currentColor" />
+      <path d="M12 7.4V4.2M10.4 3.6h3.2" />
+    </>
+  ),
+  send: (
+    <>
+      <path d="M3.4 11.2L20.6 3.4l-5.4 17.2-3.6-7.2Z" />
+      <path d="M11.6 13.4L20.6 3.4" />
+    </>
+  ),
+  activity: <path d="M2.8 12.4h4l2.4-6.2 4.4 12 2.4-5.8h5.2" />,
+  phone: (
+    <>
+      <rect x="6.4" y="2.8" width="11.2" height="18.4" rx="2.8" />
+      <path d="M10.6 17.8h2.8" />
+    </>
+  ),
+  external: (
+    <>
+      <path d="M13.6 4h6.4v6.4M20 4l-8.4 8.4" />
+      <path d="M18 14v4.4a1.6 1.6 0 0 1-1.6 1.6H5.6A1.6 1.6 0 0 1 4 18.4V7.6A1.6 1.6 0 0 1 5.6 6H10" />
+    </>
+  ),
+  logout: (
+    <>
+      <path d="M10 4H6.2A2.2 2.2 0 0 0 4 6.2v11.6A2.2 2.2 0 0 0 6.2 20H10" />
+      <path d="M14.4 16.4L18.8 12l-4.4-4.4M18.4 12H9.6" />
+    </>
+  ),
+  funnel: <path d="M3.4 4.6h17.2l-6.6 8v6.6l-4 1.8v-8.4Z" fill="currentColor" />,
 
   // ── Month badges: the season's mark ────────────────────────────────────
   sun: (
