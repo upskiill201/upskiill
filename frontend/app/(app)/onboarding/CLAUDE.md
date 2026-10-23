@@ -1,263 +1,200 @@
 # Teyro Onboarding — Implementation Rules
 
 Scope: `frontend/app/(app)/onboarding/`, `frontend/components/onboarding/`,
-`frontend/lib/onboarding/`. Rewritten 2026-09-23 for onboarding v2.
+`frontend/lib/onboarding/`. Rewritten 2026-10-23 for **onboarding v3**
+(founder, 2026-10-22: Duolingo's shape, a real lesson before signup, then the
+Teyro Pro paywall). The v2 rules this replaces are in git history.
 
 ---
 
 ## The shape of it
 
-```
-marketing site → /start (install gateway) → installed PWA
-              → /launch (manifest start_url) → /onboarding/0 → steps 1–14
-              → /onboarding/complete
-```
+Everything lives at **`/onboarding`**, one client component
+(`components/onboarding/v3/OnboardingV3.tsx`) that moves between steps itself.
+The old numbered routes (`/onboarding/0` … `/onboarding/14`,
+`/onboarding/complete`) only render `ToOnboarding`, which redirects here, so
+old links, `/start`, `/launch` and the backend's `redirectTo` keep working.
 
-**The flow is data, not code.** `lib/onboarding/steps.ts` holds
-`STEP_DEFINITIONS`; the shell renders whatever is in it. There is no switch
-statement. Reordering, renaming or adding a step is an edit to that array plus
-a dialogue rule — not a component rewrite.
+**The flow is data.** `lib/onboarding/v3/flow.ts` holds `STEPS` in order.
+Reordering is an edit to that array. `STEP_INDEX` and `progressFor` derive
+from it; nothing hardcodes a count.
 
-| # | Step id | What it asks |
+| Step | What happens | Why it's there |
 |---|---|---|
-| 1 | `welcome` | Tey introduces himself |
-| 2 | `name` | Preferred display name |
-| 3 | `category` | **Coding or AI** — the primary branch |
-| 4 | `goals` | Motivation (multi) |
-| 5 | `interests` | Branch-specific: coding areas *or* AI interests (multi) |
-| 6 | `experience` | Level, with per-category descriptions |
-| 7 | `prior-attempt` | Tried before? *(optional)* |
-| 8 | `barriers` | What gets in the way? *(optional, multi)* |
-| 9 | `commitment` | Minutes per day |
-| 10 | `preferred-time` | When to learn |
-| 11 | `path-reveal` | The personalized narrative |
-| 12 | `review` | Edit anything |
-| 13 | `account` | Sign-up |
-| 14 | `reminders` | Notification permission |
-| — | completion | `/onboarding/complete`, unnumbered |
+| `splash`, `welcome` | Tey + Get started / I have an account | Duolingo's entry |
+| `intro` | Tey says hi | The app talks to them |
+| `name` | What should I call you? | Used on every later screen |
+| `goal` | The outcome (`lib/onboarding/goals.ts`, 8 goals) | Drives the paywall headline |
+| `category` | Categories that have onboarding-ready courses; only the single best match for the goal gets "Best for your goal" | |
+| `course` | Real course cards from the catalog | Choosing it makes it theirs |
+| `experience`, `situation` | Level and life situation | Tey's tone, reactions |
+| `source` | How did you hear about us | Attribution (+ playbook lift) |
+| `daily` | 5 / 10 / 20 / 30 min, "Recommended" on 10 | Duolingo's daily goal |
+| `projection` | "Chapter 1 done by {date}" from the course's REAL lesson count and minutes | A personal result before any ask |
+| `reminder-time` | When should Tey nudge you | Sets the reminder hour |
+| `commit` | Hold-to-commit (1.5 s) | Commitment and consistency |
+| `lesson-intro` | Lesson 1 title, its real minutes and exercise count | |
+| `lesson` | **The chosen course's real lesson 1** in `LessonPlayer` | The aha moment |
+| `chest` | Gift chest: +20 Coins, +1 streak freeze, held until saved | Variable reward |
+| `save` | Signup (Google, or email + 6-digit code) | Loss aversion: their lesson is waiting |
+| `plan` | "Building {name}'s plan" checklist naming their answers | Name the goal right before the paywall |
+| `paywall` | `ProPaywall moment="ONBOARDING"` | Paywall moment 1 |
+| `result` | Free: "Chapter 1 of {course} is yours, two lessons a day" | End on a high |
+| `install` | `RemindersScreen`: install first, then push (Duolingo order) | |
+| `enter` | Marks the server session complete, routes to the course home | |
 
-**The pre-signup shape-matching challenge was removed** (it used to sit
-between `preferred-time` and `path-reveal`, granting a one-time 25 XP + 25
-coin reward via an anonymous claim token). It added a step without adding
-personalization, and the drop-off audit found it wasn't worth the friction.
-The backend's claim-token/reward plumbing (`UserOnboardingService`,
-`OnboardingChallengeClaim`) is untouched and dormant — nothing currently
-calls it — in case a gamified moment returns here later.
-
-`TOTAL_STEPS` is derived from `STEP_DEFINITIONS.length` (currently 14), never
-hardcoded — `lib/pwa/entry.ts`'s resume logic and every progress calculation
-read it, so removing or adding a step needs no numeric find-and-replace.
-Every learner walks every step; branching changes a step's *content*, never
-the flow length, so the `N/14` ratio is always honest.
-
-The completion screen is deliberately not a numbered step: the final step's
-`advance` call marks the flow complete *before* routing there, so the bar was
-already accurate when the learner last saw it — showing progress again on a
-screen with no more steps to take would be a small dishonesty.
+**Every question must change a later screen** (the playbook's cutting rule).
+A question that changes nothing gets cut, not kept "for data".
 
 ---
 
-## Launch scope is two categories
+## The real lesson, before signup
 
-Coding and AI. Both, and their interests, live in
-`lib/onboarding/catalog.ts` — **the only place** a category or interest string
-may be written. A third category later is one entry there plus a member of
-`LearningCategory`.
+- `GET /onboarding-flow/catalog` lists published courses whose lesson 1 has
+  exercises (an intro video with nothing to do is no aha moment). Cached 5 min.
+- `GET /onboarding-flow/courses/:id/first-lesson` returns **only** lesson
+  index 0 of a catalog course. Nothing else becomes public.
+- `LessonStep` plays it in `LessonPlayer` with `simulate` and
+  `pathOverride={null}`: graded on the device, nothing saved, hearts free.
+- On finish it posts `POST /onboarding-flow/lesson-claim` and keeps the opaque
+  claim token. The server stores only its SHA-256 (30-day TTL) and computes
+  the XP itself. **The client's XP is never trusted.**
+- At signup the answers carry `lesson.claimToken`;
+  `UserOnboardingService.applyPreSignupAnswers` calls `settleLessonClaim`
+  once per token, in one transaction:
+  - sets the focus course and `freeCourseId`;
+  - grants the chest (idempotency key `onboarding_chest:{userId}`);
+  - emits `onboarding.lesson_settled`, whose listener in `course/` enrols the
+    learner and runs the real `markLessonComplete` (XP, streak day 1, events).
 
-The category screen carries a scope line ("These are the two tracks Teyro is
-built around right now"). Do not remove it: two bare cards read as "the first
-two of many", which is exactly the impression onboarding must not give.
+  Settlement is best-effort and never blocks signup or the verification email.
+- Learner answers are cleaned by `sanitizeLearnerAnswers` server-side. The
+  signup DTO stays loose because the creator flow sends a different shape
+  through the same field. **Do not tighten the DTO**: that broke creator
+  signup once.
 
-`courseCategories` maps a track onto the free-text `Course.category` values
-that actually exist. **There is no Category model.** A track with no live
-courses is a normal state — the completion screen says so and routes to
-explore rather than inventing a course.
+`app/(app)/onboarding/template.tsx` returns its children bare on
+`/onboarding`. Its transformed motion wrapper turned the lesson player's
+`position: fixed` screens into boxes inside a div (a blank lesson). Don't
+wrap this route.
+
+---
+
+## Signup switches the client to the new account
+
+The flow runs signed out until `save`, so the (app) providers cache 401s
+(`/api/auth/me` and friends) in the shared SWR cache. On `onSaved`:
+
+1. `clearClientSession()` drops everything cached for whoever was on this
+   device before (an expired login's courses would otherwise paint).
+2. `mutate(ME_KEY, me)` seeds the new user.
+
+`StudentShell` only redirects to `/login` on a 401 from a **settled** fetch
+(`!isValidating`), and SWR doesn't retry 401/403 (`lib/swr.ts`). Before
+both fixes, a brand-new learner landed on the dashboard and was bounced to
+`/login`.
+
+---
+
+## State, resume, quitting
+
+- `localStorage['teyro_onboarding_v3']` (`lib/onboarding/v3/store.ts`): step,
+  answers, anonymousId, pending rewards, lastSeen. Do not reuse
+  `teyro_onboarding` (v2) or `teyro_creator_onboarding`.
+- Closing the tab and coming back resumes on the exact step; after 5+ minutes
+  away a resume card greets them by name.
+- Once the lesson is finished (`> LOSS_FROM`) and until signup, leaving loses
+  something real (nothing is saved before signup), so Back opens `QuitSheet`
+  with that truth and one optional "why" tap, and `beforeunload` warns.
+  Exiting the lesson itself also opens the sheet. **Before the lesson there
+  is no quit warning.** Never warn about a loss that isn't real.
+- After signup the server session is synced (`PUT /api/user-onboarding`,
+  `schemaVersion: 3`); `enter` sends `onboardingComplete: true`, which the
+  server only honours when the answers satisfy the required questions.
+
+---
+
+## Analytics: who finishes, where they drop, why
+
+`lib/onboarding/v3/track.ts` batches events to `POST /onboarding-flow/events`
+(own DB, `OnboardingEvent`, read by Teyro HQ) and mirrors them to PostHog.
+Types: VIEW, ANSWER, BACK, QUIT_PROMPT, QUIT_STAY, QUIT, RESUME,
+LESSON_START, LESSON_EXIT, LESSON_DONE, SIGNUP_START, SIGNUP, PAYWALL,
+INSTALL, PUSH, COMPLETE.
+
+- Events carry the device's `anonymousId`. Signup links that device's events
+  to the new user (`linkAnonymousEvents`), so the funnel stitches across it.
+- `sendBeacon` on QUIT and on page hide, so a closing tab still reports.
+- **Never send the learner's name or free text.** Answer values are option ids.
 
 ---
 
 ## Tey is not decoration
 
-Every step resolves three beats through `lib/onboarding/dialogue/`:
-
-- **`ack`** — reacts to the answer given on the *previous* step. This is what
-  makes it a conversation instead of a form.
-- **`prompt`** — the question, worded from what Tey already knows.
-- **`react`** — fires the instant an option is tapped.
-
-Rules live in `dialogue/rules.ts`, sorted by `priority` (higher = more
-specific). **No component may contain a category, level or goal conditional** —
-if you find yourself writing one, it belongs in a rule.
-
-Four guards are enforced by `__tests__/dialogue.test.ts` and will fail CI:
-
-1. Every used (slot, step) pair needs a **priority-0 catch-all**, so a beat can
-   never resolve to nothing.
-2. Rules on `barriers` or `prior-attempt` must use a pose from
-   `SUPPORTIVE_POSES`. Someone admitting they struggle gets warmth, never a
-   smirk.
-3. Any rule using `{name}` must supply `linesWithoutName` — the name budget
-   suppresses `{name}` when it was used within the last two beats, and needs
-   somewhere to fall back to.
-4. No line may promise mastery in a timeframe or claim Teyro eliminates a
-   barrier. We help with things; we don't cure them.
-
-Everything is deterministic and synchronous. **No LLM call, no network
-request** — combining a handful of known answers does not justify an AI round
-trip, and onboarding must not depend on a provider being up.
+- `lib/onboarding/v3/lines.ts`: `lineFor(step)` is the question in Tey's
+  bubble, `reactionFor(step, value)` fires on every tap and shows in the
+  footer next to Continue. The question never leaves the bubble.
+- Lines use their name, goal and course. Durations come from the real lesson
+  (`lessonMinutes`). Never a made-up number ("about two minutes" was wrong:
+  lessons run 10–12).
+- Every line has a pose; the pose family picks the reaction sound.
+- Mascot art: `public/User onbarding Assets/tey/`, the cropped copies only.
 
 ---
 
-## Branching and invalidation
+## Sound and music
 
-`saveAnswer` in `useOnboardingSession` runs `invalidateDownstream` then
-`pruneInvalidInterests` on every write. That is why switching Coding → AI
-cannot leave `web-development` attached to an AI learner — including when the
-edit comes from the review screen's Edit action rather than by walking back.
-
-`exploring` ("I'm still figuring it out") is mutually exclusive with specific
-interests in both directions. Same rule for `none` among barriers.
-
----
-
-## Storage
-
-- Learner state: `localStorage['teyro_onboarding']`, schema v2, typed answers
-  keyed by NAME (`answers.category`), not by step number.
-- **The creator flow used to share this exact key** with an incompatible
-  schema, and its 7-day expiry could wipe a learner mid-onboarding. It now
-  writes `teyro_creator_onboarding`. Do not point anything else at
-  `teyro_onboarding`.
-- v1 answers are **discarded**, not mapped — see `migrate.ts` for why guessing
-  would be worse than re-asking.
-
-Every authenticated request goes through the same-origin `/api/*` proxy. The
-auth cookie is `sameSite: 'lax'`, so a direct fetch to `NEXT_PUBLIC_API_URL`
-silently 401s. The shell used to have its own copy of the sync that did
-exactly that, which is why progress never reached the DB; it now imports
-`syncToBackend` from `useOnboardingSession`.
-
-Server side, `onboardingComplete` from the client is a **claim, not a fact**:
-`upsertSession` only honours it when the answers satisfy every required
-question.
+- **Cues:** `lib/audio/onboardingAudio.ts`, synthesised. **No audio files in
+  this repo.** v3 cues: projection, commitTick/commitLocked, planTick/planReady,
+  quitWarn, plus the reaction stings.
+- **Music:** `lib/audio/onboardingMusic.ts`, an adaptive loop, also
+  synthesised.
+  - Moods by step (`moodFor`): intro, build, reward, tension.
+  - Layers rise with progress (goal gradient). It ducks under celebrations.
+  - It stops for the lesson, which brings its own music.
+  - It starts only after the first tap (autoplay rules) and follows the
+    shared mute toggle.
+- Feedback fires after the state change, inside a `try`. A throwing
+  AudioContext must never swallow a selection.
 
 ---
 
-## Where answers actually land
+## Honesty rules (the founder's, enforced in review)
 
-Three things graduate out of the answers blob into real profile fields, via
-`applyLearningPreferences`:
-
-| Answer | Column |
-|---|---|
-| `dailyCommitment` | `StudentProfile.dailyGoalXp` (20/50/100/200) |
-| `category` / `interests` | `StudentProfile.learningTrack` / `learningInterests` |
-| `preferredTime` | `TeyNotificationPrefs.preferredHour` |
-
-The minutes→XP map is pinned on **both** sides
-(`lib/onboarding/commitment.ts` and `backend/.../onboarding-answers.ts`) with a
-test on each. A fifth minute bucket is not a free choice: `PATCH /profile/me`
-validates `@IsIn([20, 50, 100, 200])`.
-
-Barriers and prior attempts stay in the blob on purpose. They personalize
-dialogue; they are not profile settings, and self-reported difficulty should
-not be copied across extra tables **or sent to analytics** —
-`toAnalyticsProperties` enforces that by construction.
+- No fake popularity ("most popular", "most people stick"): "Recommended" only.
+- No fake proof or counts; projections and durations come from real data.
+- Savings on the paywall are computed from live prices (floor), never typed.
+- No line may promise mastery in a timeframe.
 
 ---
 
-## Notification permission stays on the final step
+## Accessibility and layout
 
-Chosen deliberately:
-
-1. **Hard constraint:** it must come after sign-up (step 14). The push
-   subscription registers against an authenticated user at
-   `POST /api/tey/push/subscriptions`. Asking earlier wins the browser
-   permission with nowhere to attach the subscription.
-2. By then the learner has set a pace, done a real exercise, and seen their
-   personalized path, so the ask has a reason attached — and the copy says so,
-   drawing on their barrier and preferred-time answers.
-
-Rules for anyone touching it:
-
-- **Request only inside a user gesture.** Safari scores a programmatic request
-  as a denial the learner can only undo in system settings.
-- **Permission granted ≠ subscription registered.** Separate states, both
-  tracked. A failed subscription heals via `TeyPushProvider.syncExisting`.
-- **Never block on a denial.** Declining is a valid answer — neutral copy,
-  neutral sound, straight on to the celebration. Never re-prompt.
+- Strict `100dvh` on phones, safe-area insets, only the content region scrolls.
+- Selection is shown three ways (check, border, `aria-checked`), never by
+  colour alone; option cards are real buttons/radios.
+- Tey's lines sit in an `aria-live` region with the full text from the first
+  frame.
+- Every animation respects `prefers-reduced-motion`; sound is a separate
+  preference.
+- Notification permission is requested only inside a user gesture, only after
+  signup (the push subscription needs an account), and a denial never blocks.
 
 ---
 
-## Sound
+## Still in the tree from v2
 
-`lib/audio/onboardingAudio.ts`. Every cue is synthesised from oscillators on
-the shared `SynthBus`, like every other sound in the app. **There are no audio
-files in this repo** — do not add one for a UI cue.
-
-- Reaction stings are chosen by the dialogue beat's **pose family**, not
-  hand-wired per call site, so line, pose and sound cannot drift apart.
-- Feedback fires **after** the state change, and inside a `try`. A throwing
-  AudioContext must never be able to swallow a selection — there is a test.
-- The toggle in the top bar affects **sound only**. Animations, navigation and
-  dialogue are separate concerns.
-- `prefers-reduced-motion` is independent of the sound preference.
-
----
-
-## Accessibility (non-negotiable)
-
-- Tey's beats sit in an `aria-live` region with the full text present from the
-  first frame. A reaction must reach someone who cannot see a pose change.
-- Selection is signalled three ways: check icon, border, and `aria-checked`.
-  **Never colour alone.**
-- The progress bar is a real `role="progressbar"` with aria values.
-- A disabled Continue explains *why* via `aria-describedby`.
-- Option cards are real buttons inside a `fieldset`/`legend`. Note that
-  `<fieldset>` already carries an implicit `group` role — adding another one
-  makes screen readers announce the question twice.
-- Every review-screen Edit button has a distinct accessible name.
-
----
-
-## Visual layout (Duolingo pattern, 2026-09-24)
-
-- **One responsive tree.** `OnboardingLayout` used to mount a mobile and a
-  desktop copy of every screen and hide one with CSS (duplicate ids, two
-  aria-live regions, two inputs fighting over autofocus). Never reintroduce a
-  second tree.
-- **`row` layout (default):** Tey beside a `TeyBubble` holding the question,
-  answers directly underneath. Stacking a big Tey above the question pushed
-  long lists below the fold on phones. **`hero`** (`layout: 'hero'` in
-  `steps.ts`): big centred Tey with the bubble above — for steps with nothing
-  to answer (welcome).
-- **The question never leaves the bubble.** Tey's reaction to a tap goes in
-  the footer next to Continue (tinted bar), not in place of the question.
-- **Mascot art lives in `public/User onbarding Assets/tey/`** — tight-cropped
-  and edge-feathered copies. The source files carry up to 70% empty canvas,
-  which is why Tey looked tiny and changed size between steps. Add new poses
-  there cropped the same way; never point a step at an uncropped original.
-- Long lists (> 5 options, review, path-reveal) get the `md` Tey so the
-  answers still fit on a phone. Lists of 5+ short labels go two-up on desktop.
-- The shell focuses the new step with `preventScroll: true` — without it the
-  browser scrolled Tey and the question off the top of long steps.
-- Copy rules (plain words, no idioms, question in the big line) are at the
-  top of `lib/onboarding/dialogue/rules.ts`.
-
-## Mobile layout contract
-
-- Strict `100dvh` on mobile, no page scroll. Only the content region scrolls.
-- `env(safe-area-inset-*)` top and bottom.
-- The name input scrolls itself into view on focus so the keyboard cannot
-  cover the CTA.
-- Long option labels wrap; several run to two lines at 360px.
-
----
+`OnboardingShell`, `lib/onboarding/steps.ts`, the dialogue engine and most of
+`components/onboarding/screens/` no longer render for learners. v3 reuses
+`NameScreen`, `RemindersScreen` (with `onNotificationsAnswer`, which skips
+the v2 session save), `OnboardingLayout`, `OnboardingFooter` and
+`OptionCard`. Don't build new learner screens on the v2 shell.
 
 ## Testing
 
-- `lib/onboarding/__tests__/` — engine, dialogue (including the guard suite),
-  analytics. Node env, no DOM.
-- `components/onboarding/__tests__/` — jsdom + React Testing Library.
-- `jest.config.ts` runs both as separate projects. The node `testMatch` is
-  deliberately broad (`**/*.test.ts`): a narrower glob silently dropped an
-  existing suite when the projects were first split.
+- `lib/onboarding/__tests__/` and `components/onboarding/__tests__/`
+  (`npx jest lib/onboarding components/onboarding`).
+- Backend: `src/onboarding-flow/*.spec.ts`, `src/user-onboarding/*.spec.ts`.
+- In the browser: run the whole flow signed out on a 375×812 viewport with a
+  throwaway `@example.com` signup, then check the DB for the enrolment,
+  lesson 1, the chest and the linked events.
