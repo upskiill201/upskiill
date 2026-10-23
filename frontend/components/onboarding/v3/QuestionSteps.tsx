@@ -14,7 +14,7 @@ import { Art, topicArt, type ArtName } from '@/components/art/Art';
 import { GOALS } from '@/lib/onboarding/goals';
 import type { CatalogCourse } from '@/lib/onboarding/v3/catalog';
 import { DAILY_OPTIONS, EXPERIENCE_OPTIONS, SOURCE_OPTIONS, TIME_OPTIONS } from '@/lib/onboarding/v3/flow';
-import { Choice, ChoiceGroup, kitCss as css } from './ui/Kit';
+import { Choice, ChoiceGroup, kitCss as css } from '@/components/kit/Kit';
 
 // ── "I want to learn…" ─────────────────────────────────────────────────────
 

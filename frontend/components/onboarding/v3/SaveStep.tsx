@@ -11,11 +11,12 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { FaGoogle } from 'react-icons/fa';
 import { signInWithGoogle } from '@/lib/firebase';
+import { saveAccount } from '@/lib/auth/savedAccount';
 import { playHaptic } from '@/lib/haptics';
 import type { AnswersV3 } from '@/lib/onboarding/v3/flow';
 import { Art, type ArtName } from '@/components/art/Art';
 import { Glyph } from '@/components/art/Glyph';
-import { Btn, kitCss as css } from './ui/Kit';
+import { Btn, kitCss as css } from '@/components/kit/Kit';
 
 function messageOf(data: unknown, fallback: string): string {
   const d = data as { error?: { message?: string }; message?: string | string[] } | null;
@@ -84,6 +85,7 @@ export function SaveStep(props: {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error(messageOf(data, 'Google sign-in failed. Try again?'));
+      if (result.user.email) saveAccount({ email: result.user.email, fullName: result.user.displayName, avatarUrl: result.user.photoURL });
       playHaptic('success');
       props.onSaved('google');
     } catch (err) {
@@ -118,6 +120,7 @@ export function SaveStep(props: {
         throw new Error(messageOf(data, "That didn't go through. Try again?"));
       }
       if (data?.linked && data?.verified) {
+        saveAccount({ email: cleanEmail, fullName: props.answers.name });
         props.onSaved('email');
         return;
       }
@@ -146,6 +149,7 @@ export function SaveStep(props: {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error(messageOf(data, "That code doesn't look right. Try again?"));
+      saveAccount({ email: cleanEmail, fullName: props.answers.name });
       playHaptic('success');
       props.onSaved('email');
     } catch (err) {

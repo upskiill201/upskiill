@@ -14,7 +14,7 @@ import { playOnboardingCue, resetCommitTicks } from '@/lib/audio/onboardingAudio
 import { duckOnboardingMusic } from '@/lib/audio/onboardingMusic';
 import { celebrationHaptic, playHaptic } from '@/lib/haptics';
 import { chapterOneFinish, type CatalogCourse } from '@/lib/onboarding/v3/catalog';
-import { kitCss as css } from './ui/Kit';
+import { kitCss as css } from '@/components/kit/Kit';
 
 function day(d: Date) {
   return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });

@@ -2,21 +2,23 @@
 
 /**
  * One-message auth screens — "check your email", "that link expired",
- * "password updated" — in the welcome screen's style: a springy badge, a
- * chunky title, one line, one big button. Plays its cue on arrival.
+ * "password updated" — in the welcome screen's style: one of Teyro's own
+ * drawings springing in, a chunky title, one line, one big button. Plays its
+ * cue on arrival.
  */
 
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { X, type LucideIcon } from 'lucide-react';
+import { Art, type ArtName } from '@/components/art/Art';
+import { Glyph } from '@/components/art/Glyph';
 import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { hydrateSoundPreferences } from '@/lib/audio/soundManager';
 import { authStyles as styles } from './AuthUi';
 
 export interface AuthStatusScreenProps {
-  Icon: LucideIcon;
+  art: ArtName;
   tone: 'good' | 'bad';
   title: string;
   children: React.ReactNode;
@@ -26,7 +28,7 @@ export interface AuthStatusScreenProps {
 }
 
 export default function AuthStatusScreen({
-  Icon,
+  art,
   tone,
   title,
   children,
@@ -46,17 +48,16 @@ export default function AuthStatusScreen({
     <div className={styles.screen}>
       <header className={styles.topBar}>
         <Link href={closeHref} className={styles.iconBtn} aria-label="Close" onClick={() => playSound('cardBack')}>
-          <X size={26} strokeWidth={3} />
+          <Glyph name="close" size={26} strokeWidth={3.2} />
         </Link>
       </header>
       <main className={`${styles.formPane} ${styles.center}`}>
         <motion.span
-          className={`${styles.sentBadge} ${tone === 'bad' ? styles.sentBadgeBad : ''}`}
           initial={reduce ? false : { scale: 0.4, rotate: -12 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: 'spring', stiffness: 380, damping: 14 }}
         >
-          <Icon size={44} strokeWidth={2.5} aria-hidden="true" />
+          <Art name={art} size={120} />
         </motion.span>
         <h1 className={styles.formTitle}>{title}</h1>
         <p className={styles.formSub}>{children}</p>

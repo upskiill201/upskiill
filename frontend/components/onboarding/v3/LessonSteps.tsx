@@ -25,7 +25,7 @@ import type { PlacementResult } from '@/lib/onboarding/v3/flow';
 import type { PlacementTest } from '@/lib/path/testOut';
 import { Art } from '@/components/art/Art';
 import { TASTE_MINUTES, TASTE_QUESTIONS } from './PathSteps';
-import { Btn, Hero, kitCss as css } from './ui/Kit';
+import { Btn, Hero, kitCss as css } from '@/components/kit/Kit';
 
 // A static import, like ChestScene's: next/dynamic drops refs, and the
 // button forwards each tap to the chest through its handle.

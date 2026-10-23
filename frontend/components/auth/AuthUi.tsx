@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { AlertCircle } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { FaGoogle } from 'react-icons/fa';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
@@ -25,7 +25,12 @@ export function Field({
   label,
   trailing,
   ...input
-}: React.InputHTMLAttributes<HTMLInputElement> & { label: string; trailing?: React.ReactNode }) {
+}: React.InputHTMLAttributes<HTMLInputElement> & {
+  label: string;
+  trailing?: React.ReactNode;
+  /** React 19 passes refs as props; lets a form move focus into this input. */
+  ref?: React.Ref<HTMLInputElement>;
+}) {
   return (
     <label className={styles.field}>
       <span className="sr-only">{label}</span>
@@ -93,7 +98,7 @@ export function FormError({ message }: { message: string }) {
   if (!message) return null;
   return (
     <p key={message} className={styles.error} role="alert">
-      <AlertCircle size={18} strokeWidth={2.75} aria-hidden="true" />
+      <Glyph name="alert" size={20} />
       {message}
     </p>
   );

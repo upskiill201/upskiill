@@ -16,7 +16,8 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Check, Eye, EyeOff } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
+import { saveAccount } from '@/lib/auth/savedAccount';
 import { signInWithGoogle } from '@/lib/firebase';
 import { extractErrorMessage } from '@/lib/apiError';
 import { playHaptic } from '@/lib/haptics';
@@ -104,6 +105,10 @@ export default function SignupFlow({
     onDone(result);
   };
 
+  /** "Sign back in" on this device next time (never the password). */
+  const remember = (who: { email: string; fullName?: string | null; avatarUrl?: string | null }) =>
+    saveAccount({ ...who, role });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
@@ -152,6 +157,7 @@ export default function SignupFlow({
         setView('code');
         return;
       }
+      remember({ email: cleanEmail, fullName: fullName.trim() });
       succeed({ redirectTo: data.redirectTo, method: 'email' });
     } catch (err: unknown) {
       fail(err instanceof Error ? err.message : "That didn't go through. Try again?");
@@ -175,6 +181,7 @@ export default function SignupFlow({
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(extractErrorMessage(data, res.status));
+      remember({ email: result.user.email ?? '', fullName: result.user.displayName, avatarUrl: result.user.photoURL });
       succeed({ redirectTo: data.redirectTo, method: 'google' });
     } catch (err: unknown) {
       console.error(err);
@@ -249,7 +256,7 @@ export default function SignupFlow({
                       }}
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      <Glyph name={showPassword ? 'eyeOff' : 'eye'} size={22} strokeWidth={2.4} />
                     </button>
                   </span>
                 }
@@ -258,7 +265,7 @@ export default function SignupFlow({
             {!linkMode && <EmailTypoHint email={email} onFix={setEmail} />}
             {!linkMode && (
               <p className={`${styles.hint} ${longEnough ? styles.hintOk : ''}`}>
-                {longEnough && <Check size={14} strokeWidth={4} aria-hidden="true" />}
+                {longEnough && <Glyph name="check" size={14} strokeWidth={3.6} />}
                 At least {MIN_PASSWORD} characters
               </p>
             )}
@@ -296,7 +303,10 @@ export default function SignupFlow({
         <motion.div key="code" {...slide}>
           <VerifyCodeForm
             email={email}
-            onVerified={({ redirectTo }) => onDone({ redirectTo, method: 'code' })}
+            onVerified={({ redirectTo }) => {
+              remember({ email: email.toLowerCase().trim(), fullName: fullName.trim() });
+              onDone({ redirectTo, method: 'code' });
+            }}
           />
         </motion.div>
       )}

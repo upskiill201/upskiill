@@ -11,7 +11,7 @@ import Image from 'next/image';
 import { Art } from '@/components/art/Art';
 import type { CatalogCourse } from '@/lib/onboarding/v3/catalog';
 import type { LessonPath } from '@/lib/onboarding/v3/flow';
-import { Choice, ChoiceGroup, Hero, TeyHero, kitCss as css } from './ui/Kit';
+import { Choice, ChoiceGroup, Hero, TeyHero, kitCss as css } from '@/components/kit/Kit';
 
 const TEY = (pose: string) => `/User onbarding Assets/tey/${pose}.webp`;
 

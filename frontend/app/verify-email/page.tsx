@@ -1,10 +1,5 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
-import { MailCheck, ShieldCheck, AlertCircle, ArrowLeft, Loader2 } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import Button from '@/components/ui/Button';
-
 /**
  * Email magic-link landing page.
  *
@@ -17,134 +12,100 @@ import Button from '@/components/ui/Button';
  * an auto-verify would consume the token before the human clicks. Verification
  * happens only on an explicit user action (POST).
  */
-function VerifyEmailContent() {
-  const searchParams = useSearchParams();
-  const token = searchParams.get('token') || '';
-  // Links name their account; without it the code can't be checked safely.
-  const email = searchParams.get('email') || '';
 
+import { useEffect, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { Art } from '@/components/art/Art';
+import { TeyLine } from '@/components/kit/Kit';
+import AuthStatusScreen from '@/components/auth/AuthStatusScreen';
+import { FormError, PrimaryButton, authStyles as styles } from '@/components/auth/AuthUi';
+import { extractErrorMessage } from '@/lib/apiError';
+import { saveAccount } from '@/lib/auth/savedAccount';
+import { playHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { hydrateSoundPreferences } from '@/lib/audio/soundManager';
+
+export default function VerifyEmailPage() {
+  const reduce = useReducedMotion() ?? false;
+  // Read after mount: no useSearchParams, so no Suspense boundary.
+  const [link, setLink] = useState<{ token: string; email: string } | null>(null);
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState('');
 
-  const handleConfirm = async () => {
-    if (!token || !email || verifying) return;
+  useEffect(() => {
+    hydrateSoundPreferences();
+    const q = new URLSearchParams(window.location.search);
+    setLink({ token: q.get('token') ?? '', email: q.get('email') ?? '' });
+  }, []);
 
+  const confirm = async () => {
+    if (!link?.token || !link.email || verifying) return;
     setVerifying(true);
     setError('');
-
     try {
       const res = await fetch('/api/auth/verify-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ token, email }),
+        body: JSON.stringify({ token: link.token, email: link.email }),
       });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || 'This verification link is invalid or has expired.');
-      }
-
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(extractErrorMessage(data, res.status));
+      playSound('correct');
+      playHaptic('success', false);
       // Server decides where to send them based on their real role:
       // creators continue onboarding, students go to their dashboard.
-      const role = data?.user?.role;
+      const role = data?.user?.role === 'INSTRUCTOR' ? 'INSTRUCTOR' : 'STUDENT';
+      saveAccount({ email: link.email, fullName: data?.user?.fullName ?? null, avatarUrl: data?.user?.avatarUrl ?? null, role });
       window.location.href = role === 'INSTRUCTOR' ? '/creator/onboarding/16' : '/dashboard';
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Verification failed');
+      setError(err instanceof Error ? err.message : 'This link is invalid or has expired.');
+      playSound('wrong');
+      playHaptic('error', false);
       setVerifying(false);
     }
   };
 
-  if (!token || !email) {
+  if (!link) return <div className={styles.screen} aria-busy="true" />;
+
+  if (!link.token || !link.email) {
     return (
-      <VerifyCard>
-        <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
-          <AlertCircle className="w-8 h-8 text-red-500" />
-        </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-3">Missing verification token</h1>
-        <p className="text-gray-600 mb-8 leading-relaxed">
-          This link looks incomplete or comes from an older email. Type the 6-digit code from the email in the app, or ask for a new one.
-        </p>
-        <FallbackLink />
-      </VerifyCard>
+      <AuthStatusScreen
+        art="linkBroken"
+        tone="bad"
+        title="This link is incomplete"
+        closeHref="/login"
+        action={{ label: 'Log in for a fresh code', href: '/login?mode=signin' }}
+      >
+        It may come from an older email. Log in with your email and password and I&apos;ll send you a new 6-digit
+        code.
+      </AuthStatusScreen>
     );
   }
 
   return (
-    <VerifyCard>
-      <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
-        <MailCheck className="w-8 h-8 text-blue-600" />
-      </div>
-
-      <h1 className="text-2xl font-bold text-gray-900 mb-3">Confirm your email</h1>
-
-      <p className="text-gray-600 mb-8 leading-relaxed">
-        One tap and your Teyro account is officially yours — streaks, XP, and all.
-      </p>
-
-      {error && (
-        <p className="mb-5 text-sm text-red-600 flex items-center justify-center gap-1">
-          <AlertCircle className="w-4 h-4" /> {error}
+    <div className={styles.screen}>
+      <main className={`${styles.formPane} ${styles.center}`}>
+        <TeyLine teySrc="/User onbarding Assets/tey/waving.webp" text="One tap and your Teyro account is officially yours." />
+        <motion.span
+          initial={reduce ? false : { scale: 0.4, rotate: -12 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: 'spring', stiffness: 380, damping: 14 }}
+        >
+          <Art name="envelope" size={120} />
+        </motion.span>
+        <h1 className={styles.formTitle}>Confirm your email</h1>
+        <p className={styles.formSub}>
+          Your streak, XP and Coins stay saved to <strong>{link.email}</strong>.
         </p>
-      )}
-
-      <Button
-        onClick={handleConfirm}
-        disabled={verifying}
-        className="w-full justify-center h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md"
-      >
-        {verifying ? (
-          <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Verifying…</span>
-        ) : (
-          <span className="flex items-center gap-2"><ShieldCheck className="w-5 h-5" /> Verify my account</span>
-        )}
-      </Button>
-
-      <div className="mt-8">
-        <FallbackLink />
-      </div>
-    </VerifyCard>
-  );
-}
-
-function VerifyCard({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F1EDFC] px-4 py-8">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 to-purple-600" />
-        {children}
-      </div>
+        <FormError message={error} />
+        <PrimaryButton type="button" busy={verifying} onClick={confirm}>
+          {verifying ? 'Confirming…' : 'Confirm my email'}
+        </PrimaryButton>
+        <a href="/login?mode=signin" className={styles.forgot}>
+          Link expired? Log in for a fresh code
+        </a>
+      </main>
     </div>
-  );
-}
-
-function FallbackLink() {
-  return (
-    <>
-      <p className="text-sm text-gray-500 mb-3">Link expired or already used?</p>
-      <a
-        href="/creator/verify-pending"
-        className="text-sm text-gray-700 hover:text-gray-900 font-semibold inline-flex items-center justify-center gap-1 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" /> Enter your 6-digit code instead
-      </a>
-    </>
-  );
-}
-
-export default function VerifyEmailPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#F1EDFC]">
-          <div className="animate-pulse flex flex-col items-center">
-            <div className="w-16 h-16 bg-blue-100 rounded-full mb-4"></div>
-            <div className="h-6 w-32 bg-gray-200 rounded"></div>
-          </div>
-        </div>
-      }
-    >
-      <VerifyEmailContent />
-    </Suspense>
   );
 }

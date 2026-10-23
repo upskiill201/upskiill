@@ -1,6 +1,5 @@
 'use client';
 
-import { XCircle } from 'lucide-react';
 import AuthStatusScreen from '@/components/auth/AuthStatusScreen';
 import { ACCOUNT_STEP } from '@/lib/creator-onboarding/steps';
 
@@ -8,7 +7,7 @@ import { ACCOUNT_STEP } from '@/lib/creator-onboarding/steps';
 export default function VerifyFailedPage() {
   return (
     <AuthStatusScreen
-      Icon={XCircle}
+      art="linkBroken"
       tone="bad"
       title="That link didn't work"
       closeHref="/creator/login"

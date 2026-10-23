@@ -29,7 +29,7 @@ import { recordAsk } from '@/lib/push/askPolicy';
 import { trackInstallEvent } from '@/lib/pwa/analytics';
 import { detectBrowser, detectPlatform } from '@/lib/pwa/platform';
 import { Art, type ArtName } from '@/components/art/Art';
-import { Btn, Hero, kitCss as css } from './ui/Kit';
+import { Btn, Hero, kitCss as css } from '@/components/kit/Kit';
 
 const IosInstallGuide = dynamic(() => import('@/components/start/IosInstallGuide'), { ssr: false });
 const ManualInstallGuide = dynamic(() => import('@/components/start/ManualInstallGuide'), { ssr: false });

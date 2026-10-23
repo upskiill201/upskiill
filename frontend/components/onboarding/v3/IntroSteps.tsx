@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { playOnboardingCue } from '@/lib/audio/onboardingAudio';
 import { playHaptic } from '@/lib/haptics';
 import { Art, type ArtName } from '@/components/art/Art';
-import { Btn, kitCss as css } from './ui/Kit';
+import { Btn, kitCss as css } from '@/components/kit/Kit';
 
 export function SplashStep({ onDone }: { onDone: () => void }) {
   const reduce = useReducedMotion();
@@ -44,39 +44,46 @@ const ORBIT: { art: ArtName; x: number; y: number; size: number; delay: number }
   { art: 'rocket', x: 112, y: 110, size: 54, delay: 0.6 },
 ];
 
-export function WelcomeStep({ onStart, onLogin }: { onStart: () => void; onLogin: () => void }) {
+/** Tey with the skills floating round him: the front door of onboarding and log in. */
+export function SkillOrbit({ teySrc = '/User onbarding Assets/tey/welcome.webp' }: { teySrc?: string }) {
   const reduce = useReducedMotion();
+  return (
+    <div className="relative w-[300px] h-[280px] flex items-center justify-center" aria-hidden="true">
+      {ORBIT.map((o, i) => (
+        <motion.div
+          key={o.art}
+          className="absolute"
+          style={{ left: '50%', top: '50%', marginLeft: o.x - o.size / 2, marginTop: o.y - o.size / 2 }}
+          initial={reduce ? false : { scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.3 + o.delay, type: 'spring', stiffness: 300, damping: 14 }}
+        >
+          <motion.div
+            animate={reduce ? undefined : { y: [0, i % 2 ? 7 : -7, 0], rotate: [0, i % 2 ? 4 : -4, 0] }}
+            transition={{ duration: 3 + (i % 3) * 0.5, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <Art name={o.art} size={o.size} />
+          </motion.div>
+        </motion.div>
+      ))}
+      <motion.div
+        initial={reduce ? false : { scale: 0.6, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 220, damping: 14 }}
+      >
+        <motion.div animate={reduce ? undefined : { y: [0, -8, 0] }} transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}>
+          <Image src={teySrc} alt="" width={170} height={170} priority />
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+}
+
+export function WelcomeStep({ onStart, onLogin }: { onStart: () => void; onLogin: () => void }) {
   return (
     <div className={css.screen} style={{ background: 'linear-gradient(180deg, var(--color-band) 0%, var(--bg-page) 62%)' }}>
       <div className="flex-1 flex flex-col items-center justify-center gap-8 px-6 pt-10 text-center">
-        <div className="relative w-[300px] h-[280px] flex items-center justify-center" aria-hidden="true">
-          {ORBIT.map((o, i) => (
-            <motion.div
-              key={o.art}
-              className="absolute"
-              style={{ left: '50%', top: '50%', marginLeft: o.x - o.size / 2, marginTop: o.y - o.size / 2 }}
-              initial={reduce ? false : { scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.3 + o.delay, type: 'spring', stiffness: 300, damping: 14 }}
-            >
-              <motion.div
-                animate={reduce ? undefined : { y: [0, i % 2 ? 7 : -7, 0], rotate: [0, i % 2 ? 4 : -4, 0] }}
-                transition={{ duration: 3 + (i % 3) * 0.5, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                <Art name={o.art} size={o.size} />
-              </motion.div>
-            </motion.div>
-          ))}
-          <motion.div
-            initial={reduce ? false : { scale: 0.6, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 220, damping: 14 }}
-          >
-            <motion.div animate={reduce ? undefined : { y: [0, -8, 0] }} transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}>
-              <Image src="/User onbarding Assets/tey/welcome.webp" alt="" width={170} height={170} priority />
-            </motion.div>
-          </motion.div>
-        </div>
+        <SkillOrbit />
         <div>
           <h1
             className="text-[clamp(28px,8vw,38px)] font-extrabold leading-[1.1] text-[var(--color-ink)]"

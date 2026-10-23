@@ -55,7 +55,10 @@ export function buildUnlockHref(
  * the dashboard rather than being trusted.
  */
 // /courses: "sign in to start this course" comes back to the course page.
-const NEXT_ALLOWED_PREFIXES = ['/dashboard', '/learn', '/admin', '/courses'] as const;
+// /pro: billing emails and pushes (update your card, renew, the paywall) link
+// here, and an expired session must not drop the learner on the dashboard.
+// /onboarding: "Log in" from the save step comes back to finish it.
+const NEXT_ALLOWED_PREFIXES = ['/dashboard', '/learn', '/admin', '/courses', '/pro', '/onboarding'] as const;
 
 /**
  * Sanitizes the `next` param used by the login wall (proxy.ts).

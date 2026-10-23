@@ -11,7 +11,7 @@ import { useEffect, useState, type ButtonHTMLAttributes, type ReactNode } from '
 import { playTypingKey } from '@/lib/audio/onboardingAudio';
 import { Art, type ArtName } from '@/components/art/Art';
 import { Glyph } from '@/components/art/Glyph';
-import css from './v3.module.css';
+import css from './kit.module.css';
 
 // ── Top bar ───────────────────────────────────────────────────────────────
 

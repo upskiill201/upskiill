@@ -35,6 +35,10 @@ export default function HeaderWrapper() {
     pathname === '/join' ||
     pathname === '/signup' ||
     pathname === '/login' ||
+    // The rest of the student auth screens are full-bleed app screens too.
+    pathname === '/forgot-password' ||
+    pathname === '/reset-password' ||
+    pathname === '/verify-email' ||
     pathname === '/creator/login' ||
     pathname === '/creator/signup' ||
     pathname.startsWith('/dashboard') ||

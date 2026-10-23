@@ -7,11 +7,12 @@
  */
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
+import { TeyLine } from '@/components/kit/Kit';
 import { getOnboardingState } from '@/lib/user-onboarding';
+import { sanitizeNextPath } from '@/lib/return-to';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { hydrateSoundPreferences } from '@/lib/audio/soundManager';
 import InvitedBanner from '@/components/referral/InvitedBanner';
@@ -41,20 +42,26 @@ function courseReturnPath(): string | null {
   return slug && /^[a-z0-9-]{1,120}$/i.test(slug) ? `/courses/${slug}?start=1` : null;
 }
 
+/** A deep link (/signup?next=/pro…) through the same allowlist as log in. */
+function nextPath(): string | null {
+  if (typeof window === 'undefined') return null;
+  const raw = new URLSearchParams(window.location.search).get('next');
+  return raw ? sanitizeNextPath(raw) : null;
+}
+
 export default function Signup() {
   const router = useRouter();
   // Read after mount (see app/login/page.tsx for why not useSearchParams).
-  const [courseNext, setCourseNext] = useState<string | null>(null);
+  const [returnTo, setReturnTo] = useState<{ course: string | null; next: string | null }>({ course: null, next: null });
 
   useEffect(() => {
     hydrateSoundPreferences();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setCourseNext(courseReturnPath());
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- read from the URL after mount, so server and client render agree
+    setReturnTo({ course: courseReturnPath(), next: nextPath() });
   }, []);
 
-  const loginHref = courseNext
-    ? `/login?mode=signin&next=${encodeURIComponent(courseNext)}`
-    : '/login?mode=signin';
+  const after = returnTo.course ?? returnTo.next;
+  const loginHref = after ? `/login?mode=signin&next=${encodeURIComponent(after)}` : '/login?mode=signin';
 
   return (
     <div className={styles.screen}>
@@ -68,7 +75,7 @@ export default function Signup() {
             router.push('/');
           }}
         >
-          <X size={26} strokeWidth={3} />
+          <Glyph name="close" size={26} strokeWidth={3.2} />
         </button>
         <Link href={loginHref} className={styles.topLink} onClick={() => playSound('navTap', 1)}>
           Log in
@@ -76,19 +83,24 @@ export default function Signup() {
       </header>
 
       <main className={styles.formPane}>
-        <div className={styles.center} style={{ display: 'flex', flexDirection: 'column' }}>
-          <Image src="/User onbarding Assets/tey/welcome.webp" alt="" width={96} height={120} priority />
-        </div>
+        <TeyLine
+          teySrc="/User onbarding Assets/tey/welcome.webp"
+          text={
+            returnTo.course
+              ? "Let's make your profile, then I'll open your course right where it starts."
+              : "Let's make your profile. It takes a minute, and everything you learn stays saved."
+          }
+        />
         <SignupFlow
           role="STUDENT"
           title="Create your profile"
           banner={<InvitedBanner />}
           // A course signup has no onboarding answers to attach.
-          getOnboarding={courseNext ? () => null : pendingOnboardingAnswers}
+          getOnboarding={returnTo.course ? () => null : pendingOnboardingAnswers}
           loginHref={loginHref}
           // The backend has set the httpOnly cookie by now.
           onDone={() => {
-            window.location.href = courseReturnPath() ?? '/dashboard';
+            window.location.href = courseReturnPath() ?? nextPath() ?? '/dashboard';
           }}
         />
       </main>

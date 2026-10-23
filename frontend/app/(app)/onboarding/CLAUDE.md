@@ -158,7 +158,7 @@ INSTALL, PUSH, COMPLETE.
   `components/art/Glyph.tsx`, also ours. **No lucide icons in onboarding or the
   paywall.** (Brand logos on "How did you hear" use `react-icons/fa`, as the
   repo rule allows; iOS install guides keep the OS's own share icon.)
-- Look and pieces: `ui/Kit.tsx` + `ui/v3.module.css` (top bar, Tey and his
+- Look and pieces: `components/kit/Kit.tsx` + `kit.module.css` (shared with the sign-in screens) (top bar, Tey and his
   bubble, 3D answer rows and tiles, footer, hero moments). Screens are built
   from these, not from v2's `OnboardingLayout`.
 - `.screen` clips sideways overflow (`overflow-x: clip`, not hidden, so the

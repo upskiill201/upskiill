@@ -64,7 +64,7 @@ import { LessonIntroStep, PathStep, PlacementIntroStep, TasteDoneStep } from './
 import { DailyStep, ExperienceStep, GoalStep, LearnStep, NameStep, SourceStep, TimeStep } from './QuestionSteps';
 import { QuitSheet } from './QuitSheet';
 import { SaveStep, type HeldReward } from './SaveStep';
-import { Btn, Footer, Hero, Screen, TeyHero, TeyLine, TopBar, kitCss as css } from './ui/Kit';
+import { Btn, Footer, Hero, Screen, TeyHero, TeyLine, TopBar, kitCss as css } from '@/components/kit/Kit';
 
 const TRANSITION_MS = 380;
 const TEY = (pose: string) => `/User onbarding Assets/tey/${pose}.webp`;
@@ -285,7 +285,7 @@ export default function OnboardingV3() {
           startMusic();
           go('intro');
         }}
-        onLogin={() => router.push('/login')}
+        onLogin={() => router.push('/login?mode=signin')}
       />
     );
   }
@@ -603,12 +603,28 @@ export default function OnboardingV3() {
           <SaveStep
             answers={answers}
             held={held}
-            onLogin={() => router.push('/login')}
+            onLogin={() => router.push('/login?mode=signin&next=%2Fonboarding')}
             onSaved={async (how) => {
               trackOnboarding(state.anonymousId, step, 'SIGNUP', { answerKey: 'method', answerValue: how });
               const next = { ...state, signedUp: true, step: 'plan' as StepId };
               update(() => next);
               try {
+                // Logged in to an existing account ("Log in" on this step):
+                // signup never ran, so the lesson they just played joins the
+                // account here (single-use claim; the chest pays once per person).
+                const claimToken = state.answers.lesson?.claimToken;
+                if (how === 'existing' && claimToken) {
+                  await fetch('/api/onboarding-flow/lesson-claim/settle', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      claimToken,
+                      anonymousId: state.anonymousId,
+                      timezoneOffset: new Date().getTimezoneOffset(),
+                    }),
+                  });
+                }
                 const me = await fetch('/api/auth/me', { credentials: 'include' }).then((r) => (r.ok ? r.json() : null));
                 if (me?.id) {
                   identifyUser(me.id);

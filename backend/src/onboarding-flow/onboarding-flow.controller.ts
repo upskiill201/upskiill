@@ -1,4 +1,5 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { Type } from 'class-transformer';
 import {
@@ -24,6 +25,13 @@ class LessonStatsDto {
   @IsOptional() @IsInt() @Min(0) @Max(50) correctAnswers?: number;
   @IsOptional() @IsInt() @Min(0) @Max(100) quizScorePct?: number;
   @IsOptional() @IsInt() @Min(0) @Max(50) bestCombo?: number;
+}
+
+/** "Log in" from the save step: the held lesson joins the existing account. */
+export class SettleClaimDto {
+  @IsString() @Length(32, 128) claimToken: string;
+  @IsOptional() @IsUUID('4') anonymousId?: string;
+  @IsOptional() @IsInt() @Min(-840) @Max(840) timezoneOffset?: number;
 }
 
 class PlacementResultDto {
@@ -135,6 +143,21 @@ export class OnboardingFlowController {
       return { ...claim, status: settled.settled ? ('SETTLED' as const) : claim.status };
     }
     return claim;
+  }
+
+  /**
+   * An existing learner who logged in mid-onboarding (the save step's "Log
+   * in") keeps the lesson they just played. The claim is single-use and the
+   * chest pays once per person, so this can't be replayed for rewards.
+   */
+  @Throttle({ default: { limit: 10, ttl: 900_000 } })
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  @Post('lesson-claim/settle')
+  async settleClaim(@Req() req: Request & { user: { id: string } }, @Body() dto: SettleClaimDto) {
+    await this.flow.linkAnonymousEvents(req.user.id, dto.anonymousId);
+    const settled = await this.flow.settleLessonClaim(req.user.id, dto.claimToken, dto.timezoneOffset ?? 0);
+    return { settled: settled.settled };
   }
 
   @Throttle({ default: { limit: 120, ttl: 60_000 } })

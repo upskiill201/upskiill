@@ -56,6 +56,13 @@ const PATHS = {
   ),
   arrow: <path d="M4.5 12h14M13 6.5l5.5 5.5-5.5 5.5" />,
   menu: <path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h15" />,
+  alert: (
+    <>
+      <circle cx="12" cy="12" r="9.5" fill="currentColor" stroke="none" />
+      <path d="M12 7.2v6" stroke="white" />
+      <circle cx="12" cy="16.8" r="1.5" fill="white" stroke="none" />
+    </>
+  ),
   chevronLeft: <path d="M14.5 5.5L8 12l6.5 6.5" />,
 } satisfies Record<string, ReactNode>;
 

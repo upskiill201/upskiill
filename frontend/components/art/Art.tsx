@@ -26,6 +26,18 @@ const Sparkle = ({ x, y, r, k }: { x: number; y: number; r: number; k: string })
   />
 );
 
+/** A scalloped rosette edge: n half-circle bumps round a circle of radius r. */
+const scallop = (cx: number, cy: number, r: number, n = 12) => {
+  const bump = (r * Math.sin(Math.PI / n)).toFixed(2);
+  const at = (i: number) => {
+    const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+    return `${(cx + r * Math.cos(a)).toFixed(2)} ${(cy + r * Math.sin(a)).toFixed(2)}`;
+  };
+  let d = `M${at(0)}`;
+  for (let i = 1; i <= n; i++) d += `A${bump} ${bump} 0 0 1 ${at(i)}`;
+  return `${d}Z`;
+};
+
 /** A flame standing on (32, 56), scaled from its base. */
 const Flame = ({ scale = 1, dx = 0 }: { scale?: number; dx?: number }) => (
   <g transform={`translate(${32 + dx} 56) scale(${scale}) translate(-32 -56)`}>
@@ -691,6 +703,32 @@ const DRAWINGS = {
       <path className={f('y')} d="M6 20l26 17 26-17v-1a5 5 0 0 0-5-5H11a5 5 0 0 0-5 5Z" />
       <circle cx="32" cy="34" r="6" className={f('r')} />
       <path className={f('w')} d="M32 38c-3-2-4-3-4-5a2 2 0 0 1 4-1 2 2 0 0 1 4 1c0 2-1 3-4 5Z" />
+    </>
+  ),
+
+  // ── Account: passwords and links ─────────────────────────────────────
+  linkBroken: (
+    <>
+      <Ground rx={20} />
+      <g transform="rotate(-32 32 32)">
+        <path className={s('std')} strokeWidth="7.5" d="M25 25.4H16.5a8.6 8.6 0 0 0 0 17.2H25" />
+        <path className={s('std')} strokeWidth="7.5" d="M39 25.4h8.5a8.6 8.6 0 0 1 0 17.2H39" />
+        <path className={s('st')} strokeWidth="7.5" d="M25 23H16.5a8.6 8.6 0 0 0 0 17.2H25" />
+        <path className={s('st')} strokeWidth="7.5" d="M39 23h8.5a8.6 8.6 0 0 1 0 17.2H39" />
+        <path className={s('stl')} strokeWidth="2.4" d="M12 26.6a6 6 0 0 1 4.5-1.6h4" />
+        <path className={s('stl')} strokeWidth="2.4" d="M43 25h4.5" />
+        <path className={s('r')} strokeWidth="3" d="M32 15.5v5M32 43v5M26.5 17.5l2 3.4M37.5 45.5l-2-3.4" />
+      </g>
+    </>
+  ),
+  seal: (
+    <>
+      <Ground rx={18} />
+      <path className={f('gd')} d={scallop(32, 32.4, 23)} />
+      <path className={f('g')} d={scallop(32, 30, 23)} />
+      <circle cx="32" cy="30" r="16" className={f('gl')} opacity="0.5" />
+      <path className={s('w')} strokeWidth="5.2" d="M23.5 30.5l6 6L41 24.5" />
+      <Sparkle x={52} y={10} r={5.4} k="y" />
     </>
   ),
   phone: (
