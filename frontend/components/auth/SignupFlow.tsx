@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Glyph } from '@/components/art/Glyph';
 import { saveAccount } from '@/lib/auth/savedAccount';
+import { clearClientSession } from '@/lib/user-cache';
 import { signInWithGoogle } from '@/lib/firebase';
 import { extractErrorMessage } from '@/lib/apiError';
 import { playHaptic } from '@/lib/haptics';
@@ -105,9 +106,15 @@ export default function SignupFlow({
     onDone(result);
   };
 
-  /** "Sign back in" on this device next time (never the password). */
-  const remember = (who: { email: string; fullName?: string | null; avatarUrl?: string | null }) =>
+  /**
+   * A new session on this device: drop the previous account's cached data
+   * (so it never paints in this one) and remember this account for "Sign
+   * back in" next time (never the password).
+   */
+  const remember = (who: { email: string; fullName?: string | null; avatarUrl?: string | null }) => {
+    clearClientSession();
     saveAccount({ ...who, role });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

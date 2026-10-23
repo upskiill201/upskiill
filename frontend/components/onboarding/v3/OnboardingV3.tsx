@@ -55,6 +55,7 @@ import { firstName, lineFor, reactionFor, teyArt, topicOf } from '@/lib/onboardi
 import { clearV3, furthestOf, loadV3, saveV3, type OnboardingV3State } from '@/lib/onboarding/v3/store';
 import { trackOnboarding } from '@/lib/onboarding/v3/track';
 import { clearClientSession } from '@/lib/user-cache';
+import { markFirstSession } from '@/lib/awareness/firstSession';
 import { Art } from '@/components/art/Art';
 import { InstallStep } from './InstallStep';
 import { SplashStep, WelcomeStep } from './IntroSteps';
@@ -476,6 +477,9 @@ export default function OnboardingV3() {
           update((s) => ({ ...s, completedAt: new Date().toISOString() }));
           clearV3();
           stopOnboardingMusic(0.6);
+          // The rest of this session stays calm: the path and Tey, no medal
+          // scenes or auto tour on top (lib/awareness/firstSession).
+          markFirstSession();
           // Straight back into lesson 1 at the next card, or to the chapter they placed into.
           const lessonId = answers.lesson?.lessonId;
           router.replace(

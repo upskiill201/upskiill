@@ -13,6 +13,7 @@ import { Glyph } from '@/components/art/Glyph';
 import { TeyLine } from '@/components/kit/Kit';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { sanitizeNextPath } from '@/lib/return-to';
+import { markFirstSession } from '@/lib/awareness/firstSession';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { hydrateSoundPreferences } from '@/lib/audio/soundManager';
 import InvitedBanner from '@/components/referral/InvitedBanner';
@@ -100,6 +101,8 @@ export default function Signup() {
           loginHref={loginHref}
           // The backend has set the httpOnly cookie by now.
           onDone={() => {
+            // A brand-new learner's first visit stays calm (lib/awareness/firstSession).
+            markFirstSession();
             window.location.href = courseReturnPath() ?? nextPath() ?? '/dashboard';
           }}
         />

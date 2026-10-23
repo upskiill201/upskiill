@@ -21,6 +21,7 @@ import AuthStatusScreen from '@/components/auth/AuthStatusScreen';
 import { FormError, PrimaryButton, authStyles as styles } from '@/components/auth/AuthUi';
 import { extractErrorMessage } from '@/lib/apiError';
 import { saveAccount } from '@/lib/auth/savedAccount';
+import { clearClientSession } from '@/lib/user-cache';
 import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { hydrateSoundPreferences } from '@/lib/audio/soundManager';
@@ -56,6 +57,7 @@ export default function VerifyEmailPage() {
       // Server decides where to send them based on their real role:
       // creators continue onboarding, students go to their dashboard.
       const role = data?.user?.role === 'INSTRUCTOR' ? 'INSTRUCTOR' : 'STUDENT';
+      clearClientSession();
       saveAccount({ email: link.email, fullName: data?.user?.fullName ?? null, avatarUrl: data?.user?.avatarUrl ?? null, role });
       window.location.href = role === 'INSTRUCTOR' ? '/creator/onboarding/16' : '/dashboard';
     } catch (err: unknown) {

@@ -34,6 +34,7 @@ import { forgetSavedAccount, maskEmail, readSavedAccount, saveAccount, type Save
 import { celebrationHaptic, playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { hydrateSoundPreferences } from '@/lib/audio/soundManager';
+import { clearClientSession } from '@/lib/user-cache';
 import { TeyMark } from '@/components/brand/TeyMark';
 import VerifyCodeForm from './VerifyCodeForm';
 import {
@@ -141,6 +142,9 @@ export default function WelcomeAuthScreen({
 
   /** A beat of "Welcome back, Ada!", then the app (a real navigation, fresh caches). */
   const arrive = (to: string, name: string | null) => {
+    // Whoever this device held before (an expired session, a shared phone)
+    // must not paint for a beat in the new account's app.
+    clearClientSession();
     playSound('correct');
     celebrationHaptic('soft');
     setWelcomeBack(name ? `Welcome back, ${name}!` : 'Welcome back!');
