@@ -14,7 +14,9 @@
  * app/(app)/, is not a slow page — it is a hard crash on a public route.
  *
  * This walks each hook's call sites transitively up the import graph to the
- * terminal page/layout files and fails if any of them lives outside the group.
+ * terminal page/layout files and fails if any of them lives outside the group,
+ * unless that route renders the hook's own provider itself (the admin lesson
+ * review mounts GamificationProvider + CelebrationProvider around the player).
  * Run it in CI; the boundary is currently clean and cheap to keep that way.
  *
  * Usage: node scripts/check-provider-boundary.mjs
@@ -37,6 +39,20 @@ const GUARDED_HOOKS = [
   'useAudioContext',
   'useTeyroLoader',
 ];
+
+/** The provider each hook needs: a route outside the group that renders it is fine. */
+const PROVIDER_OF = {
+  useGamification: 'GamificationProvider',
+  useCelebration: 'CelebrationProvider',
+  useShopEngine: 'ShopEngineProvider',
+  useHerald: 'HeraldProvider',
+  useStreakModal: 'StreakProvider',
+  useRewardAnimation: 'RewardAnimationProvider',
+  useRewardAnimationVisuals: 'RewardAnimationProvider',
+  useAudio: 'AudioProvider',
+  useAudioContext: 'AudioProvider',
+  useTeyroLoader: 'TeyroLoaderProvider',
+};
 
 /** Where those providers are mounted. Terminal routes must live under this. */
 const GROUP_PREFIX = 'app/(app)/';
@@ -114,7 +130,9 @@ for (const hook of GUARDED_HOOKS) {
     for (const imp of importers.get(f) || []) stack.push(imp);
   }
 
-  const outside = [...routes].filter((r) => !r.startsWith(GROUP_PREFIX)).sort();
+  const provider = PROVIDER_OF[hook];
+  const mountsProvider = (r) => provider && new RegExp('<' + provider + '[\\s>]').test(src.get(path.join(ROOT, r)) ?? '');
+  const outside = [...routes].filter((r) => !r.startsWith(GROUP_PREFIX) && !mountsProvider(r)).sort();
   if (outside.length) {
     failed = true;
     report.push(`  ✗ ${hook} reaches ${outside.length} route(s) outside ${GROUP_PREFIX}:`);

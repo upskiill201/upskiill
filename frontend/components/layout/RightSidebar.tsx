@@ -9,7 +9,7 @@ import LeagueBadge from '@/components/leaderboard/LeagueBadge';
 import { getLeagueMeta, LeagueTier } from '@/lib/leagues';
 import { playHaptic } from '@/lib/haptics';
 import { fetcher } from '@/lib/swr';
-import { useComingSoon } from '@/components/layout/StudentShell';
+import { useComingSoon } from '@/components/layout/ComingSoon';
 import { useGamification } from '@/context/GamificationContext';
 import { useCelebration } from '@/context/CelebrationContext';
 import LearningStatsCard from '@/components/dashboard/v2/LearningStatsCard';
