@@ -96,8 +96,25 @@ export default function OnboardingV3() {
   const musicStarted = useRef(false);
 
   // ── Load (client only, so server and first client render agree) ─────────
+  // Arriving from a course page (/onboarding?course=<id>&slug=<slug>): that
+  // course is the answer to "I want to learn…", so that screen is skipped.
+  const preset = useRef<{ courseId: string; slug: string | null } | null>(null);
   useEffect(() => {
-    const loaded = loadV3();
+    const q = new URLSearchParams(window.location.search);
+    const courseId = q.get('course');
+    if (courseId && /^[0-9a-f-]{36}$/i.test(courseId)) {
+      const slug = q.get('slug');
+      preset.current = { courseId, slug: slug && /^[a-z0-9-]{1,120}$/i.test(slug) ? slug : null };
+      window.history.replaceState(null, '', '/onboarding');
+    }
+    let loaded = loadV3();
+    // Only a learner who hasn't picked a course yet takes the preset.
+    if (preset.current && STEP_INDEX[loaded.step] <= STEP_INDEX.learn) {
+      loaded = { ...loaded, answers: { ...loaded.answers, courseId: preset.current.courseId } };
+      saveV3(loaded);
+    } else {
+      preset.current = null;
+    }
     setState(loaded);
     const away = Date.now() - new Date(loaded.lastSeen).getTime();
     if (STEP_INDEX[loaded.step] > STEP_INDEX.intro && !loaded.completedAt && away > 5 * 60 * 1000) {
@@ -133,6 +150,24 @@ export default function OnboardingV3() {
       .then(setCatalog)
       .catch(() => setCatalogError(true));
   }, [state, catalog, catalogError]);
+
+  // The preset course: skip "I want to learn…" once the catalog confirms it;
+  // a course that isn't onboarding-ready goes to the plain sign-up instead.
+  useEffect(() => {
+    const p = preset.current;
+    if (!p || !catalog || !state) return;
+    const c = catalog.find((x) => x.id === p.courseId);
+    if (!c) {
+      preset.current = null;
+      router.replace(p.slug ? `/signup?course=${encodeURIComponent(p.slug)}` : '/signup');
+      return;
+    }
+    if (step !== 'learn') return;
+    preset.current = null;
+    update((s) => ({ ...s, answers: { ...s.answers, courseId: c.id, category: c.category } }));
+    go(nextOf('learn', state.answers.path));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [catalog, step, state?.anonymousId]);
 
   // Analytics: one VIEW per screen.
   useEffect(() => {

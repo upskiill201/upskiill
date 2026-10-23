@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { RotateCcw } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { LessonPlayer } from '@/components/lesson/LessonPlayer';
 import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
 import { takePrefetchedLesson } from '@/lib/path/lessonPrefetch';
@@ -141,6 +141,12 @@ export function LessonHost({
             toPaywall((denied as { reason?: unknown } | null)?.reason);
             return;
           }
+          // Fail closed: the server must say yes before a lesson opens (the
+          // free daily limit and hearts are decided there, not here).
+          if (!started || !started.ok) {
+            setState({ kind: 'error', message: 'Could not open the lesson — check your connection and try again.' });
+            return;
+          }
         }
 
         setState({ kind: 'open', lesson: normalizeLesson(body as Record<string, unknown>) });
@@ -165,6 +171,7 @@ export function LessonHost({
     }
     if (adminReviewMode) {
       startedRef.current = true;
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- open() is the fetch; it runs once (startedRef)
       void open(lessonId);
       return;
     }
@@ -213,7 +220,7 @@ export function LessonHost({
               }}
               className="inline-flex items-center gap-2 rounded-[10px] bg-[var(--brand-blue)] px-5 py-3 text-[15px] font-extrabold text-white"
             >
-              <RotateCcw size={16} strokeWidth={3} aria-hidden="true" /> Try again
+              <Glyph name="refresh" size={16} strokeWidth={3} /> Try again
             </button>
           )}
           <button

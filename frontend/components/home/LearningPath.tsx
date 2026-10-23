@@ -25,7 +25,6 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Art } from '@/components/art/Art';
 import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -57,7 +56,7 @@ import { useHydrated } from '@/components/studio/useHydrated';
 import { buildUnlockHref } from '@/lib/return-to';
 import { courseHomeHref } from '@/lib/homeCourse';
 import { prefetchLesson } from '@/lib/path/lessonPrefetch';
-import { hasPlacementTest, jumpHref, placementHref } from '@/lib/path/testOut';
+import { jumpHref } from '@/lib/path/testOut';
 import { lessonHref, preloadCourse, type LearningPath as LearningPathData } from '@/hooks/useCourse';
 
 /** How far the road swings left/right, in px, at full amplitude. */
@@ -384,18 +383,7 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
 
   return (
     <div ref={rootRef} className="relative w-full pb-10">
-      {/* Placement needs a chapter to place into: shown once the course has two or more. */}
-      {hasPlacementTest(path.original?.trackSlug) &&
-        model.units.length >= 2 &&
-        path.completedLessons.length === 0 &&
-        (path.testedOutLessons ?? []).length === 0 && (
-          <PlacementCard
-            onStart={() => {
-              playHaptic('medium', false);
-              router.push(placementHref(courseId));
-            }}
-          />
-        )}
+      {/* "Already know some of this?" lives in home's Start here card (FirstLessonCard). */}
       <div className={styles.board}>
       {lands.map(({ unit, land, prevLand, layout, walked, tey, keepouts, reached }, unitIdx) => (
         <section
@@ -634,32 +622,6 @@ const LAND_ICON: Record<LandId, GlyphName> = {
   snow: 'mountainSnow',
   summit: 'flag',
 };
-
-/** Python and other placement courses: "already know some of this?" before the first lesson. */
-function PlacementCard({ onStart }: { onStart: () => void }) {
-  return (
-    <div className="px-3 pt-3">
-      <div
-        className="rounded-[18px] border-2 px-4 py-3.5 md:px-5 md:py-4 flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-3"
-        style={{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-card)' }}
-      >
-        <Art name="compass" size={48} className="shrink-0" />
-        <div className="flex-1 min-w-[160px]">
-          <p className="text-[16px] md:text-[17px] font-extrabold text-ink leading-tight">Already know some of this?</p>
-          <p className="text-[14px] font-semibold text-ink-soft leading-snug">Take a short test and start at your level.</p>
-        </div>
-        <button
-          type="button"
-          onClick={onStart}
-          className="w-full md:w-auto shrink-0 rounded-xl px-3.5 py-2.5 md:py-2 text-[14px] font-extrabold uppercase tracking-wide text-white transition-transform active:scale-[0.98]"
-          style={{ backgroundColor: 'var(--color-brand)', boxShadow: '0 3px 0 var(--color-brand-dark)' }}
-        >
-          Find my level
-        </button>
-      </div>
-    </div>
-  );
-}
 
 function UnitBanner({
   unit,
