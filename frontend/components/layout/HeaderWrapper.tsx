@@ -1,28 +1,16 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import Header from '../Header';
 import WaitlistHeader from './WaitlistHeader';
-import OnboardingHeader from './OnboardingHeader';
 
-const SEO_SECTIONS = ['/features', '/for', '/alternatives', '/teach', '/courses', '/learn-online', '/learn-coding', '/learn-ai'];
-
-function isSeoSection(pathname: string | null) {
-  return SEO_SECTIONS.some((s) => pathname === s || pathname?.startsWith(`${s}/`));
-}
-
+/**
+ * One header for the whole site: the Tey header (WaitlistHeader), on the
+ * homepage, SEO sections, blog, legal, cart, certificates, the 404 and every
+ * other public page. The app, auth screens, onboarding, Studio and Teyro HQ
+ * have their own chrome and show none. The old marketplace Header is retired.
+ */
 export default function HeaderWrapper() {
   const pathname = usePathname();
-
-  // Waitlist routes: show the dedicated WaitlistHeader
-  const isWaitlistRoute =
-    pathname === '/' ||
-    pathname === '/terms' ||
-    pathname === '/privacy' ||
-    pathname === '/teach' ||
-    pathname?.startsWith('/blog') ||
-    // SEO sections (features, use cases, comparisons) share the homepage chrome
-    isSeoSection(pathname);
 
   // Routes that show NO header at all
   const isHiddenRoute =
@@ -58,10 +46,5 @@ export default function HeaderWrapper() {
     return null;
   }
 
-  if (isWaitlistRoute) {
-    return <WaitlistHeader />;
-  }
-
-  // Fallback: the main global Header for the rest of the application
-  return <Header />;
+  return <WaitlistHeader />;
 }
