@@ -39,6 +39,9 @@ export const CODE_LANGUAGES = [
 ] as const;
 export type CodeLanguage = (typeof CODE_LANGUAGES)[number];
 
+/** Languages the in-browser code runner can run (lib/code): Python (Pyodide) and SQL (SQLite via sql.js). */
+export type RunLanguage = 'python' | 'sql';
+
 export const CODE_LANGUAGE_LABEL: Record<CodeLanguage, string> = {
   javascript: 'JavaScript',
   typescript: 'TypeScript',
@@ -132,7 +135,7 @@ export type LearnCard =
 // to be finished before Continue.
 
 /** The shared Originals cast (docs/originals/CAST.md). */
-export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'yaw'] as const;
+export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'yaw', 'juno', 'walt', 'leo', 'dana'] as const;
 export type CastId = (typeof CAST_IDS)[number];
 export const CAST_NAMES: Record<CastId, string> = {
   ada: 'Ada',
@@ -171,6 +174,10 @@ export const CAST_NAMES: Record<CastId, string> = {
   folake: 'Folake',
   emmanuel: 'Emmanuel',
   yaw: 'Yaw',
+  juno: 'Juno',
+  walt: 'Walt',
+  leo: 'Leo',
+  dana: 'Dana',
 };
 
 /** Who says a story line: the narrator (Tey's voice-over), Tey, or a cast member. */
@@ -222,6 +229,8 @@ export type RichLearnCard =
    */
   | (CardBase & {
       kind: 'tryIt';
+      /** Python unless it says SQL. */
+      language?: RunLanguage;
       title?: string;
       code: string;
       caption?: string;
@@ -229,6 +238,8 @@ export type RichLearnCard =
       stdin?: string[];
       /** Meant to fail (an errors lesson): done on any run, error or not. */
       expectError?: boolean;
+      /** SQL: the practice database the code runs against (public/sql/db); empty when absent. */
+      database?: string;
     });
 
 export type RichLearnCardKind = RichLearnCard['kind'];
@@ -379,7 +390,9 @@ export interface CodeCheck {
  */
 export interface WriteCodeExercise extends ExerciseBase {
   kind: 'writeCode';
-  language: 'python';
+  language: RunLanguage;
+  /** SQL: the practice database the code runs against (public/sql/db); empty when absent. */
+  database?: string;
   /** What the editor starts with (may be empty). */
   starter: string;
   solution: string;

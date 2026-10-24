@@ -90,6 +90,7 @@
     "prisma": "^5.22.0",
     "pyodide": "0.26.4",
     "source-map-support": "^0.5.21",
+    "sql.js": "1.14.1",
     "supertest": "^7.0.0",
     "ts-jest": "^29.4.11",
     "ts-loader": "^9.5.2",

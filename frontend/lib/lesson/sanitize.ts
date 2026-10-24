@@ -131,6 +131,8 @@ function parseRichCard(c: any, cid: string): RichLearnCard | null {
       return {
         id: cid,
         kind: 'tryIt',
+        ...(c.language === 'sql' ? { language: 'sql' as const } : {}),
+        ...(typeof c.database === 'string' ? { database: str(c.database, 40) } : {}),
         title: optStr(c.title, 200),
         code: str(c.code, LIMITS.codeChars),
         caption: optStr(c.caption, 300),
@@ -301,7 +303,8 @@ export function parseExercise(e: any, i: number): Exercise | null {
       return {
         ...base,
         kind: 'writeCode',
-        language: 'python',
+        language: e.language === 'sql' ? 'sql' : 'python',
+        ...(typeof e.database === 'string' ? { database: str(e.database, 40) } : {}),
         starter: str(e.starter, LIMITS.codeChars),
         solution: str(e.solution, LIMITS.codeChars),
         hint: optStr(e.hint, 600),
