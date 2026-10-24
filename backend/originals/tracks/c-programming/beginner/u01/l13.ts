@@ -4,7 +4,7 @@ import type { OriginalLesson } from '../../../../../src/originals/originals-auth
 const lesson: OriginalLesson = {
   key: 'l13',
   title: 'Spaces, indents and style',
-  summary: 'Sol 2, 06:15. Mateus "saves space" by writing a whole program on one line. It compiles. Nobody, including Mateus, can read it an hour later.',
+  summary: 'Sol 1, 22:05. Mateus "saves space" by writing a whole program on one line. It compiles. Nobody, including Mateus, can read it an hour later.',
   minutes: 10,
   outcomes: [
     'Explain that C ignores extra spaces and line breaks between code',
@@ -44,7 +44,7 @@ const lesson: OriginalLesson = {
     },
   ],
   apply: {
-    scenario: 'Sol 2, 06:15. Untangling Mateus\'s line.',
+    scenario: 'Sol 1, 22:05. Untangling Mateus\'s line.',
     items: [
       {
         kind: 'mcq',

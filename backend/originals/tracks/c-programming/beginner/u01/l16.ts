@@ -4,7 +4,7 @@ import type { OriginalLesson } from '../../../../../src/originals/originals-auth
 const lesson: OriginalLesson = {
   key: 'l16',
   title: 'return 0 and exit codes',
-  summary: 'Sol 2, 09:10. Lars\'s note in the HABCON printout: "Startup script checks the exit code. Not 0 = do not open the airlock." What is an exit code, and who reads it?',
+  summary: 'Sol 1, 23:05. Lars\'s note in the HABCON printout: "Startup script checks the exit code. Not 0 = do not open the airlock." What is an exit code, and who reads it?',
   minutes: 10,
   outcomes: [
     'Explain what return 0 tells the system',
@@ -31,7 +31,7 @@ const lesson: OriginalLesson = {
     },
   ],
   apply: {
-    scenario: 'Sol 2, 09:10. Lars\'s airlock check.',
+    scenario: 'Sol 1, 23:05. Lars\'s airlock check.',
     items: [
       {
         kind: 'mcq',

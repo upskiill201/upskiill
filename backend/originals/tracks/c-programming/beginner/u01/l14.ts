@@ -4,7 +4,7 @@ import type { OriginalLesson } from '../../../../../src/originals/originals-auth
 const lesson: OriginalLesson = {
   key: 'l14',
   title: 'Printing numbers with %d',
-  summary: 'Sol 2, 07:30. Tomoko counts 48 tomato plants and 12 lettuce trays, and wants the board to add them up. printf can do sums, if you give it a place to put the answer.',
+  summary: 'Sol 1, 22:30. Under the grow lights, Tomoko counts 48 tomato plants and 12 lettuce trays, and wants the board to add them up. printf can do sums, if you give it a place to put the answer.',
   minutes: 11,
   outcomes: [
     'Print a whole number with %d',
@@ -36,7 +36,7 @@ const lesson: OriginalLesson = {
     },
   ],
   apply: {
-    scenario: 'Sol 2, 07:30. Counting in the GreenHab.',
+    scenario: 'Sol 1, 22:30. Counting in the GreenHab.',
     items: [
       {
         kind: 'mcq',

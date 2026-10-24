@@ -4,14 +4,14 @@ import type { OriginalLesson } from '../../../../../src/originals/originals-auth
 const lesson: OriginalLesson = {
   key: 'l15',
   title: 'Checkpoint: The banner',
-  summary: 'Sol 2, 08:00. Morning briefing. Hal wants a banner on the console every morning: station, sol, crew count, plant count. Tidy, commented, and with the board doing the counting.',
+  summary: 'Sol 1, 22:50. Last briefing of a long day. From tomorrow, Hal wants a banner on the console every morning: station, sol, crew count, plant count. Tidy, commented, and with the board doing the counting.',
   minutes: 12,
   milestone: 'CHECKPOINT',
   outcomes: ['Combine printf, puts and %d in one tidy program', 'Comment code and switch lines off'],
   learn: [
     {
       kind: 'story',
-      title: 'Sol 2, 08:00',
+      title: 'Sol 1, 22:50',
       beats: [
         { speaker: 'hal', text: 'Every morning, same banner, same order. Station, sol, crew, plants. I read it with my coffee.' },
         { speaker: 'tomoko', text: '48 tomatoes, 12 lettuce trays. Let the board add them.' },

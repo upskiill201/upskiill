@@ -4,7 +4,7 @@ import type { OriginalLesson } from '../../../../../src/originals/originals-auth
 const lesson: OriginalLesson = {
   key: 'l19',
   title: 'The status board',
-  summary: 'Sol 2, 14:00. Ines builds the screen the crew will see every hour until the new board arrives: a title, a lined-up table, sums done by the board, and comments for whoever comes next.',
+  summary: 'Sol 1, 23:40. Before she sleeps, Ines builds the screen the crew will see every hour from tomorrow until the new board arrives: a title, a lined-up table, sums done by the board, and comments for whoever comes next.',
   minutes: 13,
   outcomes: [
     'Plan a program before writing it',
@@ -57,7 +57,7 @@ const lesson: OriginalLesson = {
     },
   ],
   apply: {
-    scenario: 'Sol 2, 14:00. The status board.',
+    scenario: 'Sol 1, 23:40. The status board.',
     items: [
       {
         kind: 'mcq',

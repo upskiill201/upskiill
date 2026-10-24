@@ -4,7 +4,7 @@ import type { OriginalLesson } from '../../../../../src/originals/originals-auth
 const lesson: OriginalLesson = {
   key: 'l20',
   title: 'Unit Challenge: First email to Lars',
-  summary: 'Sol 2, 19:00. The email window opens. Lars has sent a test: a broken HABCON program, "fix it before you ask me anything". Then Ines sends her first report from the backup board.',
+  summary: 'Sol 1, 23:50. Lars\'s email had an attachment Ines hasn\'t opened yet: a broken HABCON program, "fix it before you ask me anything". Then she writes her first report, to send in tomorrow\'s email window.',
   minutes: 15,
   milestone: 'UNIT_CHALLENGE',
   outcomes: [
@@ -15,16 +15,16 @@ const lesson: OriginalLesson = {
   learn: [
     {
       kind: 'story',
-      title: 'Sol 2, 19:00. Mission Support',
+      title: 'Sol 1, 23:50. The attachment',
       beats: [
-        { speaker: 'narrator', text: 'The email window opens for twenty minutes. One message from Tromsø, Norway.' },
+        { speaker: 'narrator', text: 'Ten minutes to midnight. Ines finally opens the attachment on Lars\'s email from Tromsø, Norway.' },
         { speaker: 'lars', text: 'Hal says you are an electrician. Good. Electricians check everything twice. Attached: HABCON\'s old boot screen. I broke it in four places. Fix it, then send me your report. Then we talk.' },
         { speaker: 'ines', text: 'He broke it on purpose?' },
         { speaker: 'hal', text: 'That\'s Lars. He did the same to me in 1998. Took me a week.' },
-        { speaker: 'tomoko', text: 'You have twenty minutes.' },
+        { speaker: 'tomoko', text: 'The email window opens at 19:00 tomorrow. You have time. Barely.' },
       ],
       choice: {
-        prompt: 'Four errors, twenty minutes. How does Ines attack it?',
+        prompt: 'Four errors, and she\'s exhausted. How does Ines attack it?',
         options: [
           { text: 'Run it, fix the first error the compiler shows, run again. Repeat.', outcome: 'The calm way, and the fast way. Each run shows the next real problem.', best: true },
           { text: 'Read all forty lines and guess where the four errors are.', outcome: 'Possible, but slow. The compiler already knows where they are.' },
@@ -111,7 +111,7 @@ const lesson: OriginalLesson = {
       {
         kind: 'chatReply',
         from: 'lars',
-        message: 'Fixed in 9 minutes. Acceptable. What was the hardest one?',
+        message: 'Sol 2 email. You fixed it before midnight. Acceptable. What was the hardest one?',
         prompt: 'Ines\'s best reply?',
         options: [
           { text: 'The ; after #include. The message said something extra after the header name, and I didn\'t believe it at first.' },

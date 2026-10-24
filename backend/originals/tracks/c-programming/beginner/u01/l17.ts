@@ -4,7 +4,7 @@ import type { OriginalLesson } from '../../../../../src/originals/originals-auth
 const lesson: OriginalLesson = {
   key: 'l17',
   title: 'Headers and #include',
-  summary: 'Sol 2, 10:40. Mateus deletes the "boring" first line of a program. Suddenly C has never heard of printf. What was that line doing?',
+  summary: 'Sol 1, 23:20. Mateus deletes the "boring" first line of a program. Suddenly C has never heard of printf. What was that line doing?',
   minutes: 11,
   outcomes: [
     'Explain what a header is and what #include does',
@@ -27,7 +27,7 @@ const lesson: OriginalLesson = {
     },
   ],
   apply: {
-    scenario: 'Sol 2, 10:40. The line Mateus deleted.',
+    scenario: 'Sol 1, 23:20. The line Mateus deleted.',
     items: [
       {
         kind: 'mcq',

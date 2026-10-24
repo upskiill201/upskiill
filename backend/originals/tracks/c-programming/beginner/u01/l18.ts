@@ -4,7 +4,7 @@ import type { OriginalLesson } from '../../../../../src/originals/originals-auth
 const lesson: OriginalLesson = {
   key: 'l18',
   title: 'Typos C won\'t forgive',
-  summary: 'Sol 2, 12:00. Ines types Printf with a capital P out of habit. Her phone would have fixed it. C won\'t. Which mistakes does C let slide, and which does it never?',
+  summary: 'Sol 1, 23:30. Ines types Printf with a capital P out of habit. Her phone would have fixed it. C won\'t. Which mistakes does C let slide, and which does it never?',
   minutes: 10,
   outcomes: [
     'Explain that C is case-sensitive',
@@ -36,7 +36,7 @@ const lesson: OriginalLesson = {
     },
   ],
   apply: {
-    scenario: 'Sol 2, 12:00. Hunting typos.',
+    scenario: 'Sol 1, 23:30. Hunting typos.',
     items: [
       {
         kind: 'mcq',
