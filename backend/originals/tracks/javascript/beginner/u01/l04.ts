@@ -60,8 +60,8 @@ const lesson: OriginalLesson = {
       {
         kind: 'fillBlank',
         prompt: 'Finish the template literal.',
-        template: 'console.log([[1]]Trails open: [[2]]openTrails}[[3]]);',
-        blanks: [['`'], ['${'], ['`']],
+        template: 'console.log([[1]]Trails open: [[2]]openTrails}`);',
+        blanks: [['`'], ['${']],
         distractors: ['"', '{', '$('],
         language: 'javascript',
       },

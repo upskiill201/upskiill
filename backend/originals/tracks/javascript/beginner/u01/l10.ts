@@ -83,8 +83,8 @@ const lesson: OriginalLesson = {
       {
         kind: 'fillBlank',
         prompt: 'Finish the senior line.',
-        template: '[[1]] seniorPrice = 29;\nconsole.log([[2]]Seniors 70+: $${seniorPrice}[[3]]);',
-        blanks: [['const'], ['`'], ['`']],
+        template: '[[1]] seniorPrice = 29;\nconsole.log([[2]]Seniors 70+: $${seniorPrice}`);',
+        blanks: [['const'], ['`']],
         distractors: ['let seniorPrice', '"', 'var'],
         language: 'javascript',
       },
