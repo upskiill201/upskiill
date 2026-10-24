@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A rented GPU costs $1.50 an hour. What does a 30-day month cost if it runs all the time?',
         options: [
-          { text: '$1,080' },
           { text: '$45', why: 'That\'s 30 hours. A month is 24 x 30 = 720 hours.' },
+          { text: '$1,080' },
           { text: '$1.50', why: 'That\'s one hour.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the lesson say the prices are "practice numbers"?',
         options: [
-          { text: 'Real prices change often, so you check them on the day you decide' },
           { text: 'Real AI is free', why: 'Real AI charges per token or per hour.' },
+          { text: 'Real prices change often, so you check them on the day you decide' },
           { text: 'The maths is different for real prices', why: 'The maths is the same. Only the numbers change.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

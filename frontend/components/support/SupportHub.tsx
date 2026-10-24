@@ -13,7 +13,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
-import { Bug, ChevronRight, LifeBuoy, Lightbulb, MessageSquareHeart, RotateCw, type LucideIcon } from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import Accordion from '@/components/ui/Accordion';
 import { TEY_POSE_SRC } from '@/components/lesson/TeySays';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -32,33 +32,33 @@ import {
 import { SupportComposer, type ComposerIntent } from './SupportComposer';
 import u from './support.module.css';
 
-const ACTIONS: { intent: ComposerIntent; label: string; sub: Record<SupportAudience, string>; icon: LucideIcon; tone: string }[] = [
+const ACTIONS: { intent: ComposerIntent; label: string; sub: Record<SupportAudience, string>; icon: GlyphName; tone: string }[] = [
   {
     intent: 'FEEDBACK',
     label: 'Share feedback',
     sub: { LEARNER: 'Tell us how Teyro feels', CREATOR: 'Tell us how the Studio feels' },
-    icon: MessageSquareHeart,
+    icon: 'bubble',
     tone: 'var(--brand-purple)',
   },
   {
     intent: 'IDEA',
     label: 'Suggest an idea',
     sub: { LEARNER: 'A feature or course you want', CREATOR: 'A tool that would help you teach' },
-    icon: Lightbulb,
+    icon: 'bulb',
     tone: 'var(--warning)',
   },
   {
     intent: 'BUG',
     label: 'Report a problem',
     sub: { LEARNER: 'Something isn’t working', CREATOR: 'Something in the Studio broke' },
-    icon: Bug,
+    icon: 'bug',
     tone: 'var(--error-red)',
   },
   {
     intent: 'HELP',
     label: 'Ask for help',
     sub: { LEARNER: 'Lessons, payments, your account', CREATOR: 'Review, payouts, the Studio' },
-    icon: LifeBuoy,
+    icon: 'lifebuoy',
     tone: 'var(--color-brand)',
   },
 ];
@@ -118,7 +118,7 @@ export function SupportHub({
 
       <div className={u.actions}>
         {ACTIONS.map((a, i) => {
-          const Icon = a.icon;
+          const glyph = a.icon;
           return (
             <button
               key={a.intent}
@@ -131,13 +131,13 @@ export function SupportHub({
               }}
             >
               <span className={u.actionIcon} aria-hidden="true">
-                <Icon size={26} strokeWidth={2.4} />
+                <Glyph name={glyph} size={26} strokeWidth={2.4} />
               </span>
               <span className={u.actionText}>
                 <strong>{a.label}</strong>
                 <span>{a.sub[audience]}</span>
               </span>
-              <ChevronRight size={20} className={u.actionArrow} aria-hidden="true" />
+              <Glyph name="chevron" size={20} className={u.actionArrow} />
             </button>
           );
         })}
@@ -153,7 +153,7 @@ export function SupportHub({
           <div className={u.errorBox} role="alert">
             <span>Your conversations didn’t load.</span>
             <button type="button" className={u.btnGhostSm} onClick={() => void list.mutate()}>
-              <RotateCw size={14} aria-hidden="true" /> Try again
+              <Glyph name="refresh" size={14} /> Try again
             </button>
           </div>
         ) : !tickets ? (

@@ -128,4 +128,12 @@ export const swrConfig: SWRConfiguration = {
   keepPreviousData: true,
   shouldRetryOnError: true,
   errorRetryCount: 2,
+  // A 401/403 won't fix itself on a retry: signed-out screens (onboarding,
+  // until "save your progress") were sending every authed key three times.
+  onErrorRetry: (error, _key, config, revalidate, { retryCount }) => {
+    const status = (error as { status?: number }).status;
+    if (status === 401 || status === 403) return;
+    if (retryCount >= (config.errorRetryCount ?? 2)) return;
+    setTimeout(() => revalidate({ retryCount }), 5000 * 2 ** retryCount);
+  },
 };

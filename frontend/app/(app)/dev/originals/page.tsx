@@ -15,7 +15,7 @@
  * anywhere; 404 outside development.
  */
 
-import { List, Map as MapIcon, Medal, Play, Trophy } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { notFound } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { LearningPath } from '@/components/home/LearningPath';
@@ -188,7 +188,7 @@ export default function OriginalsBench() {
                 color: view === v ? 'var(--color-brand)' : 'var(--color-ink)',
               }}
             >
-              {v === 'map' ? <MapIcon className="w-4 h-4" aria-hidden="true" /> : <List className="w-4 h-4" aria-hidden="true" />}
+              {v === 'map' ? <Glyph name="map" className="w-4 h-4" /> : <Glyph name="list" className="w-4 h-4" />}
               {v === 'map' ? 'Home map' : 'Lesson list'}
             </button>
           ))}
@@ -251,13 +251,13 @@ export default function OriginalsBench() {
                     <span className="flex-1 min-w-0">
                       <span className="block text-[16px] font-extrabold text-ink truncate">{lesson.title}</span>
                       <span className="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--text-secondary)]">
-                        {lesson.milestone === 'UNIT_CHALLENGE' && <Trophy className="w-3.5 h-3.5" aria-hidden="true" />}
-                        {lesson.milestone === 'CHECKPOINT' && <Medal className="w-3.5 h-3.5" aria-hidden="true" />}
+                        {lesson.milestone === 'UNIT_CHALLENGE' && <Glyph name="trophy" className="w-3.5 h-3.5" />}
+                        {lesson.milestone === 'CHECKPOINT' && <Glyph name="medal" className="w-3.5 h-3.5" />}
                         {lesson.milestone ? `${MILESTONE_LABEL[lesson.milestone]} · ` : ''}
                         {lesson.durationMinutes} min · {lesson.xpReward} XP
                       </span>
                     </span>
-                    <Play className="w-5 h-5 text-[var(--color-brand)]" aria-hidden="true" />
+                    <Glyph name="play" className="w-5 h-5 text-[var(--color-brand)]" />
                   </button>
                 </li>
               ))}

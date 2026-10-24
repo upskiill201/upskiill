@@ -71,10 +71,9 @@ const baloo2 = Baloo_2({
  * celebration rather than stacking a second full-page takeover, and
  * RewardAnimation/Herald/Streak sit inside Gamification because they read it.
  *
- * CartProvider, SWRProvider, PostHog, the service worker registrar and the
+ * SWRProvider, PostHog, the service worker registrar and the
  * push *navigation* listener stay in the root layout: they are needed on public
- * routes too (Header and CourseCard call useCart, which throws without its
- * provider, and a notification tap must route from whatever page is open).
+ * routes too (a notification tap must route from whatever page is open).
  */
 export default function AppGroupLayout({
   children,

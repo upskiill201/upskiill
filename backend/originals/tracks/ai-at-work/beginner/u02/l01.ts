@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         message: "I need to write a thank-you note to our whole team for the launch and I'm totally blocked. Any tricks?",
         prompt: 'What should Ada suggest?',
         options: [
-          { text: 'Dump what you want to thank them for in bullets, messy is fine, then ask the AI to shape it. Then edit.' },
           { text: 'Ask the AI to write a thank-you note.', why: 'It does not know what the team did. It will be generic.' },
+          { text: 'Dump what you want to thank them for in bullets, messy is fine, then ask the AI to shape it. Then edit.' },
           { text: 'Wait until you feel inspired.', why: 'The brain dump removes the need to wait.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -190,11 +190,11 @@ const lesson: OriginalLesson = {
         message: 'I tried your trick! The AI draft was nice but it said our launch was "a huge success". We launched yesterday, we have no data yet.',
         prompt: 'What should Ada say?',
         options: [
-          { text: "That's the editing step: change it to what you actually know, like 'went live yesterday, first results next week'." },
           { text: 'Leave it, it sounds nice.', why: 'It is an unsupported claim. Edit it.' },
           { text: 'Ask the AI to prove it.', why: 'It cannot. You know the facts; fix the line.' },
+          { text: "That's the editing step: change it to what you actually know, like 'went live yesterday, first results next week'." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -215,11 +215,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The AI draft is 90% right. What is the fastest good move?',
         options: [
-          { text: 'Fix the 10% yourself and send' },
           { text: 'Rewrite everything from scratch', why: 'Throws away the useful 90%.' },
+          { text: 'Fix the 10% yourself and send' },
           { text: 'Send it unchanged', why: 'The 10% may be a wrong fact.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

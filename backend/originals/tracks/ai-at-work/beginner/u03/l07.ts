@@ -145,11 +145,11 @@ const lesson: OriginalLesson = {
         message: "What's 'Project Falcon'? Your developers mention it constantly.",
         prompt: 'Why is this one Ada should ask a colleague about?',
         options: [
-          { text: "It's an internal name. The AI has never seen it, so it would just guess." },
           { text: 'The AI knows all project names.', why: 'Internal names are not in its training.' },
+          { text: "It's an internal name. The AI has never seen it, so it would just guess." },
           { text: 'It is about birds.', why: 'A guess, exactly the problem.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -170,11 +170,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is nodding along so costly?',
         options: [
-          { text: 'Small misunderstandings grow into wrong work later' },
           { text: 'It is not; nobody notices', why: 'It shows up in the work.' },
           { text: 'It is rude', why: 'The real cost is misunderstanding.' },
+          { text: 'Small misunderstandings grow into wrong work later' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

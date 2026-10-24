@@ -7,7 +7,7 @@
  */
 
 import Link from 'next/link';
-import { Award, RotateCcw } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/swr';
 import { type Certificate, certificateImagePath, formatCertificateDate, verifyPath } from '@/lib/certificates/types';
@@ -37,7 +37,7 @@ export default function CertificatesShelf() {
             onClick={() => void mutate()}
             className="inline-flex items-center gap-2 rounded-[10px] border border-[var(--border)] px-3 py-2 text-[14px] font-bold"
           >
-            <RotateCcw size={16} /> Try again
+            <Glyph name="refresh" size={16} /> Try again
           </button>
         </div>
       )}
@@ -45,7 +45,7 @@ export default function CertificatesShelf() {
       {data && data.length === 0 && (
         <div className="mt-3 flex items-center gap-4 rounded-[12px] border border-dashed border-[var(--border-strong)] bg-[var(--bg-card)] p-4">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--warning)_18%,transparent)] text-[var(--warning)]">
-            <Award size={24} strokeWidth={2.4} />
+            <Glyph name="medal" size={24} strokeWidth={2.4} />
           </span>
           <p className="text-[15px] font-bold text-[var(--text-secondary)]">
             Finish every lesson of a course to earn its certificate. It&apos;s yours to download, print and add to LinkedIn.

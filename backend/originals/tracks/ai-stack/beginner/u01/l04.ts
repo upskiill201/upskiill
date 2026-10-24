@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         message: 'It said 60 days so confidently. How was I meant to know?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'We can\'t tell from how it sounds. We have to give it our facts, and test it against answers we know.' },
           { text: 'Confident answers are always right.', why: 'It was confident and wrong.' },
           { text: 'Never use AI.', why: 'With the right facts in the prompt, it got it right.' },
+          { text: 'We can\'t tell from how it sounds. We have to give it our facts, and test it against answers we know.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -138,11 +138,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does context= do in model.reply(question, context=policies)?',
         options: [
-          { text: 'Puts the shop\'s facts into the prompt so the model can answer from them' },
           { text: 'Trains the model permanently', why: 'It only adds facts to this one prompt.' },
+          { text: 'Puts the shop\'s facts into the prompt so the model can answer from them' },
           { text: 'Makes the answer longer', why: 'It changes what the answer is based on.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

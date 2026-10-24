@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When is "ask me questions first" most useful?',
         options: [
-          { text: 'When you are not sure what context the task needs' },
           { text: 'For a 2-line reply you already know', why: 'You already know the context. Just give it.' },
+          { text: 'When you are not sure what context the task needs' },
           { text: 'Never, it wastes time', why: 'It often saves time by surfacing what you forgot.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         message: "Could your team write a short case study about our project? I'm not sure what it needs to include.",
         prompt: 'Which request should Ada start with?',
         options: [
-          { text: 'I need a short case study about our project with Lucía\'s company. Before writing, ask me up to 5 questions.' },
           { text: 'Write a case study about our project.', why: 'It will invent the results and the story.' },
           { text: 'Write a very long case study with everything.', why: 'Long and invented is worse.' },
+          { text: 'I need a short case study about our project with Lucía\'s company. Before writing, ask me up to 5 questions.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -158,11 +158,11 @@ const lesson: OriginalLesson = {
         message: "The AI asked me 15 questions before writing a 3-line email. That's too many!",
         prompt: 'What should Ada suggest?',
         options: [
-          { text: 'Add a limit: "ask me up to 3 questions", or just give it the context for short things.' },
           { text: 'Answer all 15.', why: 'Too slow for a 3-line email.' },
+          { text: 'Add a limit: "ask me up to 3 questions", or just give it the context for short things.' },
           { text: 'Never let it ask questions.', why: 'Useful for bigger tasks. Just add a limit.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -194,11 +194,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: "Ada's manager asks where \"about 2 weeks\" came from. Ada let the AI guess it. What should she say?",
         options: [
-          { text: '"It was a guess. I\'ll get a real estimate from the developers."' },
           { text: '"The AI calculated it."', why: 'It guessed. Saying otherwise damages trust.' },
           { text: '"Everyone knows it takes 2 weeks."', why: 'Nobody said that.' },
+          { text: '"It was a guess. I\'ll get a real estimate from the developers."' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

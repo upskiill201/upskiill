@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { Modal } from '@/components/ui/Modal';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
@@ -163,7 +163,7 @@ export default function EditProfileModal({ open, me, onClose, onSaved }: Props) 
         {error && <p className={styles.fieldError} role="alert">{error}</p>}
 
         <button type="button" className={styles.primaryBtn} disabled={!canSave} onClick={() => void save()}>
-          {saving && <Loader2 size={18} className="animate-spin" />}
+          {saving && <Glyph name="spinner" size={18} className="animate-spin" />}
           {saving ? 'Saving' : 'Save changes'}
         </button>
       </div>

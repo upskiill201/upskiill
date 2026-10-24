@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "Let\'s take a step back and look at the big picture" odd at 4:00 and five seconds?',
         options: [
-          { text: 'There\'s nothing to step back from yet: it\'s for steering a meeting that\'s lost' },
           { text: 'It\'s rude to say in a stand-up', why: 'Not rude, just in the wrong place.' },
+          { text: 'There\'s nothing to step back from yet: it\'s for steering a meeting that\'s lost' },
           { text: 'Stand-ups don\'t allow steering', why: 'They do, if they go off track. This one hadn\'t started.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

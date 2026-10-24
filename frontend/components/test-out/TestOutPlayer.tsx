@@ -15,7 +15,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Compass, Rocket, RotateCcw, Trophy, X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { ExerciseStep } from '@/components/lesson/exercises/ExerciseStep';
 import { LessonFooter, type FooterVerdict } from '@/components/lesson/LessonFooter';
 import { LessonButton } from '@/components/lesson/LessonButton';
@@ -49,11 +49,15 @@ export interface TestOutPlayerProps {
   onFinish: (outcome: TestOutOutcome) => Promise<void>;
   /** After a saved result: go to the chapter (or the course start). */
   onContinue: (outcome: TestOutOutcome) => void;
+  /** Skip the intro: the host already introduced the test (onboarding). */
+  skipIntro?: boolean;
+  /** Overrides the result screen's button ("Continue" in onboarding). */
+  continueLabel?: string;
 }
 
 type Stage = 'intro' | 'question' | 'saving' | 'result';
 
-export function TestOutPlayer({ test, heading, onExit, onFinish, onContinue }: TestOutPlayerProps) {
+export function TestOutPlayer({ test, heading, onExit, onFinish, onContinue, skipIntro = false, continueLabel }: TestOutPlayerProps) {
   const reducedMotion = useReducedMotion();
   const placement = test.mode === 'placement';
 
@@ -64,7 +68,7 @@ export function TestOutPlayer({ test, heading, onExit, onFinish, onContinue }: T
   );
   const totalPlanned = chapters.reduce((n, c) => n + c.exercises.length, 0);
 
-  const [stage, setStage] = useState<Stage>('intro');
+  const [stage, setStage] = useState<Stage>(skipIntro ? 'question' : 'intro');
   const [chapter, setChapter] = useState(0);
   const [pos, setPos] = useState(0);
   const [response, setResponse] = useState<ExerciseResponse | null>(null);
@@ -170,7 +174,7 @@ export function TestOutPlayer({ test, heading, onExit, onFinish, onContinue }: T
           aria-label="Close test"
           className="w-10 h-10 rounded-full flex items-center justify-center text-ink-soft hover:bg-[var(--bg-section)]"
         >
-          <X className="w-6 h-6 stroke-[2.75]" aria-hidden="true" />
+          <Glyph name="close" className="w-6 h-6 stroke-[2.75]" />
         </button>
         <div className="flex-1 h-4 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bg-section)' }}>
           <motion.div
@@ -266,7 +270,9 @@ export function TestOutPlayer({ test, heading, onExit, onFinish, onContinue }: T
               onClick={() => (test.mode === 'jump' && !outcome.passed ? onExit() : onContinue(outcome))}
               autoFocus
             >
-              {test.mode === 'jump'
+              {continueLabel
+                ? continueLabel
+                : test.mode === 'jump'
                 ? outcome.passed
                   ? `Start ${test.targetTitle || 'the chapter'}`
                   : 'Keep learning'
@@ -289,7 +295,7 @@ function Intro({ test, heading, questions }: { test: JumpTest | PlacementTest; h
     return (
       <div className="flex flex-col items-center text-center gap-5 pt-6">
         <span className="w-20 h-20 rounded-[24px] flex items-center justify-center" style={{ backgroundColor: 'var(--lesson-select-bg)' }}>
-          <Rocket className="w-10 h-10 stroke-[2.25]" style={{ color: 'var(--color-brand)' }} aria-hidden="true" />
+          <Glyph name="rocket" className="w-10 h-10 stroke-[2.25]" style={{ color: 'var(--color-brand)' }} />
         </span>
         <h1 className="text-[26px] md:text-[32px] font-extrabold leading-tight text-ink">Jump to {test.targetTitle || heading}</h1>
         <p className="text-[17px] font-semibold text-ink-soft max-w-[460px]">
@@ -306,7 +312,7 @@ function Intro({ test, heading, questions }: { test: JumpTest | PlacementTest; h
   return (
     <div className="flex flex-col items-center text-center gap-5 pt-6">
       <span className="w-20 h-20 rounded-[24px] flex items-center justify-center" style={{ backgroundColor: 'var(--lesson-select-bg)' }}>
-        <Compass className="w-10 h-10 stroke-[2.25]" style={{ color: 'var(--color-brand)' }} aria-hidden="true" />
+        <Glyph name="compass" className="w-10 h-10 stroke-[2.25]" style={{ color: 'var(--color-brand)' }} />
       </span>
       <h1 className="text-[26px] md:text-[32px] font-extrabold leading-tight text-ink">Find your level in {heading}</h1>
       <p className="text-[17px] font-semibold text-ink-soft max-w-[460px]">
@@ -345,9 +351,9 @@ function Result({
           style={{ backgroundColor: outcome.passed ? 'var(--lesson-correct-bg)' : 'var(--lesson-select-bg)' }}
         >
           {outcome.passed ? (
-            <Trophy className="w-10 h-10 stroke-[2.25]" style={{ color: 'var(--lesson-correct)' }} aria-hidden="true" />
+            <Glyph name="trophy" className="w-10 h-10 stroke-[2.25]" style={{ color: 'var(--lesson-correct)' }} />
           ) : (
-            <RotateCcw className="w-10 h-10 stroke-[2.25]" style={{ color: 'var(--color-brand)' }} aria-hidden="true" />
+            <Glyph name="refresh" className="w-10 h-10 stroke-[2.25]" style={{ color: 'var(--color-brand)' }} />
           )}
         </span>
         <h1 className="text-[26px] md:text-[32px] font-extrabold leading-tight text-ink">

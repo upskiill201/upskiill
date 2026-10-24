@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: "Why would I write notes when the AI writes better ones in 5 seconds?",
         prompt: 'What should Kofi say?',
         options: [
-          { text: "Because the notes aren't the point, the thinking is. If the AI writes them, the AI did the thinking." },
           { text: "You're right, let the AI do it.", why: 'Then he remembers nothing.' },
           { text: 'AI notes are always wrong.', why: 'Often they are good. That is not the problem.' },
+          { text: "Because the notes aren't the point, the thinking is. If the AI writes them, the AI did the thinking." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why are AI-made notes less useful even when they are better written?',
         options: [
-          { text: "You didn't do the thinking that makes things stick" },
           { text: 'They are too short', why: 'Length is not the issue.' },
+          { text: "You didn't do the thinking that makes things stick" },
           { text: 'They are against the rules', why: 'Not necessarily. They just teach you less.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

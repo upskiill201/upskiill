@@ -1,4 +1,4 @@
-import { Eye } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { formatInsightLine } from '@/lib/tey/analyticsVoice';
 import type { DashboardResponse } from '../types';
 
@@ -8,7 +8,7 @@ export function TeyInsights({ insights }: { insights: DashboardResponse['insight
   return (
     <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
       <div className="flex items-center gap-2 mb-3">
-        <Eye size={18} color="#0172FD" />
+        <Glyph name="eye" size={18} color="var(--color-brand)" />
         <h2 className="text-sm font-extrabold text-[#1F2A44]">What Tey Notices</h2>
       </div>
       <div className="flex flex-col gap-2.5">

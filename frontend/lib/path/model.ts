@@ -137,3 +137,33 @@ const WAVE = [0, 0.55, 0.9, 0.55, 0, -0.55, -0.9, -0.55];
 export function nodeOffset(indexInUnit: number): number {
   return WAVE[indexInUnit % WAVE.length];
 }
+
+/**
+ * The certificate at the end of the road (backend/src/certificate). Every
+ * course with published lessons issues one, and only for lessons really
+ * done: tested-out lessons never count, so they stay "to go" here too.
+ *
+ *  - far:    still before the final unit;
+ *  - close:  the next lesson is in the final unit, or only tested-out
+ *            lessons are left;
+ *  - earned: every lesson done — the server issues it on first ask.
+ */
+export type CertificateGoalState = 'far' | 'close' | 'earned';
+
+export interface CertificateGoal {
+  state: CertificateGoalState;
+  /** Lessons still to finish for the certificate. */
+  left: number;
+  /** Of those, how many were tested out (open, but not done). */
+  testedOutLeft: number;
+}
+
+export function certificateGoal(model: PathModel): CertificateGoal | null {
+  if (model.totalLessons === 0) return null;
+  const left = model.totalLessons - model.doneCount;
+  const testedOutLeft = model.units.reduce((n, u) => n + u.testedOutCount, 0);
+  if (left === 0) return { state: 'earned', left: 0, testedOutLeft: 0 };
+  const lastUnit = model.units[model.units.length - 1]?.unitNumber;
+  const close = !model.current || model.current.unitNumber === lastUnit;
+  return { state: close ? 'close' : 'far', left, testedOutLeft };
+}

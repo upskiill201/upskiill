@@ -9,7 +9,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import useSWR from 'swr';
-import { AlertCircle, Crown, MessagesSquare, Users } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Button from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import TeyMascot from '@/components/community/TeyMascot';
@@ -33,7 +33,7 @@ export default function CommunitiesPage() {
 
       {error && !data ? (
         <div className={shared.errorBanner}>
-          <AlertCircle size={28} />
+          <Glyph name="alert" size={28} />
           <span>Could not load your communities.</span>
           <Button variant="outline" onClick={() => void mutate()}>
             Try again
@@ -76,14 +76,14 @@ export default function CommunitiesPage() {
                 <h2 className={styles.name}>{c.name}</h2>
                 <p className={styles.meta}>
                   <span>
-                    <Users size={14} strokeWidth={2.5} /> {formatCount(c.memberCount)}
+                    <Glyph name="users" size={14} strokeWidth={2.5} /> {formatCount(c.memberCount)}
                   </span>
                   <span>
-                    <MessagesSquare size={14} strokeWidth={2.5} /> {formatCount(c.totalPosts)} posts
+                    <Glyph name="bubble" size={14} strokeWidth={2.5} /> {formatCount(c.totalPosts)} posts
                   </span>
                   {c.isModerator && (
                     <span className={styles.teach}>
-                      <Crown size={14} strokeWidth={2.5} /> You teach
+                      <Glyph name="crown" size={14} strokeWidth={2.5} /> You teach
                     </span>
                   )}
                 </p>

@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does nearest neighbours slow down as the data grows?',
         options: [
-          { text: 'Every prediction compares with every training patient' },
           { text: 'Python gets tired', why: 'It\'s the amount of work: one comparison per training patient.' },
           { text: 'It doesn\'t slow down', why: 'Double the training patients and you double the comparisons.' },
+          { text: 'Every prediction compares with every training patient' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -72,11 +72,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Of the 20 riskiest week-12 bookings, 12 really missed. Picking 20 at random would find about 3.7. What does that mean for Bisi?',
         options: [
-          { text: 'Calling from the top of the risk list finds about three times as many no-shows' },
           { text: 'Nothing: 12 isn\'t 20', why: 'No list is perfect. 12 vs 3.7 is a big difference.' },
+          { text: 'Calling from the top of the risk list finds about three times as many no-shows' },
           { text: 'She should call at random', why: 'The ranking does far better than random.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',

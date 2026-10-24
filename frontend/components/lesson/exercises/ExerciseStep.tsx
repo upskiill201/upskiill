@@ -20,7 +20,7 @@
 
 import { useMemo, type ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Check, X } from 'lucide-react';
+import { Emblem } from '@/components/art/Emblem';
 import {
   BLANK_RE,
   fillBlankBank,
@@ -546,7 +546,7 @@ function MatchPairsView({ exercise, response, onResponse, answer }: ViewProps<Ma
         <ul className="flex flex-col gap-1.5 text-[15px] font-bold text-[var(--lesson-correct-ink)]">
           {exercise.pairs.map((p) => (
             <li key={p.id} className="flex items-center gap-2">
-              <Check className="w-4 h-4 shrink-0 stroke-[3]" aria-hidden="true" />
+              <Emblem name="right" size={18} />
               {p.left} <span aria-hidden="true">→</span> {p.right}
             </li>
           ))}
@@ -732,9 +732,9 @@ function SortGroupsView({ exercise, response, onResponse, answer }: ViewProps<So
 /** Tick or cross for results summaries elsewhere. */
 export function ResultMark({ ok }: { ok: boolean }) {
   return ok ? (
-    <Check className="w-5 h-5 stroke-[3] text-[var(--lesson-correct)]" aria-label="Right" />
+    <Emblem name="right" size={22} label="Right" />
   ) : (
-    <X className="w-5 h-5 stroke-[3] text-[var(--lesson-wrong)]" aria-label="Wrong" />
+    <Emblem name="wrong" size={22} label="Wrong" />
   );
 }
 

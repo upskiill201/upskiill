@@ -130,11 +130,11 @@ const lesson: OriginalLesson = {
         message: 'Should I store names lowercase or in title case?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Pick one rule for storing and comparing, like title case, and apply it to every name that comes in.' },
           { text: 'Store them however people type them.', why: 'That\'s how the three Tundes happened.' },
           { text: 'Always uppercase.', why: 'Fine for comparing, but SHOUTY on member cards.' },
+          { text: 'Pick one rule for storing and comparing, like title case, and apply it to every name that comes in.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

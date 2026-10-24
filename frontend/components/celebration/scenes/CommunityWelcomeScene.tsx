@@ -22,7 +22,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
-import { Users, Check, UserCheck, UserPlus } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Avatar from '@/components/ui/Avatar';
 import PostTypeArt from '@/components/community/PostTypeArt';
 import { categoryLabel } from '@/components/community/PostCard';
@@ -218,7 +218,7 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
         </h1>
 
         <p className={local.memberLine}>
-          <Users size={17} />
+          <Glyph name="users" size={17} />
           <span className={local.memberCount}>
             <CountUpNumber value={scene.memberCount} from={Math.max(0, scene.memberCount - 1)} duration={0.9} />
           </span>
@@ -269,7 +269,7 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
                 <span className={local.choiceTitle}>{r.title}</span>
                 <span className={local.choiceSub}>{r.sub}</span>
               </span>
-              {reason === r.id && <Check size={20} className={local.choiceCheck} />}
+              {reason === r.id && <Glyph name="check" size={20} className={local.choiceCheck} />}
             </button>
           ))}
         </div>
@@ -411,7 +411,7 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
                   aria-pressed={!!followed[m.id]}
                   onClick={() => void toggleFollow(m.id)}
                 >
-                  {followed[m.id] ? <UserCheck size={16} strokeWidth={2.75} /> : <UserPlus size={16} strokeWidth={2.75} />}
+                  {followed[m.id] ? <Glyph name="userCheck" size={16} strokeWidth={2.75} /> : <Glyph name="userPlus" size={16} strokeWidth={2.75} />}
                   {followed[m.id] ? 'Following' : 'Follow'}
                 </button>
               </motion.li>

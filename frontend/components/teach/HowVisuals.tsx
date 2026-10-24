@@ -9,28 +9,11 @@
 
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import {
-  ArrowRight,
-  BadgeCheck,
-  Check,
-  Code2,
-  Copy,
-  Crown,
-  FileText,
-  Flame,
-  HelpCircle,
-  Lightbulb,
-  Link2,
-  Send,
-  Sparkles,
-  Ticket,
-  UserPlus,
-  Video,
-} from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { Pop } from '@/components/homepage/v3/Visuals';
 import s from '@/components/homepage/v3/Home.module.css';
 import h from './HowVisuals.module.css';
-import { EXAMPLE_COURSE_PRICE, EXAMPLE_KEEP_MONTHLY, EXAMPLE_MONTHLY, EXAMPLE_YEARLY } from './howPricing';
+import { EXAMPLE_KEEP_MONTHLY, POOL_PCT, PRO_MONTH } from './howPricing';
 const money = (n: number) => `$${n.toFixed(2)}`;
 
 function Studio({ title, children, className = '' }: { title: string; children: React.ReactNode; className?: string }) {
@@ -64,7 +47,7 @@ export function JourneyHeroVisual() {
     <div className={`${s.heroVisual} ${h.heroStage}`}>
       <Pop delay={0.7} className={`${s.float} ${h.floatA}`}>
         <span className={h.floatIcon} style={{ background: 'var(--warning)' }}>
-          <Crown size={18} strokeWidth={2.75} />
+          <Glyph name="crown" size={18} strokeWidth={2.55} />
         </span>
         <span>
           <span className={s.floatLabel}>Status</span>
@@ -73,10 +56,10 @@ export function JourneyHeroVisual() {
       </Pop>
       <Pop delay={1} className={`${s.float} ${h.floatB}`}>
         <span className={h.floatIcon} style={{ background: 'var(--success-green)' }}>
-          <Sparkles size={18} strokeWidth={2.75} />
+          <Glyph name="sparkle" size={18} strokeWidth={2.55} />
         </span>
         <span>
-          <span className={s.floatLabel}>New subscriber</span>
+          <span className={s.floatLabel}>New Pro learner</span>
           <span className={s.floatValue}>+{money(EXAMPLE_KEEP_MONTHLY)}/mo</span>
         </span>
       </Pop>
@@ -86,7 +69,7 @@ export function JourneyHeroVisual() {
           {MILESTONES.map((m, i) => (
             <Pop key={m.when} delay={0.15 + i * 0.12} className={h.milestone}>
               <span className={`${h.mNode} ${i === MILESTONES.length - 1 ? h.mNodeNow : ''}`}>
-                {i === MILESTONES.length - 1 ? <Sparkles size={16} strokeWidth={3} /> : <Check size={16} strokeWidth={4} />}
+                {i === MILESTONES.length - 1 ? <Glyph name="sparkle" size={16} strokeWidth={2.8} /> : <Glyph name="check" size={16} strokeWidth={3.6} />}
               </span>
               <span className={h.mText}>
                 <span className={h.mWhen}>{m.when}</span>
@@ -127,7 +110,7 @@ export function OnboardingVisual() {
         <div className={h.chips}>
           {chips.map((c, i) => (
             <Pop key={c.label} delay={0.2 + i * 0.1} className={`${h.chip} ${c.on ? h.chipOn : ''}`}>
-              {c.on && <Check size={14} strokeWidth={4} />} {c.label}
+              {c.on && <Glyph name="check" size={14} strokeWidth={3.6} />} {c.label}
             </Pop>
           ))}
         </div>
@@ -156,13 +139,13 @@ export function WizardVisual() {
       <div className={h.wizSteps}>
         {steps.map((st, i) => (
           <span key={st} className={`${h.wizStep} ${i < 4 ? h.wizDone : h.wizNow}`}>
-            {i < 4 ? <Check size={12} strokeWidth={4} /> : null} {st}
+            {i < 4 ? <Glyph name="check" size={12} strokeWidth={3.6} /> : null} {st}
           </span>
         ))}
       </div>
       <div className={h.courseHead}>
         <span className={h.trackPill}>
-          <Code2 size={14} strokeWidth={3} /> Coding · Beginner
+          <Glyph name="code" size={14} strokeWidth={2.8} /> Coding · Beginner
         </span>
         <strong className={h.courseTitle}>Python for Data</strong>
       </div>
@@ -187,10 +170,10 @@ export function WizardVisual() {
 // ─── Step 3: the lesson builder, with its live phone preview ────────────────
 
 const CARDS = [
-  { icon: <FileText size={16} strokeWidth={2.75} />, label: 'Explanation' },
-  { icon: <Code2 size={16} strokeWidth={2.75} />, label: 'Code' },
-  { icon: <Video size={16} strokeWidth={2.75} />, label: 'Video · 1:40' },
-  { icon: <HelpCircle size={16} strokeWidth={2.75} />, label: 'Quick check' },
+  { icon: <Glyph name="doc" size={16} strokeWidth={2.55} />, label: 'Explanation' },
+  { icon: <Glyph name="code" size={16} strokeWidth={2.55} />, label: 'Code' },
+  { icon: <Glyph name="video" size={16} strokeWidth={2.55} />, label: 'Video · 1:40' },
+  { icon: <Glyph name="help" size={16} strokeWidth={2.55} />, label: 'Quick check' },
 ];
 
 export function LessonBuilderVisual() {
@@ -201,7 +184,7 @@ export function LessonBuilderVisual() {
         <div className={h.phaseCol}>
           {phases.map((p, i) => (
             <span key={p} className={`${h.phase} ${i === 0 ? h.phaseOn : ''} ${i === 3 ? h.phaseOpt : ''}`}>
-              {i < 2 ? <Check size={12} strokeWidth={4} /> : null}
+              {i < 2 ? <Glyph name="check" size={12} strokeWidth={3.6} /> : null}
               {p}
               {i === 3 && <em>optional</em>}
             </span>
@@ -215,7 +198,7 @@ export function LessonBuilderVisual() {
             </Pop>
           ))}
           <span className={h.saved}>
-            <Check size={12} strokeWidth={4} /> Saved
+            <Glyph name="check" size={12} strokeWidth={3.6} /> Saved
           </span>
         </div>
         <div className={h.phone}>
@@ -230,32 +213,28 @@ export function LessonBuilderVisual() {
   );
 }
 
-// ─── Step 4: one price → monthly and yearly plans ───────────────────────────
+// ─── Step 4: one Pro learner's month → the creator pool ─────────────────────
 
 export function PricingVisual() {
   return (
-    <Studio title="Course details · Pricing">
-      <span className={h.kicker}>Your yearly price</span>
-      <div className={h.priceInput}>
-        <span>$</span>
-        <strong>{EXAMPLE_COURSE_PRICE}</strong>
-      </div>
+    <Studio title="Earnings · Teyro Pro pool (example)">
+      <span className={h.kicker}>One yearly Pro learner, this month</span>
       <div className={h.planRow}>
         <Pop delay={0.2} className={h.planCard}>
-          <span className={h.kicker}>Yearly</span>
-          <strong>${EXAMPLE_YEARLY}</strong>
-          <span>a year</span>
+          <span className={h.kicker}>They pay</span>
+          <strong>{money(PRO_MONTH)}</strong>
+          <span>a month</span>
         </Pop>
         <Pop delay={0.35} className={h.planCard}>
-          <span className={h.kicker}>Monthly</span>
-          <strong>{money(EXAMPLE_MONTHLY)}</strong>
-          <span>a month</span>
+          <span className={h.kicker}>Creator pool</span>
+          <strong>{POOL_PCT}%</strong>
+          <span>by minutes</span>
         </Pop>
       </div>
       <Pop delay={0.6} className={h.keepRow}>
-        <Sparkles size={16} strokeWidth={2.75} /> You keep {money(EXAMPLE_KEEP_MONTHLY)} of every monthly payment
+        <Glyph name="sparkle" size={16} strokeWidth={2.55} /> Up to {money(EXAMPLE_KEEP_MONTHLY)} a month to you, if they learn only in your course
       </Pop>
-      <span className={h.freeNote}>Lessons 1 and 2 are always free to try</span>
+      <span className={h.freeNote}>Your share lands in Earnings every month</span>
     </Studio>
   );
 }
@@ -271,7 +250,7 @@ export function ReviewVisual() {
         {checks.map((c, i) => (
           <Pop key={c} delay={0.1 + i * 0.1} className={h.checkItem}>
             <span className={h.checkDot}>
-              <Check size={14} strokeWidth={4} />
+              <Glyph name="check" size={14} strokeWidth={3.6} />
             </span>
             {c}
           </Pop>
@@ -281,12 +260,12 @@ export function ReviewVisual() {
         {flow.map((f, i) => (
           <span key={f} className={h.flowItem}>
             <span className={`${h.flowPill} ${i === flow.length - 1 ? h.flowLive : ''}`}>{f}</span>
-            {i < flow.length - 1 && <ArrowRight size={14} strokeWidth={3} />}
+            {i < flow.length - 1 && <Glyph name="arrow" size={14} strokeWidth={2.8} />}
           </span>
         ))}
       </div>
       <Pop delay={0.8} className={h.approved}>
-        <BadgeCheck size={20} strokeWidth={2.75} /> Approved · live in Explore
+        <Glyph name="verified" size={20} strokeWidth={2.55} /> Approved · live in Explore
       </Pop>
     </Studio>
   );
@@ -302,29 +281,29 @@ export function LaunchVisual() {
         <span className={h.profileText}>
           <strong>Ada Okafor</strong>
           <span className={h.founding}>
-            <Crown size={12} strokeWidth={2.75} /> Founding creator
+            <Glyph name="crown" size={12} strokeWidth={2.55} /> Founding creator
           </span>
           <span className={h.meta}>Coding · Python for Data</span>
         </span>
         <span className={h.follow}>
-          <UserPlus size={14} strokeWidth={3} /> Follow
+          <Glyph name="userPlus" size={14} strokeWidth={2.8} /> Follow
         </span>
       </div>
       <Pop delay={0.4} className={`${s.card} ${h.coupon}`}>
         <span className={h.couponHead}>
-          <Ticket size={18} strokeWidth={2.75} /> <strong>LAUNCH20</strong>
+          <Glyph name="ticket" size={18} strokeWidth={2.55} /> <strong>LAUNCH20</strong>
           <span className={h.couponOff}>20% off</span>
         </span>
         <span className={h.meta}>First payment · ends in 7 days · 100 uses</span>
         <span className={h.linkRow}>
-          <Link2 size={14} strokeWidth={3} />
+          <Glyph name="link" size={14} strokeWidth={2.8} />
           <span className={h.link}>teyro.app/courses/python-for-data?code=LAUNCH20</span>
-          <Copy size={14} strokeWidth={3} />
+          <Glyph name="copy" size={14} strokeWidth={2.8} />
         </span>
       </Pop>
       <Pop delay={0.8} className={`${s.card} ${h.toast}`}>
         <span className={h.floatIcon} style={{ background: 'var(--success-green)' }}>
-          <Sparkles size={16} strokeWidth={2.75} />
+          <Glyph name="sparkle" size={16} strokeWidth={2.55} />
         </span>
         <span>
           <strong>12 learners joined on launch day</strong>
@@ -364,13 +343,13 @@ export function SegmentsVisual() {
             Hey <mark>{'{first}'}</mark>, lesson 4 trips a lot of people up. You&apos;ve got this!
           </span>
           <span className={h.sendBtn}>
-            <Send size={14} strokeWidth={3} /> Send
+            <Glyph name="send" size={14} strokeWidth={2.8} /> Send
           </span>
         </div>
       </Studio>
       <Pop delay={0.9} className={`${s.card} ${h.toast}`}>
         <span className={h.floatIcon} style={{ background: 'var(--warning)' }}>
-          <Flame size={16} strokeWidth={2.75} fill="currentColor" />
+          <Glyph name="flame" size={16} strokeWidth={2.55} />
         </span>
         <span>
           <strong>Priya is back</strong>
@@ -400,7 +379,7 @@ export function OutcomeVisual() {
       <span className={h.kicker}>Earned in {last.m}</span>
       <strong className={h.bigMoney}>${(last.subs * EXAMPLE_KEEP_MONTHLY).toLocaleString('en-US', { maximumFractionDigits: 0 })}</strong>
       <span className={h.planSub}>
-        {last.subs} subscribers × {money(EXAMPLE_KEEP_MONTHLY)}
+        {last.subs} yearly Pro learners × {money(EXAMPLE_KEEP_MONTHLY)}
       </span>
       <div className={h.cols}>
         {GROWTH.map((g, i) => (
@@ -417,7 +396,7 @@ export function OutcomeVisual() {
         ))}
       </div>
       <span className={h.freeNote}>
-        <Lightbulb size={14} strokeWidth={2.75} /> An example of one {`$${EXAMPLE_COURSE_PRICE}`} course, not a promise
+        <Glyph name="bulb" size={14} strokeWidth={2.55} /> An example of one course, not a promise
       </span>
     </Studio>
   );

@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { CheckCircle2 } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import ProgressBar3D from '@/components/ui/ProgressBar3D';
 import { pickSkillMapEmptyLine } from '@/lib/tey/analyticsVoice';
 import type { DashboardResponse } from '../types';
@@ -47,7 +47,7 @@ export function SkillMap({ skills }: { skills: DashboardResponse['skillMap'] }) 
                   <div className="w-7 h-7 rounded bg-[#EEF2FF]" />
                 )}
                 <span className="text-sm font-bold text-[#1F2A44] truncate flex-1">{skill.title}</span>
-                {skill.status === 'completed' && <CheckCircle2 size={16} color="#3D5AFE" />}
+                {skill.status === 'completed' && <Glyph name="checkCircle" size={16} color="var(--brand-indigo)" />}
               </div>
               <ProgressBar3D percentage={skill.progressPercentage} size="sm" color={skill.status === 'completed' ? 'purple' : 'blue'} />
               <div className="flex items-center gap-1.5 mt-2">

@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What two things does Mr Rao most want to know?',
         options: [
-          { text: 'Does it answer customers correctly, and what does it cost?' },
           { text: 'Which vector database and which framework?', why: 'That\'s for the team, not the client.' },
           { text: 'How many layers there are', why: 'He wants outcomes, not architecture.' },
+          { text: 'Does it answer customers correctly, and what does it cost?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'Isn\'t it dumbing it down to leave out RAG and guardrails?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'It\'s translating, not dumbing down. "Answers from your help page" IS RAG, in his words. Details are ready if he asks.' },
           { text: 'Yes, always include every technical word.', why: 'Jargon stops him reading before the answer.' },
+          { text: 'It\'s translating, not dumbing down. "Answers from your help page" IS RAG, in his words. Details are ready if he asks.' },
           { text: 'Never tell clients anything technical.', why: 'Share the details when they ask; lead with the outcome.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

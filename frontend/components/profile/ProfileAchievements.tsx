@@ -7,7 +7,7 @@
  */
 
 import React, { useState } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import AchievementBadge from '@/components/achievements/AchievementBadge';
 import { Modal } from '@/components/ui/Modal';
 import { markAchievementSeen } from '@/lib/achievements';
@@ -87,7 +87,7 @@ export default function ProfileAchievements({ families, loading, error, onRetry,
         <div className={styles.errorBox} role="alert">
           Couldn&apos;t load your achievements.
           <button type="button" className={styles.linkBtn} onClick={onRetry}>
-            <RefreshCw size={14} strokeWidth={2.75} /> Try again
+            <Glyph name="refresh" size={14} strokeWidth={2.75} /> Try again
           </button>
         </div>
       ) : sorted.length === 0 ? (

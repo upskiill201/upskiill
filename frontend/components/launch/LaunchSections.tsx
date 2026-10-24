@@ -1,11 +1,9 @@
 import Link from 'next/link';
-import { ArrowRight, Check, Clapperboard, Smartphone } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { Reveal } from '@/components/homepage/v3/Visuals';
 import {
   APP_LAUNCHES,
-  FOUNDING_SHARE_PCT,
   LEARNER_GATE,
-  STANDARD_SHARE_PCT,
   STUDIO_GATE,
   STUDIO_OPENS,
 } from '@/lib/launch';
@@ -36,7 +34,7 @@ export function LaunchBar() {
           )}
         </span>
         <Link href={LEARNER_GATE ? '/#launch' : '/teach#apply'} className={l.barLink}>
-          Get notified <ArrowRight size={14} strokeWidth={3} aria-hidden="true" />
+          Get notified <Glyph name="arrow" size={14} strokeWidth={3} />
         </Link>
       </div>
     </div>
@@ -67,7 +65,7 @@ export function LaunchSection() {
         <Reveal delay={0.1} className={l.dates}>
           <div className={l.date}>
             <span className={l.dateIcon}>
-              <Clapperboard size={26} strokeWidth={2.5} aria-hidden="true" />
+              <Glyph name="video" size={26} strokeWidth={2.6} />
             </span>
             <span className={l.dateText}>
               <span className={l.dateWhen}>{STUDIO_OPENS}</span>
@@ -82,7 +80,7 @@ export function LaunchSection() {
           </div>
           <div className={l.date}>
             <span className={`${l.dateIcon} ${l.dateIconAlt}`}>
-              <Smartphone size={26} strokeWidth={2.5} aria-hidden="true" />
+              <Glyph name="phone" size={26} strokeWidth={2.6} />
             </span>
             <span className={l.dateText}>
               <span className={l.dateWhen}>{APP_LAUNCHES}</span>
@@ -127,14 +125,14 @@ export function ApplySection() {
             <span className={l.dateWhen}>What Founding Creators get</span>
             <ul className={`${l.perks} ${l.perksSpaced}`}>
               {[
-                `Keep ${FOUNDING_SHARE_PCT}% of every payment (standard creators keep ${STANDARD_SHARE_PCT}%)`,
                 'A Founding badge on your public creator page',
+                'Founding benefits inside Teyro Studio',
                 'Your course ready in Explore when learners arrive',
                 'Paid in US dollars to your bank or mobile money, in any country',
               ].map((p) => (
                 <li key={p}>
                   <span className={l.perkTick} aria-hidden="true">
-                    <Check size={14} strokeWidth={4} />
+                    <Glyph name="check" size={14} strokeWidth={3.6} />
                   </span>
                   {p}
                 </li>

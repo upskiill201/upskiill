@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         message: 'The biggest wait is 400 days. Is that real?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Over a year waiting for one appointment? Almost certainly a typo. Note it: we\'ll deal with it when we clean.' },
           { text: 'Yes, trust the data.', why: 'Data can be wrong. 400 days is impossible for this booking system.' },
+          { text: 'Over a year waiting for one appointment? Almost certainly a typo. Note it: we\'ll deal with it when we clean.' },
           { text: 'Delete the whole file.', why: 'One bad value needs fixing, not the whole file thrown away.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

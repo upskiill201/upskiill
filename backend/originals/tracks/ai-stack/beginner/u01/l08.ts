@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a "closed" model mean here?',
         options: [
-          { text: 'You use it through the lab\'s API; you can\'t download the model itself' },
           { text: 'It\'s switched off', why: 'It works fine; you just can\'t download it.' },
           { text: 'It only works at night', why: 'Closed is about access, not hours.' },
+          { text: 'You use it through the lab\'s API; you can\'t download the model itself' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'Do we need to know how chips are made to build Ask Rao?',
         prompt: "Tey's best reply?",
         options: [
-          { text: 'Not how they\'re made, but what they cost and why they\'re scarce. That shapes prices and speed in every layer above.' },
           { text: 'Yes, you must build a chip first.', why: 'You rent the hardware. Understanding it is enough.' },
+          { text: 'Not how they\'re made, but what they cost and why they\'re scarce. That shapes prices and speed in every layer above.' },
           { text: 'Chips don\'t matter at all.', why: 'They decide the cost and speed of every answer.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which layers does a small team like Ask Rao\'s usually build itself?',
         options: [
-          { text: 'Data, orchestration, the app and evaluation' },
           { text: 'Chips and factories', why: 'Those cost billions. Small teams rent compute.' },
           { text: 'None of them', why: 'The top layers are exactly their job.' },
+          { text: 'Data, orchestration, the app and evaluation' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

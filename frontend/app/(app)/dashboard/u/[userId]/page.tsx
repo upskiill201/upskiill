@@ -12,7 +12,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import useSWR from 'swr';
-import { AlertCircle, ArrowLeft, Calendar, MapPin, UserCheck, UserPlus } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import ProfileStats from '@/components/profile/ProfileStats';
 import { fetcher } from '@/lib/swr';
 import { levelProgress } from '@/lib/level';
@@ -104,7 +104,7 @@ export default function LearnerProfilePage() {
         router.back();
       }}
     >
-      <ArrowLeft size={18} strokeWidth={2.75} aria-hidden="true" /> Back
+      <Glyph name="back" size={18} strokeWidth={2.75} /> Back
     </button>
   );
 
@@ -114,7 +114,7 @@ export default function LearnerProfilePage() {
         <div className={styles.main}>
           {back}
           <div className={styles.errorBox} role="alert">
-            <AlertCircle size={28} aria-hidden="true" />
+            <Glyph name="alert" size={28} />
             <p>We couldn&apos;t load this profile.</p>
             <button type="button" className={styles.linkBtn} onClick={() => void mutate()}>
               Try again
@@ -171,11 +171,11 @@ export default function LearnerProfilePage() {
             )}
             <div className={styles.metaRow}>
               <span>
-                <Calendar size={14} strokeWidth={2.5} aria-hidden="true" /> Joined {joined(data.joinedAt)}
+                <Glyph name="calendar" size={14} strokeWidth={2.5} /> Joined {joined(data.joinedAt)}
               </span>
               {data.location && (
                 <span>
-                  <MapPin size={14} strokeWidth={2.5} aria-hidden="true" /> {data.location}
+                  <Glyph name="mapPin" size={14} strokeWidth={2.5} /> {data.location}
                 </span>
               )}
             </div>
@@ -199,11 +199,11 @@ export default function LearnerProfilePage() {
             >
               {data.isFollowing ? (
                 <>
-                  <UserCheck size={20} strokeWidth={2.75} aria-hidden="true" /> Following
+                  <Glyph name="userCheck" size={20} strokeWidth={2.75} /> Following
                 </>
               ) : (
                 <>
-                  <UserPlus size={20} strokeWidth={2.75} aria-hidden="true" /> {data.followsYou ? 'Follow back' : 'Follow'}
+                  <Glyph name="userPlus" size={20} strokeWidth={2.75} /> {data.followsYou ? 'Follow back' : 'Follow'}
                 </>
               )}
             </button>

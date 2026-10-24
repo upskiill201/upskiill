@@ -65,11 +65,11 @@ const lesson: OriginalLesson = {
         code: 'print(200000 / 10)',
         language: 'python',
         options: [
-          { text: '20000.0' },
           { text: '20000', why: '/ always gives a decimal in Python 3, even for exact answers.' },
+          { text: '20000.0' },
           { text: '2000000', why: 'That is multiplying.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

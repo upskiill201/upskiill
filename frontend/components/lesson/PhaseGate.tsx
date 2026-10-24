@@ -17,13 +17,13 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { BookOpen, Check, Flame, Lightbulb, PenLine, Target, type LucideIcon } from 'lucide-react';
+import { Emblem, type EmblemName } from '@/components/art/Emblem';
 import { useCallback, useEffect, useRef } from 'react';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { celebrationHaptic } from '@/lib/haptics';
 import { PHASE_COLOR, PHASE_LABEL, PHASE_ORDER, type LessonPhase } from '@/lib/lesson/content';
 
-const ICON: Record<LessonPhase, LucideIcon> = { learn: BookOpen, apply: Target, reflect: PenLine, deepen: Lightbulb };
+const ICON: Record<LessonPhase, EmblemName> = { learn: 'book', apply: 'dumbbell', reflect: 'pencil', deepen: 'bulb' };
 
 const DONE_TITLE: Record<LessonPhase, string> = {
   learn: 'Learn complete!',
@@ -66,8 +66,8 @@ export function PhaseGate({ from, to, result, ahead, hot, onGo }: PhaseGateProps
     return () => clearTimeout(t);
   }, [to, fire]);
 
-  const FromIcon = ICON[from];
-  const ToIcon = ICON[to];
+  const fromGlyph = ICON[from];
+  const toGlyph = ICON[to];
   const fromColor = PHASE_COLOR[from];
   const toColor = PHASE_COLOR[to];
 
@@ -86,7 +86,9 @@ export function PhaseGate({ from, to, result, ahead, hot, onGo }: PhaseGateProps
         animate={{ scale: 1, opacity: 1, rotate: 0 }}
         transition={{ type: 'spring', stiffness: 420, damping: 13 }}
       >
-        <FromIcon className="w-14 h-14 text-white stroke-[2.5]" aria-hidden="true" />
+        <span className="w-[84px] h-[84px] rounded-full bg-white grid place-items-center">
+          <Emblem name={fromGlyph} size={58} />
+        </span>
         <motion.span
           className="absolute -right-1 -bottom-1 w-11 h-11 rounded-full bg-white flex items-center justify-center"
           style={{ boxShadow: '0 3px 0 var(--border)' }}
@@ -94,7 +96,7 @@ export function PhaseGate({ from, to, result, ahead, hot, onGo }: PhaseGateProps
           animate={{ scale: 1 }}
           transition={{ delay: 0.3, type: 'spring', stiffness: 600, damping: 12 }}
         >
-          <Check className="w-7 h-7 stroke-[4]" style={{ color: 'var(--lesson-correct)' }} aria-hidden="true" />
+          <Emblem name="right" size={36} />
         </motion.span>
         {!reducedMotion && (
           <motion.span
@@ -135,7 +137,7 @@ export function PhaseGate({ from, to, result, ahead, hot, onGo }: PhaseGateProps
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4, type: 'spring', stiffness: 600, damping: 14 }}
         >
-          <Flame className="w-4 h-4 fill-current" aria-hidden="true" />
+          <Emblem name="flame" size={18} />
           {hot}
         </motion.span>
       )}
@@ -149,10 +151,10 @@ export function PhaseGate({ from, to, result, ahead, hot, onGo }: PhaseGateProps
         transition={{ delay: 0.55, type: 'spring', stiffness: 380, damping: 26 }}
       >
         <span
-          className="shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center"
-          style={{ backgroundColor: toColor, boxShadow: `0 3px 0 color-mix(in srgb, ${toColor} 70%, black)` }}
+          className="shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center bg-[var(--bg-card)]"
+          style={{ border: `2px solid ${toColor}`, boxShadow: `0 3px 0 color-mix(in srgb, ${toColor} 70%, black)` }}
         >
-          <ToIcon className="w-6 h-6 text-white stroke-[2.75]" aria-hidden="true" />
+          <Emblem name={toGlyph} size={30} />
         </span>
         <span className="min-w-0">
           <span className="block text-[12.5px] font-extrabold uppercase tracking-[0.1em]" style={{ color: toColor }}>

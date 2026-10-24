@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         message: 'Let\'s predict which patients are lazy.',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'There\'s no "lazy" in the data, and it\'s unfair to the patient. Let\'s predict who\'s likely to miss, so we can help them come.' },
           { text: 'Sure, I\'ll add a lazy column.', why: 'There\'s no such data, and labelling people is harmful.' },
+          { text: 'There\'s no "lazy" in the data, and it\'s unfair to the patient. Let\'s predict who\'s likely to miss, so we can help them come.' },
           { text: 'Models can predict anything.', why: 'Only what the examples contain, and only what\'s fair to predict.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Bisi will call the top 10 risky bookings the evening before. What does that tell Halima?',
         options: [
-          { text: 'The model must be ready by 4 p.m. and rank bookings by risk' },
           { text: 'Nothing: Bisi\'s plans don\'t matter to the model', why: 'The action decides what the model must produce, and when.' },
           { text: 'The model should call the patients', why: 'Bisi calls. The model ranks.' },
+          { text: 'The model must be ready by 4 p.m. and rank bookings by risk' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -141,11 +141,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which question is best for Emmanuel\'s new project?',
         options: [
-          { text: 'Which clinics will run out of vaccines next week, so stock can be moved?' },
           { text: 'Why is the supply chain hard?', why: 'A "why" question with nothing to predict.' },
+          { text: 'Which clinics will run out of vaccines next week, so stock can be moved?' },
           { text: 'Can AI do logistics?', why: 'Too vague to predict or measure.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

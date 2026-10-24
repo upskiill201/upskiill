@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CircleCheck, Loader2, RotateCcw, Smartphone, Zap } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { usePollCourseAccess } from '@/hooks/usePostPaymentUnlock';
 import styles from './unlock.module.css';
 
@@ -57,7 +57,7 @@ export default function WaitingForApproval({
       )}
 
       <span className={styles.waitingSpinnerWrap}>
-        <Loader2 size={28} className={styles.spinner} />
+        <Glyph name="spinner" size={28} className={styles.spinner} />
       </span>
 
       <h1 className={styles.wallCount} style={{ margin: 0 }}>
@@ -89,14 +89,14 @@ export default function WaitingForApproval({
 
       {phase === 'polling' && (
         <p className={styles.localNotice}>
-          <CircleCheck size={12} style={{ display: 'inline', marginRight: 4 }} />
+          <Glyph name="checkCircle" size={12} style={{ display: 'inline', marginRight: 4 }} />
           I&apos;m checking automatically…
         </p>
       )}
 
       {phase === 'exhausted' && (
         <div className={`${styles.msgBox} ${styles.msgError}`} role="alert" style={{ width: '100%' }}>
-          <Zap size={14} />
+          <Glyph name="hourglass" size={14} />
           <span>
             Still processing — some providers take a minute or two. Your
             payment isn&apos;t lost, I promise.
@@ -114,12 +114,12 @@ export default function WaitingForApproval({
               setAttempt((a) => a + 1);
             }}
           >
-            <RotateCcw size={15} />
+            <Glyph name="refresh" size={15} />
             Check again
           </button>
         ) : null}
         <button type="button" className={styles.secondaryBtn} onClick={onCancel}>
-          {variant === 'momo' && <Smartphone size={15} />}
+          {variant === 'momo' && <Glyph name="phone" size={15} />}
           {variant === 'momo' ? 'Use another method' : 'Back'}
         </button>
       </div>

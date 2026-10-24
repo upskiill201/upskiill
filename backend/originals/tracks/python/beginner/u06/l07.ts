@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         code: 'members = ["Ada", "Tunde", "Yusuf"]\nmembers.remove("Tunde")\nprint(members)',
         language: 'python',
         options: [
-          { text: "['Ada', 'Yusuf']" },
           { text: "['Ada', 'Tunde']", why: '.remove("Tunde") takes Tunde out, not the last item.' },
+          { text: "['Ada', 'Yusuf']" },
           { text: 'Tunde', why: '.remove() returns None; the list is printed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which one hands back the item it removed?',
         options: [
-          { text: '.pop()' },
           { text: '.remove()', why: '.remove() returns None.' },
           { text: 'Both', why: 'Only .pop() returns the item.' },
+          { text: '.pop()' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -141,11 +141,11 @@ const lesson: OriginalLesson = {
         message: 'Yusuf left. Do I .remove() him or .pop() him?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: '.remove("Yusuf"). You know his name, not his position. Use .pop() when you know where, like the front of the queue.' },
           { text: '.pop(), always.', why: 'You\'d have to know his position first.' },
           { text: 'Make a new list without him by hand.', why: 'That\'s what .remove() is for.' },
+          { text: '.remove("Yusuf"). You know his name, not his position. Use .pop() when you know where, like the front of the queue.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

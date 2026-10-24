@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Award } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/swr';
 import { type CourseCertificateStatus, verifyPath } from '@/lib/certificates/types';
@@ -19,7 +19,7 @@ export default function CertificatePill({ courseId }: { courseId: string }) {
       href={verifyPath(data.certificate.code)}
       className="inline-flex items-center gap-2 rounded-full border-2 border-[color-mix(in_srgb,var(--warning)_55%,transparent)] bg-[var(--bg-card)] px-4 py-2 text-[14px] font-extrabold uppercase tracking-[0.06em] text-[var(--warning)] shadow-[0_3px_0_color-mix(in_srgb,var(--warning)_55%,transparent)] transition-transform active:translate-y-[2px] active:shadow-none"
     >
-      <Award size={16} strokeWidth={2.8} />
+      <Glyph name="medal" size={16} strokeWidth={2.8} />
       Certificate
     </Link>
   );

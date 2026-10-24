@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why couldn\'t Ask Rao answer the order question?',
         options: [
-          { text: 'Order details aren\'t in the help page; they\'re in order records that change all the time' },
           { text: 'The model is too small', why: 'No model knows a live order unless it can look it up.' },
           { text: 'Mr Rao typed it wrong', why: 'The question was fine. The data wasn\'t there.' },
+          { text: 'Order details aren\'t in the help page; they\'re in order records that change all the time' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         message: 'Saying "I don\'t know" in front of the client was so embarrassing.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'It was the best thing it did all demo. A made-up delivery date would have been far worse, for him and his customers.' },
           { text: 'Yes, make it always give an answer.', why: 'Then it would invent order statuses.' },
+          { text: 'It was the best thing it did all demo. A made-up delivery date would have been far worse, for him and his customers.' },
           { text: 'Hide that question next time.', why: 'Customers will ask it. Build the tool instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -129,11 +129,11 @@ const lesson: OriginalLesson = {
         code: 'print(model.reply("Is delivery free?", context=policies))',
         language: 'python',
         options: [
-          { text: 'Delivery is free on orders over ₹999.' },
           { text: 'Delivery is free and takes 1 day anywhere in India.', why: 'That\'s its made-up answer WITHOUT context.' },
+          { text: 'Delivery is free on orders over ₹999.' },
           { text: 'I don\'t know.', why: 'The help page answers this one.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

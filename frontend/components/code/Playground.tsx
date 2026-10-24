@@ -15,7 +15,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Check, Eye, Lightbulb, SquareTerminal, Trophy } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { CHALLENGES, EXAMPLES, type PlaygroundChallenge } from '@/lib/code/playground';
 import { fireConfetti } from '@/lib/confetti';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -50,7 +50,7 @@ export function Playground() {
     <div className={styles.page}>
       <header className={styles.hero}>
         <span className={styles.heroIcon} aria-hidden="true">
-          <SquareTerminal size={34} strokeWidth={2.4} />
+          <Glyph name="terminal" size={34} strokeWidth={2.4} />
         </span>
         <div>
           <h1 className={styles.title}>Code playground</h1>
@@ -190,7 +190,7 @@ function ChallengeList() {
   return (
     <section className={styles.section} aria-label="Challenges">
       <p className={styles.progress}>
-        <Trophy size={18} aria-hidden="true" /> {done.length} of {CHALLENGES.length} done
+        <Glyph name="trophy" size={18} /> {done.length} of {CHALLENGES.length} done
       </p>
       <ol className={styles.list}>
         {CHALLENGES.map((c, i) => {
@@ -206,13 +206,13 @@ function ChallengeList() {
                 }}
               >
                 <span className={styles.challengeNo} aria-hidden="true">
-                  {isDone ? <Check size={18} strokeWidth={3.5} /> : i + 1}
+                  {isDone ? <Glyph name="check" size={18} strokeWidth={3.5} /> : i + 1}
                 </span>
                 <span className={styles.challengeText}>
                   <span className={styles.challengeTitle}>{c.title}</span>
                   <span className={styles.challengeTask}>{c.task}</span>
                 </span>
-                <ArrowRight size={18} className={styles.challengeArrow} aria-hidden="true" />
+                <Glyph name="arrow" size={18} className={styles.challengeArrow} />
               </button>
             </li>
           );
@@ -249,7 +249,7 @@ function ChallengeView({
   return (
     <section className={styles.section} aria-label={challenge.title}>
       <button type="button" className={styles.back} onClick={onBack}>
-        <ArrowLeft size={16} aria-hidden="true" /> All challenges
+        <Glyph name="back" size={16} /> All challenges
       </button>
       <div>
         <p className={styles.eyebrow}>
@@ -282,11 +282,11 @@ function ChallengeView({
         actions={
           <>
             <button type="button" className={padStyles.ghost} onClick={() => setHint((h) => !h)} aria-expanded={hint}>
-              <Lightbulb size={16} aria-hidden="true" /> Hint
+              <Glyph name="bulb" size={16} /> Hint
             </button>
             {failed >= 2 && (
               <button type="button" className={padStyles.ghost} onClick={() => setCode(challenge.solution)}>
-                <Eye size={16} aria-hidden="true" /> Show solution
+                <Glyph name="eye" size={16} /> Show solution
               </button>
             )}
           </>
@@ -301,12 +301,12 @@ function ChallengeView({
           role="status"
         >
           <span className={styles.winIcon} aria-hidden="true">
-            <Check size={22} strokeWidth={3.5} />
+            <Glyph name="check" size={22} strokeWidth={3.5} />
           </span>
           <span className={styles.winText}>Challenge complete!</span>
           {onNext ? (
             <button type="button" className={styles.winButton} onClick={onNext}>
-              Next challenge <ArrowRight size={16} aria-hidden="true" />
+              Next challenge <Glyph name="arrow" size={16} />
             </button>
           ) : (
             <button type="button" className={styles.winButton} onClick={onBack}>

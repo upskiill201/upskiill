@@ -3,32 +3,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import {
-  ChevronLeft,
-  ChevronRight,
-  Menu,
-  X,
-  Sparkles,
-  Rocket,
-  Settings,
-  LifeBuoy,
-  LogOut,
-  UsersRound,
-  House,
-  BookOpen,
-  Compass,
-  Trophy,
-  Target,
-  Store,
-  UserRound,
-  Ellipsis,
-  type LucideIcon,
-  Clapperboard,
-  Loader2,
-  Presentation,
-  Map,
-  SquareTerminal,
-} from 'lucide-react';
 import Link from 'next/link';
 import { Modal } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
@@ -44,43 +18,13 @@ import { useNavBadges } from '@/hooks/useNavBadges';
 import { startTour } from '@/lib/tour/store';
 import { TeyMark } from '@/components/brand/TeyMark';
 import { NavTile, type NavTone } from '@/components/nav/NavTile';
+import { Art, type ArtName } from '@/components/art/Art';
+import { Glyph } from '@/components/art/Glyph';
 import styles from './StudentShell.module.css';
+import { ComingSoonContext } from './ComingSoon';
 
-// ─── COMING SOON CONTEXT ───
-interface ComingSoonContextType {
-  triggerComingSoon: (feature: string) => void;
-}
-
-const ComingSoonContext = createContext<ComingSoonContextType | undefined>(undefined);
-
-export const useComingSoon = () => {
-  const context = useContext(ComingSoonContext);
-  if (!context) throw new Error('useComingSoon must be used within StudentShell');
-  return context;
-};
-
-/**
- * Bare context provider for consumers that need `useComingSoon()` without the
- * rest of StudentShell's student nav/chrome (e.g. the admin course-review
- * lesson viewer, which reuses the learner lesson player read-only outside the
- * dashboard sidebar/bottom-nav). Purely additive — StudentShell itself still
- * provides its own instance of this context exactly as before.
- */
-export function ComingSoonProvider({
-  children,
-  onTrigger,
-}: {
-  children: React.ReactNode;
-  /** Defaults to a no-op — callers outside the student shell rarely want the
-   *  "Coming Soon" modal, just a way to swallow the call safely. */
-  onTrigger?: (feature: string) => void;
-}) {
-  return (
-    <ComingSoonContext.Provider value={{ triggerComingSoon: onTrigger ?? (() => {}) }}>
-      {children}
-    </ComingSoonContext.Provider>
-  );
-}
+// ─── COMING SOON CONTEXT (components/layout/ComingSoon) ───
+export { ComingSoonProvider, useComingSoon } from './ComingSoon';
 
 // ─── MOBILE MENU CONTEXT ───
 // Lets pages embedded in the layout (e.g. the headerless student homescreen)
@@ -101,11 +45,9 @@ interface NavTab {
   id: string;
   label: string;
   href: string;
-  /** Drawn as a NavTile: the glyph on a tile of this colour. */
-  icon: LucideIcon;
+  /** Teyro's own drawing for the tab (components/art), on a tile of this tone when active. */
+  art: ArtName;
   tone: NavTone;
-  /** The tab's own colour PNG from /Icons; drawn instead of the glyph. */
-  image?: string;
 }
 
 /**
@@ -113,15 +55,15 @@ interface NavTab {
  * phone's bottom bar are marked in BOTTOM_TABS below.
  */
 const NAV_TABS: NavTab[] = [
-  { id: 'home', label: 'Home', href: '/dashboard', icon: House, tone: 'blue', image: '/Icons/home-button.png' },
-  { id: 'learning', label: 'My Learning', href: '/dashboard/my-learning', icon: BookOpen, tone: 'green', image: '/Icons/my-learning.png' },
-  { id: 'explore', label: 'Explore', href: '/dashboard/explore', icon: Compass, tone: 'purple', image: '/Icons/explore.png' },
-  { id: 'code', label: 'Code', href: '/dashboard/code', icon: SquareTerminal, tone: 'ink' },
-  { id: 'community', label: 'Community', href: '/dashboard/feed', icon: UsersRound, tone: 'teal', image: '/Icons/community.png' },
-  { id: 'leaderboards', label: 'Leaderboards', href: '/dashboard/leaderboards', icon: Trophy, tone: 'amber', image: '/Icons/Leaderboard.png' },
-  { id: 'quests', label: 'Quests', href: '/dashboard/quests', icon: Target, tone: 'orange', image: '/Icons/Quests.png' },
-  { id: 'shop', label: 'Shop', href: '/dashboard/shop', icon: Store, tone: 'pink', image: '/Icons/store.png' },
-  { id: 'profile', label: 'Profile', href: '/dashboard/profile', icon: UserRound, tone: 'indigo', image: '/Icons/user-profile.png' },
+  { id: 'home', label: 'Home', href: '/dashboard', art: 'home', tone: 'blue' },
+  { id: 'learning', label: 'My Learning', href: '/dashboard/my-learning', art: 'notebook', tone: 'green' },
+  { id: 'explore', label: 'Explore', href: '/dashboard/explore', art: 'compass', tone: 'amber' },
+  { id: 'code', label: 'Code', href: '/dashboard/code', art: 'code', tone: 'blue' },
+  { id: 'community', label: 'Community', href: '/dashboard/feed', art: 'people', tone: 'teal' },
+  { id: 'leaderboards', label: 'Leaderboards', href: '/dashboard/leaderboards', art: 'trophy', tone: 'amber' },
+  { id: 'quests', label: 'Quests', href: '/dashboard/quests', art: 'target', tone: 'red' },
+  { id: 'shop', label: 'Shop', href: '/dashboard/shop', art: 'shop', tone: 'red' },
+  { id: 'profile', label: 'Profile', href: '/dashboard/profile', art: 'avatar', tone: 'purple' },
 ];
 
 /** Phone bottom bar — six tabs one thumb away; My Learning, Explore and More live in the drawer. */
@@ -188,7 +130,7 @@ export default function StudentShell({
   // the dashboard page needs the same record, and because child effects run
   // before parent effects the two raw fetches went out in the same tick as two
   // identical authenticated round trips on every dashboard entry.
-  const { me, avatarUrl: resolvedAvatarUrl, error: meError } = useMe();
+  const { me, avatarUrl: resolvedAvatarUrl, error: meError, isValidating: meValidating } = useMe();
 
   // Role flags: live from /me, falling back to the local cache so the More
   // menu is right before the network answers. (Only read on a tap, so the
@@ -197,11 +139,14 @@ export default function StudentShell({
   const hasStudentAccess = me?.hasStudentAccess ?? cachedUser?.hasStudentAccess ?? false;
   const hasCreatorAccess = me?.hasCreatorAccess ?? cachedUser?.hasCreatorAccess ?? false;
 
+  // Only a 401 from a settled fetch means signed out. The cache can still
+  // hold one from before sign-in (onboarding runs signed out until "save
+  // your progress"), and acting on it bounced brand-new learners to /login.
   useEffect(() => {
-    if (meError?.status === 401) {
+    if (meError?.status === 401 && !meValidating) {
       router.push('/login');
     }
-  }, [meError, router]);
+  }, [meError, meValidating, router]);
 
   useEffect(() => {
     if (!me) return;
@@ -335,11 +280,11 @@ export default function StudentShell({
   const moreItems = (
     <>
       <Link href="/dashboard/settings" className={styles.moreItem} onClick={() => playSound('navTap', 5)}>
-        <NavTile icon={Settings} tone="slate" size="sm" />
+        <NavTile art="gear" tone="slate" size="sm" />
         <span>Settings</span>
       </Link>
       <Link href="/dashboard/help" className={styles.moreItem} onClick={() => playSound('navTap', 6)}>
-        <NavTile icon={LifeBuoy} tone="blue" size="sm" />
+        <NavTile art="lifebuoy" tone="red" size="sm" />
         <span>Help & feedback</span>
       </Link>
       <button
@@ -352,15 +297,15 @@ export default function StudentShell({
           startTour();
         }}
       >
-        <NavTile icon={Map} tone="green" size="sm" />
+        <NavTile art="map" tone="green" size="sm" />
         <span>Take the tour</span>
       </button>
       {hasStudentAccess && hasCreatorAccess && (
         <button type="button" className={styles.moreItem} onClick={() => void switchToCreator()} disabled={switching}>
           {switching ? (
-            <NavTile icon={Loader2} tone="purple" size="sm" className="[&_svg]:animate-spin" />
+            <NavTile art="clapper" tone="purple" size="sm" className="animate-pulse" />
           ) : (
-            <NavTile icon={Clapperboard} tone="purple" size="sm" />
+            <NavTile art="clapper" tone="purple" size="sm" />
           )}
           <span>Switch to Creator</span>
         </button>
@@ -369,12 +314,12 @@ export default function StudentShell({
           for /me so a creator never sees it flash before their flags load. */}
       {me && !me.hasCreatorAccess && (
         <Link href="/creator/onboarding/1" className={styles.moreItem} onClick={() => playSound('navTap', 5)}>
-          <NavTile icon={Presentation} tone="purple" size="sm" />
+          <NavTile art="easel" tone="purple" size="sm" />
           <span>Become a creator</span>
         </Link>
       )}
       <button type="button" className={`${styles.moreItem} ${styles.moreDanger}`} onClick={() => void handleLogout()}>
-        <NavTile icon={LogOut} tone="red" size="sm" />
+        <NavTile art="door" tone="red" size="sm" />
         <span>Log out</span>
       </button>
     </>
@@ -400,7 +345,7 @@ export default function StudentShell({
               onClick={closeDrawer}
               aria-label="Close menu"
             >
-              <X size={22} strokeWidth={2.5} />
+              <Glyph name="close" size={22} strokeWidth={3} />
             </button>
           </div>
 
@@ -418,7 +363,7 @@ export default function StudentShell({
                   title={isSidebarCollapsed ? tab.label : undefined}
                 >
                   <span className={styles.icon}>
-                    <NavTile icon={tab.icon} image={tab.image} tone={tab.tone} active={active} />
+                    <NavTile art={tab.art} tone={tab.tone} active={active} />
                     {badgeFor(tab.id)}
                   </span>
                   <span className={styles.label}>{tab.label}</span>
@@ -441,7 +386,7 @@ export default function StudentShell({
               title={isSidebarCollapsed ? 'More' : undefined}
             >
               <span className={styles.icon}>
-                <NavTile icon={Ellipsis} image="/Icons/more.png" tone="slate" active={isMoreOpen} />
+                <NavTile art="more" tone="teal" active={isMoreOpen} />
               </span>
               <span className={styles.label}>More</span>
             </button>
@@ -474,7 +419,7 @@ export default function StudentShell({
               }}
               aria-label={isSidebarCollapsed ? 'Expand menu' : 'Collapse menu'}
             >
-              {isSidebarCollapsed ? <ChevronRight size={16} strokeWidth={2.5} /> : <ChevronLeft size={16} strokeWidth={2.5} />}
+              <Glyph name={isSidebarCollapsed ? 'chevron' : 'chevronLeft'} size={16} strokeWidth={3} />
             </button>
           </div>
         </aside>
@@ -510,14 +455,7 @@ export default function StudentShell({
                   className={`${styles.bottomNavItem} ${active ? styles.activeBottomItem : ''}`}
                 >
                   <span className={styles.bottomNavIconWrap}>
-                    {/* A glyph tab (no PNG) is sized to the bar and leaves the ring to the wrap. */}
-                    <NavTile
-                      icon={tab.icon}
-                      image={tab.image}
-                      tone={tab.tone}
-                      active={active && Boolean(tab.image)}
-                      size={tab.image ? 'lg' : 'md'}
-                    />
+                    <NavTile art={tab.art} tone={tab.tone} active={active} size="lg" />
                     {badgeFor(id)}
                   </span>
                 </Link>
@@ -534,7 +472,7 @@ export default function StudentShell({
           {!hideMobileChrome && !isStudentHome && (
             <header className={styles.mobileHeader}>
               <button type="button" className={styles.mobileToggle} onClick={openDrawer} aria-label="Open menu">
-                <Menu size={24} strokeWidth={2.5} />
+                <Glyph name="menu" size={24} strokeWidth={2.8} />
               </button>
               <StatsBar compact show={['streak', 'coin', 'gem', 'lives']} className={styles.mobileStats} />
               <div className={styles.mobileBell} data-tour="bell">
@@ -564,7 +502,7 @@ export default function StudentShell({
         >
           <div className={styles.modalBody}>
             <div className={styles.modalIconWrapper}>
-              <Sparkles size={40} className={styles.sparkleIcon} />
+              <Art name="spark" size={56} className={styles.sparkleIcon} />
             </div>
             <h2 className={styles.modalTitle}>{comingSoonFeature} is Coming Soon!</h2>
             <p className={styles.modalDescription}>
@@ -572,7 +510,7 @@ export default function StudentShell({
               Stay tuned for our upcoming Phase 1 update!
             </p>
             <div className={styles.modalActions}>
-              <Button variant="primary" onClick={() => setComingSoonFeature(null)} leftIcon={<Rocket size={18} />}>
+              <Button variant="primary" onClick={() => setComingSoonFeature(null)} leftIcon={<Art name="rocket" size={22} />}>
                 Got it, I&apos;ll Wait!
               </Button>
             </div>

@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         message: 'I like option 2, but the ending of option 4 is better. Can we have both?',
         prompt: 'Which request should Ada give the AI?',
         options: [
-          { text: 'Take option 2, use the ending from option 4, and keep it under 8 words.' },
           { text: 'Start again with new options.', why: 'They already like parts of two. Combine them.' },
           { text: 'Pick one for us.', why: 'Lucía already chose. Combine her picks.' },
+          { text: 'Take option 2, use the ending from option 4, and keep it under 8 words.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

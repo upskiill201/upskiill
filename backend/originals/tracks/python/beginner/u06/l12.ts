@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         code: 'print(sum([30000, 15000, 25000]))',
         language: 'python',
         options: [
-          { text: '70000' },
           { text: '3', why: 'That\'s len(). sum() adds the values.' },
+          { text: '70000' },
           { text: '30000', why: 'That\'s max().' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         code: 'payments = [30000, 30000, 15000, 25000]\nprint(sum(payments) / len(payments))',
         language: 'python',
         options: [
-          { text: '25000.0' },
           { text: '25000', why: '/ always gives a float, so it shows .0.' },
           { text: '100000', why: 'That\'s just the sum. Dividing by the count gives the average.' },
+          { text: '25000.0' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

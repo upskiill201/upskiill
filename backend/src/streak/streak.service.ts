@@ -1,3 +1,4 @@
+import { ProAccessService } from '../pro/pro-access.service';
 import { BadRequestException, Injectable, Optional } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import type { Prisma, StudentProfile } from '@prisma/client';
@@ -15,7 +16,12 @@ export interface StreakRepairOffer {
   costCoins: number;
   /** ISO — after this the offer is gone. */
   expiresAt: string | null;
+  /** Teyro Pro: this repair costs nothing (one per 30 days). */
+  freeWithPro?: boolean;
 }
+
+/** Teyro Pro includes one free streak repair every 30 days. */
+const PRO_REPAIR_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
 /** The next streak-chest milestone, shown as the learner's streak goal. */
 export interface StreakGoal {
@@ -137,7 +143,23 @@ export class StreakService {
     // Optional so the many `new StreakService(prisma)` call sites in specs
     // keep working; Nest always provides it.
     @Optional() private readonly events?: EventEmitter2,
+    // Optional for the same reason; when present, Pro repairs are free.
+    @Optional() private readonly pro?: ProAccessService,
   ) {}
+
+  /** Pro learner who hasn't used this month's free repair yet. */
+  private async freeProRepair(userId: string): Promise<boolean> {
+    if (!this.pro || !(await this.pro.hasPro(userId))) return false;
+    const used = await this.prisma.rewardTransaction.findFirst({
+      where: {
+        userId,
+        sourceType: 'PRO_STREAK_REPAIR',
+        createdAt: { gte: new Date(Date.now() - PRO_REPAIR_WINDOW_MS) },
+      },
+      select: { id: true },
+    });
+    return !used;
+  }
 
   async reconcile(userId: string, tzOffsetMinutes = 0): Promise<ReconcileResult> {
     let profile = await this.prisma.studentProfile.upsert({
@@ -275,11 +297,13 @@ export class StreakService {
     // A streak that's already longer than the broken one has moved on.
     const loss = await this.latestUnrepairedLoss(userId);
     if (!loss || currentStreak >= loss.amount) return none;
+    const freeWithPro = await this.freeProRepair(userId);
     return {
       available: true,
       lostStreak: loss.amount,
-      costCoins: streakRepairCost(),
+      costCoins: freeWithPro ? 0 : streakRepairCost(),
       expiresAt: new Date(loss.createdAt.getTime() + STREAK_REPAIR_WINDOW_MS).toISOString(),
+      freeWithPro,
     };
   }
 
@@ -327,9 +351,25 @@ export class StreakService {
   async repairStreak(userId: string, tzOffsetMinutes = 0) {
     await this.reconcile(userId, tzOffsetMinutes);
     const cost = streakRepairCost();
+    const freeWithPro = await this.freeProRepair(userId);
 
     return this.prisma.$transaction(async (tx) => {
       const result = await this.applyRepair(tx, userId);
+      if (freeWithPro) {
+        // The unique key makes a double tap repair (and spend the perk) once.
+        await tx.rewardTransaction.create({
+          data: {
+            userId,
+            currency: 'COINS',
+            amount: 0,
+            sourceType: 'PRO_STREAK_REPAIR',
+            sourceId: result.lossId,
+            idempotencyKey: `pro_streak_repair:${result.lossId}`,
+          },
+        });
+        const profile = await tx.studentProfile.findUniqueOrThrow({ where: { userId } });
+        return { restoredStreak: result.restoredStreak, profile, freeWithPro: true };
+      }
       const charged = await tx.studentProfile.updateMany({
         where: { userId, coins: { gte: cost } },
         data: { coins: { decrement: cost } },

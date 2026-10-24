@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         message: 'Your AI-written update was lovely but way too long for a Slack message.',
         prompt: 'What should Ada add to her request next time?',
         options: [
-          { text: '"For Slack: 2 short lines, friendly."' },
           { text: '"Make it lovely but less."', why: 'Less how much? Give a number or a shape.' },
+          { text: '"For Slack: 2 short lines, friendly."' },
           { text: '"Be concise please."', why: '"Concise" still guesses the length.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -162,11 +162,11 @@ const lesson: OriginalLesson = {
         message: 'This is for our legal team, so please keep the jokes out of it!',
         prompt: 'Which tone instruction should Ada give the AI?',
         options: [
-          { text: '"Formal and precise, no humour."' },
           { text: '"Fun but serious."', why: 'Contradictory, and legal asked for no jokes.' },
           { text: '"Normal."', why: 'Normal for whom?' },
+          { text: '"Formal and precise, no humour."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -187,11 +187,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do AI tools often write long answers?',
         options: [
-          { text: 'Without a length, they try to cover everything that might be relevant' },
           { text: 'They are paid per word', why: 'Not the reason.' },
+          { text: 'Without a length, they try to cover everything that might be relevant' },
           { text: 'Long answers are always better', why: 'Not for busy readers.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

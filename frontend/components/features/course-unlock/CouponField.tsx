@@ -1,6 +1,6 @@
 'use client';
 
-import { Tag, X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import styles from './unlock.module.css';
 
 /**
@@ -67,7 +67,7 @@ export default function CouponField({
     return (
       <div className={styles.couponBox}>
         <span className={styles.couponAppliedRow}>
-          <Tag size={13} />
+          <Glyph name="tag" size={13} />
           <strong>{code}</strong> applied — you save ${quote.discountAmountUsd.toFixed(2)}
         </span>
         <button
@@ -76,7 +76,7 @@ export default function CouponField({
           onClick={onRemove}
           aria-label="Remove coupon"
         >
-          <X size={13} />
+          <Glyph name="close" size={13} />
         </button>
       </div>
     );

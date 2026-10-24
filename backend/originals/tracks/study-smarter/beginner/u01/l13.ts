@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'I asked it to quiz me and it gave me 10 questions WITH the answers. I just read them. Easy 10/10.',
         prompt: 'What should Kofi tell Clinton?',
         options: [
-          { text: 'That was reading, not a quiz. Add "one at a time, wait for my answer" and try again.' },
           { text: 'Nice, 10/10!', why: 'He read the answers. That is not a score.' },
           { text: 'Ask for 20 next time.', why: 'Same problem, twice as long.' },
+          { text: 'That was reading, not a quiz. Add "one at a time, wait for my answer" and try again.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

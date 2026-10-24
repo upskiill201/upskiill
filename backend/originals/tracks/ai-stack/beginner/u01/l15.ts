@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"Where is my order R-1042?" With only the help page, what should a good assistant say?',
         options: [
-          { text: 'That it doesn\'t know, because orders aren\'t in the help page' },
           { text: 'A likely delivery date', why: 'That would be made up.' },
+          { text: 'That it doesn\'t know, because orders aren\'t in the help page' },
           { text: '"Delivered"', why: 'It has no way to know that.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'A new orchestration framework launched today. Rewrite Ask Rao in it?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'Which job would it do better, and what would switching cost us? Our 12 lines don\'t need a framework yet.' },
           { text: 'Yes, newest is best.', why: 'New isn\'t a reason. Ask the three questions.' },
           { text: 'Frameworks are banned.', why: 'They can help later. Decide by the job, not the hype.' },
+          { text: 'Which job would it do better, and what would switching cost us? Our 12 lines don\'t need a framework yet.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "I don\'t know" a good failure?',
         options: [
-          { text: 'It doesn\'t mislead the customer with a made-up fact' },
           { text: 'It\'s shorter', why: 'Length isn\'t the point. Honesty is.' },
+          { text: 'It doesn\'t mislead the customer with a made-up fact' },
           { text: 'Customers love it', why: 'They\'d prefer an answer, but a wrong one is worse.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

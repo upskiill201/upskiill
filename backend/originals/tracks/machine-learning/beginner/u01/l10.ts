@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which step uses examples where the answer is already known?',
         options: [
-          { text: 'Training' },
           { text: 'Predicting', why: 'Predicting is for new examples.' },
           { text: 'Printing', why: 'Printing just shows a result.' },
+          { text: 'Training' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         code: 'wait_days = 16\nreminder = False\n\nif wait_days > 14 and not reminder:\n    print("Likely to miss")\nelse:\n    print("Likely to come")',
         language: 'python',
         options: [
-          { text: 'Likely to miss' },
           { text: 'Likely to come', why: '16 > 14 and no reminder.' },
+          { text: 'Likely to miss' },
           { text: 'An error', why: 'It runs.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Bisi has time for 2 calls. Model chances: Amaka 0.9, Kunle 0.3, Rita 0.7. Who does she call?',
         options: [
-          { text: 'Amaka and Rita' },
           { text: 'Kunle and Rita', why: 'Kunle is the least likely to miss.' },
+          { text: 'Amaka and Rita' },
           { text: 'Amaka and Kunle', why: 'Rita (0.7) is more likely to miss than Kunle (0.3).' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

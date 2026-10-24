@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The user types "  OLA ". Why clean name with .strip().title()?',
         options: [
-          { text: 'So it matches "Ola" in the list, and is stored the same way as everyone else' },
           { text: 'To make it shorter', why: 'It\'s about matching, not length.' },
           { text: 'in ignores spaces anyway', why: 'It doesn\'t: "  OLA " isn\'t "Ola".' },
+          { text: 'So it matches "Ola" in the list, and is stored the same way as everyone else' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -140,11 +140,11 @@ const lesson: OriginalLesson = {
         message: 'Should the manager let anyone type "leave Ada"?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Not in real life. For now it\'s your laptop, so it\'s fine. Later you\'d add a check on who\'s allowed to make changes.' },
           { text: 'Yes, anyone should.', why: 'Changing the member list is the group\'s decision.' },
+          { text: 'Not in real life. For now it\'s your laptop, so it\'s fine. Later you\'d add a check on who\'s allowed to make changes.' },
           { text: 'Python can\'t do that.', why: 'It can: with an if on who is using it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

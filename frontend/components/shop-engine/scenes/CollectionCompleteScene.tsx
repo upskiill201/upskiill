@@ -11,7 +11,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Lock } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import SceneShell from '../../celebration/SceneShell';
 import sceneStyles from '../../celebration/Scene.module.css';
 import styles from '../ShopScene.module.css';
@@ -110,7 +110,7 @@ export default function CollectionCompleteScene({
 
           <div style={{ textAlign: 'center' }}>
             <span className={styles.exclusiveTag}>
-              <Lock size={13} strokeWidth={2.6} />
+              <Glyph name="lock" size={13} strokeWidth={2.6} />
               Cannot be bought
             </span>
           </div>

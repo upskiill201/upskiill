@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         code: 'members = ["Ada", "Tunde", "Bisi", "Kemi"]\nprint(members[1:])',
         language: 'python',
         options: [
-          { text: "['Tunde', 'Bisi', 'Kemi']" },
           { text: "['Ada']", why: 'That\'s members[:1].' },
           { text: 'Tunde', why: 'A slice is always a list.' },
+          { text: "['Tunde', 'Bisi', 'Kemi']" },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

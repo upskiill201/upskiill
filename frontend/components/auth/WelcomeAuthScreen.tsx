@@ -1,31 +1,42 @@
 'use client';
 
 /**
- * Welcome + log in, shared by /login and /onboarding/0 — Duolingo's first
- * screen.
+ * Welcome + log in, shared by /login, the creator portal's log in and its
+ * forgot-password page (founder, 2026-10-23: rebuilt in the onboarding's
+ * look, Duolingo-faithful and warmer).
  *
- *   welcome   Tey on his platform, one promise, GET STARTED (new learners →
- *             onboarding) and I ALREADY HAVE AN ACCOUNT.
- *   signin    Duolingo's log in: one grouped field box with FORGOT? inside
- *             the password, a chunky LOG IN, then Google.
+ *   welcome   Tey with the skills floating round him, one promise, GET
+ *             STARTED (new learners → onboarding) and I ALREADY HAVE AN ACCOUNT.
+ *   signin    Tey says welcome back; "Sign back in" offers the account this
+ *             device remembers (lib/auth/savedAccount); one grouped field box
+ *             with FORGOT? inside the password, a chunky LOG IN, then Google.
+ *             A good log in gets a beat of "Welcome back, Ada!" before the app.
  *   forgot    Send a reset link; `sent` confirms it.
+ *   code      An account that never confirmed its email: a fresh 6-digit
+ *             code is sent and checked here, then the log in carries on.
  *
- * One responsive layout (it used to render separate phone and desktop trees).
  * The URL never changes; only the post-login redirect differs by route.
+ * Every icon is Teyro's own (components/art), never a stock icon.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, Eye, EyeOff, MailCheck, X } from 'lucide-react';
+import { Art } from '@/components/art/Art';
+import { Glyph } from '@/components/art/Glyph';
+import { TeyHero, TeyLine } from '@/components/kit/Kit';
+import { SkillOrbit } from '@/components/onboarding/v3/IntroSteps';
 import { signInWithGoogle } from '@/lib/firebase';
 import { extractErrorMessage } from '@/lib/apiError';
-import { playHaptic } from '@/lib/haptics';
+import { forgetSavedAccount, maskEmail, readSavedAccount, saveAccount, type SavedAccount } from '@/lib/auth/savedAccount';
+import { celebrationHaptic, playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { hydrateSoundPreferences } from '@/lib/audio/soundManager';
+import { clearClientSession } from '@/lib/user-cache';
 import { TeyMark } from '@/components/brand/TeyMark';
+import VerifyCodeForm from './VerifyCodeForm';
 import {
   Divider,
   Field,
@@ -75,18 +86,19 @@ export interface WelcomeCopy {
 const LEARNER_COPY: WelcomeCopy = {
   titleLead: 'Learn real skills, ',
   titleTail: 'one fun lesson at a time.',
-  subtitle:
-    'Bite-sized coding and AI lessons, daily streaks, leagues, and Tey cheering you on. Free to start.',
+  subtitle: 'Coding, AI, communication, leadership and more. A few minutes a day, with Tey cheering you on. Free to start.',
   art: '/User onbarding Assets/tey/welcome.webp',
   artAlt: 'Tey, the Teyro mascot, waving hello',
   signinTitle: 'Log in',
   homeHref: '/dashboard',
 };
 
-type View = 'welcome' | 'signin' | 'forgot' | 'sent';
+const TEY = (pose: string) => `/User onbarding Assets/tey/${pose}.webp`;
+
+type View = 'welcome' | 'signin' | 'forgot' | 'sent' | 'code';
 
 export default function WelcomeAuthScreen({
-  getStartedHref = '/onboarding/1',
+  getStartedHref = '/onboarding',
   backHref = '/',
   nextPath = null,
   initialView = 'welcome',
@@ -104,12 +116,16 @@ export default function WelcomeAuthScreen({
   const [resetEmail, setResetEmail] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [saved, setSaved] = useState<SavedAccount | null>(null);
+  const [welcomeBack, setWelcomeBack] = useState<string | null>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
-  // /login and /onboarding/0 sit outside the app providers, so the learner's
-  // saved mute/volume hasn't been loaded yet.
+  // /login sits outside the app providers, so the learner's saved mute/volume
+  // hasn't been loaded yet; and the remembered account lives on this device.
   useEffect(() => {
     hydrateSoundPreferences();
-  }, []);
+    setSaved(readSavedAccount(role));
+  }, [role]);
 
   const go = (next: View) => {
     setError('');
@@ -122,6 +138,19 @@ export default function WelcomeAuthScreen({
     setError(message);
     playSound('wrong');
     playHaptic('error', false);
+  };
+
+  /** A beat of "Welcome back, Ada!", then the app (a real navigation, fresh caches). */
+  const arrive = (to: string, name: string | null) => {
+    // Whoever this device held before (an expired session, a shared phone)
+    // must not paint for a beat in the new account's app.
+    clearClientSession();
+    playSound('correct');
+    celebrationHaptic('soft');
+    setWelcomeBack(name ? `Welcome back, ${name}!` : 'Welcome back!');
+    window.setTimeout(() => {
+      window.location.href = to;
+    }, reduce ? 150 : 900);
   };
 
   const handleGetStarted = () => {
@@ -139,32 +168,54 @@ export default function WelcomeAuthScreen({
     }
   };
 
+  const useSaved = () => {
+    if (!saved) return;
+    playSound('navTap', 3);
+    playHaptic('light', false);
+    setEmail(saved.email);
+    window.setTimeout(() => passwordRef.current?.focus(), 30);
+  };
+
+  const removeSaved = () => {
+    forgetSavedAccount();
+    setSaved(null);
+    if (email === saved?.email) setEmail('');
+    playSound('cardBack');
+  };
+
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
+      const cleanEmail = email.toLowerCase().trim();
       const res = await fetch(`/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          email: email.toLowerCase().trim(),
-          password,
-          ...(role === 'INSTRUCTOR' ? { role } : {}),
-        }),
+        body: JSON.stringify({ email: cleanEmail, password, ...(role === 'INSTRUCTOR' ? { role } : {}) }),
       });
       const data = await res.json();
+      if (res.status === 403 && data?.requiresVerification) {
+        // Never confirmed the email: send a fresh code and check it right here
+        // (a cooldown refusal means a recent code is already in the inbox).
+        void fetch('/api/auth/resend-verification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: cleanEmail }),
+        }).catch(() => undefined);
+        setLoading(false);
+        go('code');
+        return;
+      }
       if (!res.ok) throw new Error(extractErrorMessage(data, res.status));
-
-      playSound('correct');
-      playHaptic('success', false);
+      const fullName: string | null = data?.user?.fullName ?? null;
+      saveAccount({ email: cleanEmail, fullName, avatarUrl: data?.user?.avatarUrl ?? null, role });
       // Server-provided redirectTo comes from real profile flags, so creators
       // aren't blindly sent to /dashboard.
-      window.location.href = nextPath || data.redirectTo || copy.homeHref;
+      arrive(nextPath || data.redirectTo || copy.homeHref, fullName?.split(' ')[0] ?? null);
     } catch (err: unknown) {
       fail(err instanceof Error ? err.message : "That didn't work. Let's try again.");
-    } finally {
       setLoading(false);
     }
   };
@@ -208,14 +259,12 @@ export default function WelcomeAuthScreen({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(extractErrorMessage(data, res.status));
-
-      playSound('correct');
-      playHaptic('success', false);
-      window.location.href = nextPath || data.redirectTo || copy.homeHref;
+      const fullName = data?.user?.fullName ?? result.user.displayName ?? null;
+      if (result.user.email) saveAccount({ email: result.user.email, fullName, avatarUrl: result.user.photoURL, role });
+      arrive(nextPath || data.redirectTo || copy.homeHref, fullName?.split(' ')[0] ?? null);
     } catch (err: unknown) {
       console.error(err);
       fail(err instanceof Error ? err.message : "Google didn't cooperate. Mind trying again?");
-    } finally {
       setLoading(false);
     }
   };
@@ -229,11 +278,13 @@ export default function WelcomeAuthScreen({
         transition: { type: 'spring' as const, stiffness: 340, damping: 30 },
       };
 
+  const savedName = saved?.firstName ?? null;
+
   return (
     <div className={styles.screen}>
       <header className={styles.topBar}>
         <button type="button" className={styles.iconBtn} onClick={handleBack} aria-label={view === 'welcome' ? 'Back' : 'Close'}>
-          {view === 'welcome' ? <ArrowLeft size={24} strokeWidth={3} /> : <X size={26} strokeWidth={3} />}
+          <Glyph name={view === 'welcome' ? 'back' : 'close'} size={26} strokeWidth={3.2} />
         </button>
         {view === 'signin' && (
           <button type="button" className={styles.topLink} onClick={handleGetStarted}>
@@ -246,22 +297,21 @@ export default function WelcomeAuthScreen({
         {view === 'welcome' && (
           <motion.main key="welcome" className={styles.welcome} {...slide}>
             <div className={styles.welcomeArt}>
-              <span className={styles.halo} aria-hidden="true" />
-              <motion.div
-                className={styles.teyFloat}
-                initial={reduce ? false : { scale: 0.85, opacity: 0, y: 20 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                transition={{ type: 'spring', stiffness: 220, damping: 20 }}
-              >
-                <Image
-                  src={copy.art}
-                  alt={copy.artAlt}
-                  width={420}
-                  height={525}
-                  priority
-                  className={styles.teyImg}
-                />
-              </motion.div>
+              {role === 'STUDENT' ? (
+                <SkillOrbit teySrc={copy.art} />
+              ) : (
+                <>
+                  <span className={styles.halo} aria-hidden="true" />
+                  <motion.div
+                    className={styles.teyFloat}
+                    initial={reduce ? false : { scale: 0.85, opacity: 0, y: 20 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+                  >
+                    <Image src={copy.art} alt={copy.artAlt} width={420} height={525} priority className={styles.teyImg} />
+                  </motion.div>
+                </>
+              )}
             </div>
 
             <div className={styles.welcomeCopy}>
@@ -285,7 +335,51 @@ export default function WelcomeAuthScreen({
 
         {view === 'signin' && (
           <motion.main key="signin" className={styles.formPane} {...slide}>
-            <h1 className={styles.formTitle}>{copy.signinTitle}</h1>
+            <TeyLine
+              teySrc={TEY(savedName ? 'waving' : 'pointing')}
+              text={savedName ? `Hey ${savedName}, welcome back! Let’s pick up where you left off.` : 'Welcome back! Log in and I’ll take you right back to your lesson.'}
+            />
+
+            {saved && (
+              <div className="flex flex-col gap-2">
+                <p className="text-[12px] font-extrabold uppercase tracking-[0.12em] text-[var(--text-muted)]">Sign back in</p>
+                <button
+                  type="button"
+                  className={`${styles.saved} ${email === saved.email ? styles.savedOn : ''}`}
+                  onClick={useSaved}
+                  aria-label={`Continue as ${savedName ?? maskEmail(saved.email)}`}
+                >
+                  <span className={styles.savedAvatar} aria-hidden="true">
+                    {saved.avatarUrl ? (
+                      <Image src={saved.avatarUrl} alt="" fill sizes="48px" className="object-cover" />
+                    ) : (
+                      (savedName ?? saved.email).slice(0, 1).toUpperCase()
+                    )}
+                  </span>
+                  <span className={styles.savedText}>
+                    <span className={styles.savedName}>{savedName ?? 'Your account'}</span>
+                    <span className={styles.savedEmail}>{maskEmail(saved.email)}</span>
+                  </span>
+                  <Glyph name="chevron" size={22} className={styles.savedChev} />
+                </button>
+                <div className={styles.savedRow}>
+                  <button
+                    type="button"
+                    className={styles.linkBtn}
+                    onClick={() => {
+                      setEmail('');
+                      playSound('navTap', 2);
+                    }}
+                  >
+                    Use another account
+                  </button>
+                  <button type="button" className={`${styles.linkBtn} ${styles.linkMuted}`} onClick={removeSaved}>
+                    Remove from this device
+                  </button>
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleEmailLogin} className={styles.form} noValidate={false}>
               <FieldGroup>
                 <Field
@@ -298,6 +392,7 @@ export default function WelcomeAuthScreen({
                   required
                 />
                 <Field
+                  ref={passwordRef}
                   label="Password"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
@@ -315,7 +410,7 @@ export default function WelcomeAuthScreen({
                         }}
                         aria-label={showPassword ? 'Hide password' : 'Show password'}
                       >
-                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        <Glyph name={showPassword ? 'eyeOff' : 'eye'} size={22} strokeWidth={2.4} />
                       </button>
                       <button type="button" className={styles.forgot} onClick={() => go('forgot')}>
                         Forgot?
@@ -332,16 +427,14 @@ export default function WelcomeAuthScreen({
             <Divider />
             <GoogleButton onClick={handleGoogleLogin} disabled={loading} />
             <p className={styles.legal}>
-              By logging in to Teyro, you agree to our <Link href="/terms">Terms</Link> and{' '}
-              <Link href="/privacy">Privacy Policy</Link>.
+              By logging in to Teyro, you agree to our <Link href="/terms">Terms</Link> and <Link href="/privacy">Privacy Policy</Link>.
             </p>
           </motion.main>
         )}
 
         {view === 'forgot' && (
           <motion.main key="forgot" className={styles.formPane} {...slide}>
-            <h1 className={styles.formTitle}>Forgot password</h1>
-            <p className={styles.formSub}>Tell me your email and I&apos;ll send you a reset link.</p>
+            <TeyLine teySrc={TEY('thinking')} text="No worries, it happens. What’s your email? I’ll send you a link to choose a new password." />
             <form onSubmit={handleForgotPassword} className={styles.form}>
               <FieldGroup>
                 <Field
@@ -362,15 +455,28 @@ export default function WelcomeAuthScreen({
           </motion.main>
         )}
 
+        {view === 'code' && (
+          <motion.main key="code" className={styles.formPane} {...slide}>
+            <VerifyCodeForm
+              email={email}
+              onVerified={({ redirectTo }) => {
+                const cleanEmail = email.toLowerCase().trim();
+                const mine = saved?.email === cleanEmail ? saved : null;
+                saveAccount({ email: cleanEmail, fullName: mine?.firstName ?? null, avatarUrl: mine?.avatarUrl ?? null, role });
+                arrive(nextPath || redirectTo || copy.homeHref, mine?.firstName ?? null);
+              }}
+            />
+          </motion.main>
+        )}
+
         {view === 'sent' && (
           <motion.main key="sent" className={`${styles.formPane} ${styles.center}`} {...slide}>
             <motion.span
-              className={styles.sentBadge}
               initial={reduce ? false : { scale: 0.4, rotate: -12 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: 'spring', stiffness: 380, damping: 14 }}
             >
-              <MailCheck size={44} strokeWidth={2.5} aria-hidden="true" />
+              <Art name="envelope" size={120} />
             </motion.span>
             <h1 className={styles.formTitle}>Check your inbox</h1>
             <p className={styles.formSub}>
@@ -380,6 +486,15 @@ export default function WelcomeAuthScreen({
               Back to log in
             </PrimaryButton>
           </motion.main>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {welcomeBack && (
+          <motion.div className={styles.welcomeBack} initial={{ opacity: 0 }} animate={{ opacity: 1 }} role="status">
+            <TeyHero teySrc={TEY('cheering')} size={170} />
+            <p className={styles.welcomeBackTitle}>{welcomeBack}</p>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

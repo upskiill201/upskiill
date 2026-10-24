@@ -6,6 +6,7 @@ import { StripeProvider } from './providers/stripe.provider';
 import { MesombProvider } from './providers/mesomb.provider';
 import { EarningsService } from '../earnings/earnings.service';
 import { CouponsService } from '../coupons/coupons.service';
+import { ProGrantService } from '../pro/pro-grant.service';
 import { BadRequestException, ServiceUnavailableException } from '@nestjs/common';
 
 describe('PaymentService', () => {
@@ -35,6 +36,7 @@ describe('PaymentService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PaymentService,
+        { provide: ProGrantService, useValue: { grantMesombPro: jest.fn() } },
         {
           provide: PrismaService,
           useValue: prismaServiceMock,
@@ -95,72 +97,13 @@ describe('PaymentService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('collectMesomb', () => {
-    const userId = 'user-1';
-    const courseIds = ['course-1', 'course-2'];
-    const payerAccount = '237670000000';
-    const serviceName = 'MTN';
-
-    it('should delegate to the MeSomb provider with the courses total price', async () => {
-      prismaServiceMock.course.findMany.mockResolvedValue([
-        { id: 'course-1', price: 10 },
-        { id: 'course-2', price: 20 },
-      ]);
-
-      const providerResult = {
-        success: true,
-        provider: 'MESOMB',
-        status: 'ACTIVE',
-        subscriptionId: 'mesomb_123',
-        message: 'Payment confirmed via Mobile Money. Course unlocked!',
-      };
-
-      (mesombProviderMock.createSubscription as jest.Mock).mockResolvedValue(providerResult);
-
-      const result = await service.collectMesomb(userId, courseIds, payerAccount, serviceName);
-
-      expect(result).toEqual(providerResult);
-      // $30 = 10 + 20 — the total of the requested courses
-      expect(mesombProviderMock.createSubscription).toHaveBeenCalledWith(
-        expect.objectContaining({ userId, price: 30, phone: payerAccount, service: serviceName }),
-      );
-    });
-
-    it('should pass through a pending status without minting anything', async () => {
-      prismaServiceMock.course.findMany.mockResolvedValue([
-        { id: 'course-1', price: 10 },
-        { id: 'course-2', price: 20 },
-      ]);
-
-      const providerResult = { success: true, provider: 'MESOMB', status: 'PENDING' };
-
-      (mesombProviderMock.createSubscription as jest.Mock).mockResolvedValue(providerResult);
-
-      const result = await service.collectMesomb(userId, courseIds, payerAccount, serviceName);
-
-      expect(result).toEqual(providerResult);
-      expect(prismaServiceMock.$transaction).not.toHaveBeenCalled();
-    });
-
-    it('should surface provider failures as BadRequestException', async () => {
-      prismaServiceMock.course.findMany.mockResolvedValue([
-        { id: 'course-1', price: 10 },
-        { id: 'course-2', price: 20 },
-      ]);
-
-
-      (mesombProviderMock.createSubscription as jest.Mock).mockRejectedValue(
-        new BadRequestException('Failed to process Mobile Money prompt.'),
-      );
-
-      await expect(service.collectMesomb(userId, courseIds, payerAccount, serviceName))
-        .rejects
-        .toThrow(BadRequestException);
-    });
-  });
 });
 
 describe('PaymentService — free (100%) coupon bypass', () => {
+  // Per-course checkout as it worked before Teyro Pro (Pro switched off).
+  const OLD_PRO = process.env.PRO_ENABLED;
+  beforeAll(() => (process.env.PRO_ENABLED = 'false'));
+  afterAll(() => (process.env.PRO_ENABLED = OLD_PRO));
   let service: PaymentService;
   let prismaMock: any;
   let couponsMock: any;
@@ -185,6 +128,7 @@ describe('PaymentService — free (100%) coupon bypass', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PaymentService,
+        { provide: ProGrantService, useValue: { grantMesombPro: jest.fn() } },
         { provide: PrismaService, useValue: prismaMock },
         { provide: StripeProvider, useValue: stripeProviderMock },
         { provide: MesombProvider, useValue: mesombMock },
@@ -279,6 +223,7 @@ describe('PaymentService — MeSomb webhook signature verification', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PaymentService,
+        { provide: ProGrantService, useValue: { grantMesombPro: jest.fn() } },
         { provide: PrismaService, useValue: prismaMock },
         { provide: StripeProvider, useValue: { createSubscription: jest.fn(), cancelSubscription: jest.fn() } },
         { provide: MesombProvider, useValue: { createSubscription: jest.fn(), cancelSubscription: jest.fn() } },
@@ -368,5 +313,189 @@ describe('PaymentService — MeSomb webhook signature verification', () => {
     await expect(service.handleMesombWebhook(raw, undefined)).rejects.toThrow(BadRequestException);
     await expect(service.handleMesombWebhook(raw, 'v1=deadbeef')).rejects.toThrow(BadRequestException);
     await expect(service.handleMesombWebhook(raw, 't=123,v1=zzzz')).rejects.toThrow(BadRequestException);
+  });
+});
+
+describe('PaymentService — Stripe webhook verification and refund revocation', () => {
+  const SECRET = 'whsec_test_secret';
+  let service: PaymentService;
+  let prisma: any;
+  let earnings: any;
+
+  const build = async () => {
+    prisma = {
+      processedWebhookEvent: {
+        create: jest.fn().mockResolvedValue({}),
+        deleteMany: jest.fn().mockResolvedValue({}),
+      },
+      courseAccessEntitlement: {
+        updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+      },
+      courseSubscription: {
+        updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+      },
+    };
+    earnings = {
+      recordSaleInTx: jest.fn(),
+      recordStripeRefund: jest.fn(),
+      recordDisputeOpened: jest.fn(),
+      recordDisputeWon: jest.fn(),
+      auditSystem: jest.fn(),
+    };
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        PaymentService,
+        { provide: ProGrantService, useValue: { grantMesombPro: jest.fn() } },
+        { provide: PrismaService, useValue: prisma },
+        { provide: StripeProvider, useValue: {} },
+        { provide: MesombProvider, useValue: {} },
+        { provide: EarningsService, useValue: earnings },
+        { provide: EventEmitter2, useValue: { emit: jest.fn() } },
+        { provide: CouponsService, useValue: {} },
+      ],
+    }).compile();
+    service = module.get(PaymentService);
+  };
+
+  const signed = (event: object) => {
+    const payload = JSON.stringify(event);
+    const stripe = (service as any).stripe;
+    const header = stripe.webhooks.generateTestHeaderString({
+      payload,
+      secret: SECRET,
+    });
+    return { body: Buffer.from(payload), header };
+  };
+
+  beforeEach(async () => {
+    process.env.STRIPE_WEBHOOK_SECRET = SECRET;
+    await build();
+  });
+
+  afterEach(() => {
+    delete process.env.STRIPE_WEBHOOK_SECRET;
+    jest.clearAllMocks();
+  });
+
+  it('refuses every event when no webhook secret is configured, in any environment', async () => {
+    delete process.env.STRIPE_WEBHOOK_SECRET;
+    const forged = Buffer.from(
+      JSON.stringify({ id: 'evt_1', type: 'checkout.session.completed', data: { object: {} } }),
+    );
+    await expect(service.handleStripeWebhook(forged, '')).rejects.toBeInstanceOf(
+      ServiceUnavailableException,
+    );
+    expect(prisma.processedWebhookEvent.create).not.toHaveBeenCalled();
+  });
+
+  it('refuses an unsigned body when the secret is set', async () => {
+    const forged = Buffer.from(JSON.stringify({ id: 'evt_2', type: 'x', data: { object: {} } }));
+    await expect(service.handleStripeWebhook(forged, '')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+  });
+
+  it('a full refund expires the entitlement and cancels the renewal', async () => {
+    const stripe = (service as any).stripe;
+    stripe.invoices = { retrieve: jest.fn().mockResolvedValue({ subscription: 'sub_123' }) };
+    stripe.subscriptions = { cancel: jest.fn().mockResolvedValue({}) };
+    const { body, header } = signed({
+      id: 'evt_refund',
+      type: 'charge.refunded',
+      data: {
+        object: {
+          id: 'ch_1',
+          refunded: true,
+          payment_intent: 'pi_1',
+          invoice: 'in_1',
+          refunds: { data: [{ id: 're_1', amount: 999, created: 1 }] },
+        },
+      },
+    });
+
+    await service.handleStripeWebhook(body, header);
+
+    expect(prisma.courseAccessEntitlement.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { stripeSubscriptionId: 'sub_123', status: 'ACTIVE' },
+        data: expect.objectContaining({ status: 'EXPIRED' }),
+      }),
+    );
+    expect(stripe.subscriptions.cancel).toHaveBeenCalledWith('sub_123');
+    expect(earnings.auditSystem).toHaveBeenCalledWith(
+      'ACCESS_REVOKED',
+      'CourseSubscription',
+      'sub_123',
+      expect.objectContaining({ why: 'REFUND' }),
+    );
+  });
+
+  it('a partial refund leaves access alone', async () => {
+    const stripe = (service as any).stripe;
+    stripe.invoices = { retrieve: jest.fn() };
+    const { body, header } = signed({
+      id: 'evt_partial',
+      type: 'charge.refunded',
+      data: {
+        object: {
+          id: 'ch_2',
+          refunded: false,
+          payment_intent: 'pi_2',
+          invoice: 'in_2',
+          refunds: { data: [{ id: 're_2', amount: 100, created: 1 }] },
+        },
+      },
+    });
+
+    await service.handleStripeWebhook(body, header);
+
+    expect(earnings.recordStripeRefund).toHaveBeenCalled();
+    expect(stripe.invoices.retrieve).not.toHaveBeenCalled();
+    expect(prisma.courseAccessEntitlement.updateMany).not.toHaveBeenCalled();
+  });
+});
+
+describe('PaymentService — per-course sales with Teyro Pro on', () => {
+  const OLD_PRO = process.env.PRO_ENABLED;
+  beforeAll(() => (process.env.PRO_ENABLED = 'true'));
+  afterAll(() => (process.env.PRO_ENABLED = OLD_PRO));
+
+  const build = async (held: boolean) => {
+    const prisma: any = {
+      course: {
+        findUnique: jest.fn().mockResolvedValue({
+          id: 'course-1', title: 'Course', price: 20, published: true, instructorId: 'creator', isOriginal: false,
+        }),
+      },
+      user: { findUnique: jest.fn().mockResolvedValue({ id: 'u1', email: 'a@b.com', fullName: 'A' }) },
+      courseAccessEntitlement: { findUnique: jest.fn().mockResolvedValue(held ? { id: 'e1' } : null) },
+    };
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        PaymentService,
+        { provide: ProGrantService, useValue: {} },
+        { provide: PrismaService, useValue: prisma },
+        { provide: StripeProvider, useValue: { createSubscription: jest.fn() } },
+        { provide: MesombProvider, useValue: { createSubscription: jest.fn() } },
+        { provide: EarningsService, useValue: {} },
+        { provide: EventEmitter2, useValue: { emit: jest.fn() } },
+        { provide: CouponsService, useValue: {} },
+      ],
+    }).compile();
+    return module.get(PaymentService);
+  };
+
+  it('refuses a new course purchase: every course is part of Pro', async () => {
+    const service = await build(false);
+    await expect(service.subscribeCourse('u1', 'course-1', 'YEARLY', 'STRIPE')).rejects.toMatchObject({
+      response: expect.objectContaining({ code: 'PER_COURSE_RETIRED', requiresPro: true }),
+    });
+  });
+
+  it('refuses a coupon on a Mobile Money renewal', async () => {
+    const service = await build(true);
+    await expect(
+      service.subscribeCourse('u1', 'course-1', 'MONTHLY', 'MESOMB', { couponCode: 'X' }),
+    ).rejects.toMatchObject({ response: expect.objectContaining({ code: 'PER_COURSE_RETIRED' }) });
   });
 });

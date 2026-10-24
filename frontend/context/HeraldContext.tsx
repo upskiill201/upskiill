@@ -14,6 +14,7 @@ import { mutate } from 'swr';
 import { fetcher } from '@/lib/swr';
 import { isStudentExperienceRoute } from '@/lib/herald-scope';
 import { notify } from '@/lib/awareness/notices';
+import { isFirstSession } from '@/lib/awareness/firstSession';
 import { useCelebration } from '@/context/CelebrationContext';
 
 /** Where a full-screen moment may appear unprompted: the tabs, not mid-task. */
@@ -190,6 +191,9 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
 
       if (notification.type === 'ACHIEVEMENT' && notification.achievement) {
         if (!CALM_ROUTES.includes(window.location.pathname)) return;
+        // Straight after onboarding the home screen is just the path: the
+        // medal waits as Profile's red dot and gets its moment next visit.
+        if (isFirstSession()) return;
         surfacedRef.current.add(notification.transitionKey);
         const a = notification.achievement;
         celebrate({
@@ -257,9 +261,9 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
     if (achievementsResult.status === 'fulfilled') {
       const achData = achievementsResult.value as any;
       if (Array.isArray(achData?.unseen)) {
-        // Cap per sweep so a fresh account crossing many tiers at once
-        // doesn't flood the banner queue — the rest surface after viewing.
-        achData.unseen.slice(0, 2).forEach((c: any) => {
+        // One full-screen medal per sweep, never two back to back — the
+        // rest surface on the next calm screen, after this one is viewed.
+        achData.unseen.slice(0, 1).forEach((c: any) => {
           enqueueHeraldNotification({
             id: `herald-achievement-${c.badgeId}-${c.tier}-${Date.now()}`,
             type: 'ACHIEVEMENT',

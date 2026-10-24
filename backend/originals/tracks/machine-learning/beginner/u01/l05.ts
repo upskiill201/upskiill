@@ -25,11 +25,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes a program "machine learning"?',
         options: [
-          { text: 'It finds its rules from examples' },
           { text: 'It runs on a fast computer', why: 'Speed has nothing to do with it.' },
+          { text: 'It finds its rules from examples' },
           { text: 'It has a lot of if-statements', why: 'Hand-written rules are normal programming.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         message: 'Let\'s add "how long the visit took" as a feature.',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'We only know that after the visit. We have to predict before, so it can\'t be a clue.' },
           { text: 'Sure, more is better.', why: 'A feature from after the event can\'t help you predict it.' },
+          { text: 'We only know that after the visit. We have to predict before, so it can\'t be a clue.' },
           { text: 'Visits don\'t take time.', why: 'The issue is WHEN we know it, not whether it exists.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Chidi wants to add "or the name is Obi" to make the rule perfect. What\'s wrong?',
         options: [
-          { text: 'It memorises this page instead of learning a pattern for new patients' },
           { text: 'Nothing: 12 out of 12 is better', why: 'Perfect on old examples isn\'t the goal. New patients are.' },
           { text: 'Names are too long', why: 'The problem is that it won\'t work for anyone new.' },
+          { text: 'It memorises this page instead of learning a pattern for new patients' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -142,11 +142,11 @@ const lesson: OriginalLesson = {
         message: 'So is this "AI" or not?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'It\'s the first step. Right now it\'s a rule I found by hand. Soon a computer will find better ones from thousands of appointments.' },
           { text: 'Yes, it\'s fully finished AI.', why: 'It\'s a hand-made rule from 12 rows: a start.' },
+          { text: 'It\'s the first step. Right now it\'s a rule I found by hand. Soon a computer will find better ones from thousands of appointments.' },
           { text: 'No, and it never will be.', why: 'Learning rules from data is exactly what comes next.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Using the rule (wait > 14 and no reminder → miss), what do we predict for Tolu: 21 days, no reminder?',
         options: [
-          { text: 'Will miss' },
           { text: 'Will come', why: '21 is more than 14, and there was no reminder: both parts are true.' },
+          { text: 'Will miss' },
           { text: 'Can\'t tell', why: 'The rule gives an answer for every patient.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ireti: 18 days, got a reminder. What does the rule predict?',
         options: [
-          { text: 'Will come' },
           { text: 'Will miss', why: 'She got a reminder, so the second part of the rule is false.' },
           { text: 'Will miss, because 18 > 14', why: 'Both parts must be true. She had a reminder.' },
+          { text: 'Will come' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which patient does the rule get wrong?',
         options: [
-          { text: 'Obi: 9 days, no reminder, 14 km, missed' },
           { text: 'Tolu: 21 days, no reminder, missed', why: 'The rule predicts a miss, and Tolu missed. Correct.' },
+          { text: 'Obi: 9 days, no reminder, 14 km, missed' },
           { text: 'Dapo: 4 days, reminder, came', why: 'The rule predicts he\'ll come, and he did. Correct.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         message: 'Easy fix: add "or the patient\'s name is Obi". Now it\'s 12 out of 12.',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'That only works for this page. Next month there\'s a new Obi and a new exception. The rule has to work on patients it hasn\'t seen.' },
           { text: 'Great, ship it!', why: 'A rule built around one person has memorised, not learned.' },
           { text: 'Then add every name.', why: 'That\'s memorising the page. Chapter 4 shows why that fails.' },
+          { text: 'That only works for this page. Next month there\'s a new Obi and a new exception. The rule has to work on patients it hasn\'t seen.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -151,11 +151,11 @@ const lesson: OriginalLesson = {
         message: 'You found that rule in two minutes. Why do we need a computer at all?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Because the real list has thousands of patients and many more clues. I can\'t check every combination by hand.' },
           { text: 'We don\'t. I\'ll do it by hand forever.', why: 'Twelve rows is fine by hand. Twenty-four hundred, with ten features, is not.' },
           { text: 'Computers are always smarter.', why: 'They\'re faster at checking patterns, not smarter about what they mean.' },
+          { text: 'Because the real list has thousands of patients and many more clues. I can\'t check every combination by hand.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

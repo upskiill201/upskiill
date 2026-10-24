@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why put a one-line summary at the top?',
         options: [
-          { text: 'Someone who reads only that line still knows the situation' },
           { text: 'Documents require it legally', why: 'No law. It helps busy readers.' },
           { text: 'To make it longer', why: 'It makes it faster to read.' },
+          { text: 'Someone who reads only that line still knows the situation' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         message: "Can you send a one-pager on the launch for our leadership meeting? They'll give it about 30 seconds.",
         prompt: 'Which request should Ada give the AI (with her notes)?',
         options: [
-          { text: "One page for leadership: title, 1-line summary, then Done, Next, Risks, Decisions needed. Bullets. Use only my notes; mark gaps [?]." },
           { text: 'Write a detailed launch report.', why: '30 seconds means summary first and short sections.' },
+          { text: "One page for leadership: title, 1-line summary, then Done, Next, Risks, Decisions needed. Bullets. Use only my notes; mark gaps [?]." },
           { text: 'Make my notes look nice.', why: 'No structure or reader given.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -164,11 +164,11 @@ const lesson: OriginalLesson = {
         message: "Your one-pager was great: I read the summary and the risks and knew exactly what to do.",
         prompt: 'What made it work?',
         options: [
-          { text: 'Summary first, then short sections, with the risk on its own line.' },
           { text: 'It was very long and detailed.', why: 'It worked because it was skimmable.' },
           { text: 'It had lots of colours.', why: 'Structure, not decoration.' },
+          { text: 'Summary first, then short sections, with the risk on its own line.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

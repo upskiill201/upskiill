@@ -21,7 +21,7 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Menu, RotateCcw } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { playHaptic } from '@/lib/haptics';
 import { useMobileMenu } from '@/components/layout/StudentShell';
 import { StatsBar } from '@/components/ui/StatsBar';
@@ -187,7 +187,7 @@ export default function DashboardPage() {
           className="mt-5 inline-flex items-center gap-2 h-12 px-6 rounded-[14px] bg-brand text-white text-[15px] font-extrabold uppercase tracking-wide cursor-pointer"
           style={{ boxShadow: '0 4px 0 var(--color-brand-dark)' }}
         >
-          <RotateCcw className="w-4 h-4 stroke-[3]" aria-hidden="true" />
+          <Glyph name="refresh" size={16} />
           Try again
         </button>
       </div>
@@ -223,7 +223,7 @@ export default function DashboardPage() {
             aria-label="Open menu"
             className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center text-ink hover:bg-slate-100 cursor-pointer"
           >
-            <Menu className="w-6 h-6 stroke-[2.5]" />
+            <Glyph name="menu" size={24} strokeWidth={2.8} />
           </button>
           {picker}
           <StatsBar compact show={['streak', 'coin', 'gem', 'lives']} className="flex-1 min-w-0 justify-evenly" />

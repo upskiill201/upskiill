@@ -81,6 +81,31 @@ export class CourseController {
       req.user.id as string,
       id,
       lessonId,
+      req.user.role === 'ADMIN',
+    );
+  }
+
+  /**
+   * The learner pressed Start on a lesson. Free learners spend one of
+   * today's free lessons here (and need a heart); everyone else passes.
+   * 403 { requiresPro, reason } opens the matching paywall.
+   */
+  @UseGuards(AuthGuard('jwt'))
+  @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @HttpCode(200)
+  @Post(':id/lessons/:lessonId/start')
+  async startLesson(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Param('lessonId') lessonId: string,
+    @Body('timezoneOffset') timezoneOffset?: number,
+  ) {
+    return this.courseService.startLesson(
+      req.user.id as string,
+      id,
+      lessonId,
+      Number(timezoneOffset) || 0,
+      req.user.role === 'ADMIN',
     );
   }
 

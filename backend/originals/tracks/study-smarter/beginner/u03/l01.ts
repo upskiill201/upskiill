@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does Efua do when she can\'t put something in her own words?',
         options: [
-          { text: 'Writes a question mark and asks later' },
           { text: 'Copies it exactly', why: 'That is what she avoids.' },
           { text: 'Skips it forever', why: 'She marks it to come back to.' },
+          { text: 'Writes a question mark and asks later' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: 'My notes are amazing, I copy every slide. 60 pages for Physics.',
         prompt: 'What should Kofi say?',
         options: [
-          { text: "That was me last week. Test yourself on page 1 without looking. If you can't, the copying didn't stick." },
           { text: 'Wow, 60 pages, you must know everything.', why: 'Pages copied is not knowledge.' },
+          { text: "That was me last week. Test yourself on page 1 without looking. If you can't, the copying didn't stick." },
           { text: 'Copy the textbook too.', why: 'More copying.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In osmosis, which way does water move?',
         options: [
-          { text: 'From a dilute solution (more water) to a concentrated one (less water)' },
           { text: 'From concentrated to dilute', why: 'Backwards: water moves towards where there is less water.' },
           { text: 'It does not move', why: 'Osmosis is the movement of water.' },
+          { text: 'From a dilute solution (more water) to a concentrated one (less water)' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

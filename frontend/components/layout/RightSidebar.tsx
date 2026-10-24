@@ -4,12 +4,12 @@ import React, { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bot, Lock, BookOpen, Target, Check, ChevronRight } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import LeagueBadge from '@/components/leaderboard/LeagueBadge';
 import { getLeagueMeta, LeagueTier } from '@/lib/leagues';
 import { playHaptic } from '@/lib/haptics';
 import { fetcher } from '@/lib/swr';
-import { useComingSoon } from '@/components/layout/StudentShell';
+import { useComingSoon } from '@/components/layout/ComingSoon';
 import { useGamification } from '@/context/GamificationContext';
 import { useCelebration } from '@/context/CelebrationContext';
 import LearningStatsCard from '@/components/dashboard/v2/LearningStatsCard';
@@ -398,7 +398,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
                   }}
                 >
                   {isCompleted ? (
-                    <Check size={14} />
+                    <Glyph name="check" size={14} />
                   ) : isDay7 ? (
                     <div style={{ position: 'relative', width: 20, height: 18 }}>
                       <Image
@@ -521,7 +521,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
       <div className={styles.messageCard}>
         {/* Outline mascot watermark */}
         <div className={styles.messageCardWatermark}>
-          <Bot size={120} />
+          <Glyph name="bubble" size={120} strokeWidth={1.6} />
         </div>
 
         <div className={styles.messageCardContent}>
@@ -562,14 +562,14 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
                   : 'Keep earning XP to climb this week'}
               </p>
               <span className={styles.leaderboardProgressText} style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
-                View leaderboard <ChevronRight size={12} />
+                View leaderboard <Glyph name="chevron" size={12} />
               </span>
             </>
           ) : (
             <>
               <div className={styles.lockIconOuter}>
                 <div className={styles.lockIconInner}>
-                  <Lock size={18} className={styles.lockSvg} />
+                  <Glyph name="lock" size={18} className={styles.lockSvg} />
                 </div>
               </div>
               <h4 className={styles.leaderboardCardTitle}>JOIN THE LEADERBOARD</h4>

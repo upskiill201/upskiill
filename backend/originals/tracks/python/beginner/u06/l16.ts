@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         code: 'members = ["Ada", "Tunde", "Bisi"]\nmonth = 2\nprint(members[(month - 1) % len(members)])',
         language: 'python',
         options: [
-          { text: 'Tunde' },
           { text: 'Bisi', why: '(2 - 1) % 3 is 1: position 1.' },
           { text: 'Ada', why: 'Month 1 is Ada; month 2 is the next.' },
+          { text: 'Tunde' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         code: 'members = ["Ada", "Tunde", "Bisi"]\nmonth = 4\nprint(members[(month - 1) % len(members)])',
         language: 'python',
         options: [
-          { text: 'Ada' },
           { text: 'An IndexError', why: '% keeps it in range: (4 - 1) % 3 is 0.' },
+          { text: 'Ada' },
           { text: 'Bisi', why: 'Month 3 is Bisi; month 4 wraps back to the start.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',

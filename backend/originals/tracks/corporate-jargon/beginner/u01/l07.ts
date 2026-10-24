@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         message: 'Nice. What was the impact of the supplier clean-up?',
         prompt: 'What is Brian asking for?',
         options: [
-          { text: 'Staff now choose from 40 suppliers instead of 52, so ordering should be quicker.' },
           { text: 'Huge impact! Massive!', why: 'He asked what changed. Bigger adjectives don\'t answer that.' },
+          { text: 'Staff now choose from 40 suppliers instead of 52, so ordering should be quicker.' },
           { text: 'No impact, I just tidied it.', why: 'Don\'t undersell it: a tidier list helps every order.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -142,11 +142,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Zanele\'s update: "My spreadsheet work added significant value across the workstream." What should she add?',
         options: [
-          { text: 'What the spreadsheet does and who uses it, with a number if she has one' },
           { text: 'More adjectives, like "hugely significant"', why: 'More promises, still no facts.' },
           { text: 'Nothing, it\'s perfect', why: 'Brian will ask "what does that mean?" Better to answer before he asks.' },
+          { text: 'What the spreadsheet does and who uses it, with a number if she has one' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

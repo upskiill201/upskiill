@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does rereading feel like it works?',
         options: [
-          { text: 'The page looks familiar, which feels like knowing it' },
           { text: 'Because it does work best', why: 'The research rates it low value.' },
+          { text: 'The page looks familiar, which feels like knowing it' },
           { text: 'Because it takes a long time', why: 'Time spent is not the same as learning.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -147,11 +147,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should Kofi do with his phone while he studies?',
         options: [
-          { text: 'Put it away or on do-not-disturb, except for the study chat' },
           { text: 'Keep notifications on in case of something important', why: 'Every buzz pulls his attention away.' },
+          { text: 'Put it away or on do-not-disturb, except for the study chat' },
           { text: 'Check it after every question', why: 'That is a switch every minute.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

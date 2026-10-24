@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         message: 'Morning! Could your team also redo our whole website by next Friday? Sorry, I know it is a lot!',
         prompt: '10:00. Ada cannot. Which reply?',
         options: [
-          { text: "Thanks for thinking of us! We can't do the whole site by Friday with the launch on. We could start the homepage the week after: would that work?" },
           { text: "Sorry sorry sorry, we're swamped, maybe we can try?", why: 'Over-apology plus "maybe" = heard as yes.' },
           { text: 'Sure!', why: 'A yes they cannot deliver.' },
+          { text: "Thanks for thinking of us! We can't do the whole site by Friday with the launch on. We could start the homepage the week after: would that work?" },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         message: '1) Is Friday still on? 2) Who joins the call? 3) Can I see the homepage sketch?',
         prompt: '10:45. Which reply?',
         options: [
-          { text: '1. Yes, Friday is on. 2. Grace and me. 3. Sketch attached (checked!).' },
           { text: 'All good, see you Friday!', why: 'Two questions unanswered.' },
+          { text: '1. Yes, Friday is on. 2. Grace and me. 3. Sketch attached (checked!).' },
           { text: 'Yes!', why: 'Yes to which?' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -159,11 +159,11 @@ const lesson: OriginalLesson = {
         message: "My director's first question on your proposal will be 'what does option B cost?'",
         prompt: '2:00pm. What should Ada do?',
         options: [
-          { text: "Add the cost of option B before sending. Anticipate the first question." },
           { text: 'Wait for her to ask.', why: 'A round-trip that slows the decision.' },
           { text: 'Remove option B.', why: 'Options help; answer the question instead.' },
+          { text: "Add the cost of option B before sending. Anticipate the first question." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
@@ -198,11 +198,11 @@ const lesson: OriginalLesson = {
         message: "Can your AI give my newsletter a tough read before it goes out?",
         prompt: '3:30pm. Which request?',
         options: [
-          { text: "Read this as a busy customer: where would you stop reading? What's unclear? Top 3 changes, plus what works." },
           { text: 'Is this good?', why: 'Gets encouragement, not critique.' },
           { text: 'Rewrite it.', why: 'She asked for a critical read.' },
+          { text: "Read this as a busy customer: where would you stop reading? What's unclear? Top 3 changes, plus what works." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -266,11 +266,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the one idea behind all of Unit 2?',
         options: [
-          { text: 'Let AI handle shape and speed; you supply the facts, the voice and the final check' },
           { text: 'Let AI write everything unchecked', why: 'The facts and the final say stay with you.' },
+          { text: 'Let AI handle shape and speed; you supply the facts, the voice and the final check' },
           { text: 'Longer and more formal is better', why: 'Plain and specific wins.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

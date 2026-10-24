@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         message: "Mrs Asante says the same four mistakes come up every year. She has a list on her desk.",
         prompt: 'What should Kofi do with that?',
         options: [
-          { text: "Ask her for the list, then get the AI to make a test question on each one." },
           { text: 'Nothing, he already knows stoichiometry.', why: 'Knowing the topic and avoiding the traps are different.' },
           { text: 'Ask the AI to guess her list.', why: 'Her actual list beats a guess. Ask her first.' },
+          { text: "Ask her for the list, then get the AI to make a test question on each one." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -126,11 +126,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why learn the common mistakes on purpose?',
         options: [
-          { text: 'They become a checklist you run on every answer' },
           { text: 'So you can copy them', why: 'You want to avoid them.' },
+          { text: 'They become a checklist you run on every answer' },
           { text: 'They are all in the exam', why: 'Not necessarily, but they cost marks every year.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

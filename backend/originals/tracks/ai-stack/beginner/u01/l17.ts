@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When the model is offered a tool and asked about an order, what does it do?',
         options: [
-          { text: 'Asks for the tool with the order number, instead of answering itself' },
           { text: 'Makes up a status', why: 'With a tool available, it asks for the tool.' },
+          { text: 'Asks for the tool with the order number, instead of answering itself' },
           { text: 'Looks the order up itself', why: 'The model asks; your code does the lookup.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         message: 'My diagram is simpler. Isn\'t simpler better?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Simple is great when nothing important is hidden. Yours hides the facts, the tool and the checks: the parts that make it work.' },
           { text: 'Yes, two boxes is always best.', why: 'Too simple hides what you need to build and test.' },
           { text: 'No, more boxes is always better.', why: 'Every box should earn its place.' },
+          { text: 'Simple is great when nothing important is hidden. Yours hides the facts, the tool and the checks: the parts that make it work.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

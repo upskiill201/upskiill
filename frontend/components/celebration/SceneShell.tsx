@@ -8,7 +8,7 @@
 
 import React, { type ReactNode } from 'react';
 import Image from 'next/image';
-import { X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import styles from './Scene.module.css';
 import { CelebrationCurrency, CURRENCY_ICONS } from './currency';
 import CelebrationFxLayer from '../cosmetics/CelebrationFxLayer';
@@ -73,7 +73,7 @@ export default function SceneShell({ children, cta, secondaryCta, onSkip, corner
 
       {onSkip && (
         <button type="button" className={styles.skipButton} onClick={onSkip} aria-label="Skip celebration">
-          <X size={16} strokeWidth={2.6} />
+          <Glyph name="close" size={16} strokeWidth={2.6} />
         </button>
       )}
 

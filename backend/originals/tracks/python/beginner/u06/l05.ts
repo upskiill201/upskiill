@@ -100,11 +100,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which one can you change with x[0] = ...?',
         options: [
-          { text: 'A list' },
           { text: 'A string', why: 'Strings are immutable: TypeError.' },
           { text: 'Both', why: 'Only lists are mutable.' },
+          { text: 'A list' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         message: 'You deleted eleven variables. Any regrets?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'None. One list, twelve names, and the pot counts itself. Next I need people to join and leave.' },
           { text: 'I miss member7.', why: 'members[6] is still there.' },
+          { text: 'None. One list, twelve names, and the pot counts itself. Next I need people to join and leave.' },
           { text: 'Lists are slower.', why: 'For twelve names it makes no difference at all.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

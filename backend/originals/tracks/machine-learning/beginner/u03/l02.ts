@@ -52,21 +52,21 @@ const lesson: OriginalLesson = {
         code: 'print((3 ** 2 + 4 ** 2) ** 0.5)',
         language: 'python',
         options: [
-          { text: '5.0' },
           { text: '7', why: 'It isn\'t 3 + 4. Square, add (25), then square root.' },
           { text: '25', why: 'That\'s before the square root.' },
+          { text: '5.0' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'Two distances: Kunle to Ireti 2.24, Kunle to Amina 16.12. Who is more similar to Kunle?',
         options: [
-          { text: 'Ireti' },
           { text: 'Amina', why: 'A bigger distance means LESS similar.' },
+          { text: 'Ireti' },
           { text: 'Neither', why: 'The smaller distance is the more similar patient.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',

@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why paste the original message instead of describing it?',
         options: [
-          { text: 'The AI gets the exact words and facts, and you save typing' },
           { text: 'Describing is not allowed', why: 'Allowed, just slower and less accurate.' },
+          { text: 'The AI gets the exact words and facts, and you save typing' },
           { text: 'Pasting makes it longer', why: 'It makes your request shorter.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -152,11 +152,11 @@ const lesson: OriginalLesson = {
         message: 'Your replies come so fast now, even on weekends! (No pressure to reply on weekends though.)',
         prompt: 'Which reply is best?',
         options: [
-          { text: 'Ha, my phone tricks! And thank you, I\'ll keep weekends quieter.' },
           { text: 'I never stop working.', why: 'Not a great message to send a client.' },
+          { text: 'Ha, my phone tricks! And thank you, I\'ll keep weekends quieter.' },
           { text: 'The AI replies for me automatically.', why: 'It drafts; Ada decides and sends.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -177,11 +177,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Does the recipe (reader, facts, goal, format) still apply on a phone?',
         options: [
-          { text: 'Yes, it is just spoken or pasted instead of typed' },
           { text: 'No, phones need different rules', why: 'Same ingredients, faster input.' },
           { text: 'Only the role matters on phones', why: 'All the ingredients still matter.' },
+          { text: 'Yes, it is just spoken or pasted instead of typed' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

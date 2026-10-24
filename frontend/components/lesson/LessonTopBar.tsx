@@ -14,7 +14,8 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Music, Unlock, X } from 'lucide-react';
+import { Emblem } from '@/components/art/Emblem';
+import { Glyph } from '@/components/art/Glyph';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -110,7 +111,7 @@ export function LessonTopBar({
           aria-label="Quit lesson"
           className="shrink-0 w-10 h-10 -ml-1 rounded-xl flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-section)] cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-brand)]/25"
         >
-          <X className="w-7 h-7 stroke-[2.75]" aria-hidden="true" />
+          <Glyph name="close" className="w-7 h-7 stroke-[2.75]" />
         </button>
 
         <div className="relative flex-1">
@@ -182,7 +183,7 @@ export function LessonTopBar({
             className="relative shrink-0 w-9 h-9 rounded-xl flex items-center justify-center cursor-pointer hover:bg-[var(--bg-section)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-brand)]/25"
             style={{ color: musicOn ? 'var(--brand-purple)' : 'var(--text-muted)' }}
           >
-            <Music className="w-5 h-5 stroke-[2.5]" aria-hidden="true" />
+            <Emblem name="music" size={22} className={musicOn ? '' : 'grayscale opacity-60'} />
             {!musicOn && (
               <span aria-hidden="true" className="absolute w-6 h-[2.5px] rounded-full rotate-45" style={{ backgroundColor: 'var(--text-muted)' }} />
             )}
@@ -246,7 +247,7 @@ export function LessonTopBar({
               exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -10, scale: 0.9 }}
               transition={{ type: 'spring', stiffness: 520, damping: 16, delay: reducedMotion ? 0 : 0.5 }}
             >
-              <Unlock className="w-4 h-4 stroke-[3]" aria-hidden="true" />
+              <Emblem name="unlock" size={18} />
               {PHASE_LABEL[stamp.phase]} unlocked
             </motion.div>
           )}

@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'After dists.sort(), where are the nearest patients?',
         options: [
-          { text: 'At the start: dists[:k]' },
           { text: 'At the end: dists[-k:]', why: 'The end holds the farthest.' },
+          { text: 'At the start: dists[:k]' },
           { text: 'In the middle', why: 'Sorting puts the smallest distances first.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: '4 out of 4! Tell the board it\'s 100%.',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'It\'s 4 patients. One more could change everything. Next I test on hundreds of real bookings it hasn\'t seen.' },
           { text: 'Yes, 100%.', why: 'Four patients is far too few to claim anything.' },
           { text: 'Never mention it.', why: 'Mention it honestly: a promising start on 4 patients.' },
+          { text: 'It\'s 4 patients. One more could change everything. Next I test on hundreds of real bookings it hasn\'t seen.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -101,11 +101,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why might the best k be bigger with 2,400 bookings than with 12?',
         options: [
-          { text: 'With more patients, even the 15th nearest can still be very similar' },
           { text: 'k must always equal the number of patients', why: 'Then everyone gets the majority answer.' },
+          { text: 'With more patients, even the 15th nearest can still be very similar' },
           { text: 'It can\'t be', why: 'More data usually supports a bigger k.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

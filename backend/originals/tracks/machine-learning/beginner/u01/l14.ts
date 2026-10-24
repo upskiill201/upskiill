@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"Are there kinds of clinics?" No one has labelled them. Which kind of problem?',
         options: [
-          { text: 'Clustering' },
           { text: 'Classification', why: 'Classification needs labels to learn from. There are none.' },
+          { text: 'Clustering' },
           { text: 'Regression', why: 'There\'s no number to predict.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         message: 'Can one model answer all three questions?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Not well. Each is a different kind of problem: a number, a yes/no, and groups. We\'d build one for each.' },
           { text: 'Yes, one model does everything.', why: 'Each problem needs its own kind of model.' },
+          { text: 'Not well. Each is a different kind of problem: a number, a yes/no, and groups. We\'d build one for each.' },
           { text: 'None of them can be answered.', why: 'All three are classic ML problems.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"What chance (0 to 1) does this patient have of missing?" The output is a number. Which kind is it, usually?',
         options: [
-          { text: 'Classification: the chance is how sure it is about "miss"' },
           { text: 'Regression, always', why: 'The thing being predicted is still miss-or-come. The chance is its confidence.' },
           { text: 'Clustering', why: 'We have labels.' },
+          { text: 'Classification: the chance is how sure it is about "miss"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

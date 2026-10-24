@@ -13,7 +13,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Check } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import SceneShell from '../../celebration/SceneShell';
 import sceneStyles from '../../celebration/Scene.module.css';
 import styles from '../ShopScene.module.css';
@@ -112,7 +112,7 @@ export default function ItemUnlockedScene({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.45, duration: 0.35 }}
       >
-        <Check className={styles.receiptIcon} strokeWidth={3} />
+        <Glyph name="check" className={styles.receiptIcon} strokeWidth={3} />
         <span className={styles.receiptText}>{item.unlock.label}</span>
       </motion.div>
 

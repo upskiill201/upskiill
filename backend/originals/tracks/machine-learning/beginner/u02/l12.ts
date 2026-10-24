@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         message: 'How do you know you\'ve found all the spelling problems?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'After cleaning, nunique() says 8, and the 8 names match Afiya\'s list of pilot clinics exactly.' },
           { text: 'I looked at a few rows.', why: 'A few rows can miss rare spellings. Check the full list of names.' },
           { text: 'pandas would warn me.', why: 'It won\'t: to pandas, every spelling is valid text.' },
+          { text: 'After cleaning, nunique() says 8, and the 8 names match Afiya\'s list of pilot clinics exactly.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

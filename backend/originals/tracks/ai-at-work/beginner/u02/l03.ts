@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         message: 'I asked the AI to "improve" my email and now it sounds nothing like me and says something slightly different!',
         prompt: 'What should Ada suggest next time?',
         options: [
-          { text: 'Ask for a light edit, keep your words where possible, and list the changes so you can check the meaning.' },
           { text: 'Ask it to "improve it more".', why: 'Same problem, bigger.' },
+          { text: 'Ask for a light edit, keep your words where possible, and list the changes so you can check the meaning.' },
           { text: 'Never edit with AI.', why: 'A smaller edit level fixes this.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -162,11 +162,11 @@ const lesson: OriginalLesson = {
         message: 'Quick check of my announcement before it goes out? I like the wording, I just want no mistakes.',
         prompt: 'Which request should Ada use?',
         options: [
-          { text: 'Proofread this: spelling, grammar and punctuation only. Don\'t change the wording.' },
           { text: 'Rewrite this to be more engaging.', why: 'She likes the wording. Proofread only.' },
           { text: 'Light edit and shorten it.', why: 'She did not ask for changes to wording or length.' },
+          { text: 'Proofread this: spelling, grammar and punctuation only. Don\'t change the wording.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

@@ -49,21 +49,21 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A patient\'s risk is 0.2 with 15 neighbours. What does that mean?',
         options: [
-          { text: '3 of their 15 nearest neighbours missed' },
           { text: 'They will miss 20% of the way', why: 'It\'s the share of similar patients who missed.' },
           { text: '2 neighbours missed', why: '0.2 x 15 = 3.' },
+          { text: '3 of their 15 nearest neighbours missed' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'The highest risk was 0.47, so the vote said "come" for all 20. Accuracy 75%. Why is that misleading?',
         options: [
-          { text: '"Everyone comes" also scores 75% here: accuracy can\'t tell a useful ranking from no model at all' },
           { text: 'It isn\'t: 75% is great', why: 'Doing nothing scores the same.' },
+          { text: '"Everyone comes" also scores 75% here: accuracy can\'t tell a useful ranking from no model at all' },
           { text: 'The patients were wrong', why: 'The measure hides what the risks show.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         message: 'I don\'t need yes or no. I need to know who to call first.',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Then the risk score is what you want: sort tomorrow\'s list from highest risk to lowest and call from the top.' },
           { text: 'The predictor can only say yes or no.', why: 'It gives a risk for every patient. Sort by it.' },
           { text: 'Call everyone.', why: 'Bisi can make about 10 calls. A ranking makes them count.' },
+          { text: 'Then the risk score is what you want: sort tomorrow\'s list from highest risk to lowest and call from the top.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

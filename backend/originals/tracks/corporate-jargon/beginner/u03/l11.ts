@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'NDA is signed now! So I can send the full spreadsheet with every customer and price, right?',
         prompt: 'What does Remi say?',
         options: [
-          { text: 'Even with an NDA, send only what they need: volumes by region, not names and prices.' },
           { text: 'Yes, send everything!', why: 'An NDA protects you; it doesn\'t mean share more than needed.' },
           { text: 'Never send anything to anyone.', why: 'They need some data to make a proposal.' },
+          { text: 'Even with an NDA, send only what they need: volumes by region, not names and prices.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Synergix agrees to work with a university on research, without a full contract yet. Which document fits?',
         options: [
-          { text: 'An MoU' },
           { text: 'An SOP', why: 'That\'s an internal step-by-step procedure.' },
+          { text: 'An MoU' },
           { text: 'An RFP', why: 'That invites suppliers to bid.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

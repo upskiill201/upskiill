@@ -18,7 +18,15 @@ import { Request } from 'express';
 const USER_CACHE_TTL_MS = 30_000;
 const ACTIVE_STAMP_MS = 5 * 60_000;
 type CachedUser = Record<string, unknown>;
+// Keyed per session (sub + jti) so a logged-out token can't ride on the
+// cached entry of the same user's other, still-valid session.
 const userCache = new Map<string, { user: CachedUser; expiresAt: number }>();
+const cacheKey = (sub: string, jti?: string) => `${sub}:${jti ?? ''}`;
+
+/** Called on logout so a revoked session stops working this instant. */
+export function forgetCachedSession(sub: string, jti?: string): void {
+  userCache.delete(cacheKey(sub, jti));
+}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -36,18 +44,30 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: { sub: string; email: string }) {
-    const cached = userCache.get(payload.sub);
+  async validate(payload: { sub: string; email: string; jti?: string }) {
+    const key = cacheKey(payload.sub, payload.jti);
+    const cached = userCache.get(key);
     if (cached && cached.expiresAt > Date.now()) {
       return cached.user;
     }
 
-    const user = await this.prisma.user.findUnique({
-      where: { id: payload.sub },
-    });
+    const [user, revoked] = await Promise.all([
+      this.prisma.user.findUnique({ where: { id: payload.sub } }),
+      payload.jti
+        ? this.prisma.revokedSession.findUnique({
+            where: { jti: payload.jti },
+            select: { jti: true },
+          })
+        : Promise.resolve(null),
+    ]);
+
+    if (revoked) {
+      userCache.delete(key);
+      throw new UnauthorizedException('This session has ended. Please sign in again.');
+    }
 
     if (!user) {
-      userCache.delete(payload.sub);
+      userCache.delete(key);
       throw new UnauthorizedException('User no longer exists.');
     }
 
@@ -62,7 +82,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...result } = user;
-    userCache.set(payload.sub, { user: result, expiresAt: Date.now() + USER_CACHE_TTL_MS });
+    userCache.set(key, { user: result, expiresAt: Date.now() + USER_CACHE_TTL_MS });
     return result;
   }
 }

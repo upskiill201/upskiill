@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A program has a SyntaxError on line 3. Do lines 1 and 2 run?',
         options: [
-          { text: 'No. Python checks the whole file first, so nothing runs' },
           { text: 'Yes, only line 3 fails', why: 'That is true for errors that happen while running, like NameError. A SyntaxError stops everything.' },
           { text: 'Only line 1', why: 'With a SyntaxError, none of them run.' },
+          { text: 'No. Python checks the whole file first, so nothing runs' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does "unterminated string literal" mean?',
         options: [
-          { text: "A piece of text starts with a quote but never ends" },
           { text: 'The program ran too long', why: 'That would be a time-out, not this.' },
+          { text: "A piece of text starts with a quote but never ends" },
           { text: 'A number is too big', why: 'This message is about text and quotes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         message: "Arjun, do professional programmers still get errors?",
         prompt: "What is Arjun's honest answer?",
         options: [
-          { text: 'All day, every day. The difference is they read the message calmly and fix it fast.' },
           { text: 'No, only beginners get errors.', why: 'Everyone gets errors. Experts are just quick at reading them.' },
           { text: 'Only when the computer is broken.', why: 'Errors come from code, not broken computers.' },
+          { text: 'All day, every day. The difference is they read the message calmly and fix it fast.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

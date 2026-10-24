@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do vague requests get generic answers?',
         options: [
-          { text: 'The AI fills every gap with the most likely, average guess' },
           { text: 'The AI is lazy with short requests', why: 'It is not lazy. It is guessing what you left out.' },
+          { text: 'The AI fills every gap with the most likely, average guess' },
           { text: 'Short requests are blocked', why: 'They work, they are just vague.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

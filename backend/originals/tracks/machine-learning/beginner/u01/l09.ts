@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         code: 'wait_days = 25\nreminder = False\n\nif wait_days > 14 and not reminder:\n    print("Likely to miss")\nelse:\n    print("Likely to come")',
         language: 'python',
         options: [
-          { text: 'Likely to miss' },
           { text: 'Likely to come', why: '25 > 14 and no reminder: both parts true.' },
+          { text: 'Likely to miss' },
           { text: 'Nothing', why: 'One of the two print lines always runs.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -47,11 +47,11 @@ const lesson: OriginalLesson = {
         code: 'wait_days = 20\nreminder = True\n\nif wait_days > 14 and not reminder:\n    print("Likely to miss")\nelse:\n    print("Likely to come")',
         language: 'python',
         options: [
-          { text: 'Likely to come' },
           { text: 'Likely to miss', why: 'A reminder was sent, so "not reminder" is False.' },
           { text: 'An error', why: 'It runs fine.' },
+          { text: 'Likely to come' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',

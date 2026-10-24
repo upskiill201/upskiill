@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { ChevronLeft, Lock } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import styles from './unlock.module.css';
@@ -42,7 +42,7 @@ export default function SceneWall({
   return (
     <>
       <button type="button" className={styles.backBtn} onClick={onBack} aria-label="Back">
-        <ChevronLeft size={19} />
+        <Glyph name="chevronLeft" size={19} />
       </button>
 
       <div className={styles.sceneScroll}>
@@ -66,7 +66,7 @@ export default function SceneWall({
           transition={{ duration: 0.25, ease: 'easeOut', delay: 0.05 }}
         >
           <span className={styles.gateLockCircle}>
-            <Lock size={26} strokeWidth={2.5} />
+            <Glyph name="lock" size={26} strokeWidth={2.5} />
           </span>
           <p className={styles.wallCount}>
             {remaining > 0 ? (
@@ -100,7 +100,7 @@ export default function SceneWall({
 
       <div className={styles.sceneDock}>
         <button type="button" className={styles.cta3D} onClick={handleSeePlans}>
-          <Lock size={15} />
+          <Glyph name="lock" size={15} />
           <span>{isOriginal ? 'Get Teyro Originals' : 'Unlock the rest of the course'}</span>
         </button>
         <button type="button" className={styles.exitLink} onClick={onMaybeLater}>

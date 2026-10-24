@@ -30,11 +30,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why separate drafting from editing?',
         options: [
-          { text: 'Judging every sentence while drafting is what makes writing slow' },
           { text: 'Editing is optional', why: 'Editing is where facts get checked.' },
+          { text: 'Judging every sentence while drafting is what makes writing slow' },
           { text: 'AI tools require it', why: 'It is a writing habit, not a tool rule.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -122,11 +122,11 @@ const lesson: OriginalLesson = {
         message: "Can you proofread my announcement? I like the wording, I don't want it changed.",
         prompt: 'Which request should Ada use?',
         options: [
-          { text: 'Proofread only: spelling, grammar, punctuation. Do not change the wording.' },
           { text: 'Make it more exciting.', why: 'She asked for a proofread.' },
+          { text: 'Proofread only: spelling, grammar, punctuation. Do not change the wording.' },
           { text: 'Rewrite it in my voice.', why: "It's Lucía's text, and she likes it." },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -146,11 +146,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the risk of pressing "regenerate" on a nearly-good draft?',
         options: [
-          { text: 'It throws away the good parts and rolls the dice' },
           { text: 'None at all', why: 'You lose what was working.' },
           { text: 'It deletes your account', why: 'No! It just makes a new draft.' },
+          { text: 'It throws away the good parts and rolls the dice' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -182,11 +182,11 @@ const lesson: OriginalLesson = {
         message: 'I need to tell our agency the deadline was missed again. Firm, not nasty.',
         prompt: 'Which shape should the message take?',
         options: [
-          { text: 'Thanks for the work, the problem said plainly, what it affected, and the new date needed.' },
           { text: 'An angry list of everything that went wrong.', why: 'Firm is not angry.' },
+          { text: 'Thanks for the work, the problem said plainly, what it affected, and the new date needed.' },
           { text: 'A vague "hope all is well!"', why: 'Too soft: the problem disappears.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -236,11 +236,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is the clearest sentence?',
         options: [
-          { text: '"We need your OK on the colours by Wednesday."' },
           { text: '"Approval of colours is requested at your convenience."', why: 'Passive, and no date.' },
           { text: '"Colours, whenever, no stress, maybe?"', why: 'Unclear what is needed and when.' },
+          { text: '"We need your OK on the colours by Wednesday."' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

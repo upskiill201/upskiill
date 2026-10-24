@@ -53,11 +53,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When are questions better than a summary?',
         options: [
-          { text: 'When you need specific answers, not an overview' },
           { text: 'Never', why: 'Often you only need three facts.' },
+          { text: 'When you need specific answers, not an overview' },
           { text: 'Only for short documents', why: 'They are especially useful for long ones.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: "Your designer used a dark background, but our guide doesn't allow them!",
         prompt: 'The AI had said "dark backgrounds are allowed" with no quote. What went wrong?',
         options: [
-          { text: 'The answer came from general knowledge, not your guide. We should have asked for the quote, or "not in the document".' },
           { text: 'Your guide is wrong.', why: 'The guide is the authority here.' },
           { text: 'Dark backgrounds are always fine.', why: 'Not if the guide says otherwise.' },
+          { text: 'The answer came from general knowledge, not your guide. We should have asked for the quote, or "not in the document".' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -176,11 +176,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask "what does this document NOT say?"',
         options: [
-          { text: 'To catch things you were assuming it covers' },
           { text: 'To make it longer', why: 'It is about blind spots.' },
           { text: 'No reason', why: 'Missing rules matter as much as stated ones.' },
+          { text: 'To catch things you were assuming it covers' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

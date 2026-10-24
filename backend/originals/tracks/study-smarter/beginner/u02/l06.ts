@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         message: "I explained circuits to the AI and it said \"Great explanation!\" every time. Didn't help.",
         prompt: 'What should Kofi suggest?',
         options: [
-          { text: 'Tell it to play a confused classmate and only ask questions where you are vague. No praise, no explaining.' },
           { text: 'Then you must understand it.', why: 'Praise is not a test.' },
+          { text: 'Tell it to play a confused classmate and only ask questions where you are vague. No praise, no explaining.' },
           { text: 'Stop explaining things.', why: 'Explaining is the point. The set-up needs fixing.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why was Kofi\'s failed explanation to Miracle "the most useful thing that happened this week"?',
         options: [
-          { text: 'It showed exactly what he didn\'t understand yet' },
           { text: 'It was funny', why: 'It was, a bit. But that is not why it was useful.' },
           { text: 'Miracle explained it for him', why: 'She did not. She made him find the holes.' },
+          { text: 'It showed exactly what he didn\'t understand yet' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',

@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         message: 'Why are you talking about jollof in Chemistry?',
         prompt: 'What should Kofi say?',
         options: [
-          { text: "It's how I finally got equations. I hooked them onto recipes. You did the same thing with Makola rice!" },
           { text: 'Because I am hungry.', why: 'Also true, but not the real reason.' },
           { text: 'No reason.', why: 'There is a reason: new ideas stick to old ones.' },
+          { text: "It's how I finally got equations. I hooked them onto recipes. You did the same thing with Makola rice!" },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do new ideas stick better when linked to old ones?',
         options: [
-          { text: 'Your brain hooks the new idea onto something it already holds' },
           { text: 'Old ideas are always right', why: 'Not always, but they give the new idea a place to attach.' },
+          { text: 'Your brain hooks the new idea onto something it already holds' },
           { text: 'It makes lessons longer', why: 'It usually makes them faster.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',

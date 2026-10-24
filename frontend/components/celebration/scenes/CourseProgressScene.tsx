@@ -8,7 +8,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { BookOpen, Layers } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import SceneShell from '../SceneShell';
 import CelebrationMascot from '../CelebrationMascot';
 import { AnimatedProgressBar, CountUpNumber, TypewriterBubble } from '../ScenePrimitives';
@@ -91,11 +91,11 @@ export default function CourseProgressScene({ scene, onAdvance }: CourseProgress
         />
         <div className={styles.milestoneMetaRow}>
           <span className={styles.milestoneMetaItem}>
-            <Layers size={15} strokeWidth={2.5} />
+            <Glyph name="layers" size={15} strokeWidth={2.5} />
             {scene.sectionsCompleted} of {scene.sectionsTotal} sections
           </span>
           <span className={styles.milestoneMetaItem}>
-            <BookOpen size={15} strokeWidth={2.5} />
+            <Glyph name="book" size={15} strokeWidth={2.5} />
             {scene.lessonsCompleted} of {scene.lessonsTotal} lessons
           </span>
         </div>

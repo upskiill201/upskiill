@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Sparkles, Zap, Flame, Heart, Award } from 'lucide-react';
+import { Mark } from '@/components/art/Mark';
+import { Glyph } from '@/components/art/Glyph';
 import { useGamification } from '@/context/GamificationContext';
 import { useRewardAnimation, RewardItem } from '@/context/RewardAnimationContext';
 import { useCelebration } from '@/context/CelebrationContext';
@@ -106,7 +107,7 @@ export default function RewardRunTestWidget() {
       <div className={styles.headerRow}>
         <div className={styles.titleGroup}>
           <div className={styles.badgeIcon}>
-            <Zap size={18} className="text-[#0172FD]" />
+            <Mark kind="xp" size={18} />
           </div>
           <div>
             <h3 className={styles.title}>REWARDRUN LAB & TEST BENCH</h3>
@@ -167,7 +168,7 @@ export default function RewardRunTestWidget() {
           }
           className={`${styles.testBtn} ${styles.btnXp}`}
         >
-          <Award size={20} className="text-[#0172FD]" />
+          <Glyph name="medal" size={20} className="text-[#0172FD]" />
           <span>+150 XP (Level Up)</span>
         </button>
 
@@ -217,7 +218,7 @@ export default function RewardRunTestWidget() {
           }
           className={styles.comboBtn}
         >
-          <Sparkles size={20} />
+          <Glyph name="sparkle" size={20} />
           <span>Claim Mega Combo: +30 Coins, +50 XP & +1 Heart 🎉</span>
         </button>
       </div>
@@ -319,7 +320,7 @@ export default function RewardRunTestWidget() {
               cursor: 'pointer',
             }}
           >
-            <Sparkles size={16} />
+            <Glyph name="sparkle" size={16} />
             <span>Multi-Reward Flow</span>
           </button>
 
@@ -370,7 +371,7 @@ export default function RewardRunTestWidget() {
               cursor: 'pointer',
             }}
           >
-            <Sparkles size={16} />
+            <Glyph name="sparkle" size={16} />
             <span>Daily Missions</span>
           </button>
 
@@ -393,7 +394,7 @@ export default function RewardRunTestWidget() {
               cursor: 'pointer',
             }}
           >
-            <Flame size={16} />
+            <Mark kind="streak" size={16} />
             <span>Streak Screen</span>
           </button>
 
@@ -459,7 +460,7 @@ export default function RewardRunTestWidget() {
             }}
             style={sceneBtnStyle('#FFF7ED', '#FED7AA', '#EA580C')}
           >
-            <Flame size={16} />
+            <Mark kind="streak" size={16} />
             <span>Streak Extended</span>
           </button>
 
@@ -472,7 +473,7 @@ export default function RewardRunTestWidget() {
             }}
             style={sceneBtnStyle('#F0F9FF', '#BAE6FD', '#0369A1')}
           >
-            <Heart size={16} />
+            <Mark kind="heart" size={16} />
             <span>Streak Saved</span>
           </button>
 
@@ -491,7 +492,7 @@ export default function RewardRunTestWidget() {
             }}
             style={sceneBtnStyle('#FEF2F2', '#FECACA', '#B91C1C')}
           >
-            <Flame size={16} />
+            <Mark kind="streak" size={16} />
             <span>Streak Lost</span>
           </button>
 
@@ -504,7 +505,7 @@ export default function RewardRunTestWidget() {
             }}
             style={sceneBtnStyle('#EFF6FF', '#BFDBFE', '#1D4ED8')}
           >
-            <Award size={16} />
+            <Glyph name="medal" size={16} />
             <span>Level Up</span>
           </button>
 
@@ -525,7 +526,7 @@ export default function RewardRunTestWidget() {
             }}
             style={sceneBtnStyle('#FEFCE8', '#FDE047', '#A16207')}
           >
-            <Sparkles size={16} />
+            <Glyph name="sparkle" size={16} />
             <span>Quest Progress</span>
           </button>
 
@@ -562,7 +563,7 @@ export default function RewardRunTestWidget() {
             }}
             style={sceneBtnStyle('#F5F3FF', '#DDD6FE', '#6D28D9')}
           >
-            <Zap size={16} />
+            <Mark kind="xp" size={16} />
             <span>Full Chain Queue</span>
           </button>
         </div>

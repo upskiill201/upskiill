@@ -56,10 +56,14 @@ describe('template escaping and data safety (spec §39/§40)', () => {
     const { html } = renderVerificationEmail({
       firstName: 'Ada',
       code: '123456',
+      email: 'ada+test@example.com',
       role: 'STUDENT',
     });
     expect(html).toContain('123456');
-    expect(html).toMatch(/verify-email\?token=123456/);
+    // The link names its account, so a guessed code can't verify anyone else
+    expect(html).toMatch(
+      /verify-email\?token=123456&(amp;)?email=ada%2Btest%40example\.com/,
+    );
   });
 
   it('includes unsubscribe and preferences links when supplied, and omits them when not (transactional)', () => {

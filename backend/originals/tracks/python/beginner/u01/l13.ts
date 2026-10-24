@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the main difference between running a .py file and using the >>> prompt?',
         options: [
-          { text: 'A file runs all at once; the prompt runs one line at a time as you type' },
           { text: 'The prompt is a different language', why: 'It is the same Python.' },
           { text: 'Files can only print numbers', why: 'Files can do anything Python can.' },
+          { text: 'A file runs all at once; the prompt runs one line at a time as you type' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How does Teyro run your Python?',
         options: [
-          { text: 'Real Python 3, inside your browser, on your device' },
           { text: 'It sends your code to Teyro\'s servers', why: 'It runs on your device. Your code stays with you.' },
+          { text: 'Real Python 3, inside your browser, on your device' },
           { text: 'It only pretends to run it', why: 'It is the real Python interpreter, compiled to WebAssembly.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is CPython?',
         options: [
-          { text: 'The standard Python interpreter, the one you install' },
           { text: 'A different language from Python', why: 'It is the program that runs Python.' },
+          { text: 'The standard Python interpreter, the one you install' },
           { text: 'A Python for children', why: 'The C is for the language it is written in.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does import this show?',
         options: [
-          { text: 'The Zen of Python' },
           { text: 'Your Python version', why: 'That is sys.version_info.' },
           { text: 'Nothing', why: 'It prints the Zen.' },
+          { text: 'The Zen of Python' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         message: 'Tunde says your program could be wrong too. What do you tell him?',
         prompt: "What is Ada's best answer?",
         options: [
-          { text: 'He can read the code: every sum is written down with a comment, so he can check it himself.' },
           { text: 'Computers are never wrong.', why: 'Programs do exactly what they are told, which can be wrong. Readable code lets people check.' },
+          { text: 'He can read the code: every sum is written down with a comment, so he can check it himself.' },
           { text: 'Just trust me.', why: 'The point of the program is that nobody has to just trust anyone.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

@@ -12,7 +12,8 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Flame, Unlock, Zap, type LucideIcon } from 'lucide-react';
+import { Emblem, type EmblemName } from '@/components/art/Emblem';
+import { Mark, type MarkKind } from '@/components/art/Mark';
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 import { LessonButton } from './LessonButton';
@@ -87,14 +88,15 @@ function ProgressRing({ pct }: { pct: number }) {
   );
 }
 
-function Stake({ icon: Icon, tone, children }: { icon: LucideIcon; tone: string; children: ReactNode }) {
+/** A glyph, or one of Teyro's marks (XP gem, streak flame). */
+function Stake({ icon, mark, tone, children }: { icon?: EmblemName; mark?: MarkKind; tone: string; children: ReactNode }) {
   return (
     <li className="flex items-center gap-3 text-left">
       <span
         className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center"
         style={{ backgroundColor: `color-mix(in srgb, ${tone} 15%, var(--bg-card))`, color: tone }}
       >
-        <Icon className="w-5 h-5 stroke-[2.5]" aria-hidden="true" />
+        {mark ? <Mark kind={mark} size={20} /> : icon ? <Emblem name={icon} size={22} /> : null}
       </span>
       <span className="text-[15px] font-bold text-ink leading-snug">{children}</span>
     </li>
@@ -156,22 +158,22 @@ export function QuitSheet({
 
       <ul className="mt-4 flex flex-col gap-2.5">
         {xp ? (
-          <Stake icon={Zap} tone="var(--lesson-gold-dark)">
+          <Stake mark="xp" tone="var(--lesson-gold-dark)">
             +{xp} XP is waiting at the finish
           </Stake>
         ) : null}
         {streakAtStake ? (
-          <Stake icon={Flame} tone="var(--lesson-heart)">
+          <Stake mark="streak" tone="var(--lesson-heart)">
             Your {streakAtStake}-day streak isn&apos;t safe yet today
           </Stake>
         ) : null}
         {combo >= 3 ? (
-          <Stake icon={Flame} tone="var(--lesson-gold-dark)">
+          <Stake icon="flame" tone="var(--lesson-gold-dark)">
             You&apos;re {combo} in a row. Leaving ends the run
           </Stake>
         ) : null}
         {unlocks ? (
-          <Stake icon={Unlock} tone="var(--color-brand)">
+          <Stake icon="unlock" tone="var(--color-brand)">
             Finish to unlock <span className="font-extrabold">{unlocks}</span>
           </Stake>
         ) : null}

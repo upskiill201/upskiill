@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a nearest-neighbour predictor do?',
         options: [
-          { text: 'Finds the most similar past examples and goes with what they did' },
           { text: 'Follows a rule a person wrote', why: 'That was v0.1. Neighbours compare with examples.' },
           { text: 'Asks the patient', why: 'It predicts from past patients only.' },
+          { text: 'Finds the most similar past examples and goes with what they did' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: 'Why build it ourselves? A library does this in one line.',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Because once you\'ve built it, the one-line version stops being magic. You\'ll know exactly what it does and where it goes wrong.' },
           { text: 'Libraries are banned.', why: 'We\'ll use one from Chapter 5.' },
+          { text: 'Because once you\'ve built it, the one-line version stops being magic. You\'ll know exactly what it does and where it goes wrong.' },
           { text: 'It\'s faster by hand.', why: 'It\'s slower. We do it to understand it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does this predictor do at "training" time?',
         options: [
-          { text: 'Just stores the past examples' },
           { text: 'Writes a long list of rules', why: 'It doesn\'t write rules; it compares at prediction time.' },
           { text: 'Deletes the old examples', why: 'It needs them all to compare with.' },
+          { text: 'Just stores the past examples' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

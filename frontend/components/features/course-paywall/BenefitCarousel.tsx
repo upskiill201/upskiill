@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { CircleCheck } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { VALUE_PROPS } from './valueProps';
 import styles from './BenefitCarousel.module.css';
 
@@ -146,7 +146,6 @@ export default function BenefitCarousel({ autoAdvanceMs = 6000 }: BenefitCarouse
         onTouchStart={markUserTouched}
       >
         {VALUE_PROPS.map((slide) => {
-          const Icon = slide.icon;
           return (
             <article key={slide.id} className={styles.card}>
               <div
@@ -154,7 +153,7 @@ export default function BenefitCarousel({ autoAdvanceMs = 6000 }: BenefitCarouse
                 style={{ backgroundColor: slide.iconBg, color: slide.iconColor }}
                 aria-hidden="true"
               >
-                <Icon size={20} strokeWidth={2.25} />
+                <Glyph name={slide.icon} size={20} strokeWidth={2.25} />
               </div>
 
               <span className={styles.tag}>{slide.tag}</span>
@@ -163,7 +162,7 @@ export default function BenefitCarousel({ autoAdvanceMs = 6000 }: BenefitCarouse
               <ul className={styles.highlightsList}>
                 {slide.highlights.map((h) => (
                   <li key={h} className={styles.highlightItem}>
-                    <CircleCheck size={13} className={styles.checkIcon} />
+                    <Glyph name="checkCircle" size={13} className={styles.checkIcon} />
                     <span>{h}</span>
                   </li>
                 ))}

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { CourseController } from './course.controller';
 import { CourseService } from './course.service';
 import { CourseSlugService } from './course-slug.service';
+import { OnboardingLessonListener } from './onboarding-lesson.listener';
 import { PrismaModule } from '../prisma/prisma.module';
 import { MissionsModule } from '../missions/missions.module';
 import { ChestModule } from '../chest/chest.module';
@@ -10,6 +11,7 @@ import { CommunityModule } from '../community/community.module';
 import { ShopModule } from '../shop/shop.module';
 import { CourseReviewModule } from '../course-review/course-review.module';
 import { OriginalsModule } from '../originals/originals.module';
+import { ProAccessModule } from '../pro/pro-access.module';
 
 @Module({
   imports: [
@@ -26,9 +28,11 @@ import { OriginalsModule } from '../originals/originals.module';
     CourseReviewModule,
     // Teyro Originals: track/level info on the map, next-level hand-off.
     OriginalsModule,
+    // Teyro Pro: lesson gates and the free tier (leaf module, no billing).
+    ProAccessModule,
   ],
   controllers: [CourseController],
-  providers: [CourseService, CourseSlugService],
+  providers: [CourseService, CourseSlugService, OnboardingLessonListener],
   // The Admin Center (Courses phase) reuses publishCourse/unpublishCourse
   // rather than duplicating the quality-gate validation in admin code.
   exports: [CourseService],

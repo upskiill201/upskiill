@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did Chidi get 50 out of 50?',
         options: [
-          { text: 'Each test patient was in the training data, so its nearest neighbour was itself' },
           { text: 'The predictor is perfect', why: 'It was looking up answers it already had.' },
+          { text: 'Each test patient was in the training data, so its nearest neighbour was itself' },
           { text: 'He was lucky', why: 'It wasn\'t luck: distance 0 to itself, every time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -122,11 +122,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '163 of the 200 test bookings came. What does "everyone comes" score?',
         options: [
-          { text: '81.5%' },
           { text: '18.5%', why: 'That\'s the share who missed (37 of 200).' },
+          { text: '81.5%' },
           { text: '100%', why: 'It\'s wrong for all 37 who missed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

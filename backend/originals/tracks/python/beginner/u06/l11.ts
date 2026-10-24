@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'members[0] and members[0:1]. What\'s the difference?',
         options: [
-          { text: "members[0] is 'Ada'; members[0:1] is ['Ada'], a list" },
           { text: 'No difference', why: 'A slice is always a list.' },
+          { text: "members[0] is 'Ada'; members[0:1] is ['Ada'], a list" },
           { text: 'members[0:1] is an error', why: 'It\'s a valid one-item slice.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         message: 'Why does [2:5] stop at 4? It feels like it should include 5.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'The stop is where you stop, not the last one you take. A bonus: 5 - 2 = 3, the number of items you get.' },
           { text: 'It\'s a bug that nobody fixed.', why: 'It\'s deliberate and consistent everywhere in Python.' },
           { text: 'Use [2:5+1] every time.', why: 'Then you\'d get four items, not three.' },
+          { text: 'The stop is where you stop, not the last one you take. A bonus: 5 - 2 = 3, the number of items you get.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

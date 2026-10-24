@@ -43,6 +43,7 @@ export class AuthEmailService {
           renderVerificationEmail({
             firstName: fullName?.split(' ')[0] || '',
             code,
+            email,
             role,
           }),
       });

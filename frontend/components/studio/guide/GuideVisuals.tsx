@@ -8,30 +8,7 @@
  */
 
 import type { CSSProperties, ReactNode } from 'react';
-import {
-  BarChart3,
-  BookOpen,
-  Check,
-  CircleAlert,
-  Clock,
-  Code2,
-  Home,
-  ImageIcon,
-  Lightbulb,
-  Lock,
-  MessageCircleQuestion,
-  MessagesSquare,
-  Mic,
-  Pin,
-  Play,
-  Send,
-  TicketPercent,
-  Trophy,
-  Type,
-  Users,
-  Wallet,
-  type LucideIcon,
-} from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import type { GuideVisual } from '@/lib/creator/guide';
 import g from './guide.module.css';
 
@@ -53,10 +30,10 @@ function Frame({ children, label }: { children: ReactNode; label?: string }) {
   );
 }
 
-function Tile({ icon: Icon, t, size = 18 }: { icon: LucideIcon; t: string; size?: number }) {
+function Tile({ icon, t, size = 18 }: { icon: GlyphName; t: string; size?: number }) {
   return (
     <span className={g.tile} style={tone(t)}>
-      <Icon size={size} strokeWidth={2.5} />
+      <Glyph name={icon} size={size} strokeWidth={2.4} />
     </span>
   );
 }
@@ -64,22 +41,22 @@ function Tile({ icon: Icon, t, size = 18 }: { icon: LucideIcon; t: string; size?
 /* ── individual pictures ──────────────────────────────────────────────── */
 
 function StudioMap() {
-  const groups: { label: string | null; items: { icon: LucideIcon; name: string; t: string; dot?: number; on?: boolean }[] }[] = [
-    { label: null, items: [{ icon: Home, name: 'Home', t: 'var(--color-brand)', on: true }] },
-    { label: 'Build', items: [{ icon: BookOpen, name: 'Courses', t: 'var(--success-green)' }] },
+  const groups: { label: string | null; items: { icon: GlyphName; name: string; t: string; dot?: number; on?: boolean }[] }[] = [
+    { label: null, items: [{ icon: 'house', name: 'Home', t: 'var(--color-brand)', on: true }] },
+    { label: 'Build', items: [{ icon: 'book', name: 'Courses', t: 'var(--success-green)' }] },
     {
       label: 'Grow',
       items: [
-        { icon: Users, name: 'Learners', t: 'var(--brand-purple)', dot: 3 },
-        { icon: MessagesSquare, name: 'Community', t: 'var(--warning)', dot: 2 },
-        { icon: BarChart3, name: 'Analytics', t: 'var(--color-brand)' },
+        { icon: 'users', name: 'Learners', t: 'var(--brand-purple)', dot: 3 },
+        { icon: 'bubble', name: 'Community', t: 'var(--warning)', dot: 2 },
+        { icon: 'chart', name: 'Analytics', t: 'var(--color-brand)' },
       ],
     },
     {
       label: 'Earn',
       items: [
-        { icon: Wallet, name: 'Earnings', t: 'var(--success-green)' },
-        { icon: TicketPercent, name: 'Coupons', t: 'var(--error-red)' },
+        { icon: 'wallet', name: 'Earnings', t: 'var(--success-green)' },
+        { icon: 'ticket', name: 'Coupons', t: 'var(--error-red)' },
       ],
     },
   ];
@@ -122,7 +99,7 @@ function LessonShape() {
         ))}
       </div>
       <div className={g.shapeFoot}>
-        <Clock size={14} strokeWidth={2.75} /> A few minutes, one idea, practice every time
+        <Glyph name="clock" size={14} strokeWidth={2.55} /> A few minutes, one idea, practice every time
       </div>
     </Frame>
   );
@@ -149,7 +126,7 @@ function CourseShape() {
                 <span key={l} className={g.lessonRow}>
                   <span className={g.lessonNum}>{n}</span>
                   <span className={g.grow}>{l}</span>
-                  {n <= 2 ? <span className={g.free}>FREE</span> : <Lock size={14} strokeWidth={2.75} className={g.muted} />}
+                  {n <= 2 ? <span className={g.free}>FREE</span> : <Glyph name="lock" size={14} strokeWidth={2.55} className={g.muted} />}
                 </span>
               );
             })}
@@ -170,7 +147,7 @@ function Wizard() {
       <div className={g.wizSteps}>
         {steps.map((s, i) => (
           <span key={s} className={`${g.wizStep} ${i < 3 ? g.wizDone : ''} ${i === 3 ? g.wizNow : ''}`}>
-            <span className={g.wizDot}>{i < 3 ? <Check size={14} strokeWidth={4} /> : i + 1}</span>
+            <span className={g.wizDot}>{i < 3 ? <Glyph name="check" size={14} strokeWidth={3.6} /> : i + 1}</span>
             {s}
           </span>
         ))}
@@ -200,7 +177,7 @@ function Workspace() {
           <strong>6 of 8 lessons ready</strong>
         </span>
         <span className={g.btnMini}>
-          Continue <Play size={12} strokeWidth={3} fill="currentColor" />
+          Continue <Glyph name="play" size={12} strokeWidth={2.8} />
         </span>
       </div>
       <div className={g.tabs}>
@@ -226,7 +203,7 @@ function BuilderLayout() {
         <div className={g.rail}>
           {PHASES.map((p, i) => (
             <span key={p.name} className={`${g.railItem} ${i === 1 ? g.railOn : ''}`} style={tone(p.t)}>
-              <span className={g.railDot}>{i === 0 ? <Check size={11} strokeWidth={4} /> : null}</span>
+              <span className={g.railDot}>{i === 0 ? <Glyph name="check" size={11} strokeWidth={3.6} /> : null}</span>
               {p.name}
             </span>
           ))}
@@ -249,14 +226,14 @@ function BuilderLayout() {
 }
 
 function LearnCards() {
-  const kinds: { icon: LucideIcon; name: string; t: string }[] = [
-    { icon: Type, name: 'Explanation', t: 'var(--color-brand)' },
-    { icon: Code2, name: 'Code', t: 'var(--color-ink)' },
-    { icon: Play, name: 'Video', t: 'var(--error-red)' },
-    { icon: Mic, name: 'Audio', t: 'var(--brand-purple)' },
-    { icon: ImageIcon, name: 'Image', t: 'var(--success-green)' },
-    { icon: Lightbulb, name: 'Tip', t: 'var(--warning)' },
-    { icon: Check, name: 'Quick check', t: 'var(--color-brand)' },
+  const kinds: { icon: GlyphName; name: string; t: string }[] = [
+    { icon: 'text', name: 'Explanation', t: 'var(--color-brand)' },
+    { icon: 'code', name: 'Code', t: 'var(--color-ink)' },
+    { icon: 'play', name: 'Video', t: 'var(--error-red)' },
+    { icon: 'mic', name: 'Audio', t: 'var(--brand-purple)' },
+    { icon: 'image', name: 'Image', t: 'var(--success-green)' },
+    { icon: 'bulb', name: 'Tip', t: 'var(--warning)' },
+    { icon: 'check', name: 'Quick check', t: 'var(--color-brand)' },
   ];
   return (
     <Frame>
@@ -341,13 +318,13 @@ function Checklist() {
       <div className={g.checks}>
         {items.map(([label, ok]) => (
           <span key={label} className={`${g.check} ${ok ? g.checkOk : ''}`}>
-            <span className={g.checkBox}>{ok ? <Check size={12} strokeWidth={4} /> : null}</span>
+            <span className={g.checkBox}>{ok ? <Glyph name="check" size={12} strokeWidth={3.6} /> : null}</span>
             {label}
           </span>
         ))}
       </div>
       <span className={`${g.btnMini} ${g.btnOff}`}>
-        <Send size={12} strokeWidth={3} /> Submit for review
+        <Glyph name="send" size={12} strokeWidth={2.8} /> Submit for review
       </span>
     </Frame>
   );
@@ -365,13 +342,13 @@ function ReviewFlow() {
       <div className={g.flow}>
         {steps.map((s, i) => (
           <span key={s.name} className={g.flowStep} style={tone(s.t)}>
-            <span className={g.flowDot}>{i === 3 ? <Trophy size={14} strokeWidth={2.75} /> : i + 1}</span>
+            <span className={g.flowDot}>{i === 3 ? <Glyph name="trophy" size={14} strokeWidth={2.55} /> : i + 1}</span>
             {s.name}
           </span>
         ))}
       </div>
       <div className={g.flowLoop}>
-        <CircleAlert size={16} strokeWidth={2.75} /> Changes requested → read the notes, fix, submit again
+        <Glyph name="alert" size={16} strokeWidth={2.55} /> Changes requested → read the notes, fix, submit again
       </div>
     </Frame>
   );
@@ -382,23 +359,23 @@ function Pricing() {
     <Frame>
       <div className={g.price}>
         <span className={g.priceBase}>
-          <span className={g.editorKicker}>Your yearly price</span>
-          <strong>$60</strong>
+          <span className={g.editorKicker}>A yearly Pro learner pays</span>
+          <strong>$5.00</strong>
         </span>
         <span className={g.priceArrow}>→</span>
         <div className={g.plans}>
           <span className={g.plan}>
-            <strong>$60</strong> a year
-            <em>you keep $42</em>
+            <strong>50%</strong> creator pool
+            <em>shared by minutes</em>
           </span>
           <span className={g.plan}>
-            <strong>$10</strong> a month
-            <em>you keep $7</em>
+            <strong>$2.50</strong> a month
+            <em>if they learn only with you</em>
           </span>
         </div>
       </div>
       <div className={g.shapeFoot}>
-        <Lock size={14} strokeWidth={2.75} /> First 2 lessons free, then learners subscribe
+        <Glyph name="lock" size={14} strokeWidth={2.55} /> Anyone can try your first 2 lessons
       </div>
     </Frame>
   );
@@ -439,12 +416,12 @@ function CommunityAdmin() {
     <Frame label="Community">
       <div className={g.post}>
         <span className={g.postHead}>
-          <Pin size={13} strokeWidth={2.75} /> Announcement · New unit is live
+          <Glyph name="pin" size={13} strokeWidth={2.55} /> Announcement · New unit is live
         </span>
       </div>
       <div className={g.post}>
         <span className={g.postHead}>
-          <MessageCircleQuestion size={14} strokeWidth={2.75} className={g.warnIcon} /> Ada asked · 12m
+          <Glyph name="bubble" size={14} strokeWidth={2.4} className={g.warnIcon} /> Ada asked · 12m
           <span className={g.unanswered}>Waiting for you</span>
         </span>
         <span className={g.postBody}>Why does groupby drop missing values?</span>
@@ -512,7 +489,7 @@ function Payouts() {
       <div className={g.flow}>
         {['Requested', 'Processing', 'Paid'].map((s) => (
           <span key={s} className={g.flowStep} style={tone('var(--success-green)')}>
-            <span className={g.flowDot}><Check size={14} strokeWidth={4} /></span>
+            <span className={g.flowDot}><Glyph name="check" size={14} strokeWidth={3.6} /></span>
             {s}
           </span>
         ))}

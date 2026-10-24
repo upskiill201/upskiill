@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In plain words, how does an AI chat tool write an answer?',
         options: [
-          { text: 'It writes the words most likely to come next, based on patterns it learned' },
           { text: 'It looks up the one correct answer in a database', why: 'There is no answer database. It writes, word by word.' },
+          { text: 'It writes the words most likely to come next, based on patterns it learned' },
           { text: 'A person types the answer behind the scenes', why: 'No person is involved. It is generated.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         message: 'Your AI summary said we agreed to launch in May. We never agreed that. Where did it get it?',
         prompt: 'What is the honest answer?',
         options: [
-          { text: "I didn't give it our launch date, so it guessed one that sounded right. I'll fix it now." },
           { text: 'The AI must have found it online.', why: 'Your launch date is not online. It was a guess.' },
           { text: 'AI is never wrong, so you must have agreed.', why: 'AI tools guess when information is missing. Ada left the date out.' },
+          { text: "I didn't give it our launch date, so it guessed one that sounded right. I'll fix it now." },
         ],
-        answer: 0,
+        answer: 2,
         explanation: 'Missing facts get filled with likely-sounding ones. Owning that keeps the trust.',
       },
       {

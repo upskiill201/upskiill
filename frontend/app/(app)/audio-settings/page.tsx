@@ -3,28 +3,7 @@
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import {
-  Volume2,
-  VolumeX,
-  Play,
-  Square,
-  RotateCcw,
-  Download,
-  Upload,
-  Music,
-  Sliders,
-  CheckCircle2,
-  AlertCircle,
-  ArrowLeft,
-  Sparkles,
-  Search,
-  Check,
-  Layers,
-  Settings2,
-  Headphones,
-  Zap,
-  Info,
-} from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAudio } from '@/lib/audio/useAudio';
 import { SoundId, SoundCategory, SoundConfig } from '@/lib/audio/soundRegistry';
@@ -156,7 +135,7 @@ export default function AudioSettingsPage() {
                 : 'bg-[#FF4B4B] border-[#E03131] text-white shadow-[#FF4B4B]/25'
             }`}
           >
-            {notification.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+            {notification.type === 'success' ? <Glyph name="checkCircle" className="w-5 h-5" /> : <Glyph name="alert" className="w-5 h-5" />}
             <span className="font-extrabold text-sm" style={{ fontFamily: 'var(--font-jakarta)' }}>{notification.message}</span>
           </motion.div>
         )}
@@ -172,11 +151,11 @@ export default function AudioSettingsPage() {
               onClick={() => play('BUTTON_SECONDARY')}
               className="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <Glyph name="back" className="w-5 h-5" />
             </Link>
             <div>
               <div className="flex items-center gap-2">
-                <Headphones className="w-6 h-6 text-[#0172FD]" />
+                <Glyph name="headphones" className="w-6 h-6 text-[#0172FD]" />
                 <h1 className="text-2xl font-[900] text-slate-900 tracking-tight" style={{ fontFamily: 'var(--font-jakarta)' }}>
                   Audio Settings
                 </h1>
@@ -194,7 +173,7 @@ export default function AudioSettingsPage() {
               className="h-11 px-4 rounded-2xl bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50 active:translate-y-0.5 transition-all text-xs font-extrabold flex items-center gap-2 cursor-pointer shadow-sm"
               style={{ fontFamily: 'var(--font-jakarta)' }}
             >
-              <Download className="w-4 h-4 text-[#0172FD]" />
+              <Glyph name="download" className="w-4 h-4 text-[#0172FD]" />
               <span>Export JSON</span>
             </button>
 
@@ -203,7 +182,7 @@ export default function AudioSettingsPage() {
               className="h-11 px-4 rounded-2xl bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50 active:translate-y-0.5 transition-all text-xs font-extrabold flex items-center gap-2 cursor-pointer shadow-sm"
               style={{ fontFamily: 'var(--font-jakarta)' }}
             >
-              <Upload className="w-4 h-4 text-[#58CC02]" />
+              <Glyph name="upload" className="w-4 h-4 text-[#58CC02]" />
               <span>Import JSON</span>
             </button>
             <input ref={fileInputRef} type="file" accept=".json" onChange={handleImportJson} className="hidden" />
@@ -213,7 +192,7 @@ export default function AudioSettingsPage() {
               className="h-11 px-4 rounded-2xl bg-[#0172FD] border-b-4 border-[#0050B3] text-white hover:bg-[#0060D9] active:border-b-0 active:translate-y-1 transition-all text-xs font-[900] flex items-center gap-2 cursor-pointer shadow-md shadow-[#0172FD]/20"
               style={{ fontFamily: 'var(--font-jakarta)' }}
             >
-              <RotateCcw className="w-4 h-4" />
+              <Glyph name="refresh" className="w-4 h-4" />
               <span>Reset Defaults</span>
             </button>
           </div>
@@ -283,7 +262,7 @@ export default function AudioSettingsPage() {
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-[#F0F7FF] text-[#0172FD] flex items-center justify-center">
-                <Sliders className="w-5 h-5" />
+                <Glyph name="sliders" className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-lg font-[900] text-slate-900 leading-none" style={{ fontFamily: 'var(--font-jakarta)' }}>
@@ -300,7 +279,7 @@ export default function AudioSettingsPage() {
               onClick={stopAll}
               className="h-10 px-4 rounded-xl bg-[#FFF0F0] border border-[#FF4B4B]/30 text-[#FF4B4B] hover:bg-[#FF4B4B] hover:text-white transition-all text-xs font-extrabold flex items-center gap-2 cursor-pointer"
             >
-              <Square className="w-3.5 h-3.5 fill-current" />
+              <Glyph name="stop" className="w-3.5 h-3.5 fill-current" />
               <span>Stop All Audio</span>
             </button>
           </div>
@@ -381,7 +360,7 @@ export default function AudioSettingsPage() {
             {/* Mute All Switch */}
             <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F8FAFC] border border-slate-200/70">
               <div className="flex items-center gap-2.5">
-                {isMuted ? <VolumeX className="w-5 h-5 text-[#FF4B4B]" /> : <Volume2 className="w-5 h-5 text-[#0172FD]" />}
+                {isMuted ? <Glyph name="soundOff" className="w-5 h-5 text-[#FF4B4B]" /> : <Glyph name="soundOn" className="w-5 h-5 text-[#0172FD]" />}
                 <span className="text-xs font-extrabold text-slate-800" style={{ fontFamily: 'var(--font-jakarta)' }}>Mute All Audio</span>
               </div>
               <button
@@ -399,7 +378,7 @@ export default function AudioSettingsPage() {
             {/* Enable SFX Switch */}
             <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F8FAFC] border border-slate-200/70">
               <div className="flex items-center gap-2.5">
-                <Zap className="w-5 h-5 text-[#58CC02]" />
+                <Glyph name="bolt" className="w-5 h-5 text-[var(--success-green)]" />
                 <span className="text-xs font-extrabold text-slate-800" style={{ fontFamily: 'var(--font-jakarta)' }}>Enable Sound Effects</span>
               </div>
               <button
@@ -417,7 +396,7 @@ export default function AudioSettingsPage() {
             {/* Enable Music Switch */}
             <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F8FAFC] border border-slate-200/70">
               <div className="flex items-center gap-2.5">
-                <Music className="w-5 h-5 text-[#FF9600]" />
+                <Glyph name="music" className="w-5 h-5 text-[#FF9600]" />
                 <span className="text-xs font-extrabold text-slate-800" style={{ fontFamily: 'var(--font-jakarta)' }}>Enable Background Music</span>
               </div>
               <button
@@ -493,7 +472,7 @@ export default function AudioSettingsPage() {
 
             {/* Search Input */}
             <div className="relative w-full sm:w-72">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Glyph name="search" className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Search sound name or ID..."
@@ -640,7 +619,7 @@ export default function AudioSettingsPage() {
                       }`}
                       style={{ fontFamily: 'var(--font-jakarta)' }}
                     >
-                      <Play className="w-4 h-4 fill-current" />
+                      <Glyph name="play" className="w-4 h-4 fill-current" />
                       <span>{isPlaying ? 'PLAYING...' : 'PLAY SOUND'}</span>
                     </button>
 

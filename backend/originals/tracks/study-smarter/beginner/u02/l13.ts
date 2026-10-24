@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: 'I want to be a doctor. Why do I need chemistry ratios?',
         prompt: 'What should Kofi suggest?',
         options: [
-          { text: 'Ask the AI where ratio calculations come up in medicine. Linking it to your goal will help it stick.' },
           { text: "You don't, just pass the exam.", why: 'That makes it harder to remember, not easier.' },
+          { text: 'Ask the AI where ratio calculations come up in medicine. Linking it to your goal will help it stick.' },
           { text: 'Doctors never do maths.', why: 'Not true, and not helpful.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The AI gives a general real-life example. What is it usually safe to do?',
         options: [
-          { text: 'Use it to understand why the topic matters' },
           { text: 'Quote it in an essay as a fact', why: 'Anything you quote needs a real source.' },
           { text: 'Ignore it', why: 'General examples help it stick.' },
+          { text: 'Use it to understand why the topic matters' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

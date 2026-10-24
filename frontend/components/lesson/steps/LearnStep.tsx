@@ -10,7 +10,7 @@
  */
 
 import DOMPurify from 'dompurify';
-import { AlertTriangle, Check, Headphones, Info, Lightbulb, NotebookPen, Pin, X } from 'lucide-react';
+import { Emblem } from '@/components/art/Emblem';
 import { motion, useReducedMotion } from 'framer-motion';
 import { CodeBlock } from '../code/CodeBlock';
 import type { LearnCard } from '@/lib/lesson/learnCards';
@@ -34,9 +34,9 @@ function bulletText(raw: string) {
 }
 
 const CALLOUT = {
-  tip: { label: 'Tip', tone: 'var(--color-brand)', icon: <Lightbulb className="w-6 h-6 stroke-[2.5]" /> },
-  warning: { label: 'Watch out', tone: 'var(--warning)', icon: <AlertTriangle className="w-6 h-6 stroke-[2.5]" /> },
-  remember: { label: 'Remember', tone: 'var(--brand-purple)', icon: <Pin className="w-6 h-6 stroke-[2.5]" /> },
+  tip: { label: 'Tip', tone: 'var(--color-brand)', icon: <Emblem name="bulb" size={26} /> },
+  warning: { label: 'Watch out', tone: 'var(--warning)', icon: <Emblem name="warning" size={26} /> },
+  remember: { label: 'Remember', tone: 'var(--brand-purple)', icon: <Emblem name="pin" size={26} /> },
 } as const;
 
 /**
@@ -125,12 +125,7 @@ export function LearnStep({
                 .filter(Boolean)
                 .map((p, i) => (
                   <li key={i} className="flex items-start gap-3 text-[16.5px] md:text-[17px] font-bold text-ink leading-snug">
-                    <span
-                      className="mt-[1px] shrink-0 w-7 h-7 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: 'var(--lesson-select-bg)' }}
-                    >
-                      <Check className="w-4 h-4 stroke-[3.5] text-[var(--color-brand)]" aria-hidden="true" />
-                    </span>
+                    <Emblem name="right" size={26} className="mt-[1px]" />
                     {p}
                   </li>
                 ))}
@@ -166,7 +161,7 @@ export function LearnStep({
               className="w-16 h-16 rounded-full flex items-center justify-center"
               style={{ backgroundColor: 'var(--lesson-select-bg)' }}
             >
-              <Headphones className="w-8 h-8 text-[var(--color-brand)]" aria-hidden="true" />
+              <Emblem name="headphones" size={34} />
             </span>
             <audio src={card.startSec ? `${card.url}#t=${card.startSec}` : card.url} controls {...clipHandlers(card, onMediaEnded)} onEnded={onMediaEnded} onError={onMediaEnded} className="w-full max-w-[480px]" />
           </div>
@@ -250,8 +245,8 @@ export function LearnStep({
                     }}
                   >
                     {o}
-                    {answered && right && <Check className="w-5 h-5 shrink-0 stroke-[3] text-[var(--lesson-correct)]" aria-label="Right answer" />}
-                    {picked && !right && <X className="w-5 h-5 shrink-0 stroke-[3] text-[var(--lesson-wrong)]" aria-label="Your answer" />}
+                    {answered && right && <Emblem name="right" size={22} label="Right answer" />}
+                    {picked && !right && <Emblem name="wrong" size={22} label="Your answer" />}
                   </motion.button>
                 );
               })}
@@ -270,7 +265,7 @@ export function LearnStep({
       {card.kind === 'notes' && (
         <Card>
           <p className="flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.08em] text-[var(--text-secondary)]">
-            <NotebookPen className="w-4 h-4" aria-hidden="true" />
+            <Emblem name="notebook" size={20} />
             From your instructor
           </p>
           <div className="mt-3 flex flex-col gap-3 text-[16.5px] leading-[1.6] text-ink font-medium">
@@ -284,7 +279,7 @@ export function LearnStep({
       {card.kind === 'empty' && (
         <Card>
           <div className="flex flex-col items-center text-center gap-2">
-            <Info className="w-8 h-8 text-[var(--text-muted)]" aria-hidden="true" />
+            <Emblem name="info" size={36} />
             <p className="text-[17px] font-extrabold text-ink">Nothing to read here yet</p>
             <p className="text-[15px] font-semibold text-[var(--text-secondary)]">
               The instructor hasn&apos;t added this part. Carry on to the next step.

@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which split gives a fair test?',
         options: [
-          { text: 'Train on weeks 1–11, test on week 12' },
           { text: 'Train and test on all 12 weeks', why: 'Test patients would look themselves up.' },
+          { text: 'Train on weeks 1–11, test on week 12' },
           { text: 'Test on the first 50 training bookings', why: 'That\'s Chidi\'s 100% mistake.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         message: '12 out of 20 is only 60%. That\'s a fail.',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Random calls would reach about 4 no-shows out of 20. The list reaches 12, three times as many. For Bisi\'s evening, that\'s a big win.' },
           { text: 'Yes, it failed.', why: 'Compared with random calls, it\'s three times better.' },
           { text: 'It\'s 100% really.', why: 'It\'s 12 of 20. Be honest, then compare with the alternative.' },
+          { text: 'Random calls would reach about 4 no-shows out of 20. The list reaches 12, three times as many. For Bisi\'s evening, that\'s a big win.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A risk of 0.6 with 15 neighbours means...',
         options: [
-          { text: '9 of the 15 most similar past patients missed' },
           { text: 'The patient is 60% likely to be late', why: 'It\'s the share of similar patients who missed.' },
+          { text: '9 of the 15 most similar past patients missed' },
           { text: '6 neighbours missed', why: '0.6 x 15 = 9.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

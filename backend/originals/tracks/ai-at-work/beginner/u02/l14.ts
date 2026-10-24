@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "attached" with no attachment so common?',
         options: [
-          { text: 'You write "attached" before attaching, then forget' },
           { text: 'Email apps delete attachments', why: 'Usually it was never added.' },
+          { text: 'You write "attached" before attaching, then forget' },
           { text: 'It is rare', why: 'It is one of the most common email mistakes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -159,11 +159,11 @@ const lesson: OriginalLesson = {
         message: "Small thing: it's Lucía with an accent. Happens all the time, don't worry!",
         prompt: "What's the best reply?",
         options: [
-          { text: "Thanks for telling me, Lucía! I'll get it right from now on." },
           { text: 'The spellchecker did not flag it.', why: 'True, but names are your job.' },
+          { text: "Thanks for telling me, Lucía! I'll get it right from now on." },
           { text: 'Accents are hard to type.', why: 'Not her problem. Fix it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -184,11 +184,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The AI found no spelling errors. Is the email ready?',
         options: [
-          { text: 'Not yet: names, numbers, dates, links, attachments and recipients still need checking' },
           { text: 'Yes, completely', why: 'Correctly spelled facts can still be wrong.' },
           { text: 'Only if it is short', why: 'Length does not change what needs checking.' },
+          { text: 'Not yet: names, numbers, dates, links, attachments and recipients still need checking' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

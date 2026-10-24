@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         message: 'Gumel has a 37% no-show rate! Close it?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Gumel is rural: patients travel far and the rain hits harder. It needs more help, not closing. And it\'s only 134 bookings, so the rate is less certain.' },
           { text: 'Yes, close it.', why: 'High no-shows is a reason to help, and 134 bookings is a small sample.' },
+          { text: 'Gumel is rural: patients travel far and the rain hits harder. It needs more help, not closing. And it\'s only 134 bookings, so the rate is less certain.' },
           { text: '37% is normal everywhere.', why: 'The average is 18.3%. Gumel is very different.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

@@ -17,7 +17,7 @@ import { ThrottlerGuard, Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
-import { VerifyCodeDto } from './dto/verify-code.dto';
+import { VerifyCodeDto, VerifyLinkDto } from './dto/verify-code.dto';
 import { ResendVerificationDto } from './dto/resend-verification.dto';
 import { BecomeCreatorDto } from './dto/become-creator.dto';
 import { GetUser } from './decorator/get-user.decorator';
@@ -85,29 +85,35 @@ export class AuthController {
   }
 
   @Get('verify-email')
-  verifyEmailRedirect(@Query('token') token: string, @Res() res: Response) {
+  verifyEmailRedirect(
+    @Query('token') token: string,
+    @Query('email') email: string,
+    @Res() res: Response,
+  ) {
     // Legacy emails pointed straight at the API origin, where any session
     // cookie would be set for the wrong domain and verification double-hashed
     // the token. Real verification now happens app-side: this page exchanges
     // the token via the proxied /api route so the cookie lands first-party.
     const appUrl = process.env.APP_URL || 'https://teyro.app';
-    return res.redirect(
-      `${appUrl}/verify-email${token ? `?token=${encodeURIComponent(token)}` : ''}`,
-    );
+    const params = new URLSearchParams();
+    if (token) params.set('token', token);
+    if (email) params.set('email', email);
+    const query = params.toString();
+    return res.redirect(`${appUrl}/verify-email${query ? `?${query}` : ''}`);
   }
 
-  @Throttle({ default: { limit: 10, ttl: 900000 } }) // 10 per 15 mins — the token has the same 10^6 space as codes
+  @Throttle({ default: { limit: 10, ttl: 900000 } }) // 10 per 15 mins
   @HttpCode(HttpStatus.OK)
   @Post('verify-link')
   async verifyLink(
-    @Body('token') token: string,
+    @Body() dto: VerifyLinkDto,
     @Res({ passthrough: true }) res: Response,
   ) {
     // JSON contract: the app-origin /verify-email page POSTs here through the
     // proxied route so the session cookie lands first-party, then routes by
     // the returned role itself (INSTRUCTOR → creator onboarding, else
     // dashboard). A server-side 302 to appUrl would set nothing useful.
-    const result = await this.authService.verifyEmail(token);
+    const result = await this.authService.verifyCode(dto.email, dto.token);
     this.setCookie(res, result.access_token);
     return this.withoutToken(result);
   }
@@ -160,7 +166,12 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('logout')
-  logout(@Res({ passthrough: true }) res: Response) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    // Revoke first: clearing the cookie only helps this browser, while a copy
+    // of the token elsewhere would have kept working for its full 7 days.
+    await this.authService.revokeSession(
+      (req as Request & { cookies?: Record<string, string> }).cookies?.access_token,
+    );
     res.clearCookie('access_token', {
       path: '/',
     });
@@ -249,8 +260,25 @@ export class AuthController {
     });
     if (enrichedUser) {
       delete (enrichedUser as any).password;
+      // Never send secrets back, even to their owner.
+      delete (enrichedUser as any).verifyToken;
+      delete (enrichedUser as any).tokenExpiry;
     }
-    return enrichedUser;
+
+    // Onboarding v3 progress, so the app can send a learner who signed up
+    // mid-flow back to their step instead of dropping them in the app.
+    // Only v3 sessions (they have a goal) are routed; older flows are done.
+    const session = await this.prisma.onboardingSession.findUnique({
+      where: { userId: user.id },
+      select: { onboardingComplete: true, currentStep: true, answers: true },
+    });
+    const isV3 = !!(session?.answers as { goal?: unknown } | null)?.goal;
+    return {
+      ...enrichedUser,
+      onboarding: session
+        ? { complete: session.onboardingComplete, step: session.currentStep, version: isV3 ? 3 : 2 }
+        : null,
+    };
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -296,13 +324,10 @@ export class AuthController {
     if (!email) return { exists: false };
     const user = await this.prisma.user.findUnique({
       where: { email: email.toLowerCase().trim() },
-      select: { id: true, hasCreatorAccess: true, hasStudentAccess: true, isVerified: true },
+      select: { id: true },
     });
-    return { 
-      exists: !!user,
-      hasCreatorAccess: user?.hasCreatorAccess ?? false,
-      hasStudentAccess: user?.hasStudentAccess ?? false,
-      isVerified: user?.isVerified ?? false,
-    };
+    // Existence only: the role and verification flags it used to return told
+    // anyone which emails belonged to creators, and no screen read them.
+    return { exists: !!user };
   }
 }

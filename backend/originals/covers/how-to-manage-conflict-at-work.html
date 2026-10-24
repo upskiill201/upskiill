@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=block" rel="stylesheet" />
+<style>
+  /* Teyro Originals cover: How to Manage Conflict at Work. A still frame of a
+     team chat: a cold "Fine." bubble, a calm reply, and Grace's ward-rules
+     card pinned beside it. No Tey. */
+  :root {
+    --brand: #0172FD;
+    --brand-dark: #0060D9;
+    --brand-deep: #0050B3;
+    --ink: #071233;
+    --amber: #F59E0B;
+    --amber-dark: #B45309;
+    --green: #22C55E;
+    --green-dark: #16A34A;
+    --pink: #EC4899;
+    --pink-dark: #9D174D;
+    --white: #FFFFFF;
+    --mist: #E8F1FF;
+    --steel: #1B2A4A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 1000px; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--brand); overflow: hidden; position: relative; }
+
+  .blob { position: absolute; border-radius: 50%; background: var(--brand-dark); }
+  .ring { position: absolute; border-radius: 50%; border: 6px solid var(--white); }
+
+  .copy { position: absolute; left: 100px; top: 130px; width: 760px; z-index: 5; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--white); color: var(--brand);
+    font-weight: 800; font-size: 26px; letter-spacing: .08em; text-transform: uppercase;
+    padding: 14px 26px; border-radius: 999px; box-shadow: 0 6px 0 var(--brand-deep);
+  }
+  .pill i { width: 14px; height: 14px; border-radius: 50%; background: var(--amber); display: inline-block; }
+  h1 { margin-top: 38px; color: var(--white); font-weight: 800; font-size: 96px; line-height: 1.0; letter-spacing: -0.035em; }
+  h1 em { font-style: normal; color: var(--ink); background: var(--amber); padding: 0 18px 6px; border-radius: 26px; box-shadow: 0 8px 0 var(--amber-dark); display: inline-block; margin: 10px 0 6px; }
+  .sub { margin-top: 36px; color: var(--mist); font-weight: 700; font-size: 32px; line-height: 1.3; width: 620px; }
+
+  .stage { position: absolute; left: 900px; top: 100px; width: 640px; height: 820px; transform: rotate(-3deg); }
+  .chat { position: absolute; left: 20px; top: 40px; width: 590px; background: var(--white); border-radius: 40px; padding: 34px 34px 40px; box-shadow: 0 14px 0 var(--brand-deep); }
+  .chat h2 { font-size: 22px; letter-spacing: .12em; text-transform: uppercase; color: var(--brand); font-weight: 800; }
+  .msg { margin-top: 22px; display: flex; flex-direction: column; }
+  .msg .who { font-size: 20px; font-weight: 800; color: var(--ink); opacity: .5; margin-bottom: 6px; }
+  .msg p { font-size: 32px; font-weight: 800; line-height: 1.15; padding: 18px 24px; border-radius: 26px 26px 26px 8px; background: var(--mist); color: var(--ink); max-width: 500px; }
+  .msg.cold p { background: var(--steel); color: var(--white); font-size: 44px; }
+  .msg.me { align-items: flex-end; }
+  .msg.me p { background: var(--green); color: var(--white); border-radius: 26px 26px 8px 26px; box-shadow: 0 6px 0 var(--green-dark); }
+
+  .card { position: absolute; left: -40px; top: 600px; width: 380px; background: var(--amber); border-radius: 18px; padding: 24px 26px; box-shadow: 0 10px 0 var(--amber-dark); transform: rotate(-5deg); }
+  .card b { display: block; font-size: 20px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); opacity: .7; }
+  .card p { margin-top: 8px; font-size: 30px; font-weight: 800; color: var(--ink); line-height: 1.2; }
+
+  .spark { position: absolute; }
+</style>
+</head>
+<body>
+  <div class="blob" style="width:820px;height:820px;right:-220px;top:-300px;opacity:.55"></div>
+  <div class="blob" style="width:540px;height:540px;left:-220px;bottom:-280px;opacity:.45"></div>
+  <div class="ring" style="width:150px;height:150px;left:780px;top:810px;opacity:.12"></div>
+  <div class="ring" style="width:60px;height:60px;left:1520px;top:40px;opacity:.25"></div>
+
+  <div class="copy">
+    <span class="pill"><i></i>Teyro Original · Short course</span>
+    <h1>How to Manage<br/><em>Conflict</em><br/>at Work</h1>
+    <p class="sub">Grace can calm a ward at 3 a.m. Now she has to calm her team. Keep the peace and the relationships.</p>
+  </div>
+
+  <div class="stage">
+    <div class="chat">
+      <h2>#launch-team</h2>
+      <div class="msg cold"><span class="who">Femi</span><p style="display:inline-block;align-self:flex-start">Fine.</p></div>
+      <div class="msg me"><span class="who">Grace</span><p>Thanks! Is now a bad time? Happy to pick it up later.</p></div>
+    </div>
+    <div class="card"><b>Ward rule 15</b><p>If it reads as off, ask lightly.</p></div>
+
+    <svg class="spark" style="left:590px;top:560px" width="54" height="54" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#fff"/></svg>
+    <svg class="spark" style="left:0;top:0" width="40" height="40" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F59E0B"/></svg>
+  </div>
+</body>
+</html>

@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         code: 'count = 0\nfor w in [16, 3, 25]:\n    if w > 14:\n        count = count + 1\nprint(count)',
         language: 'python',
         options: [
-          { text: '2' },
           { text: '3', why: '3 is not more than 14.' },
           { text: '44', why: 'It counts; it doesn\'t add.' },
+          { text: '2' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'You found a 400-day wait. Shall I fix it in the spreadsheet?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Leave the export as it is. I\'ll fix it in the Python steps, so the fix is written down and repeatable.' },
           { text: 'Yes, fix it quietly.', why: 'Quiet hand edits can\'t be checked or repeated.' },
+          { text: 'Leave the export as it is. I\'ll fix it in the Python steps, so the fix is written down and repeatable.' },
           { text: 'Ignore it.', why: 'A 400-day wait would mislead the model.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is distance_km stored as text in the raw file?',
         options: [
-          { text: 'Some cells say things like "12 km"' },
           { text: 'pandas stores all numbers as text', why: 'wait_days is stored as numbers.' },
           { text: 'Distances are always text', why: 'Only because of the "km" cells.' },
+          { text: 'Some cells say things like "12 km"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

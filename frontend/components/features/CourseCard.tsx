@@ -4,12 +4,11 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Play, Heart, Users, Clock, BookOpen, ChevronRight, ShoppingCart, Check, Lock } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Badge from '../ui/Badge';
 import Avatar from '../ui/Avatar';
 import { StarRating } from '../ui/StarRating';
 import { ProgressBar } from '../ui/ProgressBar';
-import { useCart } from '@/context/CartContext';
 import { playHaptic } from '@/lib/haptics';
 import styles from './CourseCard.module.css';
 
@@ -51,9 +50,6 @@ export const CourseCard = ({
   studentsCount,
   totalHours,
   totalLessons,
-  price,
-  originalPrice,
-  discountPercentage,
   isBestseller,
   isNew,
   isFree,
@@ -64,11 +60,9 @@ export const CourseCard = ({
   progress = 0,
   className = '',
 }: CourseCardProps) => {
-  const { addItem, isInCart } = useCart();
   const [isWishlisted, setIsWishlisted] = useState(false);
   const identifier = slug || id;
   const linkHref = `/courses/${identifier}`;
-  const inCart = isInCart(id);
 
   const toggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -78,22 +72,6 @@ export const CourseCard = ({
     // tactile click, not a silent icon-fill swap.
     playHaptic('selection');
     setIsWishlisted(!isWishlisted);
-  };
-
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!inCart) {
-      playHaptic('medium');
-      // The context expects: id, title, thumbnail, instructorName, price
-      addItem({
-        id,
-        title,
-        thumbnail,
-        instructorName,
-        price,
-      });
-    }
   };
 
   return (
@@ -127,14 +105,14 @@ export const CourseCard = ({
               animate={isWishlisted ? { scale: [1, 1.3, 1] } : { scale: 1 }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
             >
-              <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} strokeWidth={2.5} />
+              <Glyph name="heart" size={16} strokeWidth={2.4} style={{ fillOpacity: isWishlisted ? 1 : 0 }} />
             </motion.button>
           )}
           
           {/* Preview Button (slides up on hover) */}
           <div className={styles.previewBtnWrapper}>
             <div className={styles.previewBtn}>
-              <Play size={14} fill="currentColor" /> Preview Course
+              <Glyph name="play" size={14} strokeWidth={2.4} /> Preview Course
             </div>
           </div>
         </div>
@@ -162,12 +140,12 @@ export const CourseCard = ({
           )}
 
           <div className={styles.metaGrid}>
-            <div className={styles.metaItem}><Clock size={12} className={styles.metaIcon} /> {totalHours}h</div>
-            <div className={styles.metaItem}><BookOpen size={12} className={styles.metaIcon} /> {totalLessons} lessons</div>
+            <div className={styles.metaItem}><Glyph name="clock" size={12} strokeWidth={2.6} className={styles.metaIcon} /> {totalHours}h</div>
+            <div className={styles.metaItem}><Glyph name="book" size={12} strokeWidth={2.2} className={styles.metaIcon} /> {totalLessons} lessons</div>
             {level && <div className={styles.metaItem}>• {level}</div>}
             {studentsCount && studentsCount > 0 && (
               <div className={styles.metaItem}>
-                <Users size={12} className={styles.metaIcon} style={{ marginLeft: '4px' }} /> 
+                <Glyph name="users" size={12} strokeWidth={2.2} className={styles.metaIcon} style={{ marginLeft: '4px' }} /> 
                 {(studentsCount / 1000).toFixed(1)}k students
               </div>
             )}
@@ -189,7 +167,7 @@ export const CourseCard = ({
                   <ProgressBar value={progress} size="sm" color="green" />
                 </div>
                 <div className={styles.ctaEnrolled}>
-                  Continue Learning <ChevronRight size={14} />
+                  Continue Learning <Glyph name="chevron" size={14} strokeWidth={3} />
                 </div>
               </div>
             ) : (
@@ -198,21 +176,9 @@ export const CourseCard = ({
                   {isFree ? (
                     <span className={styles.priceFree}>Free</span>
                   ) : (
-                    <Badge variant="purple" size="sm" icon={<Lock size={11} />}>Premium</Badge>
+                    <Badge variant="purple" size="sm" icon={<Glyph name="crown" size={11} strokeWidth={2.2} />}>Teyro Pro</Badge>
                   )}
                 </div>
-                {!isFree && (
-                  <motion.button
-                    className={`${styles.addToCartBtn} ${inCart ? styles.inCart : ''}`}
-                    onClick={handleAddToCart}
-                    title={inCart ? "In Cart" : "Add to Cart"}
-                    whileTap={{ scale: 0.85 }}
-                    animate={inCart ? { scale: [1, 1.25, 1] } : { scale: 1 }}
-                    transition={{ duration: 0.3, ease: 'easeOut' }}
-                  >
-                    {inCart ? <Check size={16} /> : <ShoppingCart size={16} />}
-                  </motion.button>
-                )}
               </div>
             )}
           </div>

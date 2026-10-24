@@ -34,11 +34,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Part 2. You also have 96 g of O₂ (32 g/mol), which is 3 moles. Which reactant is limiting?',
         options: [
-          { text: 'H₂: 4 moles of H₂ only needs 2 moles of O₂, so H₂ runs out first' },
           { text: 'O₂, because there is more of it in grams', why: 'Grams don\'t decide it. Moles and the ratio do.' },
           { text: 'Neither', why: '4 mol H₂ needs only 2 mol O₂; 1 mol O₂ is left over.' },
+          { text: 'H₂: 4 moles of H₂ only needs 2 moles of O₂, so H₂ runs out first' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Kofi prepares the night before. Which request fits the chapter best?',
         options: [
-          { text: 'Pretend you are a classmate who finds limiting reagents hard. I will explain the board question. Ask me where I am vague. Do not explain it yourself.' },
           { text: 'Write a perfect explanation I can read out.', why: 'Then the AI is teaching, not Kofi.' },
+          { text: 'Pretend you are a classmate who finds limiting reagents hard. I will explain the board question. Ask me where I am vague. Do not explain it yourself.' },
           { text: 'Give me the answer to the board question.', why: 'He needs to be able to teach it, not just know it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Decoding: the question says "[Relative atomic masses: H = 1, O = 16] [4 marks]". What does that tell Kofi?',
         options: [
-          { text: 'Use exactly those values, and show about four steps of working' },
           { text: 'Use the most precise values he knows', why: 'Use what the question gives.' },
+          { text: 'Use exactly those values, and show about four steps of working' },
           { text: 'Write four sentences of explanation', why: 'It is a calculation. Four marks means about four steps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

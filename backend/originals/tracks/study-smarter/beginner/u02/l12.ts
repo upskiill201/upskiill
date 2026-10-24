@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: "I copied all 8 AI definitions into my notes. Done!",
         prompt: 'What should Kofi say?',
         options: [
-          { text: 'Now close the chat and rewrite each one in your own words. Then ask it to check yours.' },
           { text: 'Perfect, you are done.', why: 'Copying is not the same as knowing.' },
+          { text: 'Now close the chat and rewrite each one in your own words. Then ask it to check yours.' },
           { text: 'Copy 8 more.', why: 'More copying, same problem.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why learn the key words before the topic?',
         options: [
-          { text: "You can't follow explanations full of words you don't know" },
           { text: 'Teachers test words more than ideas', why: 'Not usually. The words unlock the ideas.' },
           { text: 'It makes notes longer', why: 'Length is not the goal.' },
+          { text: "You can't follow explanations full of words you don't know" },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',

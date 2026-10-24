@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'You already build RAG systems at work. What can you do?',
         options: [
-          { text: 'Take the Jump here test on later chapters, or "Find my level", and skip what you know' },
           { text: 'Nothing: everyone does every lesson', why: 'Tests let you skip ahead when you already know a layer.' },
+          { text: 'Take the Jump here test on later chapters, or "Find my level", and skip what you know' },
           { text: 'Skip straight to v1.0', why: 'You jump chapter by chapter by passing each test.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'Can\'t we skip chips and models and go straight to building?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'They decide the cost and speed of everything we build. Two chapters now saves a surprise bill later.' },
           { text: 'Yes, chips never matter.', why: 'They drive the cost and speed of every answer.' },
           { text: 'We must build our own chips first.', why: 'We rent compute; we just need to understand it.' },
+          { text: 'They decide the cost and speed of everything we build. Two chapters now saves a surprise bill later.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

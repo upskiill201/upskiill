@@ -136,11 +136,11 @@ const lesson: OriginalLesson = {
         message: 'What\'s the biggest change since v0.4?',
         prompt: "Ada's best reply?",
         options: [
-          { text: 'The tracker knows everyone now. One list, and every count, position and turn comes from it.' },
           { text: 'More lines of code.', why: 'Fewer, actually: eleven variables became one list.' },
+          { text: 'The tracker knows everyone now. One list, and every count, position and turn comes from it.' },
           { text: 'Nothing much.', why: 'It went from one member at a time to the whole group.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

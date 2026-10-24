@@ -19,24 +19,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import useSWR from 'swr';
-import {
-  Bell,
-  ChevronRight,
-  Eye,
-  GraduationCap,
-  KeyRound,
-  Link2,
-  Loader2,
-  LogOut,
-  Mail,
-  MapPin,
-  ShieldCheck,
-  SlidersHorizontal,
-  UserRound,
-  Vibrate,
-  Volume2,
-  Wallet,
-} from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import {
   Row,
   SavedTick,
@@ -82,12 +65,12 @@ const VISIBILITY: { value: Visibility; label: string; sub: string }[] = [
 ];
 
 const SECTIONS = [
-  { id: 'preferences', label: 'Preferences', icon: SlidersHorizontal },
-  { id: 'notifications', label: 'Notifications', icon: Bell },
-  { id: 'profile', label: 'Profile', icon: UserRound },
-  { id: 'privacy', label: 'Privacy', icon: ShieldCheck },
-  { id: 'payouts', label: 'Payouts', icon: Wallet },
-  { id: 'account', label: 'Account', icon: KeyRound },
+  { id: 'preferences', label: 'Preferences', icon: 'sliders' },
+  { id: 'notifications', label: 'Notifications', icon: 'bell' },
+  { id: 'profile', label: 'Profile', icon: 'user' },
+  { id: 'privacy', label: 'Privacy', icon: 'shieldCheck' },
+  { id: 'payouts', label: 'Payouts', icon: 'wallet' },
+  { id: 'account', label: 'Account', icon: 'key' },
 ] as const;
 
 const noopSubscribe = () => () => {};
@@ -136,9 +119,9 @@ export default function CreatorSettingsPage() {
         <nav className={styles.sectionNav}>
           {SECTIONS.map((s, i) => (
             <button key={s.id} type="button" className={styles.sectionLink} onClick={() => scrollTo(s.id, i)}>
-              <s.icon size={18} strokeWidth={2.5} aria-hidden="true" />
+              <Glyph name={s.icon} size={18} strokeWidth={2.5} />
               <span>{s.label}</span>
-              <ChevronRight size={16} strokeWidth={2.5} aria-hidden="true" className={styles.sectionChevron} />
+              <Glyph name="chevron" size={16} strokeWidth={2.5} className={styles.sectionChevron} />
             </button>
           ))}
         </nav>
@@ -166,7 +149,7 @@ function PreferencesSection() {
         <SavedTick show={saved.shown} />
       </div>
       <div className={styles.card}>
-        <Row icon={Volume2} title="Sound effects" sub="Taps, saves and celebrations in the studio and the app">
+        <Row icon="soundOn" title="Sound effects" sub="Taps, saves and celebrations in the studio and the app">
           <Switch
             checked={sfxEnabled}
             label="Sound effects"
@@ -176,7 +159,7 @@ function PreferencesSection() {
             }}
           />
         </Row>
-        <Row icon={Vibrate} title="Vibration" sub="Haptic taps on this device">
+        <Row icon="vibrate" title="Vibration" sub="Haptic taps on this device">
           <Switch
             checked={haptics}
             label="Vibration"
@@ -247,7 +230,7 @@ function NotificationsSection() {
           <SectionError what="notification settings" onRetry={() => void mutate()} />
         ) : (
           <>
-            <Row icon={Bell} title="Studio notifications" sub="Sales, new learners, questions, finishes and payouts on this device">
+            <Row icon="bell" title="Studio notifications" sub="Sales, new learners, questions, finishes and payouts on this device">
               <Switch
                 checked={prefs.pushEnabled && (prefs.creatorActivity ?? true)}
                 label="Studio notifications"
@@ -273,14 +256,14 @@ function ProfileSection({ me }: { me: MeResponse | null }) {
       </div>
       <div className={styles.card}>
         <Link href="/creator/profile" className={styles.linkRow} onClick={() => playSound('navTap', 1)}>
-          <Row icon={UserRound} title="Edit your creator profile" sub="Name, username, photo, headline, what you teach and links">
-            <ChevronRight size={20} strokeWidth={2.5} aria-hidden="true" className={styles.sectionChevron} />
+          <Row icon="user" title="Edit your creator profile" sub="Name, username, photo, headline, what you teach and links">
+            <Glyph name="chevron" size={20} strokeWidth={2.5} className={styles.sectionChevron} />
           </Row>
         </Link>
         {username && (
           <Link href={`/creator-profile/${username}`} className={styles.linkRow} onClick={() => playSound('navTap', 2)}>
-            <Row icon={Eye} title="See it as a learner" sub={`teyro.app/creator-profile/${username}`}>
-              <ChevronRight size={20} strokeWidth={2.5} aria-hidden="true" className={styles.sectionChevron} />
+            <Row icon="eye" title="See it as a learner" sub={`teyro.app/creator-profile/${username}`}>
+              <Glyph name="chevron" size={20} strokeWidth={2.5} className={styles.sectionChevron} />
             </Row>
           </Link>
         )}
@@ -358,7 +341,7 @@ function PrivacySection({ load, onRetry }: { load: Load; onRetry: () => void }) 
           <>
             <div className={styles.row}>
               <span className={styles.rowIcon} aria-hidden="true">
-                <Eye size={20} strokeWidth={2.5} />
+                <Glyph name="eye" size={20} strokeWidth={2.5} />
               </span>
               <span className={styles.rowText}>
                 <span className={styles.rowTitle}>Who can see your profile</span>
@@ -379,12 +362,12 @@ function PrivacySection({ load, onRetry }: { load: Load; onRetry: () => void }) 
                   >
                     <span className={styles.goalName}>{v.label}</span>
                     <span className={styles.goalMinutes}>{v.sub}</span>
-                    {pending === 'visibility' && on && <Loader2 size={16} className={styles.goalSpin} aria-hidden="true" />}
+                    {pending === 'visibility' && on && <Glyph name="spinner" size={16} className={styles.goalSpin} />}
                   </button>
                 );
               })}
             </div>
-            <Row icon={MapPin} title="Show my location" sub="On your public page">
+            <Row icon="mapPin" title="Show my location" sub="On your public page">
               <Switch
                 checked={privacy.showLocation !== false}
                 label="Show my location"
@@ -392,7 +375,7 @@ function PrivacySection({ load, onRetry }: { load: Load; onRetry: () => void }) 
                 onChange={(v) => flip('showLocation', v)}
               />
             </Row>
-            <Row icon={Link2} title="Show my links" sub="Website, YouTube, GitHub and the rest">
+            <Row icon="link" title="Show my links" sub="Website, YouTube, GitHub and the rest">
               <Switch
                 checked={privacy.showSocials !== false}
                 label="Show my links"
@@ -422,8 +405,8 @@ function PayoutsSection() {
       </div>
       <div className={styles.card}>
         <Link href="/creator/earnings" className={styles.linkRow} onClick={() => playSound('navTap', 3)}>
-          <Row icon={Wallet} title="Earnings and payout method" sub="Your balance, payouts and where they're sent">
-            <ChevronRight size={20} strokeWidth={2.5} aria-hidden="true" className={styles.sectionChevron} />
+          <Row icon="wallet" title="Earnings and payout method" sub="Your balance, payouts and where they're sent">
+            <Glyph name="chevron" size={20} strokeWidth={2.5} className={styles.sectionChevron} />
           </Row>
         </Link>
       </div>
@@ -478,19 +461,19 @@ function AccountSection({ me, loading }: { me: MeResponse | null; loading: boole
           <SkeletonRows count={2} />
         ) : (
           <>
-            <Row icon={Mail} title="Email" sub={me?.email ?? '—'} />
+            <Row icon="mail" title="Email" sub={me?.email ?? '—'} />
             <Link href="/creator/forgot-password" className={styles.linkRow} onClick={() => playSound('navTap', 3)}>
-              <Row icon={KeyRound} title="Change password" sub="We'll email you a reset link">
-                <ChevronRight size={20} strokeWidth={2.5} aria-hidden="true" className={styles.sectionChevron} />
+              <Row icon="key" title="Change password" sub="We'll email you a reset link">
+                <Glyph name="chevron" size={20} strokeWidth={2.5} className={styles.sectionChevron} />
               </Row>
             </Link>
             {me?.hasStudentAccess && (
               <button type="button" className={styles.linkRow} onClick={() => void switchToLearning()} disabled={switching}>
-                <Row icon={GraduationCap} title="Switch to learning" sub="Your streak, lessons and courses">
+                <Row icon="cap" title="Switch to learning" sub="Your streak, lessons and courses">
                   {switching ? (
-                    <Loader2 size={20} className={styles.goalSpin} aria-hidden="true" />
+                    <Glyph name="spinner" size={20} className={styles.goalSpin} />
                   ) : (
-                    <ChevronRight size={20} strokeWidth={2.5} aria-hidden="true" className={styles.sectionChevron} />
+                    <Glyph name="chevron" size={20} strokeWidth={2.5} className={styles.sectionChevron} />
                   )}
                 </Row>
               </button>
@@ -505,7 +488,7 @@ function AccountSection({ me, loading }: { me: MeResponse | null; loading: boole
       </div>
       <div className={styles.accountActions}>
         <button type="button" className={styles.secondaryBtn} onClick={() => void logout()}>
-          <LogOut size={18} strokeWidth={2.5} aria-hidden="true" /> Log out
+          <Glyph name="logout" size={18} strokeWidth={2.5} /> Log out
         </button>
       </div>
     </section>

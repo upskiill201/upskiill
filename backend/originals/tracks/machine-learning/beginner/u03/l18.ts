@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         code: 'votes = 0\nfor n in [0, 1, 1, 0, 0]:\n    votes = votes + n\nprint(votes / 5)',
         language: 'python',
         options: [
-          { text: '0.4' },
           { text: '2', why: 'It divides the votes by 5.' },
+          { text: '0.4' },
           { text: '0.5', why: '2 ÷ 5 = 0.4.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In Emmanuel\'s code, each item is [distance, answer]. What is n[1]?',
         options: [
-          { text: 'The answer: 1 missed, 0 came' },
           { text: 'The distance', why: 'That\'s n[0].' },
           { text: 'The name', why: 'Emmanuel didn\'t store names.' },
+          { text: 'The answer: 1 missed, 0 came' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -127,11 +127,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does Emmanuel\'s code leave out that Halima\'s v0.3 includes?',
         options: [
-          { text: 'Past no-shows and reminders, and scaling' },
           { text: 'The loop', why: 'He has a loop.' },
           { text: 'The sort', why: 'He sorts the distances.' },
+          { text: 'Past no-shows and reminders, and scaling' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

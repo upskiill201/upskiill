@@ -51,6 +51,7 @@ import {
   renderAccessEndingEmail,
   type AccessEndingDay,
 } from '../templates/payment/access-ending.template';
+import { processProBillingEmail } from './pro-billing-email.processor';
 
 export interface ProcessOutcome {
   sent: boolean;
@@ -109,6 +110,8 @@ export class EmailJobProcessorService {
         return this.processReach(job);
       case 'COMMUNITY_ACTIVITY':
         return this.processCommunityActivity(job);
+      case 'PRO_BILLING':
+        return processProBillingEmail(this.prisma, this.dispatch, this.unsubscribe, job);
       default:
         this.logger.warn(`No handler for email job eventType=${job.eventType}`);
         return { sent: false, skipReason: 'NO_HANDLER' };

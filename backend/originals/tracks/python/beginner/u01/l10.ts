@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         code: '# print("A")\nprint("B", end="")\nprint("C")',
         language: 'python',
         options: [
-          { text: 'BC' },
           { text: 'B then C on separate lines', why: 'end="" keeps C on the same line as B.' },
           { text: 'ABC', why: 'The first line is a comment.' },
+          { text: 'BC' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         message: "Your comment says '# prints the title'. Is that a good comment?",
         prompt: "What's the best reply?",
         options: [
-          { text: "Not really. The code already says that. I'll comment why instead, or remove it." },
           { text: 'Yes, every line needs one.', why: 'Comments should say why, not repeat what.' },
+          { text: "Not really. The code already says that. I'll comment why instead, or remove it." },
           { text: 'Comments are ignored, so it doesn\'t matter.', why: 'Python ignores them. People read them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',

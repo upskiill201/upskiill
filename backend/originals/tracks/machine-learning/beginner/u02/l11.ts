@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does NaN mean in a pandas table?',
         options: [
-          { text: 'The cell is empty' },
           { text: 'The value is zero', why: 'Zero is a real value. NaN means nothing was recorded.' },
           { text: 'The value is negative', why: 'NaN means missing.' },
+          { text: 'The cell is empty' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         message: 'Just put 0 km in the blanks. Done.',
         prompt: "Halima's best reply?",
         options: [
-          { text: '0 km means "lives next door". That would teach the model something false. Better to drop these 10, or fill with a sensible value.' },
           { text: 'Good idea, 0 it is.', why: '0 is a real distance, not "unknown".' },
+          { text: '0 km means "lives next door". That would teach the model something false. Better to drop these 10, or fill with a sensible value.' },
           { text: 'Delete the whole column.', why: 'Distance is useful. Only 10 cells are blank.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write "Dropped 10 bookings with no distance" in the notes?',
         options: [
-          { text: 'So anyone using the results knows what was left out' },
           { text: 'Because pandas needs it', why: 'pandas doesn\'t care. People reading the results do.' },
           { text: 'To make the notes longer', why: 'It\'s about honesty, not length.' },
+          { text: 'So anyone using the results knows what was left out' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

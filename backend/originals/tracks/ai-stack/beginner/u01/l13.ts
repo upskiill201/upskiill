@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Most of the 321 input tokens came from...',
         options: [
-          { text: 'The whole help page, sent with every question' },
           { text: 'The question "Is delivery free?"', why: 'That\'s only 5 tokens.' },
           { text: 'The reply', why: 'The reply is the 13 output tokens.' },
+          { text: 'The whole help page, sent with every question' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'So, what do we tell Mr Rao it costs?',
         prompt: "Joel's best reply?",
         options: [
-          { text: 'In practice prices, well under a rupee per hundred chats. We\'ll give a real figure once we pick the model and price it on the day.' },
           { text: '$0.00018, exactly, forever.', why: 'Real prices and real prompts will differ. Give a range and a date.' },
+          { text: 'In practice prices, well under a rupee per hundred chats. We\'ll give a real figure once we pick the model and price it on the day.' },
           { text: 'We can\'t know.', why: 'Tokens times price times chats: it can be estimated.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         code: 'from teyro_ai import cost\nprint(cost("model-b", 1000000, 0))',
         language: 'python',
         options: [
-          { text: '0.5' },
           { text: '1.5', why: 'That\'s the OUTPUT price. These are input tokens.' },
           { text: '1000000', why: 'It returns dollars, not tokens.' },
+          { text: '0.5' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

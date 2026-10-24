@@ -8,7 +8,7 @@
 
 import React, { useRef, useState } from 'react';
 import Link from 'next/link';
-import { Calendar, Camera, Loader2, MapPin, Pencil, Settings } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import CosmeticFrame from '@/components/cosmetics/CosmeticFrame';
 import CosmeticBackdrop from '@/components/cosmetics/CosmeticBackdrop';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -69,7 +69,7 @@ export default function ProfileHeader({ me, onEdit, onPeople, onAvatarSaved }: P
               aria-label="Settings"
               onClick={() => playSound('navTap', 5)}
             >
-              <Settings size={20} strokeWidth={2.5} />
+              <Glyph name="gear" size={20} strokeWidth={2.5} />
             </Link>
           </div>
         </div>
@@ -96,7 +96,7 @@ export default function ProfileHeader({ me, onEdit, onPeople, onAvatarSaved }: P
                 fileRef.current?.click();
               }}
             >
-              {uploading ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} strokeWidth={2.5} />}
+              {uploading ? <Glyph name="spinner" size={16} className="animate-spin" /> : <Glyph name="camera" size={16} strokeWidth={2.5} />}
             </button>
             <input
               ref={fileRef}
@@ -120,7 +120,7 @@ export default function ProfileHeader({ me, onEdit, onPeople, onAvatarSaved }: P
               onEdit();
             }}
           >
-            <Pencil size={16} strokeWidth={2.75} aria-hidden="true" /> Edit profile
+            <Glyph name="pencil" size={16} strokeWidth={2.75} /> Edit profile
           </button>
         </div>
 
@@ -129,12 +129,12 @@ export default function ProfileHeader({ me, onEdit, onPeople, onAvatarSaved }: P
         <div className={styles.metaRow}>
           {joined(me.createdAt) && (
             <span>
-              <Calendar size={14} strokeWidth={2.5} aria-hidden="true" /> Joined {joined(me.createdAt)}
+              <Glyph name="calendar" size={14} strokeWidth={2.5} /> Joined {joined(me.createdAt)}
             </span>
           )}
           {me.profile?.location && (
             <span>
-              <MapPin size={14} strokeWidth={2.5} aria-hidden="true" /> {me.profile.location}
+              <Glyph name="mapPin" size={14} strokeWidth={2.5} /> {me.profile.location}
             </span>
           )}
         </div>

@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The raw file has 2,412 rows; the clean one has 2,400. What might the 12 extra be?',
         options: [
-          { text: 'Rows exported twice by mistake (duplicates)' },
           { text: 'Patients who don\'t exist', why: 'Close: they\'re copies of real rows. Lesson 12 finds them.' },
           { text: 'Column names', why: 'There\'s only one line of column names.' },
+          { text: 'Rows exported twice by mistake (duplicates)' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         message: 'Is a CSV some kind of special database?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'No, it\'s plain text: one row per line, commas between the columns. That\'s why every tool can open it.' },
           { text: 'Yes, you need a licence to open one.', why: 'It\'s plain text. Anything can open it.' },
+          { text: 'No, it\'s plain text: one row per line, commas between the columns. That\'s why every tool can open it.' },
           { text: 'It\'s a picture of a table.', why: 'It\'s text, not an image.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

@@ -10,27 +10,32 @@
  *   its drawer (`tour:drawer` event) and close it again afterwards.
  * - If a target never shows up (slow page, empty state) the step falls back to
  *   a centred card, so the tour can never get stuck.
- * - Auto-starts once for a learner who has not seen it, on home, when no
- *   celebration or lesson is on screen. Replay: "Take the tour" in More.
+ * - Never starts on its own (founder, 2026-10-23: a 13-step tour on top of
+ *   the first home screen was too much). A new learner is offered it once,
+ *   as Tey's notice on home on a later visit — never in the first session
+ *   after onboarding (lib/awareness/firstSession). "Take the tour" in More
+ *   replays it any time.
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, X } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { isCelebrationActive } from '@/context/CelebrationContext';
+import { Glyph } from '@/components/art/Glyph';
 import { useMe } from '@/hooks/useMe';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
 import { TOUR_STEPS } from '@/lib/tour/steps';
+import { notify } from '@/lib/awareness/notices';
+import { isFirstSession } from '@/lib/awareness/firstSession';
 import { endTour, goToTourStep, isTourDone, markTourDone, startTour, useTourState } from '@/lib/tour/store';
 
 const PAD = 8;
 const CARD_W = 360;
 const GAP = 16;
 const FIND_TIMEOUT_MS = 4500;
-const AUTO_START_DELAY_MS = 1800;
+const OFFER_DELAY_MS = 1800;
 const NEW_ACCOUNT_DAYS = 21;
 
 interface Box {
@@ -81,10 +86,12 @@ export default function AppTour() {
   // A step with nothing to point at is never "searching" — it is just a card.
   const waiting = searching && Boolean(step?.target);
 
-  // ── Auto-start, once, for a learner who has not seen it ──────────────────
+  // ── Offer it, once, to a new learner who has not seen it ─────────────────
   useEffect(() => {
     if (!userId || active || pathname !== '/dashboard') return;
     if (!me?.hasStudentAccess || isTourDone(userId)) return;
+    // Straight after onboarding, home is just the path and the next lesson.
+    if (isFirstSession()) return;
     // An older account does not need a welcome tour — mark it so we never ask.
     const created = typeof me.createdAt === 'string' ? Date.parse(me.createdAt) : NaN;
     if (!Number.isNaN(created) && Date.now() - created > NEW_ACCOUNT_DAYS * 86_400_000) {
@@ -96,8 +103,18 @@ export default function AppTour() {
       clearTimeout(timer);
       timer = setTimeout(() => {
         if (isCelebrationActive()) return; // retried when the scene ends
-        startTour();
-      }, AUTO_START_DELAY_MS);
+        // Offered once: ignored or taken, it lives in More from here on.
+        markTourDone(userId);
+        notify({
+          id: `tour-offer-${userId}`,
+          tone: 'info',
+          icon: 'tey',
+          title: 'Want a quick look around?',
+          body: "I'll show you where everything is. About a minute.",
+          action: 'Show me',
+          onTap: () => startTour(),
+        });
+      }, OFFER_DELAY_MS);
     };
     attempt();
     window.addEventListener('celebration:visibility', attempt);
@@ -299,7 +316,7 @@ export default function AppTour() {
               aria-label="Skip the tour"
               className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-section)]"
             >
-              <X size={18} strokeWidth={2.5} />
+              <Glyph name="close" size={18} strokeWidth={3} />
             </button>
 
             <div className="flex gap-3 p-4 pb-3">
@@ -346,7 +363,7 @@ export default function AppTour() {
                     className="grid h-10 w-10 place-items-center rounded-[10px] border-2 text-ink hover:bg-[var(--bg-section)]"
                     style={{ borderColor: 'var(--border)' }}
                   >
-                    <ArrowLeft size={18} strokeWidth={2.5} />
+                    <Glyph name="back" size={18} strokeWidth={3} />
                   </button>
                 )}
                 <button
@@ -357,7 +374,7 @@ export default function AppTour() {
                   style={{ background: 'var(--color-brand)', boxShadow: '0 3px 0 var(--color-brand-deep)' }}
                 >
                   {isLast ? "Let's go" : index === 0 ? 'Show me' : 'Next'}
-                  {!isLast && <ArrowRight size={16} strokeWidth={3} />}
+                  {!isLast && <Glyph name="arrow" size={16} strokeWidth={3.2} />}
                 </button>
               </div>
             </div>

@@ -13,7 +13,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
+import { getCachedUser } from '@/lib/user-cache';
 import { TeyMark } from '@/components/brand/TeyMark';
 import { LaunchBar } from '@/components/launch/LaunchSections';
 import { LEARNER_ENTRY } from '@/lib/launch';
@@ -48,6 +49,15 @@ export default function WaitlistHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeAnchor, setActiveAnchor] = useState<string | null>(null);
+  // Someone already signed in on this device gets one way back into the app
+  // instead of "Log in / Get started" (read after mount: server and client agree).
+  const [signedIn, setSignedIn] = useState<{ creator: boolean } | null>(null);
+  useEffect(() => {
+    const me = getCachedUser();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- read from localStorage after mount
+    if (me?.id) setSignedIn({ creator: !!me.hasCreatorAccess && !me.hasStudentAccess });
+  }, []);
+  const appHref = signedIn?.creator ? '/creator' : '/dashboard';
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -132,14 +142,22 @@ export default function WaitlistHeader() {
           </nav>
 
           <div className={styles.actions}>
-            {SHOW_LOGIN && (
-              <Link href={LOGIN_HREF} className={styles.login}>
-                Log in
+            {signedIn ? (
+              <Link href={appHref} className={styles.start}>
+                Open Teyro
               </Link>
+            ) : (
+              <>
+                {SHOW_LOGIN && (
+                  <Link href={LOGIN_HREF} className={styles.login}>
+                    Log in
+                  </Link>
+                )}
+                <Link href={START_HREF} className={styles.start}>
+                  {START_LABEL}
+                </Link>
+              </>
             )}
-            <Link href={START_HREF} className={styles.start}>
-              {START_LABEL}
-            </Link>
             <button
               type="button"
               className={styles.menuBtn}
@@ -147,7 +165,7 @@ export default function WaitlistHeader() {
               aria-label="Open menu"
               aria-expanded={mobileOpen}
             >
-              <Menu size={26} strokeWidth={2.75} />
+              <Glyph name="menu" size={26} strokeWidth={2.8} />
             </button>
           </div>
         </div>
@@ -162,17 +180,17 @@ export default function WaitlistHeader() {
                 <TeyMark size={40} />
               </Link>
               <button type="button" className={styles.menuBtn} onClick={() => setMobileOpen(false)} aria-label="Close menu">
-                <X size={26} strokeWidth={2.75} />
+                <Glyph name="close" size={26} strokeWidth={2.8} />
               </button>
             </div>
             <nav className={styles.panelNav} aria-label="Main">
               {NAV_LINKS.map((l) => renderLink(l, styles.panelLink))}
             </nav>
             <div className={styles.panelActions}>
-              <Link href={START_HREF} className={styles.startBig}>
-                {START_LABEL}
+              <Link href={signedIn ? appHref : START_HREF} className={styles.startBig}>
+                {signedIn ? 'Open Teyro' : START_LABEL}
               </Link>
-              {SHOW_LOGIN && (
+              {SHOW_LOGIN && !signedIn && (
                 <Link href={LOGIN_HREF} className={styles.loginBig}>
                   I already have an account
                 </Link>

@@ -32,7 +32,7 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Shield } from 'lucide-react';
+import { Emblem } from '@/components/art/Emblem';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useCelebration } from '@/context/CelebrationContext';
@@ -252,6 +252,13 @@ export interface LessonPlayerProps {
   onCompleted: (lessonId: string) => void;
   /** After the celebration chain (or straight away for a replay). */
   onFinished: () => void;
+  /** Skip the start screen: the host already introduced the lesson (onboarding). */
+  autoStart?: boolean;
+  /**
+   * A taste of the lesson (onboarding): when the questions are done, hand the
+   * result back instead of moving on to Reflect and the finish screens.
+   */
+  onTasteDone?: (result: { questions: number; right: number; bestCombo: number; seconds: number }) => void;
 }
 
 export function LessonPlayer({
@@ -265,6 +272,8 @@ export function LessonPlayer({
   onExit,
   onCompleted,
   onFinished,
+  autoStart = false,
+  onTasteDone,
 }: LessonPlayerProps) {
   const router = useRouter();
   const reducedMotion = useReducedMotion();
@@ -376,7 +385,12 @@ export function LessonPlayer({
   }, [phase]);
 
   // ── Start: the lesson's start screen (not for an admin read) ────────────
-  const [started, setStarted] = useState(adminReviewMode);
+  const [started, setStarted] = useState(adminReviewMode || autoStart);
+  // Started by the host (a tap there was the user gesture): bring the music in.
+  useEffect(() => {
+    if (autoStart && musicOn) startLessonMusic(phase === 'apply' ? 'apply' : 'learn');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // Tey's opening line: picked once (a stable seed), re-read when the
   // chapter arrives so a Checkpoint or a chapter's last lesson is named.
   const [introSeed] = useState(() => Math.random());
@@ -714,6 +728,17 @@ export function LessonPlayer({
       return;
     }
     const right = Math.max(0, exercises.length - missed.current.size);
+    if (onTasteDone) {
+      stopLessonMusic(0.5);
+      playHaptic('success', false);
+      onTasteDone({
+        questions: exercises.length,
+        right,
+        bestCombo,
+        seconds: Math.max(0, Math.round((Date.now() - startedAt.current) / 1000)),
+      });
+      return;
+    }
     duckMusic(1.6);
     setGate({
       from: 'apply',
@@ -1487,7 +1512,7 @@ export function LessonPlayer({
             className="absolute left-1/2 -translate-x-1/2 top-[calc(env(safe-area-inset-top)+70px)] md:top-[84px] z-[2] inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] font-extrabold text-white"
             style={{ backgroundColor: 'var(--lesson-correct-dark)' }}
           >
-            <Shield className="w-4 h-4 stroke-[2.8]" aria-hidden="true" />
+            <Emblem name="shield" size={18} />
             Protection used · no heart lost
           </motion.div>
         )}

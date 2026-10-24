@@ -161,11 +161,11 @@ const lesson: OriginalLesson = {
         message: "The AI summary of our call lists a decision we didn't make. Can you check?",
         prompt: 'What is the most likely cause?',
         options: [
-          { text: "It didn't have the real notes, so it filled the gap with a likely-sounding decision." },
           { text: 'You must have made that decision.', why: 'The AI guesses when it lacks facts.' },
           { text: 'The AI reads minds.', why: 'It does not. It guesses.' },
+          { text: "It didn't have the real notes, so it filled the gap with a likely-sounding decision." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -186,11 +186,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "try again" a weak follow-up?',
         options: [
-          { text: 'It adds no missing piece, so the same gaps get the same guesses' },
           { text: 'It is rude', why: 'Not about manners. It adds no information.' },
+          { text: 'It adds no missing piece, so the same gaps get the same guesses' },
           { text: 'It always works', why: 'Sometimes it gets lucky, but usually it repeats the problem.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

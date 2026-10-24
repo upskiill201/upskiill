@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Bisi says "the same people miss again and again". Which question tests it?',
         options: [
-          { text: 'Does the no-show rate rise with the number of past no-shows?' },
           { text: 'How many patients are there?', why: 'That doesn\'t test her theory.' },
+          { text: 'Does the no-show rate rise with the number of past no-shows?' },
           { text: 'Which clinic is busiest?', why: 'Unrelated to repeat misses.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         message: 'So we stop booking people with 4 no-shows?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'No: they\'re the people who most need help getting here. Call them first and offer a nearer slot. That\'s the kind action.' },
           { text: 'Yes, ban them.', why: 'Never less care because of a pattern. Offer help.' },
           { text: 'Ignore them.', why: 'They\'re where a reminder call helps most.' },
+          { text: 'No: they\'re the people who most need help getting here. Call them first and offer a nearer slot. That\'s the kind action.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

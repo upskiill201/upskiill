@@ -101,11 +101,11 @@ const lesson: OriginalLesson = {
         message: 'Next month I\'ll fix the export by hand before I send it. Easier for you?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Send it exactly as it comes out. My Python steps clean it the same way every time, and the log shows what changed.' },
           { text: 'Yes, fix it by hand.', why: 'Hand fixes can\'t be checked or repeated.' },
           { text: 'Don\'t send it at all.', why: 'The model needs fresh data every month.' },
+          { text: 'Send it exactly as it comes out. My Python steps clean it the same way every time, and the log shows what changed.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
