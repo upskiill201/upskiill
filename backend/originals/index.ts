@@ -3,6 +3,8 @@ import aiAtWork from './tracks/ai-at-work';
 import formatTour from './tracks/format-tour';
 import studySmarter from './tracks/study-smarter';
 import python from './tracks/python';
+import typescript from './tracks/typescript';
+import htmlCss from './tracks/html-css';
 import corporateJargon from './tracks/corporate-jargon';
 import smallTalk from './tracks/small-talk';
 import makePeopleListen from './tracks/make-people-listen';
@@ -36,10 +38,11 @@ import javascript from './tracks/javascript';
 import aiEverydayProductivity from './tracks/ai-everyday-productivity';
 import getHiredGetAhead from './tracks/get-hired-get-ahead';
 import codingAgents from './tracks/coding-agents';
+import reactNative from './tracks/react-native';
 
 /**
  * Every Teyro Original the loader knows about (scripts/originals.ts).
  * Add a Track here once its file exists. Tracks with no units yet are
  * checked but never loaded.
  */
-export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, machineLearning, aiStack, getHiredGetAhead, codingAgents, validateBusinessIdea, priceProduct, negotiationBeginners, difficultNegotiations, conflictAtWork, acingJobInterviews, clearWritingAtWork, speakLikeACeo, budgeting, saveMoney, impulseBuying, needsWants, longTermWealth, investmentRisk, scamsFraud, aiEverydayProductivity, sqlDatabases, javascript, cProgramming, vibeCoding, formatTour];
+export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, typescript, htmlCss, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, machineLearning, aiStack, getHiredGetAhead, codingAgents, validateBusinessIdea, priceProduct, negotiationBeginners, difficultNegotiations, conflictAtWork, acingJobInterviews, clearWritingAtWork, speakLikeACeo, budgeting, saveMoney, impulseBuying, needsWants, longTermWealth, investmentRisk, scamsFraud, aiEverydayProductivity, sqlDatabases, javascript, cProgramming, vibeCoding, reactNative, formatTour];

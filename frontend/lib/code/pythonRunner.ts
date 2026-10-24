@@ -26,12 +26,14 @@ export interface RawRunResult {
   exprResults: boolean[];
   timedOut: boolean;
   ms: number;
+  /** TypeScript only: the type errors the checker found (the program still runs). */
+  typeErrors?: { code: number; line: number | null; column: number | null; message: string }[];
 }
 
 export interface RunOptions {
   /** Lines fed to input(), in order. */
   stdin?: string[];
-  /** Python expressions evaluated in the program's namespace after it runs. */
+  /** Expressions evaluated in the program's scope after it runs (Python, or JavaScript for TypeScript). */
   exprs?: string[];
   timeoutMs?: number;
 }

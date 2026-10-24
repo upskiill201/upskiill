@@ -20,7 +20,7 @@ import {
  *                the Checkpoint and Unit Challenge exercises of every chapter
  *                before it. Pass (80%) and those chapters' lessons are marked
  *                tested out.
- *   Placement    courses in PLACEMENT_TRACKS (Python) offer "I know some
+  *   Placement    courses in PLACEMENT_TRACKS (Python, ML, AI Stack, HTML & CSS) offer "I know some
  *                Python". The learner answers a few questions per chapter, in
  *                order, until they miss; they start at that chapter.
  *

@@ -104,7 +104,18 @@ export function WriteCodeView({
       ) : exercise.language === 'javascript' ? (
         <JsPad {...padProps} page={exercise.page} storage={exercise.storage} stdin={exercise.stdin} />
       ) : (
-        <PythonPad {...padProps} stdin={exercise.stdin} />
+        <PythonPad
+          {...padProps}
+          stdin={exercise.stdin}
+          language={exercise.language}
+          runLabel={
+            exercise.language === 'html'
+              ? passed ? 'Check again' : 'Check my page'
+              : exercise.language === 'react-native'
+                ? passed ? 'Check again' : 'Check my app'
+                : padProps.runLabel
+          }
+        />
       )}
       {showHint && exercise.hint && !locked && (
         <motion.div

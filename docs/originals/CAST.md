@@ -65,6 +65,7 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 - **Remi's internship:** after graduating, Remi does a 12-week internship in the Strategy & Operations team at Synergix, Nairobi (Corporate Jargon). (The old plan for an interviews course ending with him landing it was dropped on 2026-10-20; interviews now live in Get Hired, Get Ahead, led by Clinton.)
 - **Grace and Ada:** they meet in the coffee queue at a Manchester tech conference where Ada is speaking (The Art of Small Talk, final chapter) and stay in touch as contacts. (Supersedes the earlier idea of Grace as Ada's colleague in AI at Work.)
 - **Grace and Arjun:** Arjun does freelance development for Kinwell; Grace works with him on video calls (The Art of Small Talk).
+- **Grace learns to code (TypeScript for Beginners):** a few months after The Art of Small Talk, Grace builds a Session Booker in TypeScript for Kinwell's research sessions. Femi (Kinwell developer) is her coding mentor; Arjun reviews her code on video calls; Priya is her first "customer"; Jayden (17) codes a bit and is smug about it. The Intermediate level continues with Grace turning the booker into a React web app.
 - **Tey FM (How to Make People Listen to You):** a radio phone-in anthology set AFTER Study Smarter with AI. Clinton (18) and David (18) are now first-year university students in Buea (Computer Science and Medicine). Miracle (23) has graduated and is choosing between a bank job and a Lagos startup. Lucía has been promoted and leads a small team. Each calls Tey FM; callers do not meet each other except on air in the final Live Special.
 - **Ada's office ajo:** Ada runs the rotating savings group at work. Members (Tunde and others) appear as names in her code, not as characters.
 - **Remi's job (Leadership track):** Synergix offers Remi a job at the end of his internship; as a junior analyst he leads the refund fix across five teams (How to Lead Without Being the Boss), and is then asked to lead the delivery-times project.
@@ -155,6 +156,8 @@ These three join the shared cast. They first appear in Study Smarter with AI and
 - Miracle mentors Kofi, Clinton and David as one online study group (weekly video call plus a group chat).
 - Clinton and David go to the same school in Buea; Clinton moved there from Bamenda.
 - Kofi meets Clinton and David through Miracle's group.
+- **Kofi Goes Live (HTML & CSS for Beginners):** the summer after Study Smarter with AI, twelve weeks before Kofi starts university. Kofi makes beats on his phone as **Mensah Beats**; a small Accra event, Sound Up Saturdays, offers him a set and asks for his website, so he builds one. Miracle (just started at Afiya in Lagos) mentors him on video calls; Clinton ("Head of Quality, unpaid") and David are his first fans; Efua reviews his pages; Ama, his sister, tests them. Map markers count down from "12 weeks to uni" to "Launch night". The Intermediate level continues at university with JavaScript.
+- **Order Up (React Native for Beginners, added 2026-10-22):** Theo builds an order-ahead app for Pho Real, his mum Linh's food truck in Austin, before the Eastside Food Truck Festival (fictional). Arjun, who met Theo on an online developers' forum, reviews his code on video calls from Bengaluru. Mai tests; Ray cooks. Prices in US dollars. Film 1 of a planned trilogy: Order Up: Rush Hour (full-stack) and Order Up: Opening Day (launch) are announced as in production.
 
 ## Course-only characters
 
@@ -162,7 +165,7 @@ These appear in one Original only and don't join the shared cast.
 
 | Name | Course | Who |
 |---|---|---|
-| Efua | Study Smarter with AI | Kofi's classmate in Accra. Top of the class, with famous handwritten notes; she doesn't trust AI. |
+| Efua | Study Smarter with AI (and HTML & CSS for Beginners) | Kofi's classmate in Accra. Top of the class, with famous handwritten notes; she doesn't trust AI. In HTML & CSS for Beginners she reviews Kofi's website with impeccable taste and no patience for ugly pages; her near-compliments are a running joke. |
 | Mrs Asante | Study Smarter with AI | Kofi's Chemistry teacher. Strict and fair, and gives surprise quizzes. |
 | Brian Otieno | Corporate Jargon | Remi's manager at Synergix (Nairobi), Head of Strategy & Operations. Speaks almost entirely in jargon; kind, generous, brilliant at reading people. Was a confused Synergix intern himself 15 years ago and kept a notebook translating it all. |
 | Zanele Dlamini | Corporate Jargon (and Data Science for Beginners) | The other Synergix intern, from Johannesburg. Uses jargon confidently and often wrongly; a genius with spreadsheets. Remi's rival, then his best friend at work. Grew up in Soweto; English is her third language (isiZulu, then Afrikaans), and she quietly rehearses important messages. Later a junior analyst at Synergix: in Data Science for Beginners she learns Python and pandas to find out why 1 in 3 deliveries is late. |
@@ -210,6 +213,11 @@ These appear in one Original only and don't join the shared cast.
 | Brenda Fon | Get Hired, Get Ahead | Njangi Pay's graduate recruiter (Douala). Busy and fair; met Clinton at the careers fair and reappears at his interview and offer. |
 | Ngozi Bate | Get Hired, Get Ahead (Level 2) | Clinton's engineering manager at Njangi Pay. Direct, generous with earned praise, allergic to surprises. |
 | Paul Tabi | Get Hired, Get Ahead (Level 2) | Senior developer at Njangi Pay. Knows everything, explains nothing, until Clinton earns it. |
+| Ama | HTML & CSS for Beginners | Kofi's sister, 10, Osu (Accra). His "user tester": blunt, curious, finds bugs in thirty seconds ("if Ama can't find the play button, nobody can"). Wants her own section on his site ("Ama's corner"). |
+| Theo Nguyen | React Native for Beginners (Order Up trilogy, lead) | 22, Austin, Texas. Just finished a coding bootcamp; knows JavaScript and a little TypeScript, has never shipped anything. Funny, fast, overconfident; codes at the food truck's window between orders. Builds Pho Real's order-ahead app. CastId `theo`. |
+| Linh Nguyen | React Native for Beginners | 51, Theo's mum. Has run Pho Real, the family's pho food truck in Austin, for 12 years. Sharp, practical, allergic to anything that slows the line ("Paper never crashes"). Her approval is the real finish line. CastId `linh`. |
+| Mai Nguyen | React Native for Beginners | 16, Theo's sister. Always filming, brutally honest tester ("this font is giving 2009"), the voice of every impatient customer. CastId `mai`. |
+| Ray | React Native for Beginners | Pho Real's cook. Speaks only in order numbers. Narrated. |
 
 ## Decisions
 

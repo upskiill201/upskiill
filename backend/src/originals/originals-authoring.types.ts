@@ -8,6 +8,9 @@
  * docs/ORIGINALS_PLAYBOOK.md; `npm run originals` checks them.
  */
 
+import type { DomTest } from './originals-dom-checks';
+import type { ScreenTest } from './originals-screen-checks';
+
 export type CodeLanguage =
   | 'javascript'
   | 'typescript'
@@ -26,13 +29,14 @@ export type CodeLanguage =
 
 /**
  * Languages the in-browser code runner can run (frontend/lib/code). 'sql' = SQLite (sql.js); 'c' = C (xcc, public/c).
- * 'javascript' = a sandboxed practice page (frontend/public/javascript/runner.js).
+ * 'javascript' = a sandboxed practice page (frontend/public/javascript/runner.js). 'html' = a live page (HTML + CSS).
+ * 'react-native' = a React Native screen (TSX) in a phone preview.
  */
-export type RunLanguage = 'python' | 'sql' | 'c' | 'javascript';
+export type RunLanguage = 'python' | 'sql' | 'c' | 'javascript' | 'typescript' | 'html' | 'react-native';
 
 /** The shared cast (docs/originals/CAST.md). */
 /** Course-only characters (efua, asante; brian, zanele, achieng, kamau, felix, pauline, emeka, wanjiku; jayden, priya, femi; diego; marta, sofia, tomas, carmen) are listed in CAST.md too. */
-export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel' | 'ewane' | 'brenda' | 'ngozi' | 'paul' | 'yaw' | 'juno' | 'walt' | 'leo' | 'dana' | 'nora' | 'mags' | 'rafa' | 'wes' | 'ines' | 'hal' | 'tomoko' | 'mateus' | 'lars' | 'hazel' | 'benny' | 'ruth';
+export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel' | 'ama' | 'theo' | 'linh' | 'mai' | 'ewane' | 'brenda' | 'ngozi' | 'paul' | 'yaw' | 'juno' | 'walt' | 'leo' | 'dana' | 'nora' | 'mags' | 'rafa' | 'wes' | 'ines' | 'hal' | 'tomoko' | 'mateus' | 'lars' | 'hazel' | 'benny' | 'ruth';
 export type Speaker = 'narrator' | 'tey' | CastId;
 
 // ─── Learn cards ───────────────────────────────────────────────────────────
@@ -109,6 +113,14 @@ export interface AuthoredCodeCheck {
   outputEquals?: string;
   expr?: string;
   codeIncludes?: string;
+  /** TypeScript: the code type-checks with no errors. */
+  noTypeErrors?: boolean;
+  /** TypeScript: a type error whose message contains this is reported (a lesson about that error). */
+  typeErrorIncludes?: string;
+  /** HTML: a check on the rendered page (originals-dom-checks.ts). For HTML, outputIncludes/outputEquals read the page's text. */
+  dom?: DomTest;
+  /** React Native: a check on the rendered phone screen, after optional taps and typing (originals-screen-checks.ts). */
+  screen?: ScreenTest;
 }
 
 export type AuthoredExercise =
@@ -249,7 +261,13 @@ export interface OriginalTrackDef {
    * chapters"). Default: full-length.
    */
   format?: 'full' | 'short' | 'focused';
-  /** The language every Try it live card and Write and run exercise runs in. Default: Python. 'sql' = SQLite, 'c' = C. */
+  /**
+   * The language every Try it live card and Write and run exercise in this
+   * track runs in. Default: Python. 'sql' = SQLite, 'c' = C, 'javascript' = a
+   * practice page; 'typescript' = type-checked TypeScript; 'html' = a live page
+   * (HTML + CSS), checked with page checks (`dom`); 'react-native' = a React
+   * Native screen (TSX) in a phone preview, checked with screen checks (`screen`).
+   */
   runner?: RunLanguage;
   levels: OriginalLevel[];
 }

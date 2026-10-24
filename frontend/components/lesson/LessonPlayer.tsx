@@ -1316,7 +1316,11 @@ export function LessonPlayer({
             disabled: !exercise || !isResponseComplete(exercise, response),
             hint:
               exercise?.kind === 'writeCode' && !isResponseComplete(exercise, response)
-                ? 'Run your code. Check unlocks when everything passes.'
+                ? exercise.language === 'html'
+                  ? 'Check your page. Check unlocks when everything passes.'
+                  : exercise.language === 'react-native'
+                    ? 'Check your app. Check unlocks when everything passes.'
+                    : 'Run your code. Check unlocks when everything passes.'
                 : undefined,
             onAction: check,
           }

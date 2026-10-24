@@ -101,3 +101,55 @@ describe('Write and run exercises', () => {
     expect(cards[0]).toMatchObject({ kind: 'tryIt', code: 'print(1)', stdin: ['x'] });
   });
 });
+
+describe('gradeChecks (TypeScript)', () => {
+  const typeError = { code: 2322, line: 2, column: 1, message: "Type 'string' is not assignable to type 'number'." };
+
+  it('needs the code to type-check before anything passes', () => {
+    const checks = [{ message: 'prints 45', outputIncludes: '45' }];
+    expect(gradeChecks(checks, '', ran('45\n'), 'typescript').map((r) => r.passed)).toEqual([true]);
+    expect(gradeChecks(checks, '', ran('45\n', { typeErrors: [typeError] }), 'typescript').map((r) => r.passed)).toEqual([false]);
+    // Python ignores type errors entirely (it never reports any).
+    expect(gradeChecks(checks, '', ran('45\n', { typeErrors: [typeError] }), 'python').map((r) => r.passed)).toEqual([true]);
+  });
+
+  it('lets a lesson ask for a specific type error', () => {
+    const checks = [
+      { message: 'TypeScript catches it', typeErrorIncludes: "not assignable to type 'number'" },
+      { message: 'still prints', outputIncludes: 'three' },
+    ];
+    const r = gradeChecks(checks, '', ran('three\n', { typeErrors: [typeError] }), 'typescript');
+    expect(r.map((x) => x.passed)).toEqual([true, true]);
+  });
+
+  it('checks for no type errors', () => {
+    const checks = [{ message: 'no type errors', noTypeErrors: true }];
+    expect(gradeChecks(checks, '', ran(''), 'typescript')[0].passed).toBe(true);
+    expect(gradeChecks(checks, '', ran('', { typeErrors: [typeError] }), 'typescript')[0].passed).toBe(false);
+    expect(gradeChecks(checks, '', ran('', { error: { type: 'SyntaxError', message: 'x', line: 1 } }), 'typescript')[0].passed).toBe(false);
+  });
+
+  it('keeps TypeScript lessons TypeScript through the sanitizer', () => {
+    const [card] = sanitizeLearnCards([{ id: 'c1', kind: 'tryIt', language: 'typescript', code: 'console.log(1)' }]);
+    expect(card).toMatchObject({ kind: 'tryIt', language: 'typescript' });
+    const [ex] = sanitizeExercises([
+      {
+        id: 'e1',
+        kind: 'writeCode',
+        language: 'typescript',
+        prompt: 'Write it',
+        starter: '',
+        solution: 'console.log(1)',
+        checks: [
+          { message: 'no type errors', noTypeErrors: true },
+          { message: 'the error', typeErrorIncludes: 'number' },
+        ],
+      },
+    ]);
+    expect(ex).toMatchObject({ kind: 'writeCode', language: 'typescript' });
+    expect((ex as WriteCodeExercise).checks).toEqual([
+      { message: 'no type errors', noTypeErrors: true },
+      { message: 'the error', typeErrorIncludes: 'number' },
+    ]);
+  });
+});

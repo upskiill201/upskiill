@@ -8,6 +8,9 @@ import type { LintIssue } from './originals-lint';
 import { verifySqlTrack } from './originals-sql-verify';
 import { verifyCTrack } from './originals-c-verify';
 import { verifyJsTrack } from './originals-js-verify';
+import { verifyTypeScriptTrack } from './originals-ts-verify';
+import { verifyHtmlTrack } from './originals-html-verify';
+import { verifyRnTrack } from './originals-rn-verify';
 
 /**
  * Runs every piece of Python in a Track before it can be loaded, with the
@@ -263,6 +266,12 @@ export async function verifyTrackCode(
   if (track.runner === 'c') return verifyCTrack(track);
   // JavaScript tracks run in the browser runner's own runtime, inside jsdom.
   if (track.runner === 'javascript') return verifyJsTrack(track);
+  // TypeScript tracks are type-checked and run by the TypeScript compiler, not Python.
+  if (track.runner === 'typescript') return verifyTypeScriptTrack(track);
+  // HTML & CSS tracks render each page in jsdom and run the page checks.
+  if (track.runner === 'html') return verifyHtmlTrack(track);
+  // React Native tracks render each screen in jsdom with the browser's own runtime.
+  if (track.runner === 'react-native') return verifyRnTrack(track);
   const allCode: string[] = [];
   for (const level of track.levels)
     for (const unit of level.units)

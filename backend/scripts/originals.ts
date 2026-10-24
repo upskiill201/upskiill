@@ -299,9 +299,9 @@ async function main() {
 
   let ok = true;
   for (const track of selected) {
-    // Every Try it live card and Write and run solution, run in real Python (or SQLite for SQL tracks, a practice page for JavaScript).
+    // Every Try it live card and Write and run solution, run in real Python (or SQLite for SQL tracks, xcc for C, a practice page for JavaScript, type-checked TypeScript, jsdom for HTML pages and React Native screens).
     if (hasCode(track)) console.log(`
-(running the ${track.runner === 'sql' ? 'SQL' : track.runner === 'c' ? 'C' : track.runner === 'javascript' ? 'JavaScript' : 'Python'} in ${track.slug}...)`);
+(running the ${track.runner === 'sql' ? 'SQL' : track.runner === 'c' ? 'C' : track.runner === 'javascript' ? 'JavaScript' : track.runner === 'typescript' ? 'TypeScript' : track.runner === 'html' ? 'HTML pages' : track.runner === 'react-native' ? 'React Native screens' : 'Python'} in ${track.slug}...)`);
     ok = report(track, await verifyTrackCode(track)) && ok;
   }
   // The AI Stack's practice toolkit (teyro_ai.py) and shop data: lessons depend on its exact behaviour.

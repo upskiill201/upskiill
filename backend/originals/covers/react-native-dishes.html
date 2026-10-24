@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  /* Pho Real's dish pictures for React Native for Beginners (Chapter 2 onwards).
+     Flat illustrations, rendered one tile at a time to
+     frontend/public/originals/react-native/<id>.png (scripts in the session
+     that made them: screenshot each .tile). Square, 480 x 480. */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #ccc; display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; width: 2600px; }
+  .tile { width: 480px; height: 480px; position: relative; overflow: hidden; }
+  .warm { background: #FFEDD5; }
+  .sun { background: #FEF3C7; }
+  .mint { background: #DCFCE7; }
+  .sky { background: #DBEAFE; }
+  .abs { position: absolute; }
+  /* Pho */
+  .bowl { left: 60px; top: 190px; width: 360px; height: 190px; background: #FFFFFF; border-radius: 0 0 180px 180px; box-shadow: 0 14px 0 #E7CBB1; overflow: hidden; }
+  .bowl-band { left: 0; top: 110px; width: 360px; height: 18px; background: #9A3412; opacity: .85; }
+  .broth { left: 70px; top: 160px; width: 340px; height: 70px; border-radius: 50%; background: #E8A15A; }
+  .noodle { height: 10px; border-radius: 6px; background: #FFF4DC; }
+  .beef { width: 74px; height: 40px; border-radius: 40% 60% 50% 50%; background: #8B4A2B; }
+  .herb { width: 34px; height: 18px; border-radius: 50%; background: #4CAF50; }
+  .lime { width: 50px; height: 50px; border-radius: 50%; background: #A3D65C; border: 6px solid #6FA832; }
+  .chop { width: 300px; height: 14px; border-radius: 8px; background: #B7793F; transform-origin: left center; }
+  .steam { width: 22px; height: 70px; border-radius: 20px; border: 6px solid #FFFFFF; border-left-color: transparent; border-bottom-color: transparent; opacity: .8; }
+  /* Banh mi */
+  .bread { left: 50px; top: 170px; width: 380px; height: 150px; border-radius: 75px; background: #E8A85C; box-shadow: 0 12px 0 #C98340; transform: rotate(-8deg); }
+  .bread-top { left: 60px; top: 150px; width: 360px; height: 80px; border-radius: 70px 70px 20px 20px; background: #F2C27E; transform: rotate(-8deg); }
+  .fill-g { left: 70px; top: 228px; width: 340px; height: 22px; border-radius: 12px; background: #7CB342; transform: rotate(-8deg); }
+  .fill-r { left: 80px; top: 246px; width: 320px; height: 18px; border-radius: 10px; background: #E85D3F; transform: rotate(-8deg); }
+  .fill-w { left: 90px; top: 262px; width: 300px; height: 14px; border-radius: 8px; background: #F5E6C8; transform: rotate(-8deg); }
+  /* Spring rolls */
+  .roll { width: 300px; height: 96px; border-radius: 48px; background: #F8F1E4; border: 5px solid #E5D7BD; overflow: hidden; }
+  .roll i { position: absolute; top: 20px; width: 50px; height: 50px; border-radius: 50%; opacity: .85; }
+  .dip { left: 310px; top: 300px; width: 120px; height: 120px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 8px 0 #CFE3D6; }
+  .dip i { position: absolute; left: 18px; top: 18px; width: 84px; height: 84px; border-radius: 50%; background: #D97706; }
+  /* Iced coffee */
+  .glass { left: 150px; top: 110px; width: 180px; height: 300px; border-radius: 0 0 40px 40px; background: rgba(255,255,255,.75); border: 6px solid #FFFFFF; overflow: hidden; }
+  .coffee { left: 6px; right: 6px; bottom: 6px; height: 190px; border-radius: 0 0 32px 32px; background: linear-gradient(180deg, #C69C6D 0 30%, #6B3E1F 31%); }
+  .ice { width: 46px; height: 46px; border-radius: 10px; background: rgba(255,255,255,.7); border: 3px solid #FFFFFF; }
+  .straw { left: 262px; top: 50px; width: 18px; height: 230px; border-radius: 9px; background: #9A3412; transform: rotate(12deg); }
+  /* Truck */
+  .truck { left: 40px; top: 120px; width: 400px; height: 220px; border-radius: 28px 60px 18px 18px; background: #9A3412; box-shadow: 0 12px 0 #6B2209; }
+  .window { left: 90px; top: 160px; width: 210px; height: 90px; border-radius: 14px; background: #FFF7ED; }
+  .awning { left: 80px; top: 140px; width: 230px; height: 30px; border-radius: 8px; background: repeating-linear-gradient(90deg, #FFD43B 0 28px, #FFFFFF 28px 56px); }
+  .sign { left: 90px; top: 268px; font: 800 38px 'Plus Jakarta Sans', system-ui, sans-serif; color: #FFF7ED; letter-spacing: -1px; }
+  .cab { left: 330px; top: 150px; width: 80px; height: 90px; border-radius: 12px 40px 8px 8px; background: #DBEAFE; }
+  .wheel { width: 84px; height: 84px; border-radius: 50%; background: #071233; border: 16px solid #374151; }
+  .ground { left: 0; right: 0; top: 400px; height: 80px; background: #FDE68A; }
+</style>
+</head>
+<body>
+  <div class="tile warm" id="pho">
+    <div class="abs steam" style="left:180px;top:60px"></div>
+    <div class="abs steam" style="left:230px;top:40px"></div>
+    <div class="abs steam" style="left:280px;top:62px"></div>
+    <div class="abs chop" style="left:200px;top:120px;transform:rotate(-24deg)"></div>
+    <div class="abs chop" style="left:210px;top:140px;transform:rotate(-30deg)"></div>
+    <div class="abs broth"></div>
+    <div class="abs noodle" style="left:120px;top:182px;width:130px;transform:rotate(-6deg)"></div>
+    <div class="abs noodle" style="left:240px;top:186px;width:120px;transform:rotate(5deg)"></div>
+    <div class="abs beef" style="left:150px;top:166px"></div>
+    <div class="abs beef" style="left:250px;top:170px;transform:rotate(12deg)"></div>
+    <div class="abs herb" style="left:220px;top:164px"></div>
+    <div class="abs herb" style="left:320px;top:178px;transform:rotate(30deg)"></div>
+    <div class="abs lime" style="left:330px;top:150px"></div>
+    <div class="abs bowl"><div class="abs bowl-band"></div></div>
+  </div>
+
+  <div class="tile sun" id="banh-mi">
+    <div class="abs bread"></div>
+    <div class="abs fill-w"></div>
+    <div class="abs fill-r"></div>
+    <div class="abs fill-g"></div>
+    <div class="abs bread-top"></div>
+    <div class="abs" style="left:120px;top:170px;width:60px;height:8px;border-radius:4px;background:#C98340;transform:rotate(-30deg)"></div>
+    <div class="abs" style="left:200px;top:160px;width:60px;height:8px;border-radius:4px;background:#C98340;transform:rotate(-30deg)"></div>
+    <div class="abs" style="left:280px;top:150px;width:60px;height:8px;border-radius:4px;background:#C98340;transform:rotate(-30deg)"></div>
+  </div>
+
+  <div class="tile mint" id="spring-rolls">
+    <div class="abs roll" style="left:40px;top:130px;transform:rotate(-10deg)"><i style="left:40px;background:#F4A3A3"></i><i style="left:110px;background:#7CB342"></i><i style="left:180px;background:#F4A3A3"></i></div>
+    <div class="abs roll" style="left:60px;top:250px;transform:rotate(-10deg)"><i style="left:40px;background:#7CB342"></i><i style="left:110px;background:#F4A3A3"></i><i style="left:180px;background:#7CB342"></i></div>
+    <div class="abs dip"><i></i></div>
+  </div>
+
+  <div class="tile sky" id="iced-coffee">
+    <div class="abs straw"></div>
+    <div class="abs glass">
+      <div class="abs coffee"></div>
+      <div class="abs ice" style="left:24px;top:110px;transform:rotate(12deg)"></div>
+      <div class="abs ice" style="left:90px;top:130px;transform:rotate(-10deg)"></div>
+      <div class="abs ice" style="left:50px;top:170px;transform:rotate(20deg)"></div>
+    </div>
+  </div>
+
+  <div class="tile warm" id="truck">
+    <div class="abs ground"></div>
+    <div class="abs truck"></div>
+    <div class="abs window"></div>
+    <div class="abs awning"></div>
+    <div class="abs cab"></div>
+    <div class="abs sign">PHO REAL</div>
+    <div class="abs wheel" style="left:90px;top:300px"></div>
+    <div class="abs wheel" style="left:300px;top:300px"></div>
+  </div>
+</body>
+</html>

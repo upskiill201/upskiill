@@ -43,7 +43,15 @@ export function TryItCard({ card, done, onDone }: { card: TryIt; done: boolean; 
         ) : card.language === 'javascript' ? (
           <JsPad value={code} onChange={setCode} resetTo={card.code} page={card.page} storage={card.storage} stdin={card.stdin} label={card.title ?? 'Try it live'} onRun={onRun} />
         ) : (
-          <PythonPad value={code} onChange={setCode} resetTo={card.code} stdin={card.stdin} label={card.title ?? 'Try it live'} onRun={onRun} />
+          <PythonPad
+            value={code}
+            onChange={setCode}
+            resetTo={card.code}
+            stdin={card.stdin}
+            label={card.title ?? 'Try it live'}
+            language={card.language}
+            onRun={onRun}
+          />
         )}
       </div>
       {card.challenge && (

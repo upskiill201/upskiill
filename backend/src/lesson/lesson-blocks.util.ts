@@ -11,6 +11,9 @@
  * `phaseStateFromBlocks` returns null and the client's completion flags stand.
  */
 
+import { domTestIssue } from '../originals/originals-dom-checks';
+import { screenTestIssue } from '../originals/originals-screen-checks';
+
 /* eslint-disable @typescript-eslint/no-explicit-any -- validating untyped creator JSON */
 
 /** Bite-size: a lesson video longer than this should be split up. */
@@ -19,7 +22,7 @@ export const MAX_VIDEO_SECONDS = 15 * 60;
 // exercises: 30 so a Teyro Originals Checkpoint (25–30 exercises) fits.
 const LIMITS = { learnCards: 30, exercises: 30, options: 6, lines: 30, pairs: 8, blanks: 6, bank: 12 };
 const RICH = { beats: 14, choiceOptions: 4, turns: 10, replies: 3, steps: 8, notes: 6, hotspots: 8, statements: 6, stdin: 10, checks: 8, labParts: 6, labReplies: 8 };
-const CAST = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'ewane', 'brenda', 'ngozi', 'paul', 'yaw', 'juno', 'walt', 'leo', 'dana', 'nora', 'mags', 'rafa', 'wes', 'ines', 'hal', 'tomoko', 'mateus', 'lars', 'hazel', 'benny', 'ruth'];
+const CAST = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'ama', 'theo', 'linh', 'mai', 'ewane', 'brenda', 'ngozi', 'paul', 'yaw', 'juno', 'walt', 'leo', 'dana', 'nora', 'mags', 'rafa', 'wes', 'ines', 'hal', 'tomoko', 'mateus', 'lars', 'hazel', 'benny', 'ruth'];
 const BLANK_RE = /\[\[(\d+)\]\]/g;
 
 const blank = (s: unknown) => typeof s !== 'string' || !s.trim();
@@ -177,7 +180,7 @@ function richLearnCardProblem(c: any): string | null {
     }
     case 'tryIt':
       if (blank(c.code)) return 'A Try it live card has no code.';
-      if (c.language !== undefined && !RUN_LANGUAGES.includes(c.language)) return 'A Try it live card must be Python, SQL, C or JavaScript.';
+      if (c.language !== undefined && !RUN_LANGUAGES.includes(c.language)) return 'A Try it live card must be Python, SQL, C, JavaScript, TypeScript, HTML or React Native.';
       if (pageProblem(c)) return pageProblem(c);
       return list(c.stdin).length > RICH.stdin ? `Try it live allows up to ${RICH.stdin} lines of input.` : null;
     default:
@@ -242,7 +245,7 @@ export function exerciseProblem(e: any): string | null {
     }
     case 'writeCode': {
       const checks = Array.isArray(e.checks) ? e.checks : [];
-      if (!RUN_LANGUAGES.includes(e.language)) return 'A Write and run exercise must be Python, SQL, C or JavaScript.';
+      if (!RUN_LANGUAGES.includes(e.language)) return 'A Write and run exercise must be Python, SQL, C, JavaScript, TypeScript, HTML or React Native.';
       if (blank(e.solution)) return 'A Write and run exercise has no solution.';
       if (pageProblem(e)) return pageProblem(e);
       if (checks.length === 0 || checks.length > RICH.checks) return `A Write and run exercise needs 1 to ${RICH.checks} checks.`;
@@ -254,8 +257,8 @@ export function exerciseProblem(e: any): string | null {
   }
 }
 
-/** The in-browser runners (frontend lib/code): Python (Pyodide), SQL (SQLite via sql.js), C (xcc) and JavaScript (a sandboxed page). */
-const RUN_LANGUAGES: unknown[] = ['python', 'sql', 'c', 'javascript'];
+/** The in-browser runners (frontend lib/code): Python (Pyodide), SQL (SQLite via sql.js), C (xcc), JavaScript (a sandboxed page), TypeScript, HTML pages and React Native screens. */
+const RUN_LANGUAGES: unknown[] = ['python', 'sql', 'c', 'javascript', 'typescript', 'html', 'react-native'];
 
 /** Code and practice pages longer than this are cut off by the lesson player (frontend LIMITS.codeChars). */
 const CODE_CHARS = 4000;
@@ -274,8 +277,11 @@ function pageProblem(x: any): string | null {
 /** One hidden check on a Write and run exercise. Mirrors codeCheckIssue in the frontend. */
 function codeCheckProblem(c: any): string | null {
   if (blank(c?.message)) return 'A code check has no message for the learner.';
-  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes].filter((t) => t !== undefined);
+  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes, c.noTypeErrors, c.typeErrorIncludes, c.dom, c.screen].filter((t) => t !== undefined);
   if (tests.length !== 1) return 'A code check must test exactly one thing.';
+  if (c.noTypeErrors !== undefined) return c.noTypeErrors === true ? null : 'A type-error check must be true.';
+  if (c.dom !== undefined) return domTestIssue(c.dom);
+  if (c.screen !== undefined) return screenTestIssue(c.screen);
   return blank(tests[0]) ? 'A code check has nothing to test.' : null;
 }
 
