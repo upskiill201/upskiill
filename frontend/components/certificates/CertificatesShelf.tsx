@@ -11,7 +11,6 @@
 
 import Link from 'next/link';
 import { Glyph } from '@/components/art/Glyph';
-import { Award, LockKeyhole, PencilLine, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/swr';
@@ -42,7 +41,7 @@ export default function CertificatesShelf() {
             onClick={() => setSheetOpen(true)}
             className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg-card)] px-3 py-1 text-[13px] font-bold text-[var(--text-secondary)] transition-colors hover:border-[var(--border-strong)]"
           >
-            {name.canEdit ? <PencilLine size={15} strokeWidth={2.4} /> : <LockKeyhole size={15} strokeWidth={2.4} />}
+            {name.canEdit ? <Glyph name="pencil" size={15} strokeWidth={2.4} /> : <Glyph name="lock" size={15} strokeWidth={2.4} />}
             <span>
               Name on certificates: <span className="font-extrabold text-[var(--text-primary)]">{name.name}</span>
             </span>
@@ -53,7 +52,7 @@ export default function CertificatesShelf() {
       {waiting > 0 && (
         <div className="mt-3 flex flex-col gap-4 rounded-[12px] border-2 border-[color-mix(in_srgb,var(--warning)_55%,transparent)] bg-[color-mix(in_srgb,var(--warning)_8%,var(--bg-card))] p-4 sm:flex-row sm:items-center">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--warning)] text-white shadow-[0_3px_0_color-mix(in_srgb,var(--warning)_60%,black)]">
-            <Award size={26} strokeWidth={2.6} />
+            <Glyph name="medal" size={26} strokeWidth={2.6} />
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-[16px] font-extrabold text-[var(--text-primary)]">
@@ -62,7 +61,7 @@ export default function CertificatesShelf() {
             <p className="mt-0.5 text-[14px] font-semibold text-[var(--text-secondary)]">Confirm the name to print on it and it’s yours.</p>
           </div>
           <button type="button" onClick={() => setSheetOpen(true)} className={CTA}>
-            <Award size={18} strokeWidth={2.6} /> Claim
+            <Glyph name="medal" size={18} strokeWidth={2.6} /> Claim
           </button>
         </div>
       )}

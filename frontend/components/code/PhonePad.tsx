@@ -12,7 +12,7 @@
  */
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { AlertTriangle, Check, Loader2, RotateCcw } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { runAndCheck, type GradedRun } from '@/lib/code/checks';
 import { PHONE_HEIGHT, PHONE_WIDTH, PhoneFrame, explainRnError, phoneFrameHtml } from '@/lib/code/rnRunner';
 import { transpileTsx, warmTypeScript } from '@/lib/code/tsRunner';
@@ -182,7 +182,7 @@ export function PhonePad({
             }}
             aria-label="Restart the app"
           >
-            <RotateCcw size={14} strokeWidth={2.5} aria-hidden="true" /> Restart
+            <Glyph name="refresh" size={14} strokeWidth={2.5} /> Restart
           </button>
         </div>
         <div ref={boxRef} className={styles.stage} style={{ height: outerH * scale + 24 }}>
@@ -203,7 +203,7 @@ export function PhonePad({
               {error && (
                 <div className={styles.redBox} role="alert">
                   <p className={styles.redTitle}>
-                    <AlertTriangle size={18} strokeWidth={2.5} aria-hidden="true" />
+                    <Glyph name="warning" size={18} strokeWidth={2.5} />
                     {error.syntax ? 'Syntax error' : 'Error'}
                     {error.line ? ` on line ${error.line}` : ''}
                   </p>
@@ -213,7 +213,7 @@ export function PhonePad({
               )}
               {(loading || (rendering && !error)) && (
                 <div className={styles.loading} aria-live="polite">
-                  <Loader2 size={22} className="animate-spin" aria-hidden="true" />
+                  <Glyph name="spinner" size={22} className="animate-spin" />
                   {loading ? 'Getting the phone ready' : null}
                 </div>
               )}
@@ -227,7 +227,7 @@ export function PhonePad({
       {graded && !readOnly && (
         <div className={padStyles.runRow}>
           <button type="button" className={padStyles.run} onClick={() => void check()} disabled={checking || loading}>
-            {checking ? <Loader2 size={18} className="animate-spin" aria-hidden="true" /> : <Check size={18} strokeWidth={3} aria-hidden="true" />}
+            {checking ? <Glyph name="spinner" size={18} className="animate-spin" /> : <Glyph name="check" size={18} strokeWidth={3} />}
             {checking ? 'Checking' : (runLabel ?? 'Check my app')}
           </button>
           {actions}

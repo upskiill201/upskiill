@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { Glyph } from '@/components/art/Glyph';
-import { Award } from 'lucide-react';
 import { useState } from 'react';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/swr';
@@ -28,7 +27,7 @@ export default function CertificatePill({ courseId }: { courseId: string }) {
   if (data?.status === 'ISSUED') {
     return (
       <Link href={verifyPath(data.certificate.code)} className={PILL}>
-        <Award size={16} strokeWidth={2.8} />
+        <Glyph name="medal" size={16} strokeWidth={2.8} />
         Certificate
       </Link>
     );
@@ -38,7 +37,7 @@ export default function CertificatePill({ courseId }: { courseId: string }) {
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className={PILL}>
-        <Award size={16} strokeWidth={2.8} />
+        <Glyph name="medal" size={16} strokeWidth={2.8} />
         Claim certificate
       </button>
       {open && (

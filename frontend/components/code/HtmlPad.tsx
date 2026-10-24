@@ -16,7 +16,7 @@
  */
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Check, Link2, Loader2, Monitor, Smartphone } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { runAndCheck, type GradedRun } from '@/lib/code/checks';
 import { withAssetBase } from '@/lib/code/htmlRunner';
 import { playHaptic } from '@/lib/haptics';
@@ -172,10 +172,10 @@ export function HtmlPad({
           <div className={styles.devices} role="radiogroup" aria-label="Preview size">
             {(
               [
-                ['phone', 'Phone', Smartphone],
-                ['desktop', 'Desktop', Monitor],
+                ['phone', 'Phone', 'phone'],
+                ['desktop', 'Desktop', 'panel'],
               ] as const
-            ).map(([id, text, Icon]) => (
+            ).map(([id, text, glyph]) => (
               <button
                 key={id}
                 type="button"
@@ -187,7 +187,7 @@ export function HtmlPad({
                   setDevice(id);
                 }}
               >
-                <Icon size={14} strokeWidth={2.5} aria-hidden="true" /> {text}
+                <Glyph name={glyph} size={14} strokeWidth={2.5} /> {text}
               </button>
             ))}
           </div>
@@ -202,7 +202,7 @@ export function HtmlPad({
         />
         {link !== null && (
           <p className={styles.linkNote} role="status">
-            <Link2 size={14} strokeWidth={2.5} aria-hidden="true" />
+            <Glyph name="link" size={14} strokeWidth={2.5} />
             <span>
               {link ? (
                 <>
@@ -221,7 +221,7 @@ export function HtmlPad({
       {graded && !readOnly && (
         <div className={padStyles.runRow}>
           <button type="button" className={padStyles.run} onClick={() => void check()} disabled={checking}>
-            {checking ? <Loader2 size={18} className="animate-spin" aria-hidden="true" /> : <Check size={18} strokeWidth={3} aria-hidden="true" />}
+            {checking ? <Glyph name="spinner" size={18} className="animate-spin" /> : <Glyph name="check" size={18} strokeWidth={3} />}
             {checking ? 'Checking' : (runLabel ?? 'Check my page')}
           </button>
           {actions}

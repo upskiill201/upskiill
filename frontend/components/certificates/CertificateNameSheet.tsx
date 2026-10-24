@@ -15,7 +15,7 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Award, Check, Loader2, LockKeyhole, ShieldCheck, X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Link from 'next/link';
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -80,7 +80,7 @@ function CertificatePreview({ name, courseTitle }: { name: string; courseTitle?:
           </>
         )}
         <div className="absolute bottom-[7%] right-[6%] flex h-[16%] aspect-square items-center justify-center rounded-full border-[3px] border-[var(--warning)] bg-[linear-gradient(180deg,var(--color-brand-deep),var(--ink-fixed))]">
-          <Award className="h-1/2 w-1/2 text-[var(--warning)]" strokeWidth={2.4} />
+          <Glyph name="medal" className="h-1/2 w-1/2 text-[var(--warning)]" strokeWidth={2.4} />
         </div>
       </div>
     </div>
@@ -212,7 +212,7 @@ export default function CertificateNameSheet({
             >
               <div className="flex items-start gap-3">
                 <span className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--warning)_18%,transparent)] text-[var(--warning)]">
-                  {mode === 'locked' ? <LockKeyhole size={22} strokeWidth={2.6} /> : <Award size={24} strokeWidth={2.6} />}
+                  {mode === 'locked' ? <Glyph name="lock" size={22} strokeWidth={2.6} /> : <Glyph name="medal" size={24} strokeWidth={2.6} />}
                 </span>
                 <div className="min-w-0 flex-1">
                   <h2 id={`${inputId}-title`} className="text-[20px] font-extrabold leading-tight">
@@ -226,7 +226,7 @@ export default function CertificateNameSheet({
                   aria-label="Close"
                   className="-mr-2 -mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-section)]"
                 >
-                  <X size={20} strokeWidth={2.6} />
+                  <Glyph name="close" size={20} strokeWidth={2.6} />
                 </button>
               </div>
 
@@ -237,7 +237,7 @@ export default function CertificateNameSheet({
               {mode === 'locked' ? (
                 <div className="mt-4 rounded-[12px] border border-[var(--border)] bg-[var(--bg-section)] p-4">
                   <p className="flex items-center gap-2 text-[14px] font-bold text-[var(--text-secondary)]">
-                    <ShieldCheck size={18} className="text-[var(--success-green)]" strokeWidth={2.6} />
+                    <Glyph name="shieldCheck" size={18} className="text-[var(--success-green)]" strokeWidth={2.6} />
                     Confirmed
                     {state.confirmedAt ? ` on ${formatDay(state.confirmedAt)}` : ''}
                   </p>
@@ -287,7 +287,7 @@ export default function CertificateNameSheet({
                   <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-[12px] border-2 border-[var(--border)] p-3 transition-colors has-[:checked]:border-[var(--success-green)] has-[:checked]:bg-[color-mix(in_srgb,var(--success-green)_8%,transparent)]">
                     <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="peer sr-only" />
                     <span className="mt-[1px] flex h-6 w-6 shrink-0 items-center justify-center rounded-[7px] border-2 border-[var(--border-strong)] text-white transition-colors peer-checked:border-[var(--success-green)] peer-checked:bg-[var(--success-green)] peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--color-brand)]">
-                      {agreed && <Check size={16} strokeWidth={4} />}
+                      {agreed && <Glyph name="check" size={16} strokeWidth={4} />}
                     </span>
                     <span className="text-[14px] font-bold leading-snug">I confirm this is my real name.</span>
                   </label>
@@ -313,7 +313,7 @@ export default function CertificateNameSheet({
                     disabled={!ready}
                     className="mt-4 inline-flex h-[52px] items-center justify-center gap-2 rounded-[14px] bg-[var(--color-brand)] text-[16px] font-extrabold uppercase tracking-[0.04em] text-[var(--text-on-blue)] shadow-[0_4px_0_var(--color-brand-deep)] transition-[transform,box-shadow,opacity] active:translate-y-[3px] active:shadow-none disabled:cursor-not-allowed disabled:opacity-45 disabled:active:translate-y-0"
                   >
-                    {busy ? <Loader2 size={20} className="animate-spin" /> : <Award size={20} strokeWidth={2.6} />}
+                    {busy ? <Glyph name="spinner" size={20} className="animate-spin" /> : <Glyph name="medal" size={20} strokeWidth={2.6} />}
                     {COPY[mode].button}
                   </button>
                 </form>
