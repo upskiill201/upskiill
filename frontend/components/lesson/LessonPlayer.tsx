@@ -32,7 +32,7 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Shield } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useCelebration } from '@/context/CelebrationContext';
@@ -1512,7 +1512,7 @@ export function LessonPlayer({
             className="absolute left-1/2 -translate-x-1/2 top-[calc(env(safe-area-inset-top)+70px)] md:top-[84px] z-[2] inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] font-extrabold text-white"
             style={{ backgroundColor: 'var(--lesson-correct-dark)' }}
           >
-            <Shield className="w-4 h-4 stroke-[2.8]" aria-hidden="true" />
+            <Glyph name="shield" className="w-4 h-4 stroke-[2.8]" />
             Protection used · no heart lost
           </motion.div>
         )}

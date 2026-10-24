@@ -16,7 +16,7 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { ChevronsRight, Lightbulb } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 
 export function ApplyTools({
   hintsLeft,
@@ -48,7 +48,7 @@ export function ApplyTools({
         onClick={onSkip}
         className="inline-flex items-center gap-1 h-9 rounded-xl px-2.5 -ml-2.5 text-[14px] font-extrabold uppercase tracking-[0.06em] text-[var(--text-muted)] hover:bg-[var(--bg-section)] cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-brand)]/25"
       >
-        <ChevronsRight className="w-4.5 h-4.5 stroke-[2.75]" aria-hidden="true" />
+        <Glyph name="chevronsRight" className="w-4.5 h-4.5 stroke-[2.75]" />
         Skip
       </button>
 
@@ -76,7 +76,7 @@ export function ApplyTools({
             : { color: 'var(--text-muted)', backgroundColor: 'var(--bg-section)', border: '2px solid var(--border)' }
         }
       >
-        <Lightbulb className={`w-4 h-4 stroke-[2.75] ${hintOn ? 'fill-current' : ''}`} aria-hidden="true" />
+        <Glyph name="bulb" className={`w-4 h-4 stroke-[2.75] ${hintOn ? 'fill-current' : ''}`} />
         Hint
         <span className="flex items-center gap-1" aria-hidden="true">
           {Array.from({ length: hintsTotal }, (_, i) => (

@@ -16,7 +16,7 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Flame } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { comboRung, nextRung } from '@/lib/lesson/hype';
 
 const TIER_COLOR = ['var(--lesson-gold)', 'var(--lesson-gold)', 'var(--lesson-gold)', 'var(--warning)', 'var(--lesson-heart)', 'var(--lesson-heart)'];
@@ -44,7 +44,7 @@ export function ComboChip({ run }: { run: number }) {
             animate={reducedMotion ? undefined : { scale: [1, 1.3, 1], rotate: [0, -10, 0] }}
             transition={{ duration: rung.tier >= 4 ? 0.55 : 0.9, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <Flame className="w-4 h-4 fill-current" aria-hidden="true" />
+            <Glyph name="flame" className="w-4 h-4" />
           </motion.span>
           <motion.span key={run} initial={reducedMotion ? false : { scale: 1.5 }} animate={{ scale: 1 }} className="tabular-nums">
             {run}
@@ -109,7 +109,7 @@ export function ComboBreak({ event }: { event: ComboBreakEvent | null }) {
             exit={{ opacity: 0, y: -8 }}
             transition={{ type: 'spring', stiffness: 520, damping: 18, rotate: { duration: 0.45, ease: 'easeInOut' } }}
           >
-            <Flame className="w-4 h-4" aria-hidden="true" />
+            <Glyph name="flame" className="w-4 h-4" />
             Run ended at {event.run}. Start a new one!
           </motion.div>
         )}

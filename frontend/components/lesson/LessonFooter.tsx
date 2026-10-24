@@ -9,7 +9,7 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Check, ChevronsRight, X } from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import type { ReactNode } from 'react';
 import { LessonButton, type LessonButtonVariant } from './LessonButton';
 
@@ -42,7 +42,7 @@ export function LessonFooter({
           ? 'var(--lesson-select-bg)'
           : 'var(--bg-card)';
   const ink = tone === 'correct' ? 'var(--lesson-correct-ink)' : tone === 'skip' ? 'var(--lesson-picked-ink)' : 'var(--lesson-wrong-ink)';
-  const Mark = tone === 'correct' ? Check : tone === 'skip' ? ChevronsRight : X;
+  const mark: GlyphName = tone === 'correct' ? 'check' : tone === 'skip' ? 'chevronsRight' : 'close';
   const markColor = tone === 'correct' ? 'var(--lesson-correct)' : tone === 'skip' ? 'var(--color-brand)' : 'var(--lesson-wrong)';
 
   return (
@@ -71,7 +71,7 @@ export function LessonFooter({
                   transition={{ type: 'spring', stiffness: 520, damping: 14, delay: 0.05 }}
                   className="hidden md:flex shrink-0 w-[72px] h-[72px] rounded-full bg-white items-center justify-center"
                 >
-                  <Mark className="w-10 h-10 stroke-[4]" style={{ color: markColor }} aria-hidden="true" />
+                  <Glyph name={mark} className="w-10 h-10 stroke-[4]" style={{ color: markColor }} />
                 </motion.span>
                 <div className="min-w-0">
                   <p
@@ -79,7 +79,7 @@ export function LessonFooter({
                     style={{ color: ink, fontFamily: 'var(--font-jakarta)' }}
                   >
                     <span className="md:hidden flex w-8 h-8 rounded-full bg-white items-center justify-center">
-                      <Mark className="w-5 h-5 stroke-[4]" style={{ color: markColor }} aria-hidden="true" />
+                      <Glyph name={mark} className="w-5 h-5 stroke-[4]" style={{ color: markColor }} />
                     </span>
                     {verdict.title}
                   </p>

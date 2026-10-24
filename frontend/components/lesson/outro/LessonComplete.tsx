@@ -10,7 +10,7 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { Clock, Flame, PenLine, Target, Trophy, Zap, type LucideIcon } from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -29,11 +29,11 @@ const TONE: Record<StatTone, { color: string; dark: string }> = {
   purple: { color: 'var(--brand-purple)', dark: 'color-mix(in srgb, var(--brand-purple) 78%, black)' },
 };
 
-const ICON: Record<StatCard['id'], LucideIcon> = {
-  xp: Zap,
-  accuracy: Target,
-  words: PenLine,
-  time: Clock,
+const ICON: Record<StatCard['id'], GlyphName> = {
+  xp: 'bolt', // the XP card shows the gem instead
+  accuracy: 'target',
+  words: 'pencil',
+  time: 'clock',
 };
 
 /** Tey arrives differently depending on the moment. */
@@ -49,7 +49,7 @@ const CARD_STAGGER = 0.28;
 function Stat({ card, index }: { card: StatCard; index: number }) {
   const reducedMotion = useReducedMotion();
   const tone = TONE[card.tone];
-  const Icon = ICON[card.id];
+  const glyph = ICON[card.id];
   const delayMs = (CARD_DELAY + index * CARD_STAGGER) * 1000;
   const shown = useCountUp(card.value, { delay: delayMs + 150, duration: 800, instant: Boolean(reducedMotion) });
 
@@ -84,7 +84,7 @@ function Stat({ card, index }: { card: StatCard; index: number }) {
         {card.id === 'xp' ? (
           <Image src="/Icons/gem.png" alt="" aria-hidden="true" width={26} height={26} className="w-6 h-6 md:w-7 md:h-7 shrink-0" />
         ) : (
-          <Icon className="w-5 h-5 md:w-6 md:h-6 stroke-[3] shrink-0" style={{ color: tone.color }} aria-hidden="true" />
+          <Glyph name={glyph} className="w-5 h-5 md:w-6 md:h-6 stroke-[3] shrink-0" style={{ color: tone.color }} />
         )}
         {shown === null ? (
           <span
@@ -163,10 +163,10 @@ function SessionChain({ count, name }: { count: number; name: string }) {
 function BonusTally({ bonus, delay }: { bonus: XpBonus; delay: number }) {
   const reducedMotion = useReducedMotion();
   const lines = [
-    bonus.combo > 0 ? { id: 'combo', label: 'Combo bonus', xp: bonus.combo, Icon: Flame } : null,
-    bonus.perfect > 0 ? { id: 'perfect', label: 'Perfect bonus', xp: bonus.perfect, Icon: Trophy } : null,
-    bonus.section > 0 ? { id: 'section', label: 'Chapter bonus', xp: bonus.section, Icon: Zap } : null,
-  ].filter(Boolean) as { id: string; label: string; xp: number; Icon: LucideIcon }[];
+    bonus.combo > 0 ? { id: 'combo', label: 'Combo bonus', xp: bonus.combo, glyph: 'flame' } : null,
+    bonus.perfect > 0 ? { id: 'perfect', label: 'Perfect bonus', xp: bonus.perfect, glyph: 'trophy' } : null,
+    bonus.section > 0 ? { id: 'section', label: 'Chapter bonus', xp: bonus.section, glyph: 'bolt' } : null,
+  ].filter(Boolean) as { id: string; label: string; xp: number; glyph: GlyphName }[];
   useEffect(() => {
     const timers = lines.map((_, i) => setTimeout(() => playSound('bonusTally', i), (delay + i * 0.22) * 1000));
     return () => timers.forEach(clearTimeout);
@@ -184,7 +184,7 @@ function BonusTally({ bonus, delay }: { bonus: XpBonus; delay: number }) {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ delay: delay + i * 0.22, type: 'spring', stiffness: 600, damping: 15 }}
         >
-          <l.Icon className="w-4 h-4" aria-hidden="true" />
+          <Glyph name={l.glyph} className="w-4 h-4" />
           {l.label} +{l.xp} XP
         </motion.span>
       ))}
@@ -300,11 +300,11 @@ export function LessonComplete({
               transition={{ delay: 0.45 + i * 0.15, type: 'spring', stiffness: 560, damping: 14 }}
             >
               {b.id === 'fastest' ? (
-                <Zap className="w-4 h-4 fill-current" aria-hidden="true" />
+                <Glyph name="bolt" className="w-4 h-4" />
               ) : b.id === 'bestRun' ? (
-                <Flame className="w-4 h-4 fill-current" aria-hidden="true" />
+                <Glyph name="flame" className="w-4 h-4" />
               ) : (
-                <Trophy className="w-4 h-4" aria-hidden="true" />
+                <Glyph name="trophy" className="w-4 h-4" />
               )}
               {b.label}
             </motion.span>

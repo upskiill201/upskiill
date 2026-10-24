@@ -14,7 +14,7 @@
 
 import DOMPurify from 'dompurify';
 import { motion, useReducedMotion } from 'framer-motion';
-import { CircleHelp, Meh, Plus, Smile, ThumbsUp, type LucideIcon } from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import { countWords, type LessonContent } from '@/lib/lesson/content';
 import { playHaptic } from '@/lib/haptics';
 import type { Confidence } from '@/lib/tey/lessonVoice';
@@ -23,11 +23,11 @@ import { TeySays } from '../TeySays';
 
 const sanitize = (raw: string) => DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
 
-export const CONFIDENCE_OPTIONS: { id: Confidence; label: string; icon: LucideIcon; color: string }[] = [
-  { id: 'solid', label: "I've got it", icon: ThumbsUp, color: 'var(--lesson-correct)' },
-  { id: 'mostly', label: 'Mostly', icon: Smile, color: 'var(--color-brand)' },
-  { id: 'fuzzy', label: 'Still a bit fuzzy', icon: Meh, color: 'var(--warning)' },
-  { id: 'lost', label: "I'm lost", icon: CircleHelp, color: 'var(--brand-purple)' },
+export const CONFIDENCE_OPTIONS: { id: Confidence; label: string; icon: GlyphName; color: string }[] = [
+  { id: 'solid', label: "I've got it", icon: 'thumbUp', color: 'var(--lesson-correct)' },
+  { id: 'mostly', label: 'Mostly', icon: 'faceSmile', color: 'var(--color-brand)' },
+  { id: 'fuzzy', label: 'Still a bit fuzzy', icon: 'faceMeh', color: 'var(--warning)' },
+  { id: 'lost', label: "I'm lost", icon: 'help', color: 'var(--brand-purple)' },
 ];
 
 function AnswerBox({ value, onChange, placeholder, label }: { value: string; onChange: (v: string) => void; placeholder: string; label: string }) {
@@ -88,7 +88,7 @@ export function ReflectStep({
         <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label="How well did that land?">
           {CONFIDENCE_OPTIONS.map((o, i) => {
             const picked = confidence === o.id;
-            const Icon = o.icon;
+            const glyph = o.icon;
             return (
               <motion.button
                 key={o.id}
@@ -110,7 +110,7 @@ export function ReflectStep({
                   className="w-12 h-12 rounded-full flex items-center justify-center"
                   style={{ backgroundColor: `color-mix(in srgb, ${o.color} 16%, var(--bg-card))` }}
                 >
-                  <Icon className="w-7 h-7 stroke-[2.4]" style={{ color: o.color }} aria-hidden="true" />
+                  <Glyph name={glyph} className="w-7 h-7 stroke-[2.4]" style={{ color: o.color }} />
                 </span>
                 <span className="text-[15.5px] md:text-[16px] font-extrabold text-ink leading-tight">{o.label}</span>
                 <span className="sr-only">Press {i + 1}</span>
@@ -151,7 +151,7 @@ export function ReflectStep({
                   className="inline-flex items-center gap-1.5 rounded-full border-2 border-[var(--border)] px-3.5 py-2 text-[14px] font-bold text-ink cursor-pointer hover:border-[var(--brand-purple)]"
                   style={{ boxShadow: '0 2px 0 var(--border)' }}
                 >
-                  <Plus className="w-4 h-4 stroke-[3] text-[var(--brand-purple)]" aria-hidden="true" />
+                  <Glyph name="plus" className="w-4 h-4 stroke-[3] text-[var(--brand-purple)]" />
                   {s}
                 </button>
               ))}

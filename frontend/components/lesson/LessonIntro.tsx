@@ -22,18 +22,19 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { BookOpen, Check, Clock, Flag, Flame, Lightbulb, PenLine, Sparkles, Target, Trophy, X, Zap, type LucideIcon } from 'lucide-react';
+import { Flame, Zap, type LucideIcon } from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import Image from 'next/image';
 import { goalLine, type LessonJourney } from '@/lib/lesson/journey';
 import { PHASE_COLOR, PHASE_LABEL, type LessonPhase } from '@/lib/lesson/content';
 import { LessonButton } from './LessonButton';
 import { TEY_POSE_SRC } from './TeySays';
 
-const PHASE_ICON: Record<LessonPhase, LucideIcon> = {
-  learn: BookOpen,
-  apply: Target,
-  reflect: PenLine,
-  deepen: Lightbulb,
+const PHASE_ICON: Record<LessonPhase, GlyphName> = {
+  learn: 'book',
+  apply: 'target',
+  reflect: 'pencil',
+  deepen: 'bulb',
 };
 
 export interface LessonIntroProps {
@@ -56,13 +57,18 @@ export interface LessonIntroProps {
   onClose: () => void;
 }
 
-function Chip({ icon: Icon, children, tone }: { icon: LucideIcon; children: React.ReactNode; tone: string }) {
+/** A glyph name, or the XP bolt (the XP mark stays as it is). */
+function Chip({ icon: Icon, children, tone }: { icon: GlyphName | LucideIcon; children: React.ReactNode; tone: string }) {
   return (
     <span
       className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13.5px] font-extrabold"
       style={{ color: tone, backgroundColor: `color-mix(in srgb, ${tone} 13%, var(--bg-card))`, boxShadow: `0 2px 0 color-mix(in srgb, ${tone} 30%, var(--bg-card))` }}
     >
-      <Icon className="w-4 h-4 stroke-[2.75]" aria-hidden="true" />
+      {typeof Icon === 'string' ? (
+        <Glyph name={Icon} className="w-4 h-4 stroke-[2.75]" />
+      ) : (
+        <Icon className="w-4 h-4 stroke-[2.75]" aria-hidden="true" />
+      )}
       {children}
     </span>
   );
@@ -76,8 +82,8 @@ export function ChapterBeads({ journey, stamped = false }: { journey: LessonJour
       {journey.nodes.map((n, i) => {
         const done = n.state === 'done' || (stamped && n.state === 'current');
         const here = n.state === 'current' && !stamped;
-        const Icon = n.milestone === 'UNIT_CHALLENGE' ? Trophy : n.milestone === 'CHECKPOINT' ? Flag : null;
-        const size = Icon ? 24 : here ? 20 : 13;
+        const glyph: GlyphName | null = n.milestone === 'UNIT_CHALLENGE' ? 'trophy' : n.milestone === 'CHECKPOINT' ? 'flag' : null;
+        const size = glyph ? 24 : here ? 20 : 13;
         return (
           <li key={n.id} className="flex items-center">
             {i > 0 && (
@@ -99,11 +105,11 @@ export function ChapterBeads({ journey, stamped = false }: { journey: LessonJour
               animate={here && !reducedMotion ? { scale: [1, 1.12, 1] } : undefined}
               transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
             >
-              {Icon && (
-                <Icon
+              {glyph && (
+                <Glyph
+                  name={glyph}
                   className="w-3.5 h-3.5 stroke-[2.75]"
                   style={{ color: done || here ? 'white' : 'var(--text-muted)' }}
-                  aria-hidden="true"
                 />
               )}
             </motion.span>
@@ -133,7 +139,7 @@ export function LessonIntro(p: LessonIntroProps) {
           aria-label="Close"
           className="w-10 h-10 rounded-xl flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-section)] cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-brand)]/25"
         >
-          <X className="w-7 h-7 stroke-[2.75]" aria-hidden="true" />
+          <Glyph name="close" className="w-7 h-7 stroke-[2.75]" />
         </button>
       </div>
 
@@ -185,9 +191,9 @@ export function LessonIntro(p: LessonIntroProps) {
 
         <motion.div {...stagger(5)} className="mt-5 flex flex-wrap justify-center gap-2">
           {p.xp ? <Chip icon={Zap} tone="var(--lesson-gold-dark)">+{p.xp} XP</Chip> : null}
-          {p.minutes ? <Chip icon={Clock} tone="var(--color-brand)">{p.minutes} min</Chip> : null}
-          {p.questions > 0 && <Chip icon={Target} tone="var(--lesson-correct-dark)">{p.questions} questions</Chip>}
-          {p.questions > 0 && !p.isReview && <Chip icon={Sparkles} tone="var(--brand-purple)">Combo bonus up to +5</Chip>}
+          {p.minutes ? <Chip icon="clock" tone="var(--color-brand)">{p.minutes} min</Chip> : null}
+          {p.questions > 0 && <Chip icon="target" tone="var(--lesson-correct-dark)">{p.questions} questions</Chip>}
+          {p.questions > 0 && !p.isReview && <Chip icon="sparkle" tone="var(--brand-purple)">Combo bonus up to +5</Chip>}
         </motion.div>
 
         {p.streakAtStake && !p.isReview ? (
@@ -205,7 +211,7 @@ export function LessonIntro(p: LessonIntroProps) {
             className="mt-4 inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-[14.5px] font-extrabold"
             style={{ color: 'var(--lesson-correct-dark)', backgroundColor: 'color-mix(in srgb, var(--lesson-correct) 14%, var(--bg-card))' }}
           >
-            <Flame className="w-5 h-5 fill-current" aria-hidden="true" />
+            <Glyph name="flame" className="w-5 h-5" />
             Lesson {p.lessonsToday + 1} today. Keep the run going!
           </motion.p>
         ) : null}
@@ -213,7 +219,7 @@ export function LessonIntro(p: LessonIntroProps) {
         {/* The shape of every Teyro lesson. */}
         <motion.ol {...stagger(7)} className="mt-5 flex flex-wrap items-center justify-center gap-1" aria-label="Lesson steps">
           {p.phases.map((ph, i) => {
-            const Icon = PHASE_ICON[ph];
+            const glyph = PHASE_ICON[ph];
             return (
               <li key={ph} className="flex items-center gap-1">
                 {i > 0 && <span aria-hidden="true" className="w-2 h-[3px] rounded-full bg-[var(--border)]" />}
@@ -221,7 +227,7 @@ export function LessonIntro(p: LessonIntroProps) {
                   className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[12px] font-extrabold text-white"
                   style={{ backgroundColor: PHASE_COLOR[ph] }}
                 >
-                  <Icon className="w-3.5 h-3.5 stroke-[2.75]" aria-hidden="true" />
+                  <Glyph name={glyph} className="w-3.5 h-3.5 stroke-[2.75]" />
                   {PHASE_LABEL[ph]}
                 </span>
               </li>
@@ -238,7 +244,7 @@ export function LessonIntro(p: LessonIntroProps) {
                   className="mt-0.5 shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-white"
                   style={{ backgroundColor: 'var(--lesson-correct)' }}
                 >
-                  <Check className="w-3.5 h-3.5 stroke-[3.5]" />
+                  <Glyph name="check" className="w-3.5 h-3.5 stroke-[3.5]" />
                 </span>
                 {o}
               </li>

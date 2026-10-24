@@ -22,7 +22,8 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { Clock, Lock, Sparkles, Zap } from 'lucide-react';
+import { Zap } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { useEffect, useMemo, useState } from 'react';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
@@ -129,7 +130,7 @@ export function ChapterJourney({ journey, onHome }: { journey: LessonJourney; on
           transition={{ delay: reducedMotion ? 0 : 1.6, type: 'spring', stiffness: 380, damping: 22 }}
         >
           <p className="flex items-center gap-1.5 text-[12.5px] font-extrabold uppercase tracking-[0.1em]" style={{ color: next.locked ? 'var(--text-muted)' : 'var(--color-brand)' }}>
-            {next.locked ? <Lock className="w-3.5 h-3.5 stroke-[3]" aria-hidden="true" /> : <Sparkles className="w-3.5 h-3.5 stroke-[3]" aria-hidden="true" />}
+            {next.locked ? <Glyph name="lock" className="w-3.5 h-3.5 stroke-[3]" /> : <Glyph name="sparkle" className="w-3.5 h-3.5 stroke-[3]" />}
             {next.newChapter ? `Up next · New chapter${next.marker ? ` · ${next.marker}` : ''}` : `Up next${nextMilestone ? ` · ${nextMilestone}` : ''}`}
           </p>
           <p className="mt-1 text-[19px] font-extrabold text-ink leading-snug">{next.title}</p>
@@ -143,7 +144,7 @@ export function ChapterJourney({ journey, onHome }: { journey: LessonJourney; on
             ) : null}
             {next.minutes ? (
               <span className="inline-flex items-center gap-1 text-[13px] font-extrabold text-[var(--text-secondary)]">
-                <Clock className="w-4 h-4" aria-hidden="true" />
+                <Glyph name="clock" className="w-4 h-4" />
                 {next.minutes} min
               </span>
             ) : null}

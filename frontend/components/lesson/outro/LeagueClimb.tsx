@@ -11,7 +11,7 @@
  */
 
 import { LayoutGroup, motion, useReducedMotion } from 'framer-motion';
-import { ChevronsUp, ShieldCheck, Users } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { useEffect, useMemo, useState } from 'react';
 import Avatar from '@/components/ui/Avatar';
 import LeagueBadge from '@/components/leaderboard/LeagueBadge';
@@ -128,7 +128,7 @@ export function LeagueClimb({ climb }: { climb: Climb }) {
                   {r.isMe ? Math.round(xp ?? climb.myXpAfter) : r.weeklyXp} XP
                 </span>
                 {promo && (
-                  <ShieldCheck className="absolute -right-2 -top-2 w-6 h-6 text-white rounded-full p-0.5" style={{ backgroundColor: 'var(--success-green)' }} aria-label="In the promotion zone" />
+                  <Glyph name="check" strokeWidth={3.4} className="absolute -right-2 -top-2 w-6 h-6 text-white rounded-full p-1" style={{ backgroundColor: 'var(--success-green)' }} label="In the promotion zone" />
                 )}
                 {r.isMe && moved && climb.kind === 'up' && (
                   <motion.span
@@ -139,7 +139,7 @@ export function LeagueClimb({ climb }: { climb: Climb }) {
                     style={{ backgroundColor: 'var(--success-green)' }}
                     aria-hidden="true"
                   >
-                    <ChevronsUp className="w-4 h-4 stroke-[3]" />
+                    <Glyph name="chevronsUp" className="w-4 h-4 stroke-[3]" />
                   </motion.span>
                 )}
               </motion.li>
@@ -150,7 +150,7 @@ export function LeagueClimb({ climb }: { climb: Climb }) {
 
       {climb.shared && (
         <p className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-bold text-[var(--text-muted)]">
-          <Users className="w-4 h-4" aria-hidden="true" />
+          <Glyph name="users" className="w-4 h-4" />
           This week, every active learner shares one board.
         </p>
       )}

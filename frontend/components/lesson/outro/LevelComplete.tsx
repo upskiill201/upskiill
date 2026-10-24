@@ -11,7 +11,7 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowRight, Mountain, Trophy } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Image from 'next/image';
 import { useEffect } from 'react';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -83,9 +83,9 @@ export function LevelComplete({ level, line }: { level: LevelCompletion; line: s
       >
         <span className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shrink-0">
           {next ? (
-            <Mountain className="w-6 h-6 stroke-[2.5]" aria-hidden="true" />
+            <Glyph name="mountain" className="w-6 h-6 stroke-[2.5]" />
           ) : (
-            <Trophy className="w-6 h-6 stroke-[2.5]" aria-hidden="true" />
+            <Glyph name="trophy" className="w-6 h-6 stroke-[2.5]" />
           )}
         </span>
         <span className="flex-1 min-w-0">
@@ -106,7 +106,7 @@ export function LevelComplete({ level, line }: { level: LevelCompletion; line: s
             </>
           )}
         </span>
-        {next && <ArrowRight className="w-5 h-5 stroke-[2.8] shrink-0" aria-hidden="true" />}
+        {next && <Glyph name="arrow" className="w-5 h-5 stroke-[2.8] shrink-0" />}
       </motion.div>
     </div>
   );
