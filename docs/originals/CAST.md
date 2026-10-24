@@ -93,6 +93,23 @@ They lead **SQL and Databases for Beginners** ("Save the Starlight", docs/origin
 - **Juno and Arjun:** met years ago on a classic-film restoration forum; his favourite single-screen cinema in Bengaluru closed in 2019. He mentors her on video calls (10:30 p.m. in Chicago, 9 a.m. in Bengaluru) while she builds the Starlight's database.
 - **Juno, Walt and Leo** work together at the Starlight. Ms Delgado (Lakeview Community Bank, narrated) will lend $40,000 for the roof if the records are clean. Rosa Marin and Jack Murphy (narrated regulars) both hold seat G7 on Fri 2 Oct.
 
+## Red Mesa (added 2026-10-24)
+
+They lead **C for Beginners** ("Ten Sols on Red Mesa", docs/originals/c-outline.md): a fictional Mars-analog research station near Hanksville, Utah, USA, US dollars, metric readings. Ines, Hal, Tomoko, Mateus and Lars are castIds `ines`, `hal`, `tomoko`, `mateus`, `lars`.
+
+| Name | Age | Home | Life stage | Personality |
+|---|---|---|---|---|
+| **Ines Moreau** | 31 | Montréal, Canada | Crew engineer at Red Mesa; an electrician by trade who wired the Hab two summers ago. Has never written code. | Labels every wire, keeps a pencil behind her ear, reads the whole manual first. Panics quietly, then makes a checklist. Careful, stubborn, funny when tired. |
+| **Hal Brennan** | 62 | Green River, Utah, USA | Station director and mission commander; retired U.S. Air Force aircraft mechanic | Checklists and duct tape. Dry, kind, immovable on mission rules: "We don't break sim." Calls everyone by their surname on the radio. |
+| **Tomoko Sato** | 45 | Grew up in Osaka, Japan; lives in Salt Lake City | Plant biologist at a university; runs the GreenHab (48 tomato plants, lettuce) | Patient and exact; measures everything in grams and millilitres; writes her numbers in a waterproof notebook. Quietly the best tester on the crew. |
+| **Mateus Rocha** | 26 | Belo Horizonte, Brazil | Geology PhD student; rover driver | Fast, funny, makes bets, "just run it". Breaks things by accident and owns it straight away. Learns to test before he trusts. |
+| **Lars Eriksen** | 71 | Tromsø, Norway | Retired embedded-systems engineer; wrote HABCON, the station controller, in C as a volunteer in 1998 | Answers once a sol by email at 19:00 station time. Short sentences, strong opinions ("Every byte is somebody's"), kind underneath. Never writes the code for you. |
+
+**Fixed relationships:**
+- **Ines, Hal, Tomoko and Mateus** are Crew 31 at Red Mesa for a ten-sol simulated mission. Hal hired Ines to wire the Hab; this is her first mission as crew.
+- **Lars and the station:** Lars wrote HABCON for Hal's predecessor and still answers its questions. He and Ines have never met; she knows him only from his comments in the code.
+- Narrated: Dr. Celeste Wren, the Altair Foundation's inspector (arrives Sol 10). The grant is $250,000 a year; the replacement controller board costs $1,200.
+
 ## Cameroon (added 2026-10-14, founder)
 
 These three join the shared cast. They first appear in Study Smarter with AI and can return in any Original.

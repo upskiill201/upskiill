@@ -19,7 +19,7 @@ export const MAX_VIDEO_SECONDS = 15 * 60;
 // exercises: 30 so a Teyro Originals Checkpoint (25–30 exercises) fits.
 const LIMITS = { learnCards: 30, exercises: 30, options: 6, lines: 30, pairs: 8, blanks: 6, bank: 12 };
 const RICH = { beats: 14, choiceOptions: 4, turns: 10, replies: 3, steps: 8, notes: 6, hotspots: 8, statements: 6, stdin: 10, checks: 8 };
-const CAST = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'yaw', 'juno', 'walt', 'leo', 'dana'];
+const CAST = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'yaw', 'juno', 'walt', 'leo', 'dana', 'ines', 'hal', 'tomoko', 'mateus', 'lars'];
 const BLANK_RE = /\[\[(\d+)\]\]/g;
 
 const blank = (s: unknown) => typeof s !== 'string' || !s.trim();
@@ -164,7 +164,7 @@ function richLearnCardProblem(c: any): string | null {
     }
     case 'tryIt':
       if (blank(c.code)) return 'A Try it live card has no code.';
-      if (c.language !== undefined && !RUN_LANGUAGES.includes(c.language)) return 'A Try it live card must be Python or SQL.';
+      if (c.language !== undefined && !RUN_LANGUAGES.includes(c.language)) return 'A Try it live card must be Python, SQL or C.';
       return list(c.stdin).length > RICH.stdin ? `Try it live allows up to ${RICH.stdin} lines of input.` : null;
     default:
       return 'A Learn card has an unknown type.';
@@ -228,7 +228,7 @@ export function exerciseProblem(e: any): string | null {
     }
     case 'writeCode': {
       const checks = Array.isArray(e.checks) ? e.checks : [];
-      if (!RUN_LANGUAGES.includes(e.language)) return 'A Write and run exercise must be Python or SQL.';
+      if (!RUN_LANGUAGES.includes(e.language)) return 'A Write and run exercise must be Python, SQL or C.';
       if (blank(e.solution)) return 'A Write and run exercise has no solution.';
       if (checks.length === 0 || checks.length > RICH.checks) return `A Write and run exercise needs 1 to ${RICH.checks} checks.`;
       if (Array.isArray(e.stdin) && e.stdin.length > RICH.stdin) return `Write and run allows up to ${RICH.stdin} lines of input.`;
@@ -239,8 +239,8 @@ export function exerciseProblem(e: any): string | null {
   }
 }
 
-/** The in-browser runners (frontend lib/code): Python (Pyodide) and SQL (SQLite via sql.js). */
-const RUN_LANGUAGES: unknown[] = ['python', 'sql'];
+/** The in-browser runners (frontend lib/code): Python (Pyodide), SQL (SQLite via sql.js) and C (xcc). */
+const RUN_LANGUAGES: unknown[] = ['python', 'sql', 'c'];
 
 /** One hidden check on a Write and run exercise. Mirrors codeCheckIssue in the frontend. */
 function codeCheckProblem(c: any): string | null {

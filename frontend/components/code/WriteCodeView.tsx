@@ -2,7 +2,7 @@
 
 /**
  * Write and run (an Apply exercise). The learner writes Python (or SQL, in
- * SQL tracks: the same flow on SqlPad) and runs it as often as they like:
+ * SQL tracks, or C in C tracks: the same flow on SqlPad / CPad) and runs it as often as they like:
  * runs are free and never cost hearts. The checklist goes green as
  * requirements pass, and the player's CHECK unlocks once all of them do
  * (blocks.ts isResponseComplete). The hint is always one tap away; after two
@@ -15,6 +15,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Glyph } from '@/components/art/Glyph';
 import type { ExerciseResponse, WriteCodeExercise } from '@/lib/lesson/blocks';
 import { playSound } from '@/lib/audio/lessonSounds';
+import { CPad } from './CPad';
 import { PythonPad } from './PythonPad';
 import { SqlPad } from './SqlPad';
 import styles from './PythonPad.module.css';
@@ -95,6 +96,8 @@ export function WriteCodeView({
     <div className="flex flex-col gap-4">
       {exercise.language === 'sql' ? (
         <SqlPad {...padProps} database={exercise.database} />
+      ) : exercise.language === 'c' ? (
+        <CPad {...padProps} stdin={exercise.stdin} />
       ) : (
         <PythonPad {...padProps} stdin={exercise.stdin} />
       )}

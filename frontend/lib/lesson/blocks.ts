@@ -29,6 +29,7 @@ export const CODE_LANGUAGES = [
   'html',
   'css',
   'sql',
+  'c',
   'bash',
   'json',
   'java',
@@ -39,8 +40,8 @@ export const CODE_LANGUAGES = [
 ] as const;
 export type CodeLanguage = (typeof CODE_LANGUAGES)[number];
 
-/** Languages the in-browser code runner can run (lib/code): Python (Pyodide) and SQL (SQLite via sql.js). */
-export type RunLanguage = 'python' | 'sql';
+/** Languages the in-browser code runner can run (lib/code): Python (Pyodide), SQL (SQLite via sql.js) and C (xcc, public/c). */
+export type RunLanguage = 'python' | 'sql' | 'c';
 
 export const CODE_LANGUAGE_LABEL: Record<CodeLanguage, string> = {
   javascript: 'JavaScript',
@@ -49,6 +50,7 @@ export const CODE_LANGUAGE_LABEL: Record<CodeLanguage, string> = {
   html: 'HTML',
   css: 'CSS',
   sql: 'SQL',
+  c: 'C',
   bash: 'Terminal',
   json: 'JSON',
   java: 'Java',
@@ -135,7 +137,7 @@ export type LearnCard =
 // to be finished before Continue.
 
 /** The shared Originals cast (docs/originals/CAST.md). */
-export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'yaw', 'juno', 'walt', 'leo', 'dana'] as const;
+export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'yaw', 'juno', 'walt', 'leo', 'dana', 'ines', 'hal', 'tomoko', 'mateus', 'lars'] as const;
 export type CastId = (typeof CAST_IDS)[number];
 export const CAST_NAMES: Record<CastId, string> = {
   ada: 'Ada',
@@ -178,6 +180,11 @@ export const CAST_NAMES: Record<CastId, string> = {
   walt: 'Walt',
   leo: 'Leo',
   dana: 'Dana',
+  ines: 'Ines',
+  hal: 'Hal',
+  tomoko: 'Tomoko',
+  mateus: 'Mateus',
+  lars: 'Lars',
 };
 
 /** Who says a story line: the narrator (Tey's voice-over), Tey, or a cast member. */

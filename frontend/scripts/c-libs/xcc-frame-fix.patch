@@ -1,0 +1,24 @@
+--- a/wasm/src/gen_wasm.c	2022-11-03 01:59:25.000000000 +0100
++++ b/wasm/src/gen_wasm.c	2026-10-24 12:17:55.120354600 +0100
+@@ -1506,7 +1506,8 @@
+         size_t size = type_size(varinfo->type);
+         if (size < 1)
+           size = 1;
+-        frame_size += size;
++        // Teyro: align before adding, as the offsets below do.
++        frame_size = ALIGN(frame_size, align_size(varinfo->type)) + size;
+       } else if (!is_stack_param(varinfo->type)) {
+         if (param_index < 0) {
+           unsigned char wt = to_wtype(varinfo->type);
+@@ -1575,7 +1576,10 @@
+       }
+       vreg->param_index = ret_param + param_index;
+       if ((varinfo->storage & VS_REF_TAKEN) || (is_stack_param(varinfo->type) && param_index < 0)) {
+-        vreg->non_prim.offset = ALIGN(frame_offset, align_size(varinfo->type)) - frame_size;
++        // Teyro: keep the aligned offset, or a 4-byte variable after an
++        // 8-byte one (double, long long) overlapped its top half.
++        frame_offset = ALIGN(frame_offset, align_size(varinfo->type));
++        vreg->non_prim.offset = frame_offset - frame_size;
+         size_t size = type_size(varinfo->type);
+         if (size < 1)
+           size = 1;

@@ -300,7 +300,7 @@ async function main() {
   for (const track of selected) {
     // Every Try it live card and Write and run solution, run in real Python (or SQLite for SQL tracks).
     if (hasCode(track)) console.log(`
-(running the ${track.runner === 'sql' ? 'SQL' : 'Python'} in ${track.slug}...)`);
+(running the ${track.runner === 'sql' ? 'SQL' : track.runner === 'c' ? 'C' : 'Python'} in ${track.slug}...)`);
     ok = report(track, await verifyTrackCode(track)) && ok;
   }
   // The AI Stack's practice toolkit (teyro_ai.py) and shop data: lessons depend on its exact behaviour.

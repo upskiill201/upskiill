@@ -15,6 +15,7 @@ export type CodeLanguage =
   | 'html'
   | 'css'
   | 'sql'
+  | 'c'
   | 'bash'
   | 'json'
   | 'java'
@@ -23,12 +24,12 @@ export type CodeLanguage =
   | 'dart'
   | 'plaintext';
 
-/** Languages the in-browser code runner can run (frontend/lib/code). 'sql' = SQLite (sql.js). */
-export type RunLanguage = 'python' | 'sql';
+/** Languages the in-browser code runner can run (frontend/lib/code). 'sql' = SQLite (sql.js); 'c' = C (xcc, public/c). */
+export type RunLanguage = 'python' | 'sql' | 'c';
 
 /** The shared cast (docs/originals/CAST.md). */
 /** Course-only characters (efua, asante; brian, zanele, achieng, kamau, felix, pauline, emeka, wanjiku; jayden, priya, femi; diego; marta, sofia, tomas, carmen) are listed in CAST.md too. */
-export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel' | 'yaw' | 'juno' | 'walt' | 'leo' | 'dana';
+export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel' | 'yaw' | 'juno' | 'walt' | 'leo' | 'dana' | 'ines' | 'hal' | 'tomoko' | 'mateus' | 'lars';
 export type Speaker = 'narrator' | 'tey' | CastId;
 
 // ─── Learn cards ───────────────────────────────────────────────────────────
@@ -218,7 +219,7 @@ export interface OriginalTrackDef {
    * (Checkpoint at 5, Unit Challenge at 10) and 5 units per level. Default: full-length.
    */
   format?: 'full' | 'short';
-  /** The language every Try it live card and Write and run exercise runs in. Default: Python. 'sql' = SQLite. */
+  /** The language every Try it live card and Write and run exercise runs in. Default: Python. 'sql' = SQLite, 'c' = C. */
   runner?: RunLanguage;
   levels: OriginalLevel[];
 }
