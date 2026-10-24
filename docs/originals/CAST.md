@@ -93,6 +93,22 @@ They lead **SQL and Databases for Beginners** ("Save the Starlight", docs/origin
 - **Juno and Arjun:** met years ago on a classic-film restoration forum; his favourite single-screen cinema in Bengaluru closed in 2019. He mentors her on video calls (10:30 p.m. in Chicago, 9 a.m. in Bengaluru) while she builds the Starlight's database.
 - **Juno, Walt and Leo** work together at the Starlight. Ms Delgado (Lakeview Community Bank, narrated) will lend $40,000 for the roof if the records are clean. Rosa Marin and Jack Murphy (narrated regulars) both hold seat G7 on Fri 2 Oct.
 
+## Silver Pine (added 2026-10-24)
+
+They lead **JavaScript: From Beginner to Interactive Apps** (three linked courses, "First Chair", "The Live Board", "Championship Weekend"; docs/originals/javascript-outline.md): Silver Pine Ski Hill, Alder Gap, Colorado, USA (a fictional town), winter 2026–27, US dollars. Nora, Mags, Rafa and Wes are castIds `nora`, `mags`, `rafa`, `wes`.
+
+| Name | Age | Home | Life stage | Personality |
+|---|---|---|---|---|
+| **Nora Lindqvist** | 23 | Alder Gap, Colorado, USA (grew up there) | Lift operator and ticket-window cashier at Silver Pine for three winters. Built the hill's static website from a free HTML course; has never written JavaScript. Wants to be a developer and worries it's "too late to start". | Practical, dry, makes a list for everything, terrible at waiting. Talks to the chairlift ("Come on, Old Blue"). Learns fastest by breaking things on purpose. |
+| **Mags Ellery** | 71 | Alder Gap, Colorado, USA | Owner of Silver Pine, which her parents opened in 1961 | Runs the hill from a clipboard and a landline. Stubborn about change, soft about people; invented Locals Tuesday ($20 tickets) and gives free hot chocolate to anyone who falls off the T-Bar. Says yes first and asks how later. |
+| **Rafa Ortiz** | 34 | Alder Gap, Colorado, USA (from Pueblo) | Head of ski patrol. Six years as a software tester in Denver before he quit for the mountains and swore never to write code again. | Calm, exact, darkly funny; tests everything twice. Mentors Nora in the patrol hut, reluctantly at first. His question for every feature: "What does it do when someone types nothing?" |
+| **Wes Ellery** | 15 | Alder Gap, Colorado, USA | Mags's grandson; high-school sophomore and snowboarder | Taps every button twice, reads nothing, breaks everything on his cracked phone, which makes him the best user tester on the mountain. Rides bib 13 (U16) at the Colorado Junior Freeride Championship. |
+
+**Fixed relationships:**
+- **Nora, Mags, Rafa and Wes** work (and ride) at Silver Pine. Nora built the static site; Rafa mentors her in JavaScript; Wes tests everything she builds; Mags sets the problems ("Make the website answer the phone").
+- **The hill:** Old Blue (the 1961 double chair), the Ridge T-Bar, the Bunny Carpet, 14 trails (Schoolhouse, Lazy Elk, Bunny Hollow, Old Mill, Bluebird, Mags's Run, Big Sky, Aspen Alley, Lone Pine, Silver Streak, Rattlesnake, Ridgeline, Hermit Glade, The Chute). Tickets: $59 adult, $39 child (6–12), free under 6, $29 senior (70+), $20 for everyone on Locals Tuesday.
+- **The championship:** the Colorado Junior Freeride Series moves its championship to Silver Pine on Saturday 13 March 2027 after its venue runs out of snow. The riders (Ava Brooks, Mateo Rossi, Isla Moreno and others) are names in the practice API, not characters.
+
 ## Cameroon (added 2026-10-14, founder)
 
 These three join the shared cast. They first appear in Study Smarter with AI and can return in any Original.

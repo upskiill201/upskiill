@@ -1,8 +1,9 @@
 'use client';
 
 /**
- * Write and run (an Apply exercise). The learner writes Python (or SQL, in
- * SQL tracks: the same flow on SqlPad) and runs it as often as they like:
+ * Write and run (an Apply exercise). The learner writes Python (or SQL or
+ * JavaScript in those tracks: the same flow on SqlPad / JsPad) and runs it
+ * as often as they like:
  * runs are free and never cost hearts. The checklist goes green as
  * requirements pass, and the player's CHECK unlocks once all of them do
  * (blocks.ts isResponseComplete). The hint is always one tap away; after two
@@ -18,6 +19,7 @@ import type { ExerciseResponse, WriteCodeExercise } from '@/lib/lesson/blocks';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { PythonPad } from './PythonPad';
 import { SqlPad } from './SqlPad';
+import { JsPad } from './JsPad';
 import styles from './PythonPad.module.css';
 
 type WriteCodeResponse = Extract<ExerciseResponse, { kind: 'writeCode' }>;
@@ -96,6 +98,8 @@ export function WriteCodeView({
     <div className="flex flex-col gap-4">
       {exercise.language === 'sql' ? (
         <SqlPad {...padProps} database={exercise.database} />
+      ) : exercise.language === 'javascript' ? (
+        <JsPad {...padProps} page={exercise.page} storage={exercise.storage} stdin={exercise.stdin} />
       ) : (
         <PythonPad {...padProps} stdin={exercise.stdin} />
       )}

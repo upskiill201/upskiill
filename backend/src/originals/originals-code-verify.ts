@@ -6,6 +6,7 @@ import type {
 } from './originals-authoring.types';
 import type { LintIssue } from './originals-lint';
 import { verifySqlTrack } from './originals-sql-verify';
+import { verifyJsTrack } from './originals-js-verify';
 
 /**
  * Runs every piece of Python in a Track before it can be loaded, with the
@@ -254,6 +255,8 @@ export async function verifyTrackCode(
   if (!hasCode(track)) return [];
   // SQL tracks run in SQLite (sql.js), the same build the browser uses.
   if (track.runner === 'sql') return verifySqlTrack(track);
+  // JavaScript tracks run in the browser runner's own runtime, inside jsdom.
+  if (track.runner === 'javascript') return verifyJsTrack(track);
   const allCode: string[] = [];
   for (const level of track.levels)
     for (const unit of level.units)

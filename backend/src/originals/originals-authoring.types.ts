@@ -23,12 +23,15 @@ export type CodeLanguage =
   | 'dart'
   | 'plaintext';
 
-/** Languages the in-browser code runner can run (frontend/lib/code). 'sql' = SQLite (sql.js). */
-export type RunLanguage = 'python' | 'sql';
+/**
+ * Languages the in-browser code runner can run (frontend/lib/code). 'sql' = SQLite (sql.js).
+ * 'javascript' = a sandboxed practice page (frontend/public/javascript/runner.js).
+ */
+export type RunLanguage = 'python' | 'sql' | 'javascript';
 
 /** The shared cast (docs/originals/CAST.md). */
 /** Course-only characters (efua, asante; brian, zanele, achieng, kamau, felix, pauline, emeka, wanjiku; jayden, priya, femi; diego; marta, sofia, tomas, carmen) are listed in CAST.md too. */
-export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel' | 'yaw' | 'juno' | 'walt' | 'leo' | 'dana';
+export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel' | 'yaw' | 'juno' | 'walt' | 'leo' | 'dana' | 'nora' | 'mags' | 'rafa' | 'wes';
 export type Speaker = 'narrator' | 'tey' | CastId;
 
 // ─── Learn cards ───────────────────────────────────────────────────────────
@@ -61,8 +64,10 @@ export type AuthoredCard =
   /**
    * Try it live: runnable, editable code in the track's `runner` language. Done once it runs without an error.
    * SQL: `database` names the practice database it starts from (frontend/public/sql/db); empty when absent.
+   * JavaScript: `page` is the practice page's HTML (body markup, may include <style>), shown live; without
+   * it the code runs in the console only. `storage` is what localStorage starts with. `stdin` answers prompt().
    */
-  | { kind: 'tryIt'; title?: string; code: string; caption?: string; challenge?: string; stdin?: string[]; /** The code is meant to fail (an errors lesson): done on any run. */ expectError?: boolean; database?: string };
+  | { kind: 'tryIt'; title?: string; code: string; caption?: string; challenge?: string; stdin?: string[]; /** The code is meant to fail (an errors lesson): done on any run. */ expectError?: boolean; database?: string; page?: string; storage?: Record<string, string> };
 
 export type AuthoredCardKind = AuthoredCard['kind'];
 
@@ -130,6 +135,11 @@ export type AuthoredExercise =
    * runs it); `starter` is what the editor opens with. SQL: `expr` is a query
    * run after the learner's code that must return a true first value, and
    * `database` names the practice database the code starts from.
+   * JavaScript: `expr` is a JavaScript expression run in the page after the
+   * code settles (it may return a promise); it must come out truthy. Helpers
+   * on window.__t: click, type, check, key, submit, text, count, has, logs,
+   * store, reloads, settle (frontend/public/javascript/runner.js). `page` and
+   * `storage` work as on Try it live.
    */
   | (ExerciseBase & {
       kind: 'writeCode';
@@ -139,6 +149,8 @@ export type AuthoredExercise =
       checks: AuthoredCodeCheck[];
       stdin?: string[];
       database?: string;
+      page?: string;
+      storage?: Record<string, string>;
     });
 
 export type AuthoredExerciseKind = AuthoredExercise['kind'];
