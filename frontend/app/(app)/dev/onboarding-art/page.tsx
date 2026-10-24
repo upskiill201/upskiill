@@ -8,6 +8,7 @@
  */
 
 import { Art, type ArtName } from '@/components/art/Art';
+import { EMBLEM_NAMES, Emblem } from '@/components/art/Emblem';
 import { GLYPH_NAMES, Glyph } from '@/components/art/Glyph';
 
 const NAMES: ArtName[] = [...new Set<ArtName>([
@@ -25,6 +26,17 @@ export default function OnboardingArtBench() {
   if (process.env.NODE_ENV !== 'development') return null;
   return (
     <main className="min-h-screen p-4 bg-[var(--bg-page)]">
+      <div className="mb-6 grid grid-cols-4 gap-3">
+        {EMBLEM_NAMES.map((n) => (
+          <div key={n} className="flex flex-col items-center gap-1 rounded-[12px] border-2 border-[var(--border)] p-2">
+            <div className="flex items-end gap-2">
+              <Emblem name={n} size={18} />
+              <Emblem name={n} size={40} />
+            </div>
+            <span className="text-[10px] font-bold text-[var(--text-secondary)]">{n}</span>
+          </div>
+        ))}
+      </div>
       <div className="grid grid-cols-3 gap-3">
         {NAMES.map((n) => (
           <div key={n} className="flex flex-col items-center gap-1 rounded-[12px] border-2 border-[var(--border)] p-2">

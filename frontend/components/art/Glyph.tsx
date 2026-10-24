@@ -38,8 +38,8 @@ const PATHS = {
   ),
   mail: (
     <>
-      <rect x="3" y="5.5" width="18" height="13" rx="3" />
-      <path d="M4 7.5l8 5.5 8-5.5" />
+      <rect x="3" y="5.5" width="18" height="13" rx="3" fill="currentColor" />
+      <path d="M6.4 9.2l5.6 4 5.6-4" stroke="white" strokeWidth="2.2" />
     </>
   ),
   lock: (
@@ -82,21 +82,21 @@ const PATHS = {
   ),
   pencil: (
     <>
-      <path d="M14.6 5.4l4 4L8.4 19.6H4.4v-4Z" />
-      <path d="M12.6 7.4l4 4" />
+      <path d="M15 4.6l4.4 4.4L9 19.4l-5 .6.6-5Z" fill="currentColor" />
+      <path d="M12.8 6.8l4.4 4.4" stroke="white" strokeWidth="1.8" />
     </>
   ),
   doc: (
     <>
-      <path d="M6.4 3.4h7.4l4.8 4.8v11.4a1 1 0 0 1-1 1H6.4a1 1 0 0 1-1-1V4.4a1 1 0 0 1 1-1Z" />
-      <path d="M13.6 3.6v4.8h4.8M8.8 12.6h6.4M8.8 16.4h4.4" />
+      <path d="M6.4 3.4h7.4l4.8 4.8v11.4a1 1 0 0 1-1 1H6.4a1 1 0 0 1-1-1V4.4a1 1 0 0 1 1-1Z" fill="currentColor" />
+      <path d="M13.8 3.8v4.4h4.4M8.8 12.8h6.4M8.8 16.4h4" stroke="white" strokeWidth="2" />
     </>
   ),
   help: (
     <>
-      <circle cx="12" cy="12" r="8.8" />
-      <path d="M9.4 9.4a2.7 2.7 0 0 1 5.2 1c0 1.8-2.6 2.2-2.6 3.8" />
-      <circle cx="12" cy="17.4" r="1.3" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="9.5" fill="currentColor" stroke="none" />
+      <path d="M9.4 9.6a2.7 2.7 0 0 1 5.2 1c0 1.8-2.6 2-2.6 3.4" stroke="white" strokeWidth="2.4" />
+      <circle cx="12" cy="17.2" r="1.4" fill="white" stroke="none" />
     </>
   ),
   link: <path d="M10.4 13.6a4 4 0 0 0 5.6 0l3-3a4 4 0 0 0-5.6-5.6l-1.2 1.2M13.6 10.4a4 4 0 0 0-5.6 0l-3 3a4 4 0 0 0 5.6 5.6l1.2-1.2" />,
@@ -208,8 +208,8 @@ const PATHS = {
   ),
   clock: (
     <>
-      <circle cx="12" cy="12" r="8.5" />
-      <path d="M12 7.5V12l3 2" />
+      <circle cx="12" cy="12" r="9.5" fill="currentColor" stroke="none" />
+      <path d="M12 7.4V12l3.2 2.2" stroke="white" strokeWidth="2.6" />
     </>
   ),
   play: <path d="M8.5 5.8v12.4L18.4 12Z" fill="currentColor" />,
@@ -353,8 +353,8 @@ const PATHS = {
   ),
   card: (
     <>
-      <rect x="2.8" y="5.4" width="18.4" height="13.2" rx="3" />
-      <path d="M3 10h18M6.6 14.6h3.6" />
+      <rect x="2.8" y="5.4" width="18.4" height="13.2" rx="3" fill="currentColor" />
+      <path d="M3.6 9.8h16.8M6.8 14.6h3.6" stroke="white" strokeWidth="2.2" />
     </>
   ),
   crown: <path d="M3.6 18.4L2.8 7.6l5 4.2L12 5l4.2 6.8 5-4.2-.8 10.8Z" fill="currentColor" />,
@@ -395,9 +395,9 @@ const PATHS = {
   ),
   target: (
     <>
-      <circle cx="12" cy="12" r="8.6" />
-      <circle cx="12" cy="12" r="4.6" />
-      <circle cx="12" cy="12" r="1.4" fill="currentColor" />
+      <circle cx="12" cy="12" r="9.5" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="5.4" stroke="white" strokeWidth="2.2" />
+      <circle cx="12" cy="12" r="1.8" fill="white" stroke="none" />
     </>
   ),
 
@@ -581,9 +581,10 @@ const PATHS = {
   hash: <path d="M9.6 4L8 20M16 4l-1.6 16M4.4 9h15.6M3.8 15h15.6" />,
   calendar: (
     <>
-      <rect x="3.6" y="5" width="16.8" height="15.4" rx="3" />
-      <path d="M3.8 10h16.4M8 3v4M16 3v4" />
-      <rect x="7.4" y="13.4" width="3.4" height="3.4" rx="1" fill="currentColor" stroke="none" />
+      <rect x="3.6" y="5" width="16.8" height="15.4" rx="3" fill="currentColor" />
+      <path d="M8 3v3.4M16 3v3.4" />
+      <path d="M4 10h16" stroke="white" strokeWidth="2" />
+      <rect x="7.2" y="13" width="3.6" height="3.6" rx="1" fill="white" stroke="none" />
     </>
   ),
   paperclip: <path d="M19 11.4l-7.2 7.2a4.6 4.6 0 0 1-6.5-6.5l7.6-7.6a3 3 0 0 1 4.3 4.3l-7.5 7.5a1.5 1.5 0 0 1-2.1-2.1l6.8-6.8" />,
