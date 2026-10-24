@@ -218,8 +218,9 @@ export function lintTrack(track: OriginalTrackDef): LintIssue[] {
     levels.add(level.level);
     if (level.units.length === 0) issues.push({ level: 'warning', where, message: 'No units written yet: nothing to load for this level.' });
     const planned = level.units.length + level.upcomingUnits;
-    if (track.format === 'short' ? planned < 5 : planned < 10) {
-      const target = track.format === 'short' ? 'a short course has 5' : 'a full level has 10–15';
+    const fiveUnits = track.format === 'short' || track.format === 'focused';
+    if (fiveUnits ? planned < 5 : planned < 10) {
+      const target = track.format === 'short' ? 'a short course has 5' : track.format === 'focused' ? 'a focused course has 5' : 'a full level has 10–15';
       issues.push({ level: 'warning', where, message: `${planned} units planned; ${target}.` });
     }
     // Lessons 1–5 are the free stretch; lesson 5 must be the first Checkpoint.

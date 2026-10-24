@@ -301,13 +301,13 @@ Six Originals at launch, each a Beginner level with at least its first unit (20+
 | 1 | **AI at Work** | AI | **Pilot.** Written first; no code runner needed. |
 | 2 | **Study Smarter with AI** (was "AI for Students") | AI | University and school. Teaches responsible use: studying smarter with AI, never cheating, so schools and parents can recommend it. |
 | 3 | **Python for Beginners** | Coding | Outline approved 2026-10-14 (docs/originals/python-beginner-outline.md); the code runner is built. |
-| 4 | **Acing Job Interviews** | Career | Urgent-need buyers. |
+| 4 | **Get Hired, Get Ahead** (was "Acing Job Interviews") | Career | Urgent-need buyers. Outline approved 2026-10-20 (docs/originals/get-hired-get-ahead-outline.md): two levels, How to Get Hired (10 chapters) and How to Get Ahead at Work (5); interviews are Level 1, Chapter 8. |
 | 5 | **Clear Writing at Work** | Communication | Written communication. |
 | 6 | **Speak Like a CEO** | Communication | One course merging communication, speaking like a leader, and public speaking: everyday communication → meetings → presenting → public speaking. Speaking practice in Phase 1 is technique + record yourself + self-check against a checklist (no AI feedback until Phase 2). |
 
 **Launch categories:** AI, Coding, Career, Communication. Thinking & Productivity and Life Skills come after launch. *Learning How to Learn* is not a paid Original (a well-known free course already exists under that name); its best ideas may become a short free mini-course in onboarding later.
 
-**Writing order:** AI at Work (pilot) → Study Smarter with AI → Acing Job Interviews → Clear Writing at Work → Speak Like a CEO → Python for Beginners (last, because it waits on the code runner).
+**Writing order:** AI at Work (pilot) → Study Smarter with AI → Get Hired, Get Ahead → Clear Writing at Work → Speak Like a CEO → Python for Beginners (last, because it waits on the code runner).
 
 ---
 

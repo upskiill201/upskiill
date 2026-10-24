@@ -32,7 +32,7 @@ export type RunLanguage = 'python' | 'sql' | 'c' | 'javascript';
 
 /** The shared cast (docs/originals/CAST.md). */
 /** Course-only characters (efua, asante; brian, zanele, achieng, kamau, felix, pauline, emeka, wanjiku; jayden, priya, femi; diego; marta, sofia, tomas, carmen) are listed in CAST.md too. */
-export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel' | 'yaw' | 'juno' | 'walt' | 'leo' | 'dana' | 'nora' | 'mags' | 'rafa' | 'wes' | 'ines' | 'hal' | 'tomoko' | 'mateus' | 'lars' | 'hazel' | 'benny' | 'ruth';
+export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel' | 'ewane' | 'brenda' | 'ngozi' | 'paul' | 'yaw' | 'juno' | 'walt' | 'leo' | 'dana' | 'nora' | 'mags' | 'rafa' | 'wes' | 'ines' | 'hal' | 'tomoko' | 'mateus' | 'lars' | 'hazel' | 'benny' | 'ruth';
 export type Speaker = 'narrator' | 'tey' | CastId;
 
 // ─── Learn cards ───────────────────────────────────────────────────────────
@@ -244,9 +244,11 @@ export interface OriginalTrackDef {
   devOnly?: boolean;
   /**
    * 'short' = a deliberately short course (founder, 2026-10-15): 10 lessons per unit
-   * (Checkpoint at 5, Unit Challenge at 10) and 5 units per level. Default: full-length.
+   * (Checkpoint at 5, Unit Challenge at 10) and 5 units per level. 'focused' = full-length
+   * 20-lesson units, but 5 units per level (founder, 2026-10-20: "they should have 5
+   * chapters"). Default: full-length.
    */
-  format?: 'full' | 'short';
+  format?: 'full' | 'short' | 'focused';
   /** The language every Try it live card and Write and run exercise runs in. Default: Python. 'sql' = SQLite, 'c' = C. */
   runner?: RunLanguage;
   levels: OriginalLevel[];
