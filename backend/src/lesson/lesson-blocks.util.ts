@@ -19,7 +19,7 @@ export const MAX_VIDEO_SECONDS = 15 * 60;
 // exercises: 30 so a Teyro Originals Checkpoint (25–30 exercises) fits.
 const LIMITS = { learnCards: 30, exercises: 30, options: 6, lines: 30, pairs: 8, blanks: 6, bank: 12 };
 const RICH = { beats: 14, choiceOptions: 4, turns: 10, replies: 3, steps: 8, notes: 6, hotspots: 8, statements: 6, stdin: 10, checks: 8 };
-const CAST = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'yaw', 'juno', 'walt', 'leo', 'dana', 'ines', 'hal', 'tomoko', 'mateus', 'lars', 'hazel', 'benny', 'ruth'];
+const CAST = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'yaw', 'juno', 'walt', 'leo', 'dana', 'nora', 'mags', 'rafa', 'wes', 'ines', 'hal', 'tomoko', 'mateus', 'lars', 'hazel', 'benny', 'ruth'];
 const BLANK_RE = /\[\[(\d+)\]\]/g;
 
 const blank = (s: unknown) => typeof s !== 'string' || !s.trim();
@@ -164,7 +164,8 @@ function richLearnCardProblem(c: any): string | null {
     }
     case 'tryIt':
       if (blank(c.code)) return 'A Try it live card has no code.';
-      if (c.language !== undefined && !RUN_LANGUAGES.includes(c.language)) return 'A Try it live card must be Python, SQL or C.';
+      if (c.language !== undefined && !RUN_LANGUAGES.includes(c.language)) return 'A Try it live card must be Python, SQL, C or JavaScript.';
+      if (pageProblem(c)) return pageProblem(c);
       return list(c.stdin).length > RICH.stdin ? `Try it live allows up to ${RICH.stdin} lines of input.` : null;
     default:
       return 'A Learn card has an unknown type.';
@@ -228,8 +229,9 @@ export function exerciseProblem(e: any): string | null {
     }
     case 'writeCode': {
       const checks = Array.isArray(e.checks) ? e.checks : [];
-      if (!RUN_LANGUAGES.includes(e.language)) return 'A Write and run exercise must be Python, SQL or C.';
+      if (!RUN_LANGUAGES.includes(e.language)) return 'A Write and run exercise must be Python, SQL, C or JavaScript.';
       if (blank(e.solution)) return 'A Write and run exercise has no solution.';
+      if (pageProblem(e)) return pageProblem(e);
       if (checks.length === 0 || checks.length > RICH.checks) return `A Write and run exercise needs 1 to ${RICH.checks} checks.`;
       if (Array.isArray(e.stdin) && e.stdin.length > RICH.stdin) return `Write and run allows up to ${RICH.stdin} lines of input.`;
       return checks.map(codeCheckProblem).find((p: string | null) => p !== null) ?? null;
@@ -239,8 +241,22 @@ export function exerciseProblem(e: any): string | null {
   }
 }
 
-/** The in-browser runners (frontend lib/code): Python (Pyodide), SQL (SQLite via sql.js) and C (xcc). */
-const RUN_LANGUAGES: unknown[] = ['python', 'sql', 'c'];
+/** The in-browser runners (frontend lib/code): Python (Pyodide), SQL (SQLite via sql.js), C (xcc) and JavaScript (a sandboxed page). */
+const RUN_LANGUAGES: unknown[] = ['python', 'sql', 'c', 'javascript'];
+
+/** Code and practice pages longer than this are cut off by the lesson player (frontend LIMITS.codeChars). */
+const CODE_CHARS = 4000;
+
+/** JavaScript's practice page and starting localStorage, as the player reads them (frontend sanitize.ts). */
+function pageProblem(x: any): string | null {
+  if (x.page !== undefined && (typeof x.page !== 'string' || x.page.length > CODE_CHARS)) return `A practice page must be HTML of up to ${CODE_CHARS} characters.`;
+  if (x.storage === undefined) return null;
+  const entries = x.storage && typeof x.storage === 'object' && !Array.isArray(x.storage) ? Object.entries(x.storage) : null;
+  if (!entries || entries.length > 10 || entries.some(([k, v]) => k.length > 60 || typeof v !== 'string' || v.length > CODE_CHARS)) {
+    return 'Starting localStorage must be up to 10 text values.';
+  }
+  return null;
+}
 
 /** One hidden check on a Write and run exercise. Mirrors codeCheckIssue in the frontend. */
 function codeCheckProblem(c: any): string | null {

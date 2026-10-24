@@ -2,7 +2,8 @@
 
 /**
  * Try it live (a Learn card): real, editable code with a Run button: Python,
- * SQL in SQL tracks, or C in C tracks (`card.language`). Finished once it has run without an
+ * SQL in SQL tracks, C in C tracks or JavaScript (with a live page when the card has one)
+ * in JavaScript tracks (`card.language`). Finished once it has run without an
  * error, so Continue never waits on the learner getting anything "right". The
  * challenge line nudges them to change the code and run it again, which is
  * where the learning happens.
@@ -14,6 +15,7 @@ import type { RichLearnCard } from '@/lib/lesson/blocks';
 import { CPad } from './CPad';
 import { PythonPad } from './PythonPad';
 import { SqlPad } from './SqlPad';
+import { JsPad } from './JsPad';
 
 type TryIt = Extract<RichLearnCard, { kind: 'tryIt' }>;
 
@@ -38,6 +40,8 @@ export function TryItCard({ card, done, onDone }: { card: TryIt; done: boolean; 
           <SqlPad value={code} onChange={setCode} resetTo={card.code} database={card.database} label={card.title ?? 'Try it live'} onRun={onRun} />
         ) : card.language === 'c' ? (
           <CPad value={code} onChange={setCode} resetTo={card.code} stdin={card.stdin} label={card.title ?? 'Try it live'} onRun={onRun} />
+        ) : card.language === 'javascript' ? (
+          <JsPad value={code} onChange={setCode} resetTo={card.code} page={card.page} storage={card.storage} stdin={card.stdin} label={card.title ?? 'Try it live'} onRun={onRun} />
         ) : (
           <PythonPad value={code} onChange={setCode} resetTo={card.code} stdin={card.stdin} label={card.title ?? 'Try it live'} onRun={onRun} />
         )}

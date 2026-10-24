@@ -131,8 +131,10 @@ function parseRichCard(c: any, cid: string): RichLearnCard | null {
       return {
         id: cid,
         kind: 'tryIt',
-        ...(c.language === 'sql' || c.language === 'c' ? { language: c.language as 'sql' | 'c' } : {}),
+        ...(c.language === 'sql' || c.language === 'c' || c.language === 'javascript' ? { language: c.language as 'sql' | 'c' | 'javascript' } : {}),
         ...(typeof c.database === 'string' ? { database: str(c.database, 40) } : {}),
+        ...(typeof c.page === 'string' ? { page: str(c.page, LIMITS.codeChars) } : {}),
+        ...(isStore(c.storage) ? { storage: parseStore(c.storage) } : {}),
         title: optStr(c.title, 200),
         code: str(c.code, LIMITS.codeChars),
         caption: optStr(c.caption, 300),
@@ -303,8 +305,10 @@ export function parseExercise(e: any, i: number): Exercise | null {
       return {
         ...base,
         kind: 'writeCode',
-        language: e.language === 'sql' || e.language === 'c' ? e.language : 'python',
+        language: e.language === 'sql' || e.language === 'c' || e.language === 'javascript' ? e.language : 'python',
         ...(typeof e.database === 'string' ? { database: str(e.database, 40) } : {}),
+        ...(typeof e.page === 'string' ? { page: str(e.page, LIMITS.codeChars) } : {}),
+        ...(isStore(e.storage) ? { storage: parseStore(e.storage) } : {}),
         starter: str(e.starter, LIMITS.codeChars),
         solution: str(e.solution, LIMITS.codeChars),
         hint: optStr(e.hint, 600),
@@ -314,6 +318,15 @@ export function parseExercise(e: any, i: number): Exercise | null {
     default:
       return null;
   }
+}
+
+const isStore = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
+
+/** JavaScript's starting localStorage: up to 10 text values. */
+function parseStore(v: Record<string, unknown>): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [k, val] of Object.entries(v).slice(0, 10)) if (typeof val === 'string') out[k.slice(0, 60)] = val.slice(0, LIMITS.codeChars);
+  return out;
 }
 
 /** One hidden check: only the tests that are strings survive. */
