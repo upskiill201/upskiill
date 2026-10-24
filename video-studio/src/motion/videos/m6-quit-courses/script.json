@@ -1,0 +1,73 @@
+{
+  "slug": "m6-quit-courses",
+  "compId": "M6-quit-courses",
+  "title": "Don't buy another coding course until you watch this",
+  "look": "night",
+  "voice": "TX3LPaxmHKxFdv7VOQHJ",
+  "model": "eleven_multilingual_v2",
+  "speed": 1.08,
+  "hook": {
+    "archetype": "\"Don't [do X]\" (founder template, 2026-10-10)",
+    "igCaptionLine1": "Don't buy another coding course until you watch this 🛑",
+    "igCaptionLine2": "Only ~3 in 100 people finish the online courses they start 👇"
+  },
+  "sources": [
+    { "claim": "Just over 3% (3.13%) of all participants completed Harvard/MIT edX MOOCs in 2017–18, down from ~6% in 2014–15; data from millions of learners (5.63M)", "url": "https://www.insidehighered.com/node/7744", "note": "Reich & Ruipérez-Valiente (2019), 'The MOOC pivot', Science 363(6423); MIT TSL summary https://tsl.mit.edu/research/the-mooc-pivot/", "checked": "2026-10-10" },
+    { "claim": "Learners who reach a 7-day streak are 3.6 times more likely to complete their course (company-reported correlation)", "url": "https://blog.duolingo.com/how-duolingo-streak-builds-habit", "note": "Duolingo blog, Jan 31 2022; same post names loss aversion as the mechanism", "checked": "2026-10-10" },
+    { "claim": "Loss aversion: losses loom larger than equivalent gains", "url": "https://doi.org/10.2307/1914185", "note": "Kahneman & Tversky (1979), Prospect Theory, Econometrica", "checked": "2026-10-10" },
+    { "claim": "Coffee card 'buy 10 get 1 free': customers bought more frequently as they neared the free coffee (goal-gradient effect)", "url": "https://business.columbia.edu/faculty/research/goal-gradient-hypothesis-resurrected-purchase-acceleration-illusionary-goal", "note": "Kivetz, Urminsky & Zheng (2006), Journal of Marketing Research 43:39–58", "checked": "2026-10-10" },
+    { "claim": "Teyro: lessons take a few minutes in four steps (learn, apply, reflect, deepen); write or fix code with instant feedback; XP per lesson; streak + freezes + 48-hour repair; weekly leagues with real learners, Bronze → Diamond; coins earned not bought, spent in the shop; three daily quests, daily + streak chests; Monthly Challenge with a badge; follow friends, race streaks, course community after 2nd lesson; free to start", "url": "https://teyro.app/features", "note": "teyro.app/features + teyro.app homepage", "checked": "2026-10-10" }
+  ],
+  "teyro": {
+    "bridgeChips": ["Streaks", "Quests", "Leagues"],
+    "outroHeadline": "Learning that plays like a game.",
+    "outroAsk": "Start free · Search Teyro"
+  },
+  "lines": [
+    { "id": "h1", "chapter": "00", "text": "Don't buy another coding course | until you watch this." },
+    { "id": "h2", "chapter": "00", "text": "Only about three out of every hundred people | finish the online courses they start." },
+    { "id": "h3", "chapter": "00", "text": "It's not because they're lazy. | It's the design. | And games solved this years ago." },
+    { "id": "h4", "chapter": "00", "text": "Here are the five tricks games use to keep you playing, | and how they help you finish learning." },
+
+    { "id": "c1a", "chapter": "01 Why you quit", "text": "First, *why you quit.* | A course gives you hours and hours of video, | one huge finish line, | and nobody who notices when you stop." },
+    { "id": "c1b", "chapter": "01 Why you quit", "text": "Day one feels great. | Day five, you skip. | Day twelve, you forget it exists." },
+    { "id": "c1c", "chapter": "01 Why you quit", "text": "Harvard and MIT studied millions of learners. | In the latest year they looked at, | just over *three percent* finished." },
+
+    { "id": "c2a", "chapter": "02 Tiny levels", "text": "Trick one. *Tiny levels.* | A game never asks you to play for forty hours. | It gives you one level. | A few minutes. | Then a win." },
+    { "id": "c2b", "chapter": "02 Tiny levels", "text": "Every win is a small hit of progress, | so you want the next one." },
+
+    { "id": "c3a", "chapter": "03 The streak", "text": "Trick two. *The streak.* | A number that grows every day you show up." },
+    { "id": "c3b", "chapter": "03 The streak", "text": "Your brain hates losing something | more than it likes winning it. | Psychologists call that *loss aversion*." },
+    { "id": "c3c", "chapter": "03 The streak", "text": "So once you have a streak, | you protect it. | Duolingo says learners who hit a seven day streak | are three point six times more likely to finish their course." },
+
+    { "id": "c4a", "chapter": "04 The progress bar", "text": "Trick three. *The progress bar.* | In one famous study, | a coffee shop handed out cards. | Buy ten, get one free." },
+    { "id": "c4b", "chapter": "04 The progress bar", "text": "The closer people got to the free coffee, | the faster they bought. | It's called the *goal gradient*." },
+    { "id": "c4c", "chapter": "04 The progress bar", "text": "Games use it everywhere. | Quests. | Chests. | Bars that are almost full." },
+    { "id": "c4d", "chapter": "04 The progress bar", "text": "But tricks alone won't keep you going for months. | The last two will." },
+
+    { "id": "bridge", "chapter": "bridge", "text": "Quick thing. | Every trick in this video is built into Teyro." },
+    { "id": "back", "chapter": "bridge", "text": "Lessons, streaks, quests and leagues, | for coding and AI. | Okay. | Trick four." },
+
+    { "id": "c5a", "chapter": "05 Other players", "text": "*Other players.* | Games put you on a leaderboard with real people." },
+    { "id": "c5b", "chapter": "05 Other players", "text": "Now you're not studying alone. | You're racing the person just above you. | And your friends notice when you skip." },
+
+    { "id": "c6a", "chapter": "06 Rewards", "text": "Trick five. *Rewards you earn.* | Coins. | Chests. | A shop to spend them in." },
+    { "id": "c6b", "chapter": "06 Rewards", "text": "But the reward isn't the point. | It's a reason to come back tomorrow, | until coming back is just a habit." },
+
+    { "id": "t1", "chapter": "07 The catch", "text": "Here's the catch. | Most games are built to keep you playing forever. | A good learning game is built so you *finish*." },
+    { "id": "t2", "chapter": "07 The catch", "text": "The tricks only matter | if every lesson makes you actually do something. | Write the code. | Fix the bug. | Get it right." },
+    { "id": "cav", "chapter": "07 The catch", "text": "To be fair, | no app can learn for you. | You still have to show up. | The trick is making showing up easy." },
+
+    { "id": "recap", "chapter": "Recap", "text": "So. | Tiny levels. | A streak. | A progress bar. | Other players. | Rewards. | That's how games keep you coming back." },
+
+    { "id": "ty1", "chapter": "Teyro", "text": "And that's exactly what you get on Teyro." },
+    { "id": "ty2", "chapter": "Teyro", "text": "Lessons take a few minutes, | in four steps: | learn, | apply, | reflect, | deepen. | You write real code, | with instant feedback." },
+    { "id": "ty3", "chapter": "Teyro", "text": "Every right answer earns XP. | Your streak grows every day, | and a freeze covers a busy one." },
+    { "id": "ty4", "chapter": "Teyro", "text": "Weekly leagues put you against real learners, | from Bronze to Diamond." },
+    { "id": "ty5", "chapter": "Teyro", "text": "Three daily quests. | Chests to open. | Coins to spend in the shop. | And a Monthly Challenge, | with its own badge." },
+    { "id": "ty6", "chapter": "Teyro", "text": "Follow friends, | race their streaks, | and join your course community." },
+
+    { "id": "punch", "chapter": "end", "text": "It feels like playing. | But you *finish*." },
+    { "id": "cta", "chapter": "end", "text": "Want learning that feels like a game? | It's free to start. | Learn it on Teyro." }
+  ]
+}

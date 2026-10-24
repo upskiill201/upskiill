@@ -1,0 +1,74 @@
+{
+  "slug": "m5-git-undo",
+  "compId": "M5-git-undo",
+  "title": "How to undo anything in Git",
+  "look": "night",
+  "voice": "TX3LPaxmHKxFdv7VOQHJ",
+  "model": "eleven_multilingual_v2",
+  "speed": 1.08,
+  "hook": {
+    "archetype": "\"I wish someone told me this before I started [skill]\" (founder template, 2026-10-10)",
+    "igCaptionLine1": "I wish someone told me this before I started coding 😮‍💨",
+    "igCaptionLine2": "You can undo almost anything in Git 👇"
+  },
+  "course": {
+    "name": "Learn Git, GitHub and GitHub Actions",
+    "facts": "free course on Teyro; Git → GitHub Actions",
+    "source": "founder (2026-10-10)"
+  },
+  "sources": [
+    { "claim": "git commit --amend replaces the last commit with one using the current staging area (forgot a file / bad message)", "url": "https://git-scm.com/book/en/v2/Git-Basics-Undoing-Things", "note": "Pro Git, Undoing Things", "checked": "2026-10-10" },
+    { "claim": "git reset --soft HEAD^/HEAD~1: undo a commit and redo, changes kept", "url": "https://git-scm.com/docs/git-reset", "note": "git-reset docs, 'Undo a commit and redo'", "checked": "2026-10-10" },
+    { "claim": "git restore --staged <file> unstages; git restore <file> discards working-tree changes; git restore added in Git 2.23.0", "url": "https://git-scm.com/book/en/v2/Git-Basics-Undoing-Things", "note": "Pro Git + https://git-scm.com/docs/git-restore", "checked": "2026-10-10" },
+    { "claim": "Anything committed can almost always be recovered (even deleted branches and --amend-overwritten commits); anything never committed is likely never to be seen again", "url": "https://git-scm.com/book/en/v2/Git-Basics-Undoing-Things", "note": "Pro Git, Undoing Things (note)", "checked": "2026-10-10" },
+    { "claim": "git stash saves uncommitted changes to reapply later", "url": "https://git-scm.com/docs/git-stash", "note": "git-stash docs", "checked": "2026-10-10" },
+    { "claim": "git revert records new commits that reverse earlier commits", "url": "https://git-scm.com/docs/git-revert", "note": "git-revert docs", "checked": "2026-10-10" },
+    { "claim": "Rewriting history you already pushed is a problem for others; don't push until you're happy", "url": "https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History", "note": "Pro Git, Rewriting History", "checked": "2026-10-10" },
+    { "claim": "Reflog records every time HEAD / branch tips move; recover a deleted branch with git reflog + git branch <name> <sha>", "url": "https://git-scm.com/book/en/v2/Git-Internals-Maintenance-and-Data-Recovery", "note": "Pro Git, Data Recovery + git-reflog docs", "checked": "2026-10-10" },
+    { "claim": "Reflog entries not reachable from the current tip expire after 30 days by default (reachable: 90 days)", "url": "https://git-scm.com/docs/git-gc", "note": "gc.reflogExpireUnreachable = 30 days, gc.reflogExpire = 90 days", "checked": "2026-10-10" },
+    { "claim": "Teyro course 'Learn Git, GitHub and GitHub Actions' is free", "url": "founder", "note": "founder statement 2026-10-10", "checked": "2026-10-10" }
+  ],
+  "teyro": {
+    "bridgeChips": ["Free course", "Git → GitHub Actions", "A few minutes a day"],
+    "outroHeadline": "Learn Git, GitHub and GitHub Actions. Free.",
+    "outroAsk": "Search Teyro"
+  },
+  "lines": [
+    { "id": "h1", "chapter": "00", "text": "I wish someone told me this before I started coding. | You can undo almost *anything* in Git." },
+    { "id": "h2", "chapter": "00", "text": "Most beginners panic, | delete the whole folder, | and start again. | You don't have to." },
+    { "id": "h3", "chapter": "00", "text": "Here are the five oh-no moments, | and the exact command that fixes each one." },
+
+    { "id": "c1a", "chapter": "01 Committed too early", "text": "Oh-no number one. | You commit, | then notice you forgot a file, | or your message has a typo." },
+    { "id": "c1b", "chapter": "01 Committed too early", "text": "Just add the file, | and run git commit, dash dash amend. | It replaces your last commit with a fixed one." },
+    { "id": "c1c", "chapter": "01 Committed too early", "text": "Want to unpack the commit completely? | Git reset, dash dash soft, head tilde one. | Tilde one means one commit back." },
+    { "id": "c1d", "chapter": "01 Committed too early", "text": "The commit disappears, | but every change stays, | ready to commit again." },
+
+    { "id": "c2a", "chapter": "02 Staged the wrong file", "text": "Oh-no number two. | You ran git add on a file | that shouldn't go in yet." },
+    { "id": "c2b", "chapter": "02 Staged the wrong file", "text": "Git restore, dash dash staged, | and the file name. | It comes out of the staging area, | and your edits stay safe." },
+
+    { "id": "c3a", "chapter": "03 Broke a file", "text": "Oh-no number three. | You've broken a file, | and you just want the last saved version back." },
+    { "id": "c3b", "chapter": "03 Broke a file", "text": "Git restore, | and the file name. | Your changes are thrown away, | and the file goes back to your last commit." },
+    { "id": "c3c", "chapter": "03 Broke a file", "text": "Careful with this one. | Those changes were never committed, | so they're gone for good. | Not sure? | Run git stash instead, | and bring them back later." },
+    { "id": "c3d", "chapter": "03 Broke a file", "text": "But what if the mistake is already on GitHub, | and your team has pulled it?" },
+
+    { "id": "bridge", "chapter": "bridge", "text": "Quick thing. | Git, GitHub and GitHub Actions is a free course. | You can learn it on Teyro." },
+    { "id": "back", "chapter": "bridge", "text": "Okay. | Back to the mistake." },
+
+    { "id": "c4a", "chapter": "04 Already pushed", "text": "Oh-no number four. | The bad commit is already on GitHub." },
+    { "id": "c4b", "chapter": "04 Already pushed", "text": "Don't reset it. | Your teammates already have that commit. | Rewrite it, | and their history no longer matches yours." },
+    { "id": "c4c", "chapter": "04 Already pushed", "text": "Use git revert, | and the commit's ID. | Revert doesn't delete anything. | It adds a new commit | that does the exact *opposite*. | Safe for everyone." },
+
+    { "id": "c5a", "chapter": "05 Deleted a branch", "text": "Oh-no number five. | You deleted a branch, | with a week of work on it." },
+    { "id": "c5b", "chapter": "05 Deleted a branch", "text": "Here's the secret most beginners never learn. | Git keeps a diary. | It's called the *reflog*." },
+    { "id": "c5c", "chapter": "05 Deleted a branch", "text": "Every time your HEAD moves, | Git writes it down. | Run git reflog, | find your lost commit, | and make a new branch right there." },
+    { "id": "c5d", "chapter": "05 Deleted a branch", "text": "Even commits you overwrote with amend are in there. | By default, | lost commits stay in the diary for thirty days." },
+
+    { "id": "t1", "chapter": "The rule", "text": "And here's the rule behind all of this. | Anything you committed | can almost always be recovered. | Anything you never committed | is likely gone forever." },
+    { "id": "t2", "chapter": "The rule", "text": "So commit early. | Commit often." },
+
+    { "id": "recap", "chapter": "Recap", "text": "So. | Committed too early? Amend. | Wrong file staged? Restore staged. | Broken file? Restore. | Already pushed? Revert. | Lost a branch? Reflog." },
+
+    { "id": "punch", "chapter": "end", "text": "Git doesn't punish mistakes. | It just needs you to *commit*." },
+    { "id": "cta", "chapter": "end", "text": "Want to learn all of it, step by step, for free? | Learn it on Teyro." }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "slug": "m9-chatgpt-enter",
+  "compId": "M9-chatgpt-enter",
+  "title": "What happens when you press Enter on ChatGPT",
+  "look": "neon",
+  "voice": "TX3LPaxmHKxFdv7VOQHJ",
+  "model": "eleven_multilingual_v2",
+  "speed": 1.08,
+  "hook": {
+    "archetype": "\"Nobody is talking about this…\" (founder template, exact line picked 2026-10-10) + impossible-sounding truth",
+    "igCaptionLine1": "I don't understand why nobody is talking about this 🤯",
+    "igCaptionLine2": "When you press Enter on ChatGPT, it has no idea how its answer will end 👇"
+  },
+  "sources": [
+    { "claim": "A token can be a character, part of a word, a whole word or punctuation; ~4 characters; ~3/4 of a word; 100 tokens ≈ 75 words; reasoning models use internal reasoning tokens not shown as answer text", "url": "https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them", "note": "OpenAI Help Center, 'Understanding and counting tokens'", "checked": "2026-10-10" },
+    { "claim": "Each text generation request is independent and stateless; multi-turn chat works by sending the previous messages back in with each request", "url": "https://developers.openai.com/api/docs/guides/conversation-state", "note": "OpenAI API docs, 'Conversation state'", "checked": "2026-10-10" },
+    { "claim": "GPT-3: 175 billion parameters, 96 layers, context window of 2048 tokens", "url": "https://arxiv.org/abs/2005.14165", "note": "Brown et al. (2020), 'Language Models are Few-Shot Learners', abstract + Table 2.1 + §2.1", "checked": "2026-10-10" },
+    { "claim": "The Transformer, based solely on attention mechanisms, introduced in 2017", "url": "https://arxiv.org/abs/1706.03762", "note": "Vaswani et al. (2017), 'Attention Is All You Need'", "checked": "2026-10-10" },
+    { "claim": "By default the API generates the entire output before sending it; streaming sends output as it is generated, over server-sent events", "url": "https://developers.openai.com/api/docs/guides/streaming-responses", "note": "OpenAI API docs, 'Streaming API responses'", "checked": "2026-10-10" },
+    { "claim": "ChatGPT sometimes writes plausible-sounding but incorrect or nonsensical answers", "url": "https://openai.com/index/chatgpt/", "note": "OpenAI, 'Introducing ChatGPT' (Nov 2022), Limitations", "checked": "2026-10-10" },
+    { "claim": "Teyro AI track: put AI to work, then build with it (use AI tools, build AI agents, create automations); lessons take a few minutes in four steps; apply straight away with instant feedback; streaks + freezes; weekly leagues Bronze → Diamond; three daily quests, chests; follow friends; course community after the second lesson; free to start", "url": "https://teyro.app/features", "note": "teyro.app homepage + /features, read 2026-10-10", "checked": "2026-10-10" }
+  ],
+  "teyro": {
+    "bridgeChips": ["AI track", "A few minutes a day", "Use it straight away"],
+    "outroHeadline": "Put AI to work, then build with it. Free to start.",
+    "outroAsk": "Search Teyro · teyro.app"
+  },
+  "lines": [
+    { "id": "h1", "chapter": "00", "text": "I don't understand | why nobody is talking about this." },
+    { "id": "h2", "chapter": "00", "text": "When you press Enter on ChatGPT, | it has no idea | how its answer will end." },
+    { "id": "h3", "chapter": "00", "text": "It writes one tiny piece at a time, | and it picks the next piece | only after the last one is out." },
+    { "id": "h4", "chapter": "00", "text": "Here's everything that happens | after you press Enter." },
+
+    { "id": "c1a", "chapter": "01 Chopped", "text": "First, your message gets *chopped*." },
+    { "id": "c1b", "chapter": "01 Chopped", "text": "Not into words. | Into *tokens*. | Small chunks of text. | A token is about four characters, | or three quarters of a word." },
+
+    { "id": "c2a", "chapter": "02 Numbers", "text": "But a model can't read letters. | So every token becomes a *number*." },
+    { "id": "c2b", "chapter": "02 Numbers", "text": "Then each number becomes a long list of numbers, | a map of what it means." },
+
+    { "id": "c3a", "chapter": "03 No memory", "text": "Next, the part that surprises people. | It doesn't *remember* you." },
+    { "id": "c3b", "chapter": "03 No memory", "text": "Each request to the model starts from zero. | So your whole chat gets sent back in, | every single time." },
+    { "id": "c3c", "chapter": "03 No memory", "text": "And that has a limit. | GPT-3 could see two thousand and forty-eight tokens. | Past that, | it simply can't see." },
+
+    { "id": "c4a", "chapter": "04 Attention", "text": "Now the model reads it all. | Every token looks at every other token." },
+    { "id": "c4b", "chapter": "04 Attention", "text": "In, the cat sat because it was tired, | what does *it* point to? | The cat. | Attention figures that out." },
+    { "id": "c4c", "chapter": "04 Attention", "text": "This came from a twenty seventeen paper, | Attention Is All You Need. | It's the T in GPT. | *Transformer*." },
+
+    { "id": "c5a", "chapter": "05 Layers", "text": "And it doesn't do this once. | It stacks it." },
+    { "id": "c5b", "chapter": "05 Layers", "text": "GPT-3 had *ninety-six* layers, | and a hundred and seventy-five billion numbers | tuned during training." },
+    { "id": "c5c", "chapter": "05 Layers", "text": "Every layer sharpens the picture. | But after all that, | it still hasn't written a single word." },
+
+    { "id": "bridge", "chapter": "bridge", "text": "Quick thing. | This is exactly how I'm learning AI right now, on Teyro." },
+    { "id": "back", "chapter": "bridge", "text": "A few minutes a day, | and I use what I learn straight away. | Okay. | The first word." },
+
+    { "id": "c6a", "chapter": "06 One token", "text": "At the very end, | the model gives every possible next token a *score*." },
+    { "id": "c6b", "chapter": "06 One token", "text": "After, the sky is, | blue scores high. | Green scores low. | It picks one, | adds it to the text, | and runs the whole thing again." },
+    { "id": "c6c", "chapter": "06 One token", "text": "Token. | Run. | Token. | Run. | Every piece is a full trip through the layers." },
+
+    { "id": "c7a", "chapter": "07 Streaming", "text": "So why does it look like typing? | Because, sort of, it is." },
+    { "id": "c7b", "chapter": "07 Streaming", "text": "Instead of waiting for the whole answer, | the app *streams* each piece to you | the moment it's made." },
+
+    { "id": "t1", "chapter": "08 The weird part", "text": "Here's the weird part. | There's no answer sitting in a database." },
+    { "id": "t2", "chapter": "08 The weird part", "text": "The model isn't looking anything up. | It's *predicting* what should come next." },
+    { "id": "t3", "chapter": "08 The weird part", "text": "That's why it can sound sure | and still be wrong. | OpenAI says so themselves." },
+    { "id": "cav", "chapter": "08 The weird part", "text": "To be fair, | newer models can think first, | in hidden tokens you never see. | But it's still tokens, | one at a time." },
+
+    { "id": "recap", "chapter": "09 Recap", "text": "So. | Tokens. | Numbers. | Your whole chat, sent again. | Attention. | Layers. | One token at a time. | Streamed back." },
+
+    { "id": "ty1", "chapter": "teyro", "text": "I didn't get this from one video. | I learn all of it on Teyro." },
+    { "id": "ty2", "chapter": "teyro", "text": "There's an AI track. | Use AI tools, | build AI agents, | and create automations." },
+    { "id": "ty3", "chapter": "teyro", "text": "Lessons take a few minutes, | in four steps, | and you practise straight away, | with instant feedback." },
+    { "id": "ty4", "chapter": "teyro", "text": "My streak grows every day, | and a freeze covers a busy one. | Weekly leagues, | Bronze to Diamond. | Daily quests and chests." },
+    { "id": "ty5", "chapter": "teyro", "text": "Friends to race, | and a course community | that cheers your wins." },
+    { "id": "ty6", "chapter": "teyro", "text": "Now I don't just use AI. | I *build* with it." },
+
+    { "id": "punch", "chapter": "end", "text": "It's not looking up an answer. | It's predicting the next *token*." },
+    { "id": "cta", "chapter": "end", "text": "Want to understand AI like this? | Learn it on Teyro." },
+    { "id": "cta2", "chapter": "end", "text": "Search for it in your browser, | or go straight to Teyro dot app." }
+  ]
+}

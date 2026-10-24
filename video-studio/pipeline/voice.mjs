@@ -44,12 +44,13 @@ const settings = { stability: 0.45, similarity_boost: 0.8, style: 0.35, use_spea
 async function tts(line, prev, next) {
   const text = clean(line.text);
   const ctx = S.model === 'eleven_v3' ? {} : { previous_text: prev ? clean(prev.text) : undefined, next_text: next ? clean(next.text) : undefined };
-  const hash = crypto.createHash('sha1').update(JSON.stringify([text, S.voice, S.model, settings])).digest('hex').slice(0, 12);
+  const vs = line.speed ? { ...settings, speed: line.speed } : settings;  // per-line "speed" override (e.g. a CTA re-take)
+  const hash = crypto.createHash('sha1').update(JSON.stringify([text, S.voice, S.model, vs])).digest('hex').slice(0, 12);
   const mp3 = path.join(workDir, `${line.id}.mp3`), meta = path.join(workDir, `${line.id}.json`);
   if (!redo.has(line.id) && fs.existsSync(meta) && JSON.parse(fs.readFileSync(meta, 'utf8')).hash === hash) return { mp3, ...JSON.parse(fs.readFileSync(meta, 'utf8')) };
   const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${S.voice}/with-timestamps?output_format=mp3_44100_128`, {
     method: 'POST', headers: { 'xi-api-key': K, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, model_id: S.model, voice_settings: settings, ...ctx }),
+    body: JSON.stringify({ text, model_id: S.model, voice_settings: vs, ...ctx }),
   });
   const j = await r.json();
   if (!r.ok) throw new Error(`TTS ${line.id} failed: ${r.status} ${JSON.stringify(j.detail ?? j).slice(0, 300)}`);

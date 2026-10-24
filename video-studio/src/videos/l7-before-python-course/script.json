@@ -1,0 +1,25 @@
+{
+  "slug": "l7-before-python-course",
+  "account": "teyro",
+  "title": "Don't buy another Python course until you've tried these 4",
+  "sources": [
+    "Lister et al. (2004), 'A Multi-National Study of Reading and Tracing Skills in Novice Programmers', ACM SIGCSE Bulletin 36(4) (ITiCSE working group, 7 countries). Table 4.2 (doodles of 56 students x 12 MCQs): synchronized trace 77% correct, trace 75%, blank page (no doodles) 50%. Open PDF: cs.auckland.ac.nz/~j-hamer/ITiCSE04-wg.pdf",
+    "Ericson, Margulieux & Rick (2017), 'Solving Parsons problems versus fixing and writing code', Koli Calling: significantly less time, no significant difference in learning or one-week retention. Confirmed in Ericson et al. (2022), 'Parsons Problems and Beyond', ITiCSE-WGR (open copy, Aalto): 'solving Parsons problems was significantly faster than ... fixing code with errors [62], writing textual code [59, 62]'",
+    "Margulieux, Morrison & Decker (2020), 'Reducing withdrawal and failure rates in introductory programming with subgoal labeled worked examples', International Journal of STEM Education 7:19 (265 students, semester-long): 'students in the subgoal group were half as likely to withdraw and half as likely to fail than the control group'",
+    "Sentance, Waite & Kallia (2019), 'Teaching computer programming with PRIMM: a sociocultural perspective', Computer Science Education 29(2-3): 13 schools, 493 students aged 11-14; 'Learners performed better in the post test than the control group' (abstract, eprints.gla.ac.uk/229013)",
+    "teyro.app + teyro.app/features: write or fix code with instant feedback; short lessons, a few minutes a day"
+  ],
+  "voice": "cgSgspJ2msm6clMCkdW9",
+  "model": "eleven_multilingual_v2",
+  "fps": 30,
+  "lines": [
+    { "id": "h1", "text": "Don't buy another Python course | until you've tried these *four.*" },
+    { "id": "h2", "text": "And none of them is *practise more.*" },
+    { "id": "i1", "text": "First, trace it on paper. | Keep a table of every variable | and update it line by line. | In a seven-country study, | tracers got *77 percent* right. | Students who wrote nothing? | *Half.*" },
+    { "id": "i2", "text": "Second, unscramble code. | Jumble the lines of a working program | and put them back in order. | These are called *Parsons problems,* | and students learned about the same | in *less time* than writing from scratch." },
+    { "id": "i3", "text": "Third, write the steps *before* the code, | one comment each, | like *read the file, count the words.* | In a semester-long study, | students taught this way were *half* as likely | to drop out or fail." },
+    { "id": "i4", "text": "And finally, *modify* before you make. | Change one line of working code, | predict what happens, | then run it. | In a study of almost *500* students, | that group did *better* on the test." },
+    { "id": "c1", "text": "If you want lessons that make you *write* and *fix* real code, | a few minutes a day, | the link's in my *bio.*" },
+    { "id": "c2", "text": "It's called *Teyro.*" }
+  ]
+}

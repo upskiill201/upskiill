@@ -1,0 +1,74 @@
+{
+  "slug": "m10-best-ai-model",
+  "compId": "M10-best-ai-model",
+  "title": "GPT-6 vs Claude Opus 5.5 vs Gemini 4 Argon",
+  "look": "blueprint",
+  "voice": "TX3LPaxmHKxFdv7VOQHJ",
+  "model": "eleven_multilingual_v2",
+  "speed": 1.08,
+  "hook": {
+    "archetype": "\"This is the exact difference between…\" (founder template, hook 1 picked 2026-10-10)",
+    "igCaptionLine1": "This is the exact difference between GPT-6, Claude Opus 5.5 and Gemini 4 Argon ⚔️",
+    "igCaptionLine2": "One of them is #2 at coding and #35 at chat 👇"
+  },
+  "sources": [
+    { "claim": "OpenAI: GPT-6 Astra $10 in / $50 out per 1M tokens (flagship); GPT-6.1 Sol $2 / $10; GPT-6 Luna $0.10 / $0.50", "url": "https://developers.openai.com/api/docs/models", "note": "OpenAI API docs, Models page", "checked": "2026-10-10" },
+    { "claim": "Anthropic: Claude Fable 5.1 $10 / $50; Opus 5.5 $4 / $20; Sonnet 5.5 $2 / $10; Haiku 5.5 from $0.10 / $0.50", "url": "https://platform.claude.com/docs/en/about-claude/models/overview", "note": "Claude Platform docs, Models overview", "checked": "2026-10-10" },
+    { "claim": "Google: Gemini 3.8 Flash and Flash-Lite models listed in the Gemini API", "url": "https://ai.google.dev/gemini-api/docs/models", "note": "Gemini API docs, Models page", "checked": "2026-10-10" },
+    { "claim": "Gemini 4 Argon announced Sep 30 2026, rolling out first to trusted cyber defenders (Fairwind Program) before developers/consumers; introductory price $2 / $10 per 1M tokens, then $4 / $20", "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/", "note": "Google blog, 'Introducing Gemini 4 Argon'", "checked": "2026-10-10" },
+    { "claim": "Arena Text leaderboard: #1 gemini-4-argon-high 1525±9 (Preliminary, 4,892 votes); #2 claude-opus-5.5-high 1507±8; gpt-6-astra-max #35 (1475±7)", "url": "https://arena.ai/leaderboard/text", "note": "Arena (formerly LMArena), blind pairwise human votes; snapshot read 2026-10-10", "checked": "2026-10-10" },
+    { "claim": "Arena WebDev leaderboard: #1 claude-opus-5.5-max 1813±15; #2 gpt-6-astra-max 1786±11; #3 claude-sonnet-5.5-xhigh 1774±15; gemini-4-argon-high #9 (1678±15); claude-haiku-5.5-high 1587±20 vs gpt-6-luna-max 1581±7", "url": "https://arena.ai/leaderboard/code/webdev", "note": "Arena WebDev; snapshot read 2026-10-10", "checked": "2026-10-10" },
+    { "claim": "Teyro AI track: use AI tools, build AI agents, create automations; few-minute lessons in four steps; apply straight away with instant feedback; streaks + freezes; weekly leagues Bronze → Diamond; three daily quests, chests; follow friends; free to start", "url": "https://teyro.app/features", "note": "teyro.app homepage + /features, read 2026-10-10", "checked": "2026-10-10" }
+  ],
+  "teyro": {
+    "bridgeChips": ["AI track", "A few minutes a day", "Use AI tools"],
+    "outroHeadline": "Put AI to work, then build with it. Free to start.",
+    "outroAsk": "Search Teyro · teyro.app"
+  },
+  "lines": [
+    { "id": "h1", "chapter": "00", "text": "This is the exact difference | between GPT-6, | Claude Opus five point five, | and Gemini 4 Argon." },
+    { "id": "h2", "chapter": "00", "text": "One company's top model | costs a *hundred times* more | than its smallest one." },
+    { "id": "h3", "chapter": "00", "text": "So which one is actually the best? | I checked the official price lists, | and two public leaderboards." },
+    { "id": "h4", "chapter": "00", "text": "Here's what I found." },
+
+    { "id": "c1a", "chapter": "01 Three sizes", "text": "First, | every lab sells *three sizes*." },
+    { "id": "c1b", "chapter": "01 Three sizes", "text": "OpenAI has Astra, | Sol, | and Luna. | Anthropic has Opus, | Sonnet, | and Haiku. | Google has Argon at the top, | then Flash, | and Flash-Lite." },
+    { "id": "c1c", "chapter": "01 Three sizes", "text": "Think of a truck, | a car, | and a scooter. | Bigger thinks harder. | Smaller is faster and cheaper." },
+
+    { "id": "c2a", "chapter": "02 The price", "text": "Next, *the price*. | It's counted per million tokens." },
+    { "id": "c2b", "chapter": "02 The price", "text": "Astra costs ten dollars in, | fifty out. | Opus five point five, | four and twenty." },
+    { "id": "c2c", "chapter": "02 The price", "text": "Sonnet, | Sol, | and Argon's launch price, | two and ten. | The small ones, | Luna and Haiku, | just *ten cents* in." },
+
+    { "id": "c3a", "chapter": "03 The test", "text": "So how do you measure *best*? | With a blind test." },
+    { "id": "c3b", "chapter": "03 The test", "text": "On a site called Arena, | people ask two hidden models the same thing, | and vote for the better answer. | Thousands of votes become a score." },
+
+    { "id": "c4a", "chapter": "04 Best at chat", "text": "In chat, | number one right now is *Gemini 4 Argon*." },
+    { "id": "c4b", "chapter": "04 Best at chat", "text": "But there's a catch. | Its score is still marked preliminary, | and most people can't use it yet. | Google is giving it to security teams first." },
+    { "id": "c4c", "chapter": "04 Best at chat", "text": "Number two? | Claude Opus five point five. | And GPT-6 Astra, | the most expensive of them all? | Number *thirty-five*." },
+
+    { "id": "bridge", "chapter": "bridge", "text": "Quick thing. | I learn how to actually use these tools on Teyro." },
+    { "id": "back", "chapter": "bridge", "text": "A few minutes a day, | on the AI track. | Okay. | So is Astra just bad?" },
+
+    { "id": "c5a", "chapter": "05 Best at code", "text": "Switch to the coding leaderboard, | and everything *flips*." },
+    { "id": "c5b", "chapter": "05 Best at code", "text": "Number one, | Opus five point five. | Number two, | GPT-6 Astra. | Number three, | Sonnet five point five." },
+    { "id": "c5c", "chapter": "05 Best at code", "text": "And Argon, | the chat champion? | Number nine." },
+
+    { "id": "c6a", "chapter": "06 Best value", "text": "Now add the price. | Sonnet lands within the margin of error of Astra at coding, | for *one fifth* of the cost." },
+    { "id": "c6b", "chapter": "06 Best value", "text": "And at the cheap end, | Haiku and Luna cost the same, | and score almost exactly the same." },
+
+    { "id": "t1", "chapter": "07 The trap", "text": "Here's the trap. | Astra is number two at code, | and number thirty-five at chat. | Argon is number one at chat, | and number nine at code." },
+    { "id": "t2", "chapter": "07 The trap", "text": "So *best* is the wrong question. | The real question is, | best at what?" },
+
+    { "id": "picks", "chapter": "08 My picks", "text": "So here's my take. | For coding, | Opus five point five. | For value, | Sonnet five point five. | For chat, | Argon, | once you can get it. | On a budget, | Haiku or Luna." },
+    { "id": "cav", "chapter": "08 My picks", "text": "To be fair, | these rankings move every week. | So test two models on your own task, | and keep the winner." },
+
+    { "id": "ty1", "chapter": "teyro", "text": "Picking the right model is a skill. | I learn skills like this on Teyro." },
+    { "id": "ty2", "chapter": "teyro", "text": "The AI track teaches you to use AI tools, | build AI agents, | and create automations." },
+    { "id": "ty3", "chapter": "teyro", "text": "Lessons take a few minutes, | in four steps, | and you practise straight away, | with instant feedback." },
+    { "id": "ty4", "chapter": "teyro", "text": "My streak grows every day, | and a freeze covers a busy one. | Weekly leagues, | Bronze to Diamond. | Daily quests, | chests, | and friends to race." },
+
+    { "id": "punch", "chapter": "end", "text": "There's no best model. | There's the best model | for the *job*." },
+    { "id": "cta", "chapter": "end", "text": "Want to get good at AI? | Learn it on Teyro." },
+    { "id": "cta2", "chapter": "end", "text": "Search for it in your browser, | or go straight to Teyro dot app." }
+  ]
+}

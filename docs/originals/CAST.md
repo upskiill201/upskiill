@@ -94,6 +94,7 @@ They lead **Vibe Coding: Build Apps with AI** ("Second Line", docs/originals/vib
 - **Hazel and Benny:** his band director for three years; he calls her "Miss B".
 - **Hazel and Ruth:** Ruth runs the booster club's money; she reviews every change to the band's app before it goes live.
 - Narrated: Principal Dupree (Esplanade High), Mr Lionel (Crescent Coach Lines, the bus), Marcus (Ruth's grandson), band parents. Target: $18,000 for the National Brass Showcase in Washington, D.C.
+
 ## The Starlight (added 2026-10-23)
 
 They lead **SQL and Databases for Beginners** ("Save the Starlight", docs/originals/sql-databases-outline.md): Chicago, USA, US dollars. Juno, Walt, Leo and Dana are castIds `juno`, `walt`, `leo`, `dana`.
