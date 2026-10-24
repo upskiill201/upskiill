@@ -13,7 +13,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { hydrateSoundPreferences } from '@/lib/audio/soundManager';
 import { getCreatorOnboarding, toSignupPayload } from '@/lib/creator-onboarding/storage';
@@ -45,7 +45,7 @@ export default function CreatorSignup() {
             router.push('/creator/login');
           }}
         >
-          <X size={26} strokeWidth={3} />
+          <Glyph name="close" size={26} strokeWidth={3.2} />
         </button>
         <Link
           href="/creator/login?mode=signin"

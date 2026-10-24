@@ -1,0 +1,165 @@
+/* Teyro HQ growth pages: the screen-by-screen table, journeys and timelines. */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.scroll {
+  overflow-x: auto;
+  margin: 0 -4px;
+}
+
+.stopBar {
+  display: inline-block;
+  height: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--error-red) 75%, white);
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.hot td {
+  background: color-mix(in srgb, var(--error-red) 6%, transparent);
+}
+
+.muted {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  background: var(--bg-section);
+  color: var(--text-secondary);
+}
+
+.good {
+  background: color-mix(in srgb, var(--success-green) 14%, transparent);
+  color: color-mix(in srgb, var(--success-green) 70%, black);
+}
+
+.warn {
+  background: color-mix(in srgb, var(--warning) 18%, transparent);
+  color: color-mix(in srgb, var(--warning) 60%, black);
+}
+
+.bad {
+  background: color-mix(in srgb, var(--error-red) 12%, transparent);
+  color: var(--error-red);
+}
+
+.brand {
+  background: var(--lesson-select-bg);
+  color: var(--color-brand);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.event {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.event:first-child {
+  border-top: none;
+}
+
+.eventTime {
+  color: var(--text-muted);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.eventText {
+  color: var(--text-primary);
+  font-weight: 600;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.quote {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--bg-section);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.quoteMeta {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.stack {
+  display: grid;
+  gap: 8px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--color-brand);
+  text-decoration: none;
+}

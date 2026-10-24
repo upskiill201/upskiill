@@ -36,11 +36,11 @@ const lesson: OriginalLesson = {
         code: 'print("ngozi okafor".title())',
         language: 'python',
         options: [
-          { text: 'Ngozi Okafor' },
           { text: 'Ngozi okafor', why: '.title() capitalises every word.' },
+          { text: 'Ngozi Okafor' },
           { text: 'NGOZI OKAFOR', why: 'That\'s .upper().' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',

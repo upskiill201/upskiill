@@ -140,7 +140,7 @@ export const LEARNER_FAQ = [
   {
     question: 'How do paid courses work?',
     answer:
-      'The first two lessons of every paid course are free. To keep going, you subscribe monthly or yearly. You can see and manage your plan from the course page.',
+      'You start free: Chapter 1 of your course and 2 lessons a day. Teyro Pro ($12.99 a month or $59.99 a year, with a 7-day free trial) opens every course with unlimited lessons and hearts. You can see and manage your plan in Settings.',
   },
   {
     question: 'How do leagues work?',
@@ -166,12 +166,12 @@ export const CREATOR_FAQ = [
   {
     question: 'How much do I earn, and when do I get paid?',
     answer:
-      'You keep 70% of every payment for your course. Each sale clears after 14 days; once $50 or more is available you can request a payout to your bank or mobile money from Earnings.',
+      'Each month, 50% of every Teyro Pro learner’s payment is shared among the creators whose courses they learned in, by the minutes they spent in each. Your share lands in Earnings and clears after 14 days; once $50 or more is available you can request a payout to your bank or mobile money.',
   },
   {
     question: 'Why are my first two lessons marked FREE?',
     answer:
-      'Every paid course lets learners try the first two lessons free before they subscribe. Make them your best lessons: they’re what turns a visitor into a subscriber.',
+      'Anyone can try the first two lessons of your course, before they start Teyro Pro. Make them your best lessons: they’re what turns a visitor into a learner who stays.',
   },
   {
     question: 'How long should a video be?',

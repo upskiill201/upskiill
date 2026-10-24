@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import styles from './Modal.module.css';
 
 export type ModalProps = {
@@ -49,7 +49,7 @@ export const Modal: React.FC<ModalProps> = ({
     <div className={styles.overlay} onClick={handleOverlayClick} role="dialog" aria-modal="true" aria-labelledby={title ? 'modal-title' : undefined}>
       <div className={`${styles.panel} ${styles[size]}`}>
         <button className={styles.closeBtn} onClick={onClose} aria-label="Close modal">
-          <X size={20} />
+          <Glyph name="close" size={20} />
         </button>
         
         {title && (

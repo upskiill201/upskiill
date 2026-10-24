@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why record what was rejected?',
         options: [
-          { text: 'So nobody re-opens the same option months later without knowing why it was dropped' },
           { text: 'To blame people', why: 'It is about memory, not blame.' },
           { text: 'It is legally required', why: 'Usually not; it is just useful.' },
+          { text: 'So nobody re-opens the same option months later without knowing why it was dropped' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
@@ -163,11 +163,11 @@ const lesson: OriginalLesson = {
         message: "Six months ago we chose the darker blue. Now my new boss asks why. Nobody remembers!",
         prompt: 'What would have prevented this?',
         options: [
-          { text: 'A decision log line: what, when, who, why, and what was rejected.' },
           { text: 'A longer meeting.', why: 'The problem is memory, not meeting length.' },
           { text: 'Nothing could help.', why: 'A one-line log would.' },
+          { text: 'A decision log line: what, when, who, why, and what was rejected.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -189,11 +189,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What happens after Ada sends "Confirming what we decided today"?',
         options: [
-          { text: 'Any disagreement comes out now, not three weeks later' },
           { text: 'Nothing changes', why: 'Misunderstandings surface early.' },
+          { text: 'Any disagreement comes out now, not three weeks later' },
           { text: 'Everyone is annoyed', why: 'Most people are grateful for clarity.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

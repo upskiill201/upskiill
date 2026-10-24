@@ -1,20 +1,26 @@
 'use client';
 
 /**
- * Write and run (an Apply exercise). The learner writes Python and runs it
- * as often as they like: runs are free and never cost hearts. The checklist
- * goes green as requirements pass, and the player's CHECK unlocks once all
- * of them do (blocks.ts isResponseComplete). The hint is always one tap
- * away; after two failed runs the solution is offered too, at the cost of
- * the combo (LessonPlayer).
+ * Write and run (an Apply exercise). The learner writes Python (or SQL, C or
+ * JavaScript in those tracks: the same flow on SqlPad / CPad / JsPad) and runs it
+ * as often as they like:
+ * runs are free and never cost hearts. The checklist goes green as
+ * requirements pass, and the player's CHECK unlocks once all of them do
+ * (blocks.ts isResponseComplete). The hint is always one tap away; after two
+ * failed runs the solution is offered too, at the cost of the combo
+ * (LessonPlayer).
  */
 
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Eye, Lightbulb } from 'lucide-react';
+import { Emblem } from '@/components/art/Emblem';
+import { Glyph } from '@/components/art/Glyph';
 import type { ExerciseResponse, WriteCodeExercise } from '@/lib/lesson/blocks';
 import { playSound } from '@/lib/audio/lessonSounds';
+import { CPad } from './CPad';
 import { PythonPad } from './PythonPad';
+import { SqlPad } from './SqlPad';
+import { JsPad } from './JsPad';
 import styles from './PythonPad.module.css';
 
 type WriteCodeResponse = Extract<ExerciseResponse, { kind: 'writeCode' }>;
@@ -42,65 +48,83 @@ export function WriteCodeView({
   const canShowSolution = current.failedRuns >= SOLUTION_AFTER && !current.usedSolution;
   const passed = current.passedCode !== null && current.passedCode === current.code;
 
+  const padProps = {
+    value: current.code,
+    onChange: (code: string) => onResponse({ ...current, code }),
+    resetTo: exercise.starter,
+    readOnly: locked,
+    checks: exercise.checks,
+    runLabel: passed ? 'Run again' : 'Run',
+    minLines: Math.max(4, exercise.starter.split('\n').length + 1),
+    label: exercise.prompt,
+    onRun: (run: { allPassed: boolean }) => {
+      onResponse(
+        run.allPassed
+          ? { ...current, passedCode: current.code }
+          : { ...current, passedCode: null, failedRuns: current.failedRuns + 1 },
+      );
+    },
+    actions: locked ? null : (
+      <>
+        {exercise.hint && (
+          <button
+            type="button"
+            className={styles.ghost}
+            onClick={() => {
+              playSound('select');
+              setShowHint((v) => !v);
+            }}
+            aria-expanded={showHint}
+          >
+            <Emblem name="bulb" size={18} /> Hint
+          </button>
+        )}
+        {canShowSolution && (
+          <button
+            type="button"
+            className={styles.ghost}
+            onClick={() => {
+              playSound('select');
+              onResponse({ ...current, code: exercise.solution, passedCode: null, usedSolution: true });
+            }}
+          >
+            <Glyph name="eye" size={16} strokeWidth={2.5} /> Show solution
+          </button>
+        )}
+      </>
+    ),
+  };
+
   return (
     <div className="flex flex-col gap-4">
-      <PythonPad
-        value={current.code}
-        onChange={(code) => onResponse({ ...current, code })}
-        resetTo={exercise.starter}
-        readOnly={locked}
-        stdin={exercise.stdin}
-        checks={exercise.checks}
-        runLabel={passed ? 'Run again' : 'Run'}
-        minLines={Math.max(4, exercise.starter.split('\n').length + 1)}
-        label={exercise.prompt}
-        onRun={(run) => {
-          onResponse(
-            run.allPassed
-              ? { ...current, passedCode: current.code }
-              : { ...current, passedCode: null, failedRuns: current.failedRuns + 1 },
-          );
-        }}
-        actions={
-          locked ? null : (
-            <>
-              {exercise.hint && (
-                <button
-                  type="button"
-                  className={styles.ghost}
-                  onClick={() => {
-                    playSound('select');
-                    setShowHint((v) => !v);
-                  }}
-                  aria-expanded={showHint}
-                >
-                  <Lightbulb size={16} aria-hidden="true" /> Hint
-                </button>
-              )}
-              {canShowSolution && (
-                <button
-                  type="button"
-                  className={styles.ghost}
-                  onClick={() => {
-                    playSound('select');
-                    onResponse({ ...current, code: exercise.solution, passedCode: null, usedSolution: true });
-                  }}
-                >
-                  <Eye size={16} aria-hidden="true" /> Show solution
-                </button>
-              )}
-            </>
-          )
-        }
-      />
+      {exercise.language === 'sql' ? (
+        <SqlPad {...padProps} database={exercise.database} />
+      ) : exercise.language === 'c' ? (
+        <CPad {...padProps} stdin={exercise.stdin} />
+      ) : exercise.language === 'javascript' ? (
+        <JsPad {...padProps} page={exercise.page} storage={exercise.storage} stdin={exercise.stdin} />
+      ) : (
+        <PythonPad
+          {...padProps}
+          stdin={exercise.stdin}
+          language={exercise.language}
+          runLabel={
+            exercise.language === 'html'
+              ? passed ? 'Check again' : 'Check my page'
+              : exercise.language === 'react-native'
+                ? passed ? 'Check again' : 'Check my app'
+                : padProps.runLabel
+          }
+        />
+      )}
       {showHint && exercise.hint && !locked && (
         <motion.div
           initial={reduce ? false : { opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
           className="rounded-[16px] border-2 p-4 flex gap-3 items-start"
-          style={{ borderColor: 'var(--warning)', background: 'color-mix(in srgb, var(--warning) 10%, white)' }}
+          style={{ borderColor: 'var(--warning)', background: 'color-mix(in srgb, var(--warning) 10%, var(--bg-card))' }}
         >
-          <Lightbulb className="w-5 h-5 shrink-0 mt-0.5 text-[var(--warning)]" aria-hidden="true" />
+          <Emblem name="bulb" size={22} className="mt-0.5" />
           <p className="text-[16px] font-bold leading-snug text-ink">{exercise.hint}</p>
         </motion.div>
       )}

@@ -22,7 +22,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { AlertCircle, Lock, Star, X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { fireConfetti } from '@/lib/confetti';
 import { celebrationHaptic, playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -46,8 +46,10 @@ interface EnrollmentWizardProps {
   courseTitle: string;
   category?: string | null;
   thumbnailUrl?: string | null;
-  /** Paid course → "first 2 lessons free" (a preview, not a paywall). */
+  /** Paid course: part of Teyro Pro, with some lessons free for this learner. */
   isPaid: boolean;
+  /** What's free for this learner, as the course page worked it out from the server. */
+  freeLine?: string;
   firstLessonTitle?: string;
   secondLessonTitle?: string;
   unitTitle?: string;
@@ -100,6 +102,7 @@ export default function EnrollmentWizard({
   category,
   thumbnailUrl,
   isPaid,
+  freeLine,
   firstLessonTitle,
   secondLessonTitle,
   unitTitle,
@@ -225,7 +228,7 @@ export default function EnrollmentWizard({
           }}
           style={{ visibility: canClose ? 'visible' : 'hidden' }}
         >
-          <X size={26} strokeWidth={3} />
+          <Glyph name="close" size={26} strokeWidth={3} />
         </button>
         <div className={styles.progress} role="progressbar" aria-valuemin={1} aria-valuemax={3} aria-valuenow={step + 1}>
           <motion.span
@@ -309,8 +312,8 @@ export default function EnrollmentWizard({
                   <Image src="/User onbarding Assets/tey/pointing.webp" alt="" width={116} height={150} priority className={styles.teyImg} />
                 </motion.div>
                 <motion.p className={styles.bubble} {...pop(0.12)}>
-                  {isPaid
-                    ? 'Here’s your path. The first 2 lessons are free, so jump in.'
+                  {isPaid && freeLine
+                    ? `Here’s your path. ${freeLine}, so jump in.`
                     : 'Here’s your path. A few minutes a day and you’ll fly through it.'}
                 </motion.p>
               </div>
@@ -325,13 +328,13 @@ export default function EnrollmentWizard({
                   <motion.div className={`${styles.nodeRow} ${styles.nodeLeft}`} {...pop(0.38)}>
                     <span className={styles.startBubble}>START</span>
                     <span className={`${styles.node} ${styles.nodeActive}`} aria-hidden="true">
-                      <Star size={30} strokeWidth={2.5} fill="currentColor" />
+                      <Glyph name="star" size={30} strokeWidth={2} />
                     </span>
                     <span className={styles.nodeLabel}>{firstTitle}</span>
                   </motion.div>
                   <motion.div className={`${styles.nodeRow} ${styles.nodeRight}`} {...pop(0.55)}>
                     <span className={`${styles.node} ${styles.nodeNext}`} aria-hidden="true">
-                      {isPaid ? <Star size={26} strokeWidth={2.5} fill="currentColor" /> : <Lock size={24} strokeWidth={3} />}
+                      <Glyph name={isPaid ? 'star' : 'lock'} size={isPaid ? 26 : 24} strokeWidth={isPaid ? 2 : 2.8} />
                     </span>
                     <span className={styles.nodeLabel}>{secondLessonTitle || 'Lesson 2'}</span>
                   </motion.div>
@@ -342,9 +345,9 @@ export default function EnrollmentWizard({
                 </div>
               </div>
 
-              {isPaid && (
+              {isPaid && freeLine && (
                 <motion.p className={styles.freeChip} {...pop(0.85)}>
-                  First 2 lessons free · unlock the rest anytime
+                  {freeLine}
                 </motion.p>
               )}
             </motion.div>
@@ -398,7 +401,7 @@ export default function EnrollmentWizard({
 
               <motion.div className={styles.upFirst} {...pop(reward ? 1 : 0.6)}>
                 <span className={`${styles.node} ${styles.nodeActive} ${styles.nodeSm}`} aria-hidden="true">
-                  <Star size={22} strokeWidth={2.5} fill="currentColor" />
+                  <Glyph name="star" size={22} strokeWidth={2} />
                 </span>
                 <span className={styles.upFirstText}>
                   <span className={styles.upFirstLabel}>Up first</span>
@@ -415,7 +418,7 @@ export default function EnrollmentWizard({
         <div className={styles.footerInner}>
           {commit === 'error' && (
             <div className={styles.errorMsg} role="alert">
-              <AlertCircle size={28} strokeWidth={2.75} aria-hidden="true" />
+              <Glyph name="alert" size={28} />
               <span>
                 <strong>That didn&apos;t go through.</strong>
                 <br />

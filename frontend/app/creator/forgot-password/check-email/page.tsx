@@ -1,13 +1,12 @@
 'use client';
 
-import { MailCheck } from 'lucide-react';
 import AuthStatusScreen from '@/components/auth/AuthStatusScreen';
 
 /** After requesting a creator password reset. */
 export default function CheckEmailPage() {
   return (
     <AuthStatusScreen
-      Icon={MailCheck}
+      art="envelope"
       tone="good"
       title="Check your inbox"
       closeHref="/creator/login"

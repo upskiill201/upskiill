@@ -3,6 +3,8 @@ import aiAtWork from './tracks/ai-at-work';
 import formatTour from './tracks/format-tour';
 import studySmarter from './tracks/study-smarter';
 import python from './tracks/python';
+import typescript from './tracks/typescript';
+import htmlCss from './tracks/html-css';
 import corporateJargon from './tracks/corporate-jargon';
 import smallTalk from './tracks/small-talk';
 import makePeopleListen from './tracks/make-people-listen';
@@ -14,11 +16,33 @@ import motivateTeam from './tracks/motivate-team';
 import dataScience from './tracks/data-science';
 import machineLearning from './tracks/machine-learning';
 import aiStack from './tracks/ai-stack';
-import { launchLineup } from './tracks/launch-lineup';
+import validateBusinessIdea from './tracks/validate-business-idea';
+import priceProduct from './tracks/price-product';
+import negotiationBeginners from './tracks/negotiation-beginners';
+import difficultNegotiations from './tracks/difficult-negotiations';
+import conflictAtWork from './tracks/conflict-at-work';
+import acingJobInterviews from './tracks/acing-job-interviews';
+import clearWritingAtWork from './tracks/clear-writing-at-work';
+import speakLikeACeo from './tracks/speak-like-a-ceo';
+import budgeting from './tracks/budgeting';
+import saveMoney from './tracks/save-money';
+import impulseBuying from './tracks/impulse-buying';
+import needsWants from './tracks/needs-wants';
+import longTermWealth from './tracks/long-term-wealth';
+import investmentRisk from './tracks/investment-risk';
+import scamsFraud from './tracks/scams-fraud';
+import vibeCoding from './tracks/vibe-coding';
+import sqlDatabases from './tracks/sql-databases';
+import cProgramming from './tracks/c-programming';
+import javascript from './tracks/javascript';
+import aiEverydayProductivity from './tracks/ai-everyday-productivity';
+import getHiredGetAhead from './tracks/get-hired-get-ahead';
+import codingAgents from './tracks/coding-agents';
+import reactNative from './tracks/react-native';
 
 /**
  * Every Teyro Original the loader knows about (scripts/originals.ts).
  * Add a Track here once its file exists. Tracks with no units yet are
  * checked but never loaded.
  */
-export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, machineLearning, aiStack, ...launchLineup, formatTour];
+export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, typescript, htmlCss, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, machineLearning, aiStack, getHiredGetAhead, codingAgents, validateBusinessIdea, priceProduct, negotiationBeginners, difficultNegotiations, conflictAtWork, acingJobInterviews, clearWritingAtWork, speakLikeACeo, budgeting, saveMoney, impulseBuying, needsWants, longTermWealth, investmentRisk, scamsFraud, aiEverydayProductivity, sqlDatabases, javascript, cProgramming, vibeCoding, reactNative, formatTour];

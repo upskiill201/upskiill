@@ -18,7 +18,7 @@ import {
 
 /**
  * /learn/[id]/test?section=<sectionId>   Jump ahead to that chapter
- * /learn/[id]/test?placement=1            placement test (Python)
+ * /learn/[id]/test?placement=1            placement test (PLACEMENT_TRACKS)
  *
  * Teyro Originals only; the server refuses anything else. Leaving, failing or
  * an error always goes home to the course path.

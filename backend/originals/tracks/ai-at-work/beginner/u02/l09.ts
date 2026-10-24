@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is a bare "Hi!" a problem in work chat?',
         options: [
-          { text: 'The other person has to wait for your real question' },
           { text: 'It is rude to greet people', why: 'Greeting is fine; just add the question.' },
+          { text: 'The other person has to wait for your real question' },
           { text: 'Chat apps block greetings', why: 'They do not.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         message: 'hi',
         prompt: 'Lucía sent only "hi" an hour ago. What is the most helpful reply?',
         options: [
-          { text: "Hi Lucía! What can I help with?" },
           { text: '(Wait for her to say more)', why: 'You could both wait forever.' },
           { text: '"Why just hi?"', why: 'Not friendly, even if fair.' },
+          { text: "Hi Lucía! What can I help with?" },
         ],
-        answer: 0,
+        answer: 2,
         explanation: 'You cannot control how others write, but you can keep it moving kindly.',
       },
       {
@@ -167,11 +167,11 @@ const lesson: OriginalLesson = {
         message: "I'm in Mexico City and keep getting your team's messages at 3am my time. Haha.",
         prompt: 'What should Ada do?',
         options: [
-          { text: "So sorry! We'll schedule messages for your working hours from now on." },
           { text: 'Just mute your phone.', why: 'Puts the problem on her.' },
+          { text: "So sorry! We'll schedule messages for your working hours from now on." },
           { text: "That's the only time we work.", why: 'Schedule send fixes this.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -198,11 +198,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Is chat "too casual" for writing rules?',
         options: [
-          { text: 'No. Chat is still writing: clear, complete and kind' },
           { text: 'Yes, anything goes in chat', why: 'Messy chat slows everyone down.' },
           { text: 'Chat should be as formal as a letter', why: 'Friendly is fine; clear is the point.' },
+          { text: 'No. Chat is still writing: clear, complete and kind' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

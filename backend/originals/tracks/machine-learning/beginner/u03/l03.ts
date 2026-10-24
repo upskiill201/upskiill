@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In ["Ireti", 18, 6, 0], what is p[3]?',
         options: [
-          { text: '0: Ireti came' },
           { text: '6: her distance', why: 'That\'s p[2]. Positions start at 0.' },
+          { text: '0: Ireti came' },
           { text: '"Ireti"', why: 'That\'s p[0].' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why start best_d at 1000?',
         options: [
-          { text: 'So the first real distance is smaller and replaces it' },
           { text: 'Because the nearest patient is 1000 km away', why: 'It\'s just a starting value bigger than any real distance.' },
           { text: 'Python needs it to be 1000', why: 'Any number bigger than every real distance works.' },
+          { text: 'So the first real distance is smaller and replaces it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         message: 'Twelve patients is fine. Will this work with 2,400?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Yes, same loop, just more distances to check. It gets slower, and lesson 14 shows how to speed it up.' },
           { text: 'No, loops only work up to 12.', why: 'Loops work for any length of list.' },
+          { text: 'Yes, same loop, just more distances to check. It gets slower, and lesson 14 shows how to speed it up.' },
           { text: 'It becomes instant.', why: 'More patients means more distances to work out.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

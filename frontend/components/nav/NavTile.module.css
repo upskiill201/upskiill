@@ -61,3 +61,9 @@
   background: color-mix(in srgb, var(--tile-tone) 20%, transparent);
   border-color: color-mix(in srgb, var(--tile-tone) 55%, transparent);
 }
+
+/* Teyro's own drawings keep the size NavTile gives them (ART_PX), not the glyph size. */
+.art svg {
+  width: auto;
+  height: auto;
+}

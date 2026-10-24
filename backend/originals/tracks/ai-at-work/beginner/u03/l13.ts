@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which claims should Ada spot-check?',
         options: [
-          { text: 'The 2 or 3 she will act on or repeat' },
           { text: 'Every single sentence', why: 'Too slow; focus on what matters.' },
+          { text: 'The 2 or 3 she will act on or repeat' },
           { text: 'None, summaries are reliable', why: 'Usually, which is why wrong ones slip through.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -165,11 +165,11 @@ const lesson: OriginalLesson = {
         message: "The summary credits our CEO with the idea for the new tagline. It was actually our intern's!",
         prompt: 'Which failure is this, and what fixes it?',
         options: [
-          { text: 'Wrong attribution. Spot-check who said what before sharing.' },
           { text: 'An invented detail.', why: 'The idea was real; the credit was wrong.' },
+          { text: 'Wrong attribution. Spot-check who said what before sharing.' },
           { text: 'Nothing wrong.', why: 'Credit matters, especially for an intern.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -191,11 +191,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why do wrong summaries slip through so easily?',
         options: [
-          { text: 'Most summaries are right and read smoothly, so we stop checking' },
           { text: 'They are always obviously wrong', why: 'If they were, nobody would miss them.' },
           { text: 'Nobody reads summaries', why: 'People read and repeat them.' },
+          { text: 'Most summaries are right and read smoothly, so we stop checking' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

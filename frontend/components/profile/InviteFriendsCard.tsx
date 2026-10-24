@@ -10,7 +10,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import useSWR from 'swr';
-import { Check, Copy, Share2 } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { FaWhatsapp } from 'react-icons/fa';
 import { fetcher } from '@/lib/swr';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -80,7 +80,7 @@ export default function InviteFriendsCard() {
           <div className={styles.linkBox}>
             <span className={styles.linkText}>{link.replace(/^https?:\/\//, '')}</span>
             <button type="button" className={styles.copyBtn} onClick={() => void copy()}>
-              {copied ? <Check size={14} strokeWidth={3} /> : <Copy size={14} strokeWidth={2.75} />}
+              {copied ? <Glyph name="check" size={14} strokeWidth={3} /> : <Glyph name="copy" size={14} strokeWidth={2.75} />}
               {copied ? 'Copied' : 'Copy'}
             </button>
           </div>
@@ -95,7 +95,7 @@ export default function InviteFriendsCard() {
               <FaWhatsapp size={18} aria-hidden="true" /> WhatsApp
             </a>
             <button type="button" className={styles.shareBtn} onClick={() => void share()}>
-              <Share2 size={16} strokeWidth={2.75} aria-hidden="true" /> Share
+              <Glyph name="share" size={16} strokeWidth={2.75} /> Share
             </button>
           </div>
 

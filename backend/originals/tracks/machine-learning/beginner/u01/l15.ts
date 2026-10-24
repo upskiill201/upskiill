@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"Everyone comes" scores 80%. Your rule scores 78%. What do you conclude?',
         options: [
-          { text: 'The rule is worse than the lazy guess' },
           { text: 'The rule is great: 78% is high', why: 'Compared with 80% for doing nothing, it\'s worse.' },
+          { text: 'The rule is worse than the lazy guess' },
           { text: 'They\'re the same', why: '78% is below 80%.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         code: 'print(f"{3 / 4:.0%}")',
         language: 'python',
         options: [
-          { text: '75%' },
           { text: '0.75', why: ':.0% shows a percentage.' },
           { text: '3%', why: '3 ÷ 4 = 0.75 = 75%.' },
+          { text: '75%' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes Halima\'s model different from a chat AI?',
         options: [
-          { text: 'It learns from Afiya\'s bookings and predicts no-shows' },
           { text: 'It isn\'t machine learning', why: 'Both are ML models.' },
           { text: 'It knows everything a chat AI knows', why: 'It knows only patterns in bookings.' },
+          { text: 'It learns from Afiya\'s bookings and predicts no-shows' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -135,11 +135,11 @@ const lesson: OriginalLesson = {
         message: 'One number for the board. What do I say?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Not yet. When I have it, it\'ll be a score on patients the model hasn\'t seen, next to what a lazy guess gets.' },
           { text: '92%.', why: 'That was on the page the rule was built from. Not a fair test.' },
+          { text: 'Not yet. When I have it, it\'ll be a score on patients the model hasn\'t seen, next to what a lazy guess gets.' },
           { text: '100%.', why: 'Also on the same page. And no model is 100% on new patients.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

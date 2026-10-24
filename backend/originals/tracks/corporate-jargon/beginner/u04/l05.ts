@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Message 5, from Emeka in Lagos: "Kindly confirm receipt." How should Remi read it?',
         options: [
-          { text: 'As a polite request to confirm he received it' },
           { text: 'As rude', why: '"Kindly" is normal, polite business English in Nigeria.' },
+          { text: 'As a polite request to confirm he received it' },
           { text: 'As a joke', why: 'It\'s a real, simple request: confirm you got it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

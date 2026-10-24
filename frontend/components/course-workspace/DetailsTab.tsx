@@ -10,7 +10,7 @@
 
 import Image from 'next/image';
 import { useRef, useState } from 'react';
-import { CheckCircle2, ImageIcon, Loader2, Plus, UploadCloud, X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { CREATOR_TRACK_LIST, CREATOR_TRACKS, normalizeCourseCategory, type CreatorTrack } from '@/lib/creator/categories';
 import { calculateCoursePricingLadder } from '@/lib/pricing-engine';
 import { slugifyTitle } from '@/lib/courses/slug';
@@ -50,13 +50,13 @@ function List({ label, hint, items, placeholder, onChange, max = 6 }: { label: s
         <div key={i} className={b.optRow}>
           <input className={b.input} value={it} maxLength={160} placeholder={placeholder} onChange={(e) => onChange(items.map((x, j) => (j === i ? e.target.value : x)))} />
           <button type="button" className={`${b.tool} ${b.toolDanger}`} aria-label="Remove" onClick={() => onChange(items.filter((_, j) => j !== i))}>
-            <X size={16} />
+            <Glyph name="close" size={16} strokeWidth={2.8} />
           </button>
         </div>
       ))}
       {items.length < max && (
         <button type="button" className={b.addRow} onClick={() => onChange([...items, ''])}>
-          <Plus size={15} /> Add
+          <Glyph name="plus" size={15} strokeWidth={2.8} /> Add
         </button>
       )}
     </div>
@@ -216,7 +216,7 @@ export function DetailsTab({ course, locked, onSaved }: { course: CourseDetails;
           </div>
         ) : (
           <div className={s.thumb} style={{ display: 'grid', placeItems: 'center', color: 'var(--text-muted)' }}>
-            <ImageIcon size={32} aria-hidden="true" />
+            <Glyph name="image" size={32} strokeWidth={2.2} />
           </div>
         )}
         <input
@@ -243,7 +243,7 @@ export function DetailsTab({ course, locked, onSaved }: { course: CourseDetails;
         />
         <div className={b.row}>
           <button type="button" className={b.btn} style={{ flex: '0 0 auto' }} disabled={locked || uploading > 0} onClick={() => fileRef.current?.click()}>
-            {uploading ? <Loader2 size={16} className={b.spin} /> : <UploadCloud size={16} />} {uploading ? `${uploading}%` : form.thumbnailUrl ? 'Replace' : 'Upload'}
+            {uploading ? <Glyph name="spinner" size={16} strokeWidth={2.8} className={b.spin} /> : <Glyph name="upload" size={16} strokeWidth={2.6} />} {uploading ? `${uploading}%` : form.thumbnailUrl ? 'Replace' : 'Upload'}
           </button>
           {form.thumbnailUrl && (
             <button type="button" className={b.btnGhost} style={{ flex: '0 0 auto' }} disabled={locked} onClick={() => set('thumbnailUrl', '')}>
@@ -256,7 +256,7 @@ export function DetailsTab({ course, locked, onSaved }: { course: CourseDetails;
       <div className={b.card}>
         <span className={b.label}>
           Price
-          <span className={b.hint}>Paid courses: the first 2 lessons stay free, then learners subscribe monthly or yearly. You keep 70%.</span>
+          <span className={b.hint}>Free courses are open to everyone. Paid courses are part of Teyro Pro: learners start free, and each month you’re paid from the Pro pool for the minutes they spend in your course.</span>
         </span>
         <div className={b.chips} role="radiogroup" aria-label="Price">
           <button type="button" role="radio" aria-checked={form.price === 0} disabled={locked} className={`${b.chip} ${form.price === 0 ? b.chipOn : ''}`} onClick={() => set('price', 0)}>
@@ -298,11 +298,11 @@ export function DetailsTab({ course, locked, onSaved }: { course: CourseDetails;
       {!locked && (
         <div className={b.row} style={{ alignItems: 'center' }}>
           <button type="button" className={b.btnPrimary} style={{ flex: '0 0 auto' }} disabled={saving} onClick={() => void save()}>
-            {saving ? <Loader2 size={16} className={b.spin} /> : null} Save details
+            {saving ? <Glyph name="spinner" size={16} strokeWidth={2.8} className={b.spin} /> : null} Save details
           </button>
           {saved && (
             <span className={`${b.status} ${b.statusOk}`} style={{ flex: '0 0 auto' }}>
-              <CheckCircle2 size={14} aria-hidden="true" /> Saved
+              <Glyph name="check" size={14} strokeWidth={3.2} /> Saved
             </span>
           )}
         </div>

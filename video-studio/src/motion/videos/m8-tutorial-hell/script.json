@@ -1,0 +1,80 @@
+{
+  "slug": "m8-tutorial-hell",
+  "compId": "M8-tutorial-hell",
+  "title": "Stop watching coding tutorials",
+  "look": "night",
+  "voice": "TX3LPaxmHKxFdv7VOQHJ",
+  "model": "eleven_multilingual_v2",
+  "speed": 1.08,
+  "hook": {
+    "archetype": "\"Stop… if you want…\" (founder template) + personal story (founder, 2026-10-10: Remi speaks as a learner who switched to Teyro)",
+    "igCaptionLine1": "Stop watching coding tutorials if you actually want to learn to code 🛑",
+    "igCaptionLine2": "I watched 40 hours of them. Then I opened an empty file and froze 👇"
+  },
+  "sources": [
+    { "claim": "Experiment 2: the repeated-study group (SSSS) read the passage ~14.2 times; the repeated-test group (STTT) read it ~3.4 times and then did 3 free-recall tests", "url": "https://psychology.ecu.edu/wp-content/pv-uploads/sites/216/2019/03/Roediger-Karpicke-2006.pdf", "note": "Roediger & Karpicke (2006), 'Test-Enhanced Learning', Psychological Science 17(3):249–255, Table 1", "checked": "2026-10-10" },
+    { "claim": "1 week later: repeated testing recalled 61% vs repeated study 40%; 5 min later repeated study was ahead (83% vs 71%)", "url": "https://psychology.ecu.edu/wp-content/pv-uploads/sites/216/2019/03/Roediger-Karpicke-2006.pdf", "note": "same paper, Exp. 2 results + General Discussion ('61% vs. 40%')", "checked": "2026-10-10" },
+    { "claim": "The repeated-study group predicted they would remember the passage better in 1 week than the testing groups (higher confidence)", "url": "https://psychology.ecu.edu/wp-content/pv-uploads/sites/216/2019/03/Roediger-Karpicke-2006.pdf", "note": "same paper, Exp. 2 questionnaire results (Table 1: 4.8 vs 4.0 on a 7-point scale)", "checked": "2026-10-10" },
+    { "claim": "Proportional forgetting over 1 week: repeated study 52%, repeated test 14%", "url": "https://psychology.ecu.edu/wp-content/pv-uploads/sites/216/2019/03/Roediger-Karpicke-2006.pdf", "note": "same paper, Fig. 3 text", "checked": "2026-10-10" },
+    { "claim": "'Desirable difficulties' (Bjork, 1994): manipulations that feel harder/slower in the short term but improve long-term retention", "url": "https://psychology.ecu.edu/wp-content/pv-uploads/sites/216/2019/03/Roediger-Karpicke-2006.pdf", "note": "named and cited in Roediger & Karpicke (2006) General Discussion", "checked": "2026-10-10" },
+    { "claim": "Meta-analysis of 225 studies of undergraduate STEM courses: about 34 in 100 students failed under traditional lecturing vs about 22 in 100 with active learning", "url": "https://www.washington.edu/news/2014/05/12/improve-grades-reduce-failure-undergrads-should-tell-profs-dont-lecture-me/", "note": "Freeman et al. (2014), PNAS 111(23):8410–8415, https://www.pnas.org/doi/10.1073/pnas.1319030111", "checked": "2026-10-10" },
+    { "claim": "Teyro: 'Practise. Don't just watch.' Writing and fixing real code within minutes, instant feedback, every right answer earns XP; four steps learn/apply/reflect/deepen; a few minutes a day; streaks with freezes; weekly leagues Bronze → Diamond; three daily quests, chests, coins; follow friends; course community after two lessons; free to start; 'Learn Git, GitHub, and GitHub Actions' course, free, 57 lessons, manage code, collaborate, automate your workflow", "url": "https://teyro.app", "note": "teyro.app homepage text, read 2026-10-10; course facts also from the founder", "checked": "2026-10-10" }
+  ],
+  "teyro": {
+    "bridgeChips": ["Real code", "Instant feedback", "A few minutes"],
+    "outroHeadline": "Practise. Don't just watch. Free to start.",
+    "outroAsk": "Search Teyro"
+  },
+  "lines": [
+    { "id": "h1", "chapter": "00", "text": "Stop watching coding tutorials | if you actually want to learn to code." },
+    { "id": "h2", "chapter": "00", "text": "I watched forty hours of them. | Then I opened an empty file, | to build something on my own. | And I *froze*." },
+    { "id": "h3", "chapter": "00", "text": "Not one line. | If that's you, | it's not your brain. | It's the method." },
+    { "id": "h4", "chapter": "00", "text": "Here's what's really going on, | and what fixed it for me." },
+
+    { "id": "c1a", "chapter": "01 The freeze", "text": "First, *the freeze.* | You follow along, | the code works, | you feel great." },
+    { "id": "c1b", "chapter": "01 The freeze", "text": "Then the video ends, | and so does your coding. | You learned the video, | not the skill. | People call this *tutorial hell*." },
+
+    { "id": "c2a", "chapter": "02 The illusion", "text": "So why does watching feel like learning? | Because it's *familiar*." },
+    { "id": "c2b", "chapter": "02 The illusion", "text": "You see the code | and think, | yeah, I know that. | But seeing it isn't writing it." },
+    { "id": "c2c", "chapter": "02 The illusion", "text": "Recognising a face is easy. | Drawing it from memory is hard. | Coding is drawing from memory." },
+
+    { "id": "c3a", "chapter": "03 The study", "text": "Scientists tested this. | One group read a passage *fourteen times*." },
+    { "id": "c3b", "chapter": "03 The study", "text": "Another group read it about three times, | then tested themselves. | No notes. | Just recall." },
+    { "id": "c3c", "chapter": "03 The study", "text": "One week later? | The re-readers remembered *forty percent*. | The testers, *sixty-one*." },
+    { "id": "c3d", "chapter": "03 The study", "text": "And here's the part that stung. | The re-readers felt *more* confident." },
+
+    { "id": "c4a", "chapter": "04 Do the work", "text": "Next. | *Write it, | don't watch it.*" },
+    { "id": "c4b", "chapter": "04 Do the work", "text": "A huge review of two hundred twenty-five studies | compared college science lectures | with classes where students actually did the work." },
+    { "id": "c4c", "chapter": "04 Do the work", "text": "In lectures, | about thirty-four in a hundred failed. | Doing the work? | About *twenty-two*." },
+    { "id": "c4d", "chapter": "04 Do the work", "text": "So watching was never the problem. | Watching *only* was. | And that's when I changed how I learn." },
+
+    { "id": "bridge", "chapter": "bridge", "text": "Quick thing. | This is exactly why I switched to Teyro." },
+    { "id": "back", "chapter": "bridge", "text": "Every lesson has me writing real code within minutes. | More on that later. | First, the part that made it stick." },
+
+    { "id": "c5a", "chapter": "05 Feedback", "text": "*Instant feedback.* | A video can't tell you you're wrong." },
+    { "id": "c5b", "chapter": "05 Feedback", "text": "So you practise the mistake | until it feels right. | You need to know in seconds, | not after the project breaks." },
+
+    { "id": "c6a", "chapter": "06 Tiny steps", "text": "Then, *tiny steps.* | One idea. | Use it. | Then come back tomorrow." },
+    { "id": "c6b", "chapter": "06 Tiny steps", "text": "In that same study, | the re-readers forgot about *half* of what they'd learned within a week. | The testers? | Just *fourteen percent*." },
+    { "id": "c6c", "chapter": "06 Tiny steps", "text": "Pull it back out of your head again, | and it stays." },
+
+    { "id": "t1", "chapter": "07 The trap", "text": "Now, *the trap.* | Five minutes after studying, | the re-readers actually scored higher." },
+    { "id": "t2", "chapter": "07 The trap", "text": "Testing yourself feels slower. | Harder. | Like you're failing." },
+    { "id": "t3", "chapter": "07 The trap", "text": "But that struggle is the learning. | Researchers call it a *desirable difficulty*." },
+    { "id": "cav", "chapter": "07 The trap", "text": "To be fair, | videos aren't useless. | Watch to get the idea. | Then close it, | and write it yourself." },
+
+    { "id": "recap", "chapter": "08 Recap", "text": "So. | Watching feels like knowing. | Recall beats re-reading. | Do the work. | Get feedback fast. | Small steps, | every day." },
+
+    { "id": "ty1", "chapter": "teyro", "text": "That's how I learn now, | and I do it on Teyro." },
+    { "id": "ty2", "chapter": "teyro", "text": "I started with the free Git, GitHub and GitHub Actions course. | Fifty-seven short lessons." },
+    { "id": "ty3", "chapter": "teyro", "text": "Each one takes a few minutes, | in four steps. | Learn, | apply, | reflect, | deepen." },
+    { "id": "ty4", "chapter": "teyro", "text": "I write real code, | and every answer gets checked instantly. | Right answers earn XP." },
+    { "id": "ty5", "chapter": "teyro", "text": "My streak grows every day, | and a freeze covers a busy one. | Weekly leagues, | Bronze to Diamond. | Daily quests and chests." },
+    { "id": "ty6", "chapter": "teyro", "text": "Friends to race, | and a course community | that cheers your wins." },
+    { "id": "ty7", "chapter": "teyro", "text": "And the meter flipped. | My first commit. | My first pull request. | A GitHub Action that runs on its own." },
+
+    { "id": "punch", "chapter": "end", "text": "You don't learn code by watching it. | You learn it by *writing* it." },
+    { "id": "cta", "chapter": "end", "text": "Want to actually learn to code? | Learn it on Teyro." },
+    { "id": "cta2", "chapter": "end", "text": "Search for it in your browser, | or go straight to Teyro dot app." }
+  ]
+}

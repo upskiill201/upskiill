@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         message: 'I just copy the AI\'s worked examples into my notes. Is that OK?',
         prompt: 'What should Kofi say?',
         options: [
-          { text: 'Ask it to label each step with WHY, then do a similar one yourself before you copy anything.' },
           { text: 'Yes, copying is learning.', why: 'Copying is reading. Doing is learning.' },
+          { text: 'Ask it to label each step with WHY, then do a similar one yourself before you copy anything.' },
           { text: 'Never write anything down.', why: 'Notes are fine. Notes without trying is the problem.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

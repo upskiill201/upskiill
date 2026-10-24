@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         message: 'Felix is OOO. Just wait till Monday for access?',
         prompt: 'Remi needs access for Brian\'s KPI deck, due EOW. What does he say?',
         options: [
-          { text: 'Can\'t wait: the deck is due Friday. I\'ll raise a helpdesk ticket now, ETA 24 hours.' },
           { text: 'Sure, Monday is fine.', why: 'The deck is due by the end of THIS week.' },
           { text: 'I\'ll call Felix on holiday.', why: 'His message gives another route: the helpdesk.' },
+          { text: 'Can\'t wait: the deck is due Friday. I\'ll raise a helpdesk ticket now, ETA 24 hours.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Remi wants Brian to know about the delay, without asking him to do anything. Which label fits?',
         options: [
-          { text: 'FYI' },
           { text: 'NB: action needed', why: 'He doesn\'t need Brian to act.' },
+          { text: 'FYI' },
           { text: 'URGENT', why: 'It\'s not urgent for Brian.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

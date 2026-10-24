@@ -1,21 +1,30 @@
 'use client';
 
 /**
- * Try it live (a Learn card): real, editable Python with a Run button.
- * Finished once it has run without an error, so Continue never waits on
- * the learner getting anything "right". The challenge line nudges them to
- * change the code and run it again, which is where the learning happens.
+ * Try it live (a Learn card): real, editable code with a Run button: Python,
+ * SQL in SQL tracks, C in C tracks or JavaScript (with a live page when the card has one)
+ * in JavaScript tracks (`card.language`). Finished once it has run without an
+ * error, so Continue never waits on the learner getting anything "right". The
+ * challenge line nudges them to change the code and run it again, which is
+ * where the learning happens.
  */
 
 import { useState } from 'react';
-import { Sparkles, Zap } from 'lucide-react';
+import { Emblem } from '@/components/art/Emblem';
 import type { RichLearnCard } from '@/lib/lesson/blocks';
+import { CPad } from './CPad';
 import { PythonPad } from './PythonPad';
+import { SqlPad } from './SqlPad';
+import { JsPad } from './JsPad';
 
 type TryIt = Extract<RichLearnCard, { kind: 'tryIt' }>;
 
 export function TryItCard({ card, done, onDone }: { card: TryIt; done: boolean; onDone: () => void }) {
   const [code, setCode] = useState(card.code);
+  const onRun = (run: { error: unknown; timedOut: boolean; typeErrors?: unknown[] }) => {
+    const clean = !run.error && !run.timedOut && (run.typeErrors?.length ?? 0) === 0;
+    if ((card.expectError || clean) && !done) onDone();
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -24,27 +33,34 @@ export function TryItCard({ card, done, onDone }: { card: TryIt; done: boolean; 
         style={{ boxShadow: '0 4px 0 var(--border)' }}
       >
         <p className="flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.08em] text-[var(--success-green)]">
-          <Zap className="w-4 h-4" aria-hidden="true" />
+          <Emblem name="play" size={18} />
           {card.title ?? 'Try it live'}
         </p>
         {card.caption && <p className="text-[17px] leading-[1.55] font-semibold text-ink">{card.caption}</p>}
-        <PythonPad
-          value={code}
-          onChange={setCode}
-          resetTo={card.code}
-          stdin={card.stdin}
-          label={card.title ?? 'Try it live'}
-          onRun={(run) => {
-            if ((card.expectError || (!run.error && !run.timedOut)) && !done) onDone();
-          }}
-        />
+        {card.language === 'sql' ? (
+          <SqlPad value={code} onChange={setCode} resetTo={card.code} database={card.database} label={card.title ?? 'Try it live'} onRun={onRun} />
+        ) : card.language === 'c' ? (
+          <CPad value={code} onChange={setCode} resetTo={card.code} stdin={card.stdin} label={card.title ?? 'Try it live'} onRun={onRun} />
+        ) : card.language === 'javascript' ? (
+          <JsPad value={code} onChange={setCode} resetTo={card.code} page={card.page} storage={card.storage} stdin={card.stdin} label={card.title ?? 'Try it live'} onRun={onRun} />
+        ) : (
+          <PythonPad
+            value={code}
+            onChange={setCode}
+            resetTo={card.code}
+            stdin={card.stdin}
+            label={card.title ?? 'Try it live'}
+            language={card.language}
+            onRun={onRun}
+          />
+        )}
       </div>
       {card.challenge && (
         <div
           className="rounded-[18px] border-2 p-4 flex gap-3 items-start"
-          style={{ borderColor: 'var(--brand-purple)', background: 'color-mix(in srgb, var(--brand-purple) 8%, white)' }}
+          style={{ borderColor: 'var(--brand-purple)', background: 'color-mix(in srgb, var(--brand-purple) 8%, var(--bg-card))' }}
         >
-          <Sparkles className="w-5 h-5 shrink-0 mt-0.5 text-[var(--brand-purple)]" aria-hidden="true" />
+          <Emblem name="sparkle" size={22} className="mt-0.5" />
           <p className="text-[16px] font-bold leading-snug text-ink">
             <span className="text-[var(--brand-purple)]">Your turn: </span>
             {card.challenge}

@@ -129,6 +129,13 @@ const ready = (async () => {
     } catch {
       /* no toolkit: importing teyro_ai will say the module is missing */
     }
+    try {
+      // Working with AI Coding Agents' practice agent: "from teyro_agent import PracticeAgent".
+      const res = await fetch('/python/teyro_agent.py');
+      if (res.ok) pyodide.globals.get('__teyro_install')('teyro_agent', await res.text());
+    } catch {
+      /* no practice agent: importing teyro_agent will say the module is missing */
+    }
     self.postMessage({ type: 'ready' });
   } catch (err) {
     self.postMessage({ type: 'loadError', message: String((err && err.message) || err) });

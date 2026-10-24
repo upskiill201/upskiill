@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which detail do summaries usually drop first?',
         options: [
-          { text: 'Caveats, conditions and minority views' },
           { text: 'The main headline', why: 'Headlines usually survive.' },
+          { text: 'Caveats, conditions and minority views' },
           { text: 'The title', why: 'Titles survive.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         message: "Great news, the summary says the new flow boosts sign-ups! Let's roll it out on desktop too.",
         prompt: 'What should Ada say?',
         options: [
-          { text: "Wait: the full report says it only helped on phones, and desktop showed no clear change. Let's test desktop separately." },
           { text: 'Yes, roll it out everywhere!', why: 'The condition ("phones only") was dropped.' },
           { text: 'The summary is wrong.', why: 'It was accurate, just incomplete.' },
+          { text: "Wait: the full report says it only helped on phones, and desktop showed no clear change. Let's test desktop separately." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -178,11 +178,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where do the caveats belong in a summary for a director?',
         options: [
-          { text: 'In a short "But note:" line, if they could change the decision' },
           { text: 'Nowhere; directors want only good news', why: 'Directors need caveats to decide well.' },
           { text: 'In a separate 10-page appendix', why: 'They will never see it.' },
+          { text: 'In a short "But note:" line, if they could change the decision' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -40,11 +40,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'After min-max scaling, what does the largest value in a column become?',
         options: [
-          { text: '1' },
           { text: '0', why: 'The smallest becomes 0.' },
           { text: 'It stays the same', why: 'Every value is squashed into 0 to 1.' },
+          { text: '1' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         message: 'Scaling is always better, right?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'It makes the features fair to each other. Whether that improves the predictions, you test. Sometimes one feature SHOULD count more.' },
           { text: 'Always, without exception.', why: 'It\'s a sensible default, not a guarantee.' },
           { text: 'Never scale.', why: 'Without it, small-range features like past no-shows get drowned.' },
+          { text: 'It makes the features fair to each other. Whether that improves the predictions, you test. Sometimes one feature SHOULD count more.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',

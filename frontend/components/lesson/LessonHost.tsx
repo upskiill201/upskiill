@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { RotateCcw } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { LessonPlayer } from '@/components/lesson/LessonPlayer';
 import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
 import { takePrefetchedLesson } from '@/lib/path/lessonPrefetch';
@@ -48,6 +48,11 @@ type HostState =
   | { kind: 'loading' }
   | { kind: 'open'; lesson: Record<string, unknown> & { id: string } }
   | { kind: 'error'; message: string };
+
+/** The server's 403 reason → the paywall moment that answers it. */
+function paywallMomentFor(reason: unknown): 'LOCKED_LESSON' | 'DAILY_LIMIT' | 'OUT_OF_HEARTS' {
+  return reason === 'DAILY_LIMIT' || reason === 'OUT_OF_HEARTS' ? reason : 'LOCKED_LESSON';
+}
 
 /** Normalise contentBlocks once — every consumer below assumes an object. */
 function normalizeLesson(raw: Record<string, unknown>) {
@@ -101,9 +106,14 @@ export function LessonHost({
         const res = prefetched ? null : await fetch(endpoint, { credentials: 'include' });
         const status = prefetched ? prefetched.status : res!.status;
 
-        if (status === 403 && !adminReviewMode) {
+        const toPaywall = (reason?: unknown) => {
           playHaptic('light');
-          router.replace(buildUnlockHref(courseId, lessonHref(courseId, sectionIndex, id)));
+          router.replace(buildUnlockHref(courseId, lessonHref(courseId, sectionIndex, id), paywallMomentFor(reason)));
+        };
+
+        if (status === 403 && !adminReviewMode) {
+          const denied = prefetched ? prefetched.body : await res!.json().catch(() => null);
+          toPaywall((denied as { reason?: unknown } | null)?.reason);
           return;
         }
         if (status < 200 || status >= 300) {
@@ -114,6 +124,31 @@ export function LessonHost({
           return;
         }
         const body = prefetched ? prefetched.body : await res!.json();
+
+        // Teyro Pro free tier: opening the lesson spends one of today's free
+        // lessons (and needs a heart). Reading the content above never does,
+        // because home prefetches it on tap. Pro, replays and per-course
+        // plans pass straight through.
+        if (!adminReviewMode) {
+          const started = await fetch(`/api/courses/${courseId}/lessons/${id}/start`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ timezoneOffset: new Date().getTimezoneOffset() }),
+          }).catch(() => null);
+          if (started?.status === 403) {
+            const denied = await started.json().catch(() => null);
+            toPaywall((denied as { reason?: unknown } | null)?.reason);
+            return;
+          }
+          // Fail closed: the server must say yes before a lesson opens (the
+          // free daily limit and hearts are decided there, not here).
+          if (!started || !started.ok) {
+            setState({ kind: 'error', message: 'Could not open the lesson — check your connection and try again.' });
+            return;
+          }
+        }
+
         setState({ kind: 'open', lesson: normalizeLesson(body as Record<string, unknown>) });
         // Feeds Tey's LESSON_ABANDONED rule. Not for an instructor reading content.
         if (!adminReviewMode) track('lesson_started', { entityType: 'lesson', entityId: id });
@@ -136,6 +171,7 @@ export function LessonHost({
     }
     if (adminReviewMode) {
       startedRef.current = true;
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- open() is the fetch; it runs once (startedRef)
       void open(lessonId);
       return;
     }
@@ -184,7 +220,7 @@ export function LessonHost({
               }}
               className="inline-flex items-center gap-2 rounded-[10px] bg-[var(--brand-blue)] px-5 py-3 text-[15px] font-extrabold text-white"
             >
-              <RotateCcw size={16} strokeWidth={3} aria-hidden="true" /> Try again
+              <Glyph name="refresh" size={16} strokeWidth={3} /> Try again
             </button>
           )}
           <button

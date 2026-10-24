@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why did the one-neighbour predictor get Rita wrong?',
         options: [
-          { text: 'Her single nearest neighbour, Obi, was unusual' },
           { text: 'The distance formula failed', why: 'Obi really was her most similar patient. He just wasn\'t typical.' },
+          { text: 'Her single nearest neighbour, Obi, was unusual' },
           { text: 'Rita has no neighbours', why: 'She has twelve; the nearest happened to be the odd one.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         code: 'right = 0\nfor i in range(3):\n    right = right + 1\nprint(right)',
         language: 'python',
         options: [
-          { text: '3' },
           { text: '2', why: 'range(3) is 0, 1, 2: three times round the loop.' },
           { text: '0', why: 'right grows every time round.' },
+          { text: '3' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -126,11 +126,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is asking 3 neighbours like asking 3 friends for directions?',
         options: [
-          { text: 'One person can be wrong; the majority is usually safer' },
           { text: 'Friends always agree', why: 'They don\'t, which is why you take the majority.' },
           { text: 'It\'s three times faster', why: 'It\'s slower, but safer.' },
+          { text: 'One person can be wrong; the majority is usually safer' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

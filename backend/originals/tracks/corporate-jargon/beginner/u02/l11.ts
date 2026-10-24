@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: 'I want to ask Mr Kamau why my spreadsheet macro keeps crashing. In the all-hands. Good idea?',
         prompt: 'What does Remi say?',
         options: [
-          { text: 'Ask Felix in IT after. It only matters to you, and Felix fixes everything.' },
           { text: 'Yes! Ask in front of everyone.', why: 'Two hundred people don\'t need the macro.' },
           { text: 'Ask Mr Kamau privately in the lift.', why: 'The CEO isn\'t IT support.' },
+          { text: 'Ask Felix in IT after. It only matters to you, and Felix fixes everything.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

@@ -15,8 +15,12 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Check, Eye, Lightbulb, SquareTerminal, Trophy } from 'lucide-react';
-import { CHALLENGES, EXAMPLES, type PlaygroundChallenge } from '@/lib/code/playground';
+import { Glyph } from '@/components/art/Glyph';
+import { CHALLENGES, EXAMPLES, HTML_EXAMPLES, RN_EXAMPLES, TS_EXAMPLES, type PlaygroundChallenge } from '@/lib/code/playground';
+import type { RunLanguage } from '@/lib/lesson/blocks';
+
+/** The runners the playground offers (SQL, C and JavaScript live only in their courses). */
+type PlayLanguage = Extract<RunLanguage, 'python' | 'typescript' | 'html' | 'react-native'>;
 import { fireConfetti } from '@/lib/confetti';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { useHydrated } from '@/components/studio/useHydrated';
@@ -25,6 +29,17 @@ import padStyles from './PythonPad.module.css';
 import styles from './Playground.module.css';
 
 const DRAFT_KEY = 'teyro.playground.draft';
+/** TypeScript keeps its own draft, so switching language never loses either one. */
+const draftKey = (language: PlayLanguage) =>
+  language === 'python' ? DRAFT_KEY : `${DRAFT_KEY}.${language === 'typescript' ? 'ts' : language === 'react-native' ? 'rn' : 'html'}`;
+const EXAMPLES_FOR: Record<PlayLanguage, typeof EXAMPLES> = { python: EXAMPLES, typescript: TS_EXAMPLES, html: HTML_EXAMPLES, 'react-native': RN_EXAMPLES };
+const PROGRAM_LABEL: Record<PlayLanguage, string> = {
+  python: 'Your Python program',
+  typescript: 'Your TypeScript program',
+  html: 'Your web page',
+  'react-native': 'Your app',
+};
+const LANGUAGE_KEY = 'teyro.playground.language';
 const DONE_KEY = 'teyro.playground.done';
 
 function readStore(key: string): string | null {
@@ -50,11 +65,11 @@ export function Playground() {
     <div className={styles.page}>
       <header className={styles.hero}>
         <span className={styles.heroIcon} aria-hidden="true">
-          <SquareTerminal size={34} strokeWidth={2.4} />
+          <Glyph name="terminal" size={34} strokeWidth={2.4} />
         </span>
         <div>
           <h1 className={styles.title}>Code playground</h1>
-          <p className={styles.sub}>Write and run Python right here, on any device. Nothing to install.</p>
+          <p className={styles.sub}>Write and run Python, TypeScript, a web page or a phone app right here, on any device. Nothing to install.</p>
         </div>
       </header>
 
@@ -95,18 +110,52 @@ function FreeCode() {
 }
 
 function FreeCodeEditor() {
-  // The last draft on this device, else the first example.
-  const [code, setCode] = useState(() => readStore(DRAFT_KEY) ?? EXAMPLES[0].code);
+  const [language, setLanguage] = useState<PlayLanguage>(() => {
+    const saved = readStore(LANGUAGE_KEY);
+    return saved === 'typescript' || saved === 'html' || saved === 'react-native' ? saved : 'python';
+  });
+  return <FreeCodeFor key={language} language={language} onLanguage={setLanguage} />;
+}
+
+function FreeCodeFor({ language, onLanguage }: { language: PlayLanguage; onLanguage: (l: PlayLanguage) => void }) {
+  const examples = EXAMPLES_FOR[language];
+  // The last draft on this device for this language, else the first example.
+  const [code, setCode] = useState(() => readStore(draftKey(language)) ?? examples[0].code);
   useEffect(() => {
-    const t = window.setTimeout(() => writeStore(DRAFT_KEY, code), 400);
+    const t = window.setTimeout(() => writeStore(draftKey(language), code), 400);
     return () => window.clearTimeout(t);
-  }, [code]);
+  }, [code, language]);
 
   return (
     <section className={styles.section} aria-label="Free code">
+      <div className={styles.tabs} role="tablist" aria-label="Language">
+        {(
+          [
+            ['python', 'Python'],
+            ['typescript', 'TypeScript'],
+            ['html', 'HTML & CSS'],
+            ['react-native', 'React Native'],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={language === id}
+            className={`${styles.tab} ${language === id ? styles.tabOn : ''}`}
+            onClick={() => {
+              playSound('navTap');
+              writeStore(LANGUAGE_KEY, id);
+              onLanguage(id);
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
       <div className={styles.examples}>
         <span className={styles.examplesLabel}>Start from</span>
-        {EXAMPLES.map((ex) => (
+        {examples.map((ex) => (
           <button
             key={ex.id}
             type="button"
@@ -130,7 +179,14 @@ function FreeCodeEditor() {
           Blank
         </button>
       </div>
-      <PythonPad value={code} onChange={setCode} minLines={10} maxLines={24} label="Your Python program" />
+      <PythonPad
+        value={code}
+        onChange={setCode}
+        minLines={10}
+        maxLines={24}
+        language={language}
+        label={PROGRAM_LABEL[language]}
+      />
       <p className={styles.note}>Your code is saved on this device as you type.</p>
     </section>
   );
@@ -190,7 +246,7 @@ function ChallengeList() {
   return (
     <section className={styles.section} aria-label="Challenges">
       <p className={styles.progress}>
-        <Trophy size={18} aria-hidden="true" /> {done.length} of {CHALLENGES.length} done
+        <Glyph name="trophy" size={18} /> {done.length} of {CHALLENGES.length} done
       </p>
       <ol className={styles.list}>
         {CHALLENGES.map((c, i) => {
@@ -206,13 +262,13 @@ function ChallengeList() {
                 }}
               >
                 <span className={styles.challengeNo} aria-hidden="true">
-                  {isDone ? <Check size={18} strokeWidth={3.5} /> : i + 1}
+                  {isDone ? <Glyph name="check" size={18} strokeWidth={3.5} /> : i + 1}
                 </span>
                 <span className={styles.challengeText}>
                   <span className={styles.challengeTitle}>{c.title}</span>
                   <span className={styles.challengeTask}>{c.task}</span>
                 </span>
-                <ArrowRight size={18} className={styles.challengeArrow} aria-hidden="true" />
+                <Glyph name="arrow" size={18} className={styles.challengeArrow} />
               </button>
             </li>
           );
@@ -249,7 +305,7 @@ function ChallengeView({
   return (
     <section className={styles.section} aria-label={challenge.title}>
       <button type="button" className={styles.back} onClick={onBack}>
-        <ArrowLeft size={16} aria-hidden="true" /> All challenges
+        <Glyph name="back" size={16} /> All challenges
       </button>
       <div>
         <p className={styles.eyebrow}>
@@ -282,11 +338,11 @@ function ChallengeView({
         actions={
           <>
             <button type="button" className={padStyles.ghost} onClick={() => setHint((h) => !h)} aria-expanded={hint}>
-              <Lightbulb size={16} aria-hidden="true" /> Hint
+              <Glyph name="bulb" size={16} /> Hint
             </button>
             {failed >= 2 && (
               <button type="button" className={padStyles.ghost} onClick={() => setCode(challenge.solution)}>
-                <Eye size={16} aria-hidden="true" /> Show solution
+                <Glyph name="eye" size={16} /> Show solution
               </button>
             )}
           </>
@@ -301,12 +357,12 @@ function ChallengeView({
           role="status"
         >
           <span className={styles.winIcon} aria-hidden="true">
-            <Check size={22} strokeWidth={3.5} />
+            <Glyph name="check" size={22} strokeWidth={3.5} />
           </span>
           <span className={styles.winText}>Challenge complete!</span>
           {onNext ? (
             <button type="button" className={styles.winButton} onClick={onNext}>
-              Next challenge <ArrowRight size={16} aria-hidden="true" />
+              Next challenge <Glyph name="arrow" size={16} />
             </button>
           ) : (
             <button type="button" className={styles.winButton} onClick={onBack}>

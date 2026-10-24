@@ -1,3 +1,4 @@
+import { FREE_COURSE_SWITCH_DAYS } from '../pro/pro.config';
 import type { PrismaService } from '../prisma/prisma.service';
 
 /**
@@ -77,6 +78,17 @@ export async function setFocusCourse(
   const res = await prisma.studentProfile.updateMany({
     where: { userId },
     data: { focusCourseId: courseId },
+  });
+  // Teyro Pro free tier: the free course follows the focus course, but at
+  // most once every 30 days, so switching focus can't open every Chapter 1.
+  const settledBefore = new Date(Date.now() - FREE_COURSE_SWITCH_DAYS * 24 * 60 * 60 * 1000);
+  await prisma.studentProfile.updateMany({
+    where: {
+      userId,
+      NOT: { freeCourseId: courseId },
+      OR: [{ freeCourseId: null }, { freeCourseSetAt: null }, { freeCourseSetAt: { lt: settledBefore } }],
+    },
+    data: { freeCourseId: courseId, freeCourseSetAt: new Date() },
   });
   return res.count > 0;
 }

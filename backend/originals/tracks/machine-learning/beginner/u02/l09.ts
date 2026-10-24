@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the mean of no_show the no-show rate?',
         options: [
-          { text: 'It\'s 1 for a miss and 0 otherwise, so the mean is misses ÷ bookings' },
           { text: 'pandas has a special rule for no_show', why: 'It works for any 0/1 column.' },
           { text: 'It isn\'t; you need a different command', why: 'The mean of 0s and 1s is exactly the share of 1s.' },
+          { text: 'It\'s 1 for a miss and 0 otherwise, so the mean is misses ÷ bookings' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         message: 'So reminders work! Can we tell the board they cut no-shows in half?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'They go WITH half the no-shows. Maybe the clinics that send reminders are different in other ways too. It\'s a strong hint, not proof.' },
           { text: 'Yes: proven.', why: 'A difference between groups isn\'t proof that one causes the other.' },
+          { text: 'They go WITH half the no-shows. Maybe the clinics that send reminders are different in other ways too. It\'s a strong hint, not proof.' },
           { text: 'No, the numbers mean nothing.', why: 'They\'re a real, useful pattern.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

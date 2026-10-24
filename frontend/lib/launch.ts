@@ -32,11 +32,23 @@ export const STUDIO_OPENS = 'October 2026';
 export const APP_LAUNCHES = 'November 2026';
 
 /**
- * Creator revenue share (per EarningsService: a new agreement defaults to 70%;
- * Founding Creators are set to 80% in Teyro HQ). Marketing copy reads these.
+ * How creators are paid, under Teyro Pro (founder, 2026-10-22): learners pay
+ * one subscription that opens every course, and each month CREATOR_POOL_PCT
+ * of every Pro learner's net payment is shared among the creators whose
+ * courses they learned in, by minutes. Founding Creators are paid exactly
+ * like every creator (founder, 2026-10-23); they keep the Founding badge and
+ * founding benefits. Backend: pro.config proPoolSharePct, src/pro/pool.
+ * Every marketing line about creator pay reads these.
  */
-export const STANDARD_SHARE_PCT = 70;
-export const FOUNDING_SHARE_PCT = 80;
+export const CREATOR_POOL_PCT = 50;
+export const PRO_MONTHLY_USD = 12.99;
+export const PRO_YEARLY_USD = 59.99;
+/** A yearly Pro learner's payment, per month: $5.00. */
+export const PRO_YEARLY_PER_MONTH_USD = Math.round((PRO_YEARLY_USD / 12) * 100) / 100;
+/** Their monthly pool: half of it, before card fees and tax. */
+export const POOL_PER_YEARLY_LEARNER_USD = Math.round(PRO_YEARLY_PER_MONTH_USD * CREATOR_POOL_PCT) / 100;
+/** One short line, for chips and fine print. */
+export const CREATOR_PAY_SHORT = `${CREATOR_POOL_PCT}% of every Pro learner's payment, shared by minutes`;
 
 /**
  * The Founding Creator programme runs until the public launch (November

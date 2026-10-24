@@ -11,7 +11,7 @@ import type { PrefFlags } from '../delivery/tey-policy.service';
  * saver, and vice versa.
  */
 
-export type NotifyAudience = 'learner' | 'creator' | 'community';
+export type NotifyAudience = 'learner' | 'creator' | 'community' | 'billing';
 
 export interface NotifySpec {
   audience: NotifyAudience;
@@ -25,6 +25,12 @@ export interface NotifySpec {
   tag: string;
   /** For a future Rive Tey on the lock screen / in the SW. */
   teyState: string;
+  /**
+   * About their money (trial ending, a failed card): not silenced by a
+   * category toggle, not throttled, not counted against a marketing cap.
+   * Still needs push switched on, still waits out quiet hours.
+   */
+  transactional?: boolean;
 }
 
 const HOUR = 3600;
@@ -58,6 +64,20 @@ export const NOTIFY_KINDS = {
   COURSE_UNLOCK: {
     audience: 'learner', pref: 'courseOffers', throttleMinutes: 20 * 60,
     ttlSeconds: 12 * HOUR, tag: 'tey-unlock', teyState: 'ENCOURAGING',
+  },
+  // "Still want Pro?" and the "decide later" reminder: offers, so they obey
+  // the offers toggle and wait three days between pushes.
+  PRO_OFFER: {
+    audience: 'learner', pref: 'courseOffers', throttleMinutes: 3 * 24 * 60,
+    ttlSeconds: 12 * HOUR, tag: 'tey-pro-offer', teyState: 'ENCOURAGING',
+  },
+
+  // ── Billing (Teyro Pro) ────────────────────────────────────────────────
+  // Trial ending, card declined, bank wants a yes, Pro ended.
+  PRO_BILLING: {
+    audience: 'billing', pref: 'courseOffers', throttleMinutes: 0,
+    ttlSeconds: 24 * HOUR, tag: 'tey-pro-billing', teyState: 'REMINDER',
+    transactional: true,
   },
 
   // ── Community (focus course only — see common/focus-course.util.ts) ────
@@ -111,6 +131,11 @@ export const NOTIFY_KINDS = {
     audience: 'creator', pref: 'creatorActivity', throttleMinutes: 0,
     ttlSeconds: 48 * HOUR, tag: 'studio-course', teyState: 'CELEBRATING',
   },
+  // The month's Teyro Pro pool share landed in their earnings.
+  STUDIO_POOL: {
+    audience: 'creator', pref: 'creatorActivity', throttleMinutes: 0,
+    ttlSeconds: 72 * HOUR, tag: 'studio-pool', teyState: 'CELEBRATING',
+  },
 } as const satisfies Record<string, NotifySpec>;
 
 export type NotifyKind = keyof typeof NOTIFY_KINDS;
@@ -122,6 +147,8 @@ export const DAILY_EVENT_PUSH_CAP: Record<NotifyAudience, number> = {
   // Replies and mentions are conversations; a busy thread should not go quiet
   // after three. Broadcast posts are held back by their own 90-minute throttle.
   community: 12,
+  // Transactional, so the cap is never consulted; here for the type only.
+  billing: 10,
 };
 
 export function kindsFor(audience: NotifyAudience): NotifyKind[] {

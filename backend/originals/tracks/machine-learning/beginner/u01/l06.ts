@@ -20,8 +20,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Why does Samuel\'s program count as learning?',
-      options: ['It improved from experience, not from moves he typed in', 'It ran on an IBM computer', 'It played a board game'],
-      answer: 0,
+      options: ['It ran on an IBM computer', 'It played a board game', 'It improved from experience, not from moves he typed in'],
+      answer: 2,
       explanation: 'The computer and the game don\'t matter. Improving from examples does.',
     },
   ],
@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How did the program get better?',
         options: [
-          { text: 'By playing many games, including against itself, and adjusting how it scored positions' },
           { text: 'Samuel typed in better moves every night', why: 'Then it would be following his rules, not learning.' },
           { text: 'It copied moves from the internet', why: 'This was the 1950s: no internet.' },
+          { text: 'By playing many games, including against itself, and adjusting how it scored positions' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -103,11 +103,11 @@ const lesson: OriginalLesson = {
         message: 'So machine learning is older than I am?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Much older. The idea is from the 1950s. What changed is how much data and computing power we have now.' },
           { text: 'No, it was invented last year.', why: 'It goes back to the 1950s.' },
+          { text: 'Much older. The idea is from the 1950s. What changed is how much data and computing power we have now.' },
           { text: 'It started with chatbots.', why: 'Chatbots are a recent, very large use of a 70-year-old idea.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -132,11 +132,11 @@ const lesson: OriginalLesson = {
         message: 'A 1950s board game. What does that have to do with clinics?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Same idea: learn from past results to make a better choice next time. His examples were games; ours are appointments.' },
           { text: 'Nothing. It\'s just history.', why: 'It\'s the same core idea Halima is using.' },
+          { text: 'Same idea: learn from past results to make a better choice next time. His examples were games; ours are appointments.' },
           { text: 'We\'ll make patients play checkers.', why: 'Funny, but no.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

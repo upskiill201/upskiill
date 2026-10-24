@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'You already use pandas every day. What can you do?',
         options: [
-          { text: 'Take the Jump here test for the next chapter and skip ahead if you pass' },
           { text: 'Nothing: everyone must do every lesson', why: 'Jump here tests let you skip what you already know.' },
+          { text: 'Take the Jump here test for the next chapter and skip ahead if you pass' },
           { text: 'Skip straight to v1.0', why: 'You can jump chapter by chapter by passing each one\'s test.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         message: 'Why not skip to the fancy forest model now?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Because a forest trained on messy data with an unfair test would fool us. The early steps make the later scores trustworthy.' },
           { text: 'Sure, let\'s skip everything.', why: 'Skipping the fair test is how teams fool themselves.' },
+          { text: 'Because a forest trained on messy data with an unfair test would fool us. The early steps make the later scores trustworthy.' },
           { text: 'Forests don\'t exist.', why: 'They do: Chapter 10.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'From which chapter does the course use scikit-learn?',
         options: [
-          { text: 'Chapter 5' },
           { text: 'Chapter 1', why: 'Chapter 1 uses plain rules and a little Python.' },
           { text: 'Never', why: 'It\'s the main tool from Chapter 5.' },
+          { text: 'Chapter 5' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

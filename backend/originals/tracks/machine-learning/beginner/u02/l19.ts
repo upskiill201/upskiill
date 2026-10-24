@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'After step 4 (turning "12 km" into numbers), how many blanks does distance_km have?',
         options: [
-          { text: '10: fixing the text doesn\'t fill the blanks' },
           { text: '0: to_numeric fills them in', why: 'to_numeric only converts text. Blanks stay blank until step 5.' },
           { text: '16: the 6 texts become blanks too', why: 'With " km" removed first, they become real numbers.' },
+          { text: '10: fixing the text doesn\'t fill the blanks' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         message: 'Why print the row count after every step?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'So if a step removes far more rows than expected, I see it straight away instead of finding out from a strange model.' },
           { text: 'Because pandas needs it.', why: 'pandas doesn\'t. You do.' },
+          { text: 'So if a step removes far more rows than expected, I see it straight away instead of finding out from a strange model.' },
           { text: 'To fill the screen.', why: 'Each count is a check.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

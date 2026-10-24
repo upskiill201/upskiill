@@ -1,0 +1,72 @@
+{
+  "slug": "m3-passwords",
+  "compId": "M3-passwords",
+  "title": "Stop adding symbols to your password",
+  "look": "lab",
+  "voice": "TX3LPaxmHKxFdv7VOQHJ",
+  "model": "eleven_multilingual_v2",
+  "speed": 1.08,
+  "hook": {
+    "archetype": "\"Stop doing [habit] if you want [result]\" (founder template, 2026-10-09)",
+    "igCaptionLine1": "Stop adding symbols to your password 🔐",
+    "igCaptionLine2": "P@ssw0rd ticks every box. It's leaked 6 million times 👇"
+  },
+  "sources": [
+    { "claim": "'P@ssw0rd' seen 6,421,042 times in breaches; '123456' 210,461,208; 'password' 52,372,427; 'correcthorsebatterystaple' 4,173; 'Password1!' 584,516; 'P@ssw0rd!' 119,515", "url": "https://haveibeenpwned.com/Passwords", "note": "Pwned Passwords range API (k-anonymity), queried 2026-10-09; recheck on voicing day", "checked": "2026-10-09" },
+    { "claim": "Sites SHALL NOT impose composition rules (mixtures of character types); single-factor passwords min 15 characters; users respond predictably (password → Password1!); passphrases effective; passwords SHALL be salted and hashed with a cost factor; compare new passwords against a breach blocklist", "url": "https://pages.nist.gov/800-63-4/sp800-63b.html", "note": "NIST SP 800-63B rev 4 (Aug 2025), §3.1.1.2 + Appendix A", "checked": "2026-10-09" },
+    { "claim": "Hashing is one-way; unique per-user salt defeats precomputed (rainbow) tables; fast hashes like SHA-256 unsuitable; use Argon2id / scrypt / bcrypt (work factor ≥ 10) / PBKDF2", "url": "https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html", "note": "OWASP Password Storage Cheat Sheet", "checked": "2026-10-09" },
+    { "claim": "One RTX 4090: SHA2-256 21,975.5 MH/s (≈22 billion/s); MD5 164.1 GH/s; bcrypt (cost 5, 32 iterations) 184.0 kH/s", "url": "https://gist.github.com/Chick3nman/32e662a5bb63bc4f51b847bb422222fd", "note": "hashcat v6.2.6 benchmark, stock RTX 4090 (Chick3nman / hashcat)", "checked": "2026-10-09" },
+    { "claim": "EFF large wordlist has 7,776 words; 4 random words = 7,776^4 ≈ 3.66 quadrillion combinations", "url": "https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt", "note": "counted 7,776 entries; power computed", "checked": "2026-10-09" },
+    { "claim": "3.66e15 guesses: at 22 billion/s (SHA-256) ≈ 46 hours ('days'); at 184 thousand/s (bcrypt cost 5) ≈ 630 years ('centuries')", "url": "computed", "note": "full keyspace on one RTX 4090; real bcrypt settings (cost ≥ 10) are slower still", "checked": "2026-10-09" },
+    { "claim": "Teyro lines: 'a few minutes a day', coding track, 'the fun way to finish learning coding and AI'", "url": "https://teyro.app", "note": "homepage + /features", "checked": "2026-10-09" }
+  ],
+  "teyro": {
+    "bridgeChips": ["Coding", "AI", "A few minutes a day"],
+    "outroHeadline": "The fun way to finish learning coding and AI.",
+    "outroAsk": "Search Teyro"
+  },
+  "lines": [
+    { "id": "h1", "chapter": "00", "text": "Stop adding symbols to your password | if you don't want to get *hacked*." },
+    { "id": "h2", "chapter": "00", "text": "Capital. | Number. | Symbol. | This password ticks every box. | And it's leaked over *six million* times." },
+    { "id": "h3", "chapter": "00", "text": "Because hackers don't guess the way you think. | Let's follow one password, | from sign-up to cracked." },
+
+    { "id": "c1a", "chapter": "01 Sign-up", "text": "Step one. *Sign-up.* | You type your password, | and a good site does something strange. | It throws it away." },
+    { "id": "c1b", "chapter": "01 Sign-up", "text": "First it runs it through a *hash*. | Think of a blender. | Same password in, | same smoothie out. | But you can't un-blend a smoothie." },
+    { "id": "c1c", "chapter": "01 Sign-up", "text": "So the site only keeps the smoothie. | A string of scrambled characters. | When you log in, | it blends what you typed, | and checks if they match." },
+
+    { "id": "c2a", "chapter": "02 The breach", "text": "Step two. *The breach.* | One day the site gets hacked. | The hackers walk out with millions of these hashes." },
+    { "id": "c2b", "chapter": "02 The breach", "text": "No passwords. | Just smoothies. | They can't un-blend them. | So they do the next best thing. | They *guess*." },
+
+    { "id": "c3a", "chapter": "03 The guessing machine", "text": "Step three. *The guessing machine.* | Blend a guess. | Compare. | Wrong? | Next guess." },
+    { "id": "c3b", "chapter": "03 The guessing machine", "text": "Sounds slow. | It isn't. | One gaming graphics card | tries about *twenty two billion* guesses a second | against a common fast hash." },
+
+    { "id": "c4a", "chapter": "04 The list", "text": "Step four. *The list.* | And they don't start with random letters. | They start with passwords that already leaked." },
+    { "id": "c4b", "chapter": "04 The list", "text": "One, two, three, four, five, six. | Seen over *two hundred million* times. | The word password? | Fifty two million." },
+    { "id": "c4c", "chapter": "04 The list", "text": "And here's why your symbols don't help. | People add them the *same* way. | Capital first. | A one or a zero. | An exclamation mark at the end." },
+    { "id": "c4d", "chapter": "04 The list", "text": "Crackers know those tricks. | They're built into the list. | So that strong-looking password | falls almost *instantly*." },
+    { "id": "c4e", "chapter": "04 The list", "text": "So if guessing is this fast, | how does any password survive?" },
+
+    { "id": "bridge", "chapter": "bridge", "text": "Quick thing. | Coding lessons like this, a few minutes a day, | that's what you get on Teyro." },
+    { "id": "back", "chapter": "bridge", "text": "Okay. | Back to the crackers." },
+
+    { "id": "c5a", "chapter": "05 Salt", "text": "Step five. *Salt.* | First problem: | two people with the same password | get the same hash." },
+    { "id": "c5b", "chapter": "05 Salt", "text": "Crack one, | you've cracked both. | And hackers keep giant pre-made tables of hashes, | ready to look up." },
+    { "id": "c5c", "chapter": "05 Salt", "text": "So good sites add a *salt*. | Random text, | different for every user, | mixed in before blending. | Same password, | totally different hash." },
+
+    { "id": "c6a", "chapter": "06 Slow on purpose", "text": "Step six. *Slow on purpose.* | The real problem is speed. | Those common hashes were built to be fast." },
+    { "id": "c6b", "chapter": "06 Slow on purpose", "text": "So good sites use hashes that are slow on purpose, | like *bcrypt*, | or Argon two." },
+    { "id": "c6c", "chapter": "06 Slow on purpose", "text": "Same graphics card. | Twenty two billion guesses a second | drops to about *a hundred eighty four thousand*." },
+
+    { "id": "t1", "chapter": "07 What actually works", "text": "Now the twist. | Symbols don't beat the list. | *Length* does." },
+    { "id": "t2", "chapter": "07 What actually works", "text": "Pick four random words. | From a list of seven thousand seven hundred seventy six words, | that's over three quadrillion combinations." },
+    { "id": "t3", "chapter": "07 What actually works", "text": "None of them on a leak list. | Against a fast hash, | that's days of guessing. | Against a slow one, | *centuries*." },
+    { "id": "t4", "chapter": "07 What actually works", "text": "Even NIST, | the US standards body, | now tells sites: | stop forcing symbols. | Ask for at least fifteen characters." },
+    { "id": "t5", "chapter": "07 What actually works", "text": "One catch. | Random means random. | Correct horse battery staple, | the famous example? | Leaked over four thousand times." },
+    { "id": "cav", "chapter": "07 What actually works", "text": "To be fair, | none of this helps if you reuse it. | Use a different password everywhere. | A password manager makes that easy." },
+
+    { "id": "recap", "chapter": "Recap", "text": "So. | Sites blend your password. | Hackers steal the blends, | and guess from leaked lists. | Salt and slow hashes fight back. | And length beats symbols." },
+
+    { "id": "punch", "chapter": "end", "text": "Don't be clever. | Be *long*." },
+    { "id": "cta", "chapter": "end", "text": "Want to build apps that store passwords right? | Learn it on Teyro." }
+  ]
+}

@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is "we" a bad owner?',
         options: [
-          { text: 'Everyone assumes someone else will do it' },
           { text: 'It is grammatically wrong', why: 'Grammar is fine; ownership is the problem.' },
           { text: 'Teams cannot own tasks', why: 'Teams can, but one named person makes it happen.' },
+          { text: 'Everyone assumes someone else will do it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
@@ -157,11 +157,11 @@ const lesson: OriginalLesson = {
         message: "Our meeting notes always have 15 actions and half never get done.",
         prompt: 'What should Ada suggest?',
         options: [
-          { text: 'Have the AI flag actions with no owner or date, and fix those before sending the notes.' },
           { text: 'Write more actions.', why: 'More vague actions, same result.' },
           { text: 'Stop writing notes.', why: 'Notes help when actions are real.' },
+          { text: 'Have the AI flag actions with no owner or date, and fix those before sending the notes.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -182,11 +182,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'When should vague actions be fixed?',
         options: [
-          { text: 'Before the meeting notes go out' },
           { text: 'At the next meeting', why: 'By then they are already forgotten.' },
+          { text: 'Before the meeting notes go out' },
           { text: 'Never, vague is fine', why: 'Vague actions rarely happen.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

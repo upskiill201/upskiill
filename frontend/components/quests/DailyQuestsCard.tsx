@@ -14,7 +14,7 @@
  *    pays +15 Coins (the server's rule), instead of a chest that didn't exist.
  */
 
-import { Check, Clock, RefreshCw } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -55,7 +55,7 @@ export function DailyQuestsCard({ variant = 'rail' }: { variant?: 'rail' | 'page
           Daily Quests
         </h2>
         <span className="inline-flex items-center gap-1 text-[13px] font-extrabold" style={{ color: 'var(--warning)' }}>
-          <Clock className="w-4 h-4 stroke-[2.6]" aria-hidden="true" />
+          <Glyph name="clock" size={16} strokeWidth={2.6} />
           {left}
         </span>
       </header>
@@ -81,7 +81,7 @@ export function DailyQuestsCard({ variant = 'rail' }: { variant?: 'rail' | 'page
             onClick={() => void mutate()}
             className="mt-3 inline-flex items-center gap-1.5 rounded-[12px] px-4 py-2 text-[13.5px] font-extrabold text-[var(--color-brand)] hover:bg-[var(--light-blue-bg)] cursor-pointer"
           >
-            <RefreshCw className="w-4 h-4" aria-hidden="true" />
+            <Glyph name="refresh" size={16} strokeWidth={2.6} />
             Try again
           </button>
         </div>
@@ -105,7 +105,7 @@ export function DailyQuestsCard({ variant = 'rail' }: { variant?: 'rail' | 'page
         >
           {allClaimed ? (
             <>
-              <Check className="w-4 h-4 stroke-[3]" aria-hidden="true" />
+              <Glyph name="check" size={16} />
               All done for today — new quests in {left}.
             </>
           ) : (

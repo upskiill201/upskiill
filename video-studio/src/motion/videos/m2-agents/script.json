@@ -1,0 +1,117 @@
+{
+  "slug": "m2-agents",
+  "compId": "M2-agents",
+  "title": "AI agents, explained",
+  "look": "blueprint",
+  "voice": "TX3LPaxmHKxFdv7VOQHJ",
+  "model": "eleven_multilingual_v2",
+  "speed": 1.08,
+  "hook": {
+    "archetype": "jargon wall Ã¢â€ â€™ one simple idea",
+    "igCaptionLine1": "Agent. Tools. Memory. MCP. Ã°Å¸Â§Â ",
+    "igCaptionLine2": "It sounds like a lot. It's really just one loop Ã°Å¸â€˜â€¡"
+  },
+  "sources": [
+    {
+      "claim": "Agents are typically just LLMs using tools based on environmental feedback in a loop",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "note": "Anthropic, 'Building effective agents' (Dec 19, 2024), section Agents",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "Agents should get ground truth from the environment each step; common to include stopping conditions such as a maximum number of iterations; autonomy means potential for compounding errors",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "note": "section Agents",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "Anthropic spent more time optimizing tools than the overall prompt when building their SWE-bench agent",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "note": "Appendix 2, Prompt engineering your tools",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "Find the simplest solution; many applications only need a single optimised LLM call; agents fit when you can't predict the steps",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "note": "sections 'When (and when not) to use agents' and 'When to use agents'",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "Model Context Protocol released by Anthropic as an open standard on Nov 25, 2024",
+      "url": "https://www.anthropic.com/news/model-context-protocol",
+      "note": "announcement dated Nov 25, 2024",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "MCP servers offer resources, prompts and tools; JSON-RPC 2.0; hosts must obtain explicit user consent before invoking any tool",
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28",
+      "note": "MCP specification 2026-07-28, Overview + Security and Trust & Safety",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "95% per step over 20 steps Ã¢â€°Ë† 36% (0.95^20 = 0.358)",
+      "url": "computed",
+      "note": "illustrative arithmetic, shown as an example on screen",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "Teyro lines: AI track includes 'Build AI agents'; 'a few minutes a day'; 'the fun way to finish learning coding and AI'",
+      "url": "https://teyro.app",
+      "note": "homepage 'Pick your track' + title; /features 'Short lessons'",
+      "checked": "2026-10-09"
+    }
+  ],
+  "teyro": {
+    "bridgeChips": ["AI track", "Build AI agents", "A few minutes a day"],
+    "outroHeadline": "The fun way to finish learning coding and AI.",
+    "outroAsk": "Search Teyro"
+  },
+  "lines": [
+    { "id": "title", "chapter": "00", "text": "AI agents, explained." },
+    { "id": "o1", "chapter": "00", "text": "This is Kemi. | She types one line: | find the cheapest flight to Nairobi on Friday, | and put it in my calendar." },
+    { "id": "o2", "chapter": "00", "text": "A chatbot would *describe* how to do that. | An agent goes and does it." },
+    { "id": "o3", "chapter": "00", "text": "Agent. | Tools. | Memory. | MCP. | It sounds like a lot. | It's really just one *loop*. | Let's build it from scratch." },
+
+    { "id": "c1a", "chapter": "01 The brain", "text": "Step one. *The brain.* | A language model on its own | does one thing. | Text in, | text out." },
+    { "id": "c1b", "chapter": "01 The brain", "text": "It can't check a price. | It can't open a calendar. | It's a brain in a jar. | Smart, | but no hands." },
+
+    { "id": "c2a", "chapter": "02 Tools", "text": "Step two. *Tools.* | So we give it hands. | A short menu: | search flights, | read calendar, | add event." },
+    { "id": "c2b", "chapter": "02 Tools", "text": "Each tool is a name, | a description, | and the inputs it needs." },
+    { "id": "c2c", "chapter": "02 Tools", "text": "Now when Kemi asks, | the model doesn't answer. | It writes a request: | search flights, | Lagos to Nairobi, | Friday." },
+    { "id": "c2d", "chapter": "02 Tools", "text": "Your code runs it, | and hands back the result. | The model never touches the internet. | It just *asks*. | That's a tool call." },
+    { "id": "c2e", "chapter": "02 Tools", "text": "And those descriptions matter. | For one agent, | Anthropic spent more time on the tools | than on the prompt." },
+
+    { "id": "c3a", "chapter": "03 The loop", "text": "Step three. *The loop.* | One search isn't enough. | The cheapest flight is sold out." },
+    { "id": "c3b", "chapter": "03 The loop", "text": "So the model reads the result, | and picks the next move. | Search again. | Compare. | Check the calendar." },
+    { "id": "c3c", "chapter": "03 The loop", "text": "Think. | Act. | Observe. | Repeat. | Anthropic describes agents as a model | using tools, | in a *loop*." },
+    { "id": "c3d", "chapter": "03 The loop", "text": "But every loop adds more text. | And soon, | the model starts to *forget*." },
+
+    { "id": "c4a", "chapter": "04 Memory", "text": "Step four. *Memory.* | A model can only read so much at once. | That limit is its *context window*." },
+    { "id": "c4b", "chapter": "04 Memory", "text": "Fill it with old results, | and early details get pushed out, | like what Kemi actually asked." },
+    { "id": "c4c", "chapter": "04 Memory", "text": "So agents keep notes. | They summarise old steps, | and read them back when needed." },
+    { "id": "c4d", "chapter": "04 Memory", "text": "Now, | Kemi's agent has three tools. | What if it needed *three hundred*?" },
+
+    { "id": "bridge", "chapter": "bridge", "text": "Quick thing. | Building AI agents | is part of the AI track on Teyro." },
+    { "id": "back", "chapter": "bridge", "text": "Okay. | Back to the wiring." },
+
+    { "id": "c5a", "chapter": "05 One plug", "text": "Step five. *One plug.* | Before, | every app wired every tool | by hand." },
+    { "id": "c5c", "chapter": "05 One plug", "text": "So in November twenty twenty four, | Anthropic released an open standard: | the *Model Context Protocol*. | MCP." },
+    { "id": "c5d", "chapter": "05 One plug", "text": "Think USB-C, | for AI. | Build a tool once, | and any MCP app | can plug it in." },
+    { "id": "c5e", "chapter": "05 One plug", "text": "A server offers three things: | *tools* to run, | *resources* to read, | and *prompts* to reuse." },
+
+    { "id": "c6a", "chapter": "06 Guardrails", "text": "Step six. *Guardrails.* | Searching flights is harmless. | Paying for one isn't." },
+    { "id": "c6b", "chapter": "06 Guardrails", "text": "So risky tools need a human. | The agent pauses, | shows Kemi the flight, | and waits for a *yes*." },
+    { "id": "c6c", "chapter": "06 Guardrails", "text": "The MCP spec says it plainly: | get the user's consent | before running any tool." },
+
+    { "id": "t1", "chapter": "07 The trap", "text": "And here's the trap. | Most agent failures aren't the model. | They're the *loop*." },
+    { "id": "t2", "chapter": "07 The trap", "text": "Small mistakes stack up. | If each step is ninety five percent right, | twenty steps in a row | come out right only about *a third* of the time." },
+    { "id": "t3", "chapter": "07 The trap", "text": "And a loop with no exit | just keeps going. | And *spending*." },
+    { "id": "t4", "chapter": "07 The trap", "text": "So good agents check real results every step, | and have a *stop* condition. | Goal reached, | or too many turns." },
+    { "id": "cav", "chapter": "07 The trap", "text": "To be fair, | most tasks don't need an agent. | One good prompt is often enough." },
+
+    { "id": "recap", "chapter": "Recap", "text": "So. | A brain. | Tools for hands. | A loop to keep going. | Notes to remember. | MCP to plug in. | Guardrails to stay safe. | And a way to *stop*." },
+
+    { "id": "punch", "chapter": "end", "text": "No magic. | Just a model, | some tools, | and a *loop*." },
+    { "id": "cta", "chapter": "end", "text": "Want to build your own agent? | Learn it on Teyro." }
+  ]
+}

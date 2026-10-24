@@ -1,4 +1,4 @@
-import { Target } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import ProgressBar3D from '@/components/ui/ProgressBar3D';
 import type { DashboardResponse } from '../types';
 
@@ -9,7 +9,7 @@ export function WeeklyGoal({ goal }: { goal: DashboardResponse['weeklyGoal'] }) 
   return (
     <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
       <div className="flex items-center gap-2 mb-3">
-        <Target size={18} color="#0172FD" />
+        <Glyph name="target" size={18} color="var(--color-brand)" />
         <h2 className="text-sm font-extrabold text-[#1F2A44]">Weekly Goal</h2>
       </div>
       <ProgressBar3D

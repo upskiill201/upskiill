@@ -48,11 +48,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'With k = 12 on a 12-patient notebook, what happens?',
         options: [
-          { text: 'Every new patient gets the same prediction: the majority answer' },
           { text: 'It\'s the most accurate possible', why: 'It ignores the new patient completely.' },
           { text: 'It crashes', why: 'It runs. It just stops being useful.' },
+          { text: 'Every new patient gets the same prediction: the majority answer' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -71,21 +71,21 @@ const lesson: OriginalLesson = {
         message: 'So k = 3 is the best k, full stop.',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'Best for 12 patients tested on 4. With 2,400 bookings the best k will probably be bigger. We test to find out.' },
           { text: 'Yes, 3 forever.', why: 'The best k depends on the data. Test it.' },
+          { text: 'Best for 12 patients tested on 4. With 2,400 bookings the best k will probably be bigger. We test to find out.' },
           { text: 'k doesn\'t matter.', why: 'It changed the score from 1 to 3 of 4.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Why choose an odd k?',
         options: [
-          { text: 'With two possible answers, an odd number of votes can\'t tie' },
           { text: 'Odd numbers are luckier', why: 'It\'s about ties, not luck.' },
           { text: 'Python only accepts odd k', why: 'Any k works. Odd k just avoids ties.' },
+          { text: 'With two possible answers, an odd number of votes can\'t tie' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

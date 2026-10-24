@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         message: "Can't I just copy my notes onto one page in small writing?",
         prompt: 'What should Kofi say?',
         options: [
-          { text: "That's copying. Start from a blank page and memory. What you can't remember is exactly what to revise." },
           { text: 'Yes, smaller writing fits more.', why: 'Still copying, just smaller.' },
+          { text: "That's copying. Start from a blank page and memory. What you can't remember is exactly what to revise." },
           { text: 'Use a bigger page.', why: 'The size is not the issue.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

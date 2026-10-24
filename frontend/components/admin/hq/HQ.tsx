@@ -9,7 +9,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, type CSSProperties, type ReactNode } from 'react';
-import { ArrowDownRight, ArrowRight, ArrowUpRight, Minus } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { TEY_POSE_SRC, type TeyPose } from '@/components/lesson/TeySays';
 import { Columns } from '@/components/studio/Charts';
 import h from './hq.module.css';
@@ -127,7 +127,7 @@ export function Panel({
 export function MoreLink({ href, children }: { href: string; children: ReactNode }) {
   return (
     <Link href={href} className={h.more}>
-      {children} <ArrowRight size={15} aria-hidden="true" />
+      {children} <Glyph name="arrow" size={15} strokeWidth={2.8} />
     </Link>
   );
 }
@@ -136,10 +136,10 @@ export function MoreLink({ href, children }: { href: string; children: ReactNode
 
 export function Delta({ pct, upIsGood = true, label = 'vs previous' }: { pct: number; upIsGood?: boolean; label?: string }) {
   const tone = pct === 0 ? h.flat : (pct > 0) === upIsGood ? h.up : h.down;
-  const Icon = pct === 0 ? Minus : pct > 0 ? ArrowUpRight : ArrowDownRight;
+  const glyph = pct === 0 ? 'minus' : pct > 0 ? 'upRight' : 'downRight';
   return (
     <span className={`${h.delta} ${tone}`}>
-      <Icon size={14} strokeWidth={3} aria-hidden="true" />
+      <Glyph name={glyph} size={14} strokeWidth={3} />
       {pct > 0 ? '+' : ''}
       {pct}% <span className={h.deltaLabel}>{label}</span>
     </span>

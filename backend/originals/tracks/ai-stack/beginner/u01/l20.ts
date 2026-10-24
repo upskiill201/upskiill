@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Without context, the model said returns are allowed for 60 days. Which layer fixes that?',
         options: [
-          { text: 'Data and retrieval: give it the help page' },
           { text: 'Compute: faster chips', why: 'Speed doesn\'t add facts.' },
+          { text: 'Data and retrieval: give it the help page' },
           { text: 'Application: a nicer chat box', why: 'The box isn\'t the problem; missing facts are.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -101,11 +101,11 @@ const lesson: OriginalLesson = {
         message: 'One line for Mr Rao about v0.1?',
         prompt: "Joel's best reply?",
         options: [
-          { text: '"Ask Rao answers delivery, returns and sizes from your help page, for about $0.04 per 1,000 chats; order tracking is next."' },
           { text: '"v0.1 implements retrieval across a six-layer architecture."', why: 'True, and he\'d stop reading.' },
           { text: '"It\'s finished."', why: 'It can\'t track orders or block attacks yet.' },
+          { text: '"Ask Rao answers delivery, returns and sizes from your help page, for about $0.04 per 1,000 chats; order tracking is next."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

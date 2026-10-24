@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         message: "I memorised all the Physics formulas, but in the mock I didn't know which one to use.",
         prompt: 'What should Kofi suggest?',
         options: [
-          { text: 'Ask the AI why each formula works and when you would use it. Then you can pick the right one.' },
           { text: 'Memorise them again, harder.', why: 'He already knew them. He did not understand them.' },
           { text: 'Ask for more formulas.', why: 'More to memorise, same problem.' },
+          { text: 'Ask the AI why each formula works and when you would use it. Then you can pick the right one.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

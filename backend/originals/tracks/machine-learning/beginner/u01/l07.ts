@@ -42,11 +42,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which step uses past appointments where we already know who came?',
         options: [
-          { text: 'Training' },
           { text: 'Predicting', why: 'Predicting is for new appointments with no answer yet.' },
           { text: 'Neither', why: 'Training learns from exactly those.' },
+          { text: 'Training' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -87,11 +87,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can\'t we train on tomorrow\'s appointments?',
         options: [
-          { text: 'We don\'t know their answers yet' },
           { text: 'They are too few', why: 'Even a big list can\'t be used for training without answers.' },
+          { text: 'We don\'t know their answers yet' },
           { text: 'Models can only use old data', why: 'They predict on new data. They train on data with known answers.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -106,11 +106,11 @@ const lesson: OriginalLesson = {
         message: 'Does the model have to learn again every morning?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'No. Train it now and then on past data, then use it to predict every morning\'s list.' },
           { text: 'Yes, from zero, every day.', why: 'Training is occasional. Predicting is daily.' },
           { text: 'It never needs training.', why: 'Without training it has learned nothing.' },
+          { text: 'No. Train it now and then on past data, then use it to predict every morning\'s list.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

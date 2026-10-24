@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '"Get your ducks in a row." What does Brian want?',
         options: [
-          { text: 'Get organised and ready' },
           { text: 'Bring some ducks', why: 'Remi\'s literal brain says yes. The office says no. It means get organised.' },
+          { text: 'Get organised and ready' },
           { text: 'Stand in a line', why: 'The picture is a neat line, but the meaning is "be organised".' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',

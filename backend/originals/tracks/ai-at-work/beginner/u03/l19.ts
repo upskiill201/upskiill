@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ada just wants to know if an article is worth reading. Which checks matter?',
         options: [
-          { text: 'Purpose and kind (a gist) are enough' },
           { text: 'All eight, every time', why: 'Overkill for a low-stakes skim.' },
+          { text: 'Purpose and kind (a gist) are enough' },
           { text: 'None', why: 'Purpose still shapes the summary.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         message: "Can you share your summary 'recipe'? Mine always come out vague.",
         prompt: 'What should Ada send?',
         options: [
-          { text: "Her reusable request: purpose, kind, reader, page numbers, 'only what the text supports', keep certainty, then caveats separately." },
           { text: '"Summarise this."', why: 'That is why Lucía\'s come out vague.' },
           { text: 'A list of AI tools.', why: 'The tool is not the problem; the request is.' },
+          { text: "Her reusable request: purpose, kind, reader, page numbers, 'only what the text supports', keep certainty, then caveats separately." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -152,11 +152,11 @@ const lesson: OriginalLesson = {
         message: 'Eight checks sounds like a lot for every summary.',
         prompt: "What's Ada's answer?",
         options: [
-          { text: "It's not every time: purpose and kind for quick things, all eight when money, contracts or decisions are involved." },
           { text: 'Yes, always do all eight.', why: 'Overkill for small things.' },
+          { text: "It's not every time: purpose and kind for quick things, all eight when money, contracts or decisions are involved." },
           { text: 'Skip them all.', why: 'High-stakes summaries need them.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -178,11 +178,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where should Ada keep her reusable summary request?',
         options: [
-          { text: 'With her other saved templates and style guide' },
           { text: 'Nowhere, she will remember', why: 'Saved is faster and more reliable.' },
           { text: 'In the bin', why: 'It saves her time daily.' },
+          { text: 'With her other saved templates and style guide' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: '(private chat) Remi!! The deadline is the 20th, not the 30th! Say something!',
         prompt: 'What does Remi reply?',
         options: [
-          { text: 'Doing it now.' },
           { text: 'You say it.', why: 'Zanele wasn\'t at Monday\'s sync, so she\'s not sure. Remi was.' },
+          { text: 'Doing it now.' },
           { text: 'I know, I\'ll wait until he finishes.', why: 'Every minute adds more plan built on the wrong date.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -124,11 +124,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Later, Zanele interrupts REMI with a good point. What should he say?',
         options: [
-          { text: '"Good point, Zanele. Let me finish this one sentence and then over to you."' },
           { text: '"I was talking!"', why: 'Fair, but sharp. There\'s a kinder way to keep your turn.' },
           { text: 'Stop and never finish', why: 'His point matters too. Finish it briefly, then hand over.' },
+          { text: '"Good point, Zanele. Let me finish this one sentence and then over to you."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

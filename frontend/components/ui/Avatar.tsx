@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { User } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import styles from './Avatar.module.css';
 
 type AvatarProps = {
@@ -59,7 +59,7 @@ export default function Avatar({
         ) : initials ? (
           <span className={styles.initials}>{initials}</span>
         ) : (
-          <User className={styles.fallbackIcon} />
+          <Glyph name="user" className={styles.fallbackIcon} />
         )}
       </div>
       {online && <span className={`${styles.statusDot} ${styles[size]}`} />}

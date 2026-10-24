@@ -43,22 +43,22 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which definition of diffusion is best for Kofi\'s notes?',
         options: [
-          { text: 'Particles spreading from a high to a low concentration, until evenly spread.' },
           { text: 'Stuff spreads out.', why: 'Misses the key terms.' },
           { text: 'A 45-word textbook definition copied exactly', why: 'Hard to remember, and copying again.' },
+          { text: 'Particles spreading from a high to a low concentration, until evenly spread.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         variant: 'pickPrompt',
         prompt: 'Which request finds the mark-worthy words?',
         options: [
-          { text: 'What key terms must a definition of diffusion include to get full marks at final-year level?' },
           { text: 'Define diffusion for me.', why: 'He gets a definition, not the key terms to check his own.' },
+          { text: 'What key terms must a definition of diffusion include to get full marks at final-year level?' },
           { text: 'Is diffusion important?', why: 'Not a definition question.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: "I wrote all my Physics definitions in my own words, but I lost marks on every one in the quiz.",
         prompt: 'What is probably missing?',
         options: [
-          { text: 'The key terms the mark scheme looks for. Keep your words, but put those terms back in.' },
           { text: 'They were too short.', why: 'Short is fine if the key terms are there.' },
           { text: 'He should copy the textbook instead.', why: 'Own words plus key terms is better than copying.' },
+          { text: 'The key terms the mark scheme looks for. Keep your words, but put those terms back in.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         message: "Our newsletter reads like every other company's. Everything is 'exciting' and 'innovative'.",
         prompt: 'What should Ada suggest?',
         options: [
-          { text: 'Replace each big word with a fact or number, and add one detail only your team knows.' },
           { text: 'Use even stronger adjectives.', why: 'More big words, more generic.' },
           { text: 'Make it longer.', why: 'Length is not the problem; specifics are.' },
+          { text: 'Replace each big word with a fact or number, and add one detail only your team knows.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -172,11 +172,11 @@ const lesson: OriginalLesson = {
         message: "A colleague ran your email through an AI detector and it said '90% AI'. Should I worry?",
         prompt: "What's Ada's honest answer?",
         options: [
-          { text: "Detectors are often wrong. What matters is whether it's accurate, specific and sounds like us. I wrote it with AI help and checked every fact." },
           { text: 'The detector must be right.', why: 'Detectors are frequently wrong.' },
+          { text: "Detectors are often wrong. What matters is whether it's accurate, specific and sounds like us. I wrote it with AI help and checked every fact." },
           { text: "I've never used AI, ever.", why: 'Honesty about AI use builds more trust.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

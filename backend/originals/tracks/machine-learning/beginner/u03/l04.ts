@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Kunle\'s nearest neighbour, Ireti, came. Kunle missed. What does that show?',
         options: [
-          { text: 'One neighbour can be the exception' },
           { text: 'The distance formula is wrong', why: 'The formula found the most similar patient correctly. She just did something different.' },
           { text: 'Kunle lied', why: 'Similar patients don\'t always do the same thing.' },
+          { text: 'One neighbour can be the exception' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is it called a "lazy" learner?',
         options: [
-          { text: 'It does no work until it has to predict' },
           { text: 'It\'s slow to type', why: 'It\'s about when the work happens.' },
           { text: 'It doesn\'t use the examples', why: 'It uses them at prediction time.' },
+          { text: 'It does no work until it has to predict' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -135,11 +135,11 @@ const lesson: OriginalLesson = {
         message: 'One neighbour said Kunle would come. He didn\'t. Can we ask more than one?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Exactly what we\'ll do next: ask the nearest three or five, and go with the majority.' },
           { text: 'No, one is the rule.', why: 'You can ask as many as you like. That\'s k.' },
+          { text: 'Exactly what we\'ll do next: ask the nearest three or five, and go with the majority.' },
           { text: 'Ask all 2,400.', why: 'Then everyone gets the same answer: the majority. Lesson 8 shows why.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

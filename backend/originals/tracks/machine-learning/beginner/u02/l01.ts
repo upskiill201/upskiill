@@ -43,11 +43,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Miracle want the cleaning written in Python?',
         options: [
-          { text: 'The same steps can run again on next month\'s data, and anyone can check them' },
           { text: 'Python is the only way to open a file', why: 'Spreadsheets open files too. The win is repeatable steps.' },
           { text: 'Spreadsheets are illegal', why: 'They\'re fine for looking. Code is better for repeatable work.' },
+          { text: 'The same steps can run again on next month\'s data, and anyone can check them' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'Can\'t the model just learn from the messy file?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'It would learn the mess too: "YABA" and "Yaba" as two clinics, a 400-day wait as real. Clean first.' },
           { text: 'Yes, models ignore mistakes.', why: 'Models learn from everything they\'re given, mistakes included.' },
+          { text: 'It would learn the mess too: "YABA" and "Yaba" as two clinics, a 400-day wait as real. Clean first.' },
           { text: 'Models can\'t read files.', why: 'They can. The problem is what\'s in the file.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -131,11 +131,11 @@ const lesson: OriginalLesson = {
         message: 'How many rows did Emmanuel send?',
         prompt: "Halima's best reply?",
         options: [
-          { text: '2,412. I\'ll check that number in Python too, so we know nothing went missing.' },
           { text: 'About a thousand.', why: 'It was 2,412.' },
+          { text: '2,412. I\'ll check that number in Python too, so we know nothing went missing.' },
           { text: 'I didn\'t count; it doesn\'t matter.', why: 'Knowing the row count is the first check on any dataset.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

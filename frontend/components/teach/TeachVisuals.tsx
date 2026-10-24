@@ -6,29 +6,14 @@
  * coming back, a stuck learner nudged, a question answered, a payout landing.
  *
  * Illustrative data, but every mechanic shown ships today, and the money
- * adds up with the real pricing engine: a $60 course (the yearly price) is
- * $10/month, and the creator keeps 70% ($7) of every monthly payment.
+ * adds up with the real Pro prices: a yearly Pro learner pays $5.00 a month,
+ * half of it is the creators' pool, so one who learns only in your course
+ * sends you $2.50 a month (lib/launch.ts).
  */
 
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import {
-  BadgeCheck,
-  Bell,
-  Bug,
-  Check,
-  CircleDollarSign,
-  Flame,
-  Landmark,
-  Lock,
-  MessageCircleQuestion,
-  Pin,
-  Send,
-  Smartphone,
-  Sparkles,
-  Trophy,
-  TrendingUp,
-} from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { Pop } from '@/components/homepage/v3/Visuals';
 import s from '@/components/homepage/v3/Home.module.css';
 import t from './Teach.module.css';
@@ -60,16 +45,16 @@ export function StudioHeroVisual() {
     <div className={`${s.heroVisual} ${t.heroStage}`}>
       <Pop delay={0.6} className={`${s.float} ${t.floatSale}`}>
         <span className={t.floatIcon} style={{ background: 'var(--success-green)' }}>
-          <CircleDollarSign size={20} strokeWidth={2.75} />
+          <Glyph name="coinDollar" size={20} strokeWidth={2.55} />
         </span>
         <span>
-          <span className={s.floatLabel}>New subscriber</span>
-          <span className={s.floatValue}>+$7.00/mo</span>
+          <span className={s.floatLabel}>New Pro learner</span>
+          <span className={s.floatValue}>+$2.50/mo</span>
         </span>
       </Pop>
       <Pop delay={0.9} className={`${s.float} ${t.floatFinish}`}>
         <span className={t.floatIcon} style={{ background: 'var(--brand-purple)' }}>
-          <Trophy size={20} strokeWidth={2.75} />
+          <Glyph name="trophy" size={20} strokeWidth={2.55} />
         </span>
         <span>
           <span className={s.floatLabel}>Kemi finished</span>
@@ -97,7 +82,7 @@ export function StudioHeroVisual() {
         <div className={t.bigRow}>
           <span className={t.big}>$1,260.00</span>
           <span className={t.up}>
-            <TrendingUp size={16} strokeWidth={3} /> 26%
+            <Glyph name="upRight" size={16} strokeWidth={2.8} /> 26%
           </span>
         </div>
         <div className={t.cols}>
@@ -118,7 +103,7 @@ export function StudioHeroVisual() {
           <span className={t.courseIcon}>{'</>'}</span>
           <span className={t.courseText}>
             <strong>Python for Data</strong>
-            <span>180 subscribers × $7 a month</span>
+            <span>504 Pro learners · Teyro Pro pool</span>
           </span>
           <span className={t.livePill}>Live</span>
         </div>
@@ -133,9 +118,9 @@ export function StudioHeroVisual() {
 
 export function RecurringVisual() {
   const steps = [
-    { label: 'Lesson 1', sub: 'Free', done: true },
-    { label: 'Lesson 2', sub: 'Free', done: true },
-    { label: 'Subscribe', sub: '$10 a month', now: true },
+    { label: 'Start', sub: 'Free', done: true },
+    { label: 'Your lessons', sub: 'Free to try', done: true },
+    { label: 'Teyro Pro', sub: '$5.00 a month', now: true },
   ];
   return (
     <div className={`${s.card} ${t.recurring}`} aria-hidden="true">
@@ -143,7 +128,7 @@ export function RecurringVisual() {
       <div className={t.steps}>
         {steps.map((st, i) => (
           <Pop key={st.label} delay={0.15 + i * 0.15} className={`${t.step} ${st.now ? t.stepNow : ''}`}>
-            <span className={t.stepNode}>{st.done ? <Check size={22} strokeWidth={4} /> : <Lock size={20} strokeWidth={3} />}</span>
+            <span className={t.stepNode}>{st.done ? <Glyph name="check" size={22} strokeWidth={3.6} /> : <Glyph name="lock" size={20} strokeWidth={2.8} />}</span>
             <strong>{st.label}</strong>
             <span>{st.sub}</span>
           </Pop>
@@ -153,12 +138,12 @@ export function RecurringVisual() {
         {['Sep', 'Oct', 'Nov', 'Dec'].map((m, i) => (
           <Pop key={m} delay={0.7 + i * 0.12} className={t.keepMonth}>
             <span>{m}</span>
-            <strong>+$7.00</strong>
+            <strong>+$2.50</strong>
           </Pop>
         ))}
       </div>
       <p className={t.keepNote}>
-        <Sparkles size={16} strokeWidth={2.75} /> You keep 70%, every month they keep learning.
+        <Glyph name="sparkle" size={16} strokeWidth={2.55} /> Your share of the pool, every month they learn with you.
       </p>
     </div>
   );
@@ -180,13 +165,13 @@ export function BuilderVisual() {
       <div className={t.tabs}>
         {PHASE_TABS.map((p, i) => (
           <span key={p.name} className={`${t.tab} ${i === 1 ? t.tabOn : ''}`} style={{ ['--tone' as string]: p.tone }}>
-            {i === 0 ? <Check size={14} strokeWidth={4} /> : null}
+            {i === 0 ? <Glyph name="check" size={14} strokeWidth={3.6} /> : null}
             {p.name}
           </span>
         ))}
       </div>
       <span className={t.kicker}>
-        <Bug size={14} strokeWidth={3} /> Find the bug
+        <Glyph name="help" size={14} strokeWidth={2.8} /> Find the bug
       </span>
       <pre className={t.code}>
         <span>{'def average(nums):'}</span>
@@ -203,7 +188,7 @@ export function BuilderVisual() {
         ))}
       </div>
       <Pop delay={1} className={t.published}>
-        <BadgeCheck size={20} strokeWidth={2.75} /> Lesson published · 5 min · +10 XP
+        <Glyph name="verified" size={20} strokeWidth={2.55} /> Lesson published · 5 min · +10 XP
       </Pop>
     </div>
   );
@@ -225,7 +210,7 @@ export function RetentionVisual() {
         <div className={t.headRow}>
           <strong className={t.cardTitle}>Your learners</strong>
           <span className={t.greenPill}>
-            <Flame size={14} strokeWidth={3} fill="currentColor" /> 63 learning today
+            <Glyph name="flame" size={14} strokeWidth={2.8} /> 63 learning today
           </span>
         </div>
         {LEARNERS.map((l, i) => (
@@ -245,14 +230,14 @@ export function RetentionVisual() {
               <span className={t.learnerNote}>{l.note}</span>
             </span>
             <span className={t.streak}>
-              <Flame size={16} strokeWidth={2.75} fill="currentColor" /> {l.streak}
+              <Glyph name="flame" size={16} strokeWidth={2.55} /> {l.streak}
             </span>
           </Pop>
         ))}
       </div>
       <Pop delay={0.8} className={`${s.card} ${t.toastCard}`}>
         <span className={t.floatIcon} style={{ background: 'var(--warning)' }}>
-          <Bell size={18} strokeWidth={2.75} />
+          <Glyph name="bell" size={18} strokeWidth={2.55} />
         </span>
         <span>
           <strong>Tey reminded Tunde</strong>
@@ -297,7 +282,7 @@ export function InsightVisual() {
           ))}
         </div>
         <Pop delay={0.8} className={t.flagNote}>
-          <MessageCircleQuestion size={18} strokeWidth={2.75} />
+          <Glyph name="bubble" size={18} strokeWidth={2.55} />
           <span>
             <strong>Lesson 4 is where most stop.</strong> Exercise 2 is missed by 6 in 10 on the first try.
           </span>
@@ -305,7 +290,7 @@ export function InsightVisual() {
       </div>
       <Pop delay={1.1} className={`${s.card} ${t.toastCard}`}>
         <span className={t.floatIcon} style={{ background: 'var(--color-brand)' }}>
-          <Send size={18} strokeWidth={2.75} />
+          <Glyph name="send" size={18} strokeWidth={2.55} />
         </span>
         <span>
           <strong>Nudge sent to 9 quiet learners</strong>
@@ -323,7 +308,7 @@ export function CommunityVisual() {
     <div className={t.stack} aria-hidden="true">
       <Pop delay={0.1} className={`${s.card} ${t.post} ${t.pinned}`}>
         <span className={t.postHead}>
-          <Pin size={16} strokeWidth={2.75} /> <strong>Announcement</strong> · from you
+          <Glyph name="pin" size={16} strokeWidth={2.55} /> <strong>Announcement</strong> · from you
         </span>
         <p className={t.postBody}>New unit is live: cleaning messy data with pandas.</p>
       </Pop>
@@ -348,7 +333,7 @@ export function CommunityVisual() {
         <span className={t.postStats}>
           <Image src="/art/ui/like.svg" alt="" width={18} height={18} /> 31 · 6 replies ·
           <span className={t.answered}>
-            <Check size={14} strokeWidth={4} /> Answered
+            <Glyph name="check" size={14} strokeWidth={3.6} /> Answered
           </span>
         </span>
       </div>
@@ -370,21 +355,21 @@ export function PayoutVisual() {
       <span className={t.big}>$1,142.80</span>
       <div className={t.method}>
         <span className={t.methodIcon}>
-          <Smartphone size={18} strokeWidth={2.75} />
+          <Glyph name="phone" size={18} strokeWidth={2.55} />
         </span>
         <span>
           <strong>Mobile money</strong>
           <span>•••• 4821</span>
         </span>
         <span className={t.methodAlt}>
-          <Landmark size={16} strokeWidth={2.75} /> or bank
+          <Glyph name="bank" size={16} strokeWidth={2.55} /> or bank
         </span>
       </div>
       <div className={t.timeline}>
         {steps.map((st, i) => (
           <Pop key={st.label} delay={0.3 + i * 0.25} className={t.tStep}>
             <span className={t.tDot}>
-              <Check size={16} strokeWidth={4} />
+              <Glyph name="check" size={16} strokeWidth={3.6} />
             </span>
             <strong>{st.label}</strong>
             <span>{st.sub}</span>

@@ -16,7 +16,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { AlertCircle, ChevronDown, RefreshCw, Sparkles, Zap } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
+import { Mark } from '@/components/art/Mark';
 import { useGamification } from '@/context/GamificationContext';
 import { useShopEngine } from '@/context/ShopEngineContext';
 import ShopItemCard from '@/components/shop/ShopItemCard';
@@ -272,11 +273,11 @@ export default function ShopPage() {
       <div className={styles.shop}>
         <div className={styles.main}>
           <div className={styles.errorState} role="alert">
-            <AlertCircle size={32} strokeWidth={2.5} />
+            <Glyph name="alert" size={32} strokeWidth={2.5} />
             <h2>The shop didn&apos;t load</h2>
             <p>{loadError}</p>
             <button type="button" className={styles.retryBtn} onClick={() => void load()}>
-              <RefreshCw size={16} strokeWidth={2.75} />
+              <Glyph name="refresh" size={16} strokeWidth={2.75} />
               Try again
             </button>
           </div>
@@ -299,7 +300,7 @@ export default function ShopPage() {
             className={`${styles.eventBanner} ${styles.oEvent}`}
             style={{ '--accent': catalog.event.accent } as React.CSSProperties}
           >
-            <Sparkles size={20} strokeWidth={2.5} />
+            <Glyph name="sparkle" size={20} strokeWidth={2.5} />
             <div>
               <h2 className={styles.eventName}>{catalog.event.name}</h2>
               <p className={styles.eventTagline}>{catalog.event.tagline}</p>
@@ -422,11 +423,10 @@ export default function ShopPage() {
                         }}
                       >
                         What&apos;s inside
-                        <ChevronDown
+                        <Glyph name="chevronDown"
                           size={16}
                           strokeWidth={2.75}
                           className={openOdds === chest.tier ? styles.chevOpen : ''}
-                          aria-hidden="true"
                         />
                       </button>
                       <AnimatePresence initial={false}>
@@ -596,7 +596,7 @@ export default function ShopPage() {
           </div>
           {activeBoosts.map((b) => (
             <div key={b.id} className={styles.boostRow}>
-              <Zap size={18} strokeWidth={2.5} fill="currentColor" aria-hidden="true" />
+              <Mark kind="xp" size={18} />
               <span>{b.name} active</span>
               <CountdownPill ms={new Date(b.activeUntil as string).getTime() - Date.now()} label="Ends in" />
             </div>

@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         message: 'The AI keeps using words like "stoichiometric ratio". I just skip them.',
         prompt: 'David is in Miracle\'s group in Buea. What should Kofi tell him?',
         options: [
-          { text: "Don't skip them. Ask it: what does that word mean? Explain it before you use it." },
           { text: 'Skipping is fine, the rest makes sense.', why: 'That word might be the whole point of the answer.' },
           { text: 'Ask for a longer answer.', why: 'Longer usually means more words he doesn\'t know.' },
+          { text: "Don't skip them. Ask it: what does that word mean? Explain it before you use it." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
@@ -122,11 +122,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The AI starts three chapters back, explaining what an atom is. What went wrong?',
         options: [
-          { text: "Kofi didn't say what he already knows" },
           { text: 'The AI is slow', why: 'It just had no idea where his knowledge stopped.' },
+          { text: "Kofi didn't say what he already knows" },
           { text: 'Atoms are part of moles', why: 'True, but he already knows atoms.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

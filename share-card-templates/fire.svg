@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
+  <defs>
+    <path id="outer" d="M306 44
+      C 326 142 390 192 430 250
+      C 446 212 456 178 452 136
+      C 510 232 538 322 538 420
+      C 538 600 434 728 300 728
+      C 166 728 62 600 62 432
+      C 62 346 90 272 128 222
+      C 138 286 162 326 196 350
+      C 190 250 238 146 306 44 Z"/>
+    <path id="inner" d="M302 340
+      C 322 408 380 446 392 524
+      C 404 612 360 690 300 690
+      C 240 690 202 642 206 582
+      C 208 542 228 514 252 496
+      C 258 532 272 552 290 558
+      C 280 484 286 408 302 340 Z"/>
+  </defs>
+
+  <!-- outer flame: chunky flat body with a darker bottom lip -->
+  <use href="#outer" fill="#E8650A" stroke="#E8650A" stroke-width="44" stroke-linejoin="round"/>
+  <use href="#outer" transform="translate(0 -24)" fill="#FF9600" stroke="#FF9600" stroke-width="44" stroke-linejoin="round"/>
+
+  <!-- inner flame -->
+  <use href="#inner" transform="translate(0 -24)" fill="#F5A800" stroke="#F5A800" stroke-width="30" stroke-linejoin="round"/>
+  <use href="#inner" transform="translate(0 -40)" fill="#FFC800" stroke="#FFC800" stroke-width="30" stroke-linejoin="round"/>
+
+  <!-- flat glossy highlights -->
+  <ellipse cx="150" cy="430" rx="24" ry="72" transform="rotate(18 150 430)" fill="#fff" opacity=".5"/>
+  <circle cx="186" cy="318" r="15" fill="#fff" opacity=".5"/>
+  <ellipse cx="262" cy="560" rx="14" ry="36" transform="rotate(18 262 560)" fill="#fff" opacity=".6"/>
+</svg>

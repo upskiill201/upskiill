@@ -11,7 +11,7 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Check, Download, Link2, Loader2, RotateCcw, Share2, X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -191,7 +191,7 @@ export default function ShareSheet({ request, onClose }: { request: ShareCardReq
               aria-label="Close"
               className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-section)]"
             >
-              <X size={20} strokeWidth={2.6} />
+              <Glyph name="close" size={20} strokeWidth={2.6} />
             </button>
           </div>
 
@@ -222,7 +222,7 @@ export default function ShareSheet({ request, onClose }: { request: ShareCardReq
                   onClick={fetchCard}
                   className="inline-flex items-center gap-2 rounded-[10px] border border-[var(--border)] bg-[var(--bg-card)] px-4 py-2 text-[14px] font-bold"
                 >
-                  <RotateCcw size={16} /> Try again
+                  <Glyph name="refresh" size={16} /> Try again
                 </button>
               </div>
             ) : (
@@ -278,7 +278,7 @@ export default function ShareSheet({ request, onClose }: { request: ShareCardReq
             disabled={!slug}
             className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-[var(--color-brand)] px-6 py-4 text-[16px] font-extrabold uppercase tracking-[0.04em] text-[var(--text-on-blue)] shadow-[0_4px_0_var(--color-brand-deep)] transition-transform active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-brand-deep)] disabled:opacity-60"
           >
-            <Share2 size={18} strokeWidth={2.6} /> Share
+            <Glyph name="share" size={18} strokeWidth={2.6} /> Share
           </button>
 
           <div className="mt-3 grid grid-cols-2 gap-2">
@@ -288,7 +288,7 @@ export default function ShareSheet({ request, onClose }: { request: ShareCardReq
               disabled={!slug || busy}
               className="inline-flex items-center justify-center gap-2 rounded-[10px] border border-[var(--border)] px-4 py-3 text-[15px] font-bold transition-colors hover:border-[var(--border-strong)] disabled:opacity-60"
             >
-              {busy ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />} Download
+              {busy ? <Glyph name="spinner" size={18} className="animate-spin" /> : <Glyph name="download" size={18} />} Download
             </button>
             <button
               type="button"
@@ -296,7 +296,7 @@ export default function ShareSheet({ request, onClose }: { request: ShareCardReq
               disabled={!slug}
               className="inline-flex items-center justify-center gap-2 rounded-[10px] border border-[var(--border)] px-4 py-3 text-[15px] font-bold transition-colors hover:border-[var(--border-strong)] disabled:opacity-60"
             >
-              {copied ? <Check size={18} className="text-[var(--success-green)]" /> : <Link2 size={18} />}
+              {copied ? <Glyph name="check" size={18} className="text-[var(--success-green)]" /> : <Glyph name="link" size={18} />}
               {copied ? 'Copied' : 'Copy link'}
             </button>
           </div>

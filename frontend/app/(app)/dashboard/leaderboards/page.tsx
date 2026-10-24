@@ -14,7 +14,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { LayoutGroup, motion, useReducedMotion } from 'framer-motion';
-import { ChevronDown, ChevronUp, RefreshCw, ShieldAlert, ShieldCheck, Trophy, Users } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/swr';
 import Avatar from '@/components/ui/Avatar';
@@ -176,7 +176,7 @@ export default function LeaderboardsPage() {
             <h1 className={styles.title}>{meta.name}</h1>
             {data.tournamentWins > 0 && (
               <p className={styles.tournamentWins}>
-                <Trophy size={13} strokeWidth={2.6} />
+                <Glyph name="trophy" size={13} strokeWidth={2.6} />
                 {data.tournamentWins} {data.tournamentWins === 1 ? 'win' : 'wins'}
               </p>
             )}
@@ -224,7 +224,7 @@ export default function LeaderboardsPage() {
 
           {data.shared && data.joined && (
             <p className={styles.sharedNote}>
-              <Users size={15} strokeWidth={2.6} />
+              <Glyph name="users" size={15} strokeWidth={2.6} />
               Teyro is growing — this week everyone active races on one board. You move up or down from your own league.
             </p>
           )}
@@ -245,7 +245,7 @@ export default function LeaderboardsPage() {
                         <ZoneDivider
                           kind="demotion"
                           label="DEMOTION ZONE"
-                          icon={<ShieldAlert size={13} strokeWidth={2.6} />}
+                          icon={<Glyph name="shieldAlert" size={13} strokeWidth={2.6} />}
                         />
                       )}
                       <motion.div
@@ -280,7 +280,7 @@ export default function LeaderboardsPage() {
                         <ZoneDivider
                           kind="promotion"
                           label="PROMOTION ZONE"
-                          icon={<ShieldCheck size={13} strokeWidth={2.6} />}
+                          icon={<Glyph name="shieldCheck" size={13} strokeWidth={2.6} />}
                         />
                       )}
                     </React.Fragment>
@@ -345,7 +345,7 @@ function Movement({ from, to }: { from: number | undefined; to: number }) {
       style={{ color: up ? 'var(--success-green)' : 'var(--error-red)' }}
       aria-label={`${up ? 'Up' : 'Down'} ${Math.abs(from - to)} since your last visit`}
     >
-      {up ? <ChevronUp size={14} strokeWidth={3} /> : <ChevronDown size={14} strokeWidth={3} />}
+      {up ? <Glyph name="chevronUp" size={14} strokeWidth={3} /> : <Glyph name="chevronDown" size={14} strokeWidth={3} />}
       {Math.abs(from - to)}
     </span>
   );
@@ -422,7 +422,7 @@ function ZoneDivider({
 function EmptyBoard() {
   return (
     <div className={styles.emptyBoard}>
-      <Trophy size={28} strokeWidth={2} />
+      <Glyph name="trophy" size={28} strokeWidth={2} />
       <p>You&apos;re the first one in this week&apos;s cohort.</p>
       <p className={styles.emptyHint}>Earn XP to set the pace — others will join as they learn.</p>
     </div>
@@ -462,12 +462,12 @@ function LoadingState() {
 function ErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
     <div className={styles.errorState} role="alert">
-      <ShieldAlert size={30} strokeWidth={2} />
+      <Glyph name="shieldAlert" size={30} strokeWidth={2} />
       <p>{message}</p>
       <Button
         variant="primary"
         size="md"
-        leftIcon={<RefreshCw size={16} />}
+        leftIcon={<Glyph name="refresh" size={16} />}
         onClick={() => {
           playHaptic('light');
           onRetry();

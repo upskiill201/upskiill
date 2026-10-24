@@ -13,34 +13,12 @@
  *   GET /api/payment/my-subscriptions, POST /api/payment/cancel-subscription
  */
 
+import { proApi, ProApiError, type ProStatus } from '@/lib/pro/api';
 import React, { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import useSWR from 'swr';
 import { useReducedMotion } from 'framer-motion';
-import {
-  Bell,
-  BookOpen,
-  Check,
-  ChevronRight,
-  CreditCard,
-  Loader2,
-  LogOut,
-  Mail,
-  RefreshCw,
-  SlidersHorizontal,
-  Target,
-  Trash2,
-  Trophy,
-  UserRound,
-  Volume2,
-  Music,
-  Vibrate,
-  KeyRound,
-  MessagesSquare,
-  Moon,
-  Sun,
-  SunMoon,
-} from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import { fetcher } from '@/lib/swr';
 import { playHaptic, isHapticsEnabled, setHapticsEnabled } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -104,12 +82,12 @@ const DAILY_GOALS = [
 const USERNAME_PATTERN = /^[a-zA-Z0-9_]{3,30}$/;
 
 const SECTIONS = [
-  { id: 'preferences', label: 'Preferences', icon: SlidersHorizontal },
-  { id: 'goal', label: 'Daily goal', icon: Target },
-  { id: 'profile', label: 'Profile', icon: UserRound },
-  { id: 'notifications', label: 'Notifications', icon: Bell },
-  { id: 'subscriptions', label: 'Subscriptions', icon: CreditCard },
-  { id: 'account', label: 'Account', icon: KeyRound },
+  { id: 'preferences', label: 'Preferences', icon: 'sliders' },
+  { id: 'goal', label: 'Daily goal', icon: 'target' },
+  { id: 'profile', label: 'Profile', icon: 'user' },
+  { id: 'notifications', label: 'Notifications', icon: 'bell' },
+  { id: 'subscriptions', label: 'Subscriptions', icon: 'card' },
+  { id: 'account', label: 'Account', icon: 'key' },
 ] as const;
 
 const PLAN_LABEL: Record<Subscription['plan'], string> = {
@@ -121,10 +99,10 @@ const PLAN_LABEL: Record<Subscription['plan'], string> = {
 
 const noopSubscribe = () => () => {};
 
-const APPEARANCE_OPTIONS: { value: ThemePref; label: string; icon: React.ElementType }[] = [
-  { value: 'auto', label: 'Auto', icon: SunMoon },
-  { value: 'light', label: 'Light', icon: Sun },
-  { value: 'dark', label: 'Dark', icon: Moon },
+const APPEARANCE_OPTIONS: { value: ThemePref; label: string; icon: GlyphName }[] = [
+  { value: 'auto', label: 'Auto', icon: 'sunMoon' },
+  { value: 'light', label: 'Light', icon: 'sun' },
+  { value: 'dark', label: 'Dark', icon: 'moon' },
 ];
 
 const APPEARANCE_SUB: Record<ThemePref, string> = {
@@ -167,9 +145,9 @@ export default function SettingsPage() {
         <nav className={styles.sectionNav}>
           {SECTIONS.map((s, i) => (
             <button key={s.id} type="button" className={styles.sectionLink} onClick={() => scrollTo(s.id, i)}>
-              <s.icon size={18} strokeWidth={2.5} aria-hidden="true" />
+              <Glyph name={s.icon} size={18} strokeWidth={2.5} />
               <span>{s.label}</span>
-              <ChevronRight size={16} strokeWidth={2.5} aria-hidden="true" className={styles.sectionChevron} />
+              <Glyph name="chevron" size={16} strokeWidth={2.5} className={styles.sectionChevron} />
             </button>
           ))}
         </nav>
@@ -199,7 +177,7 @@ function PreferencesSection() {
         <SavedTick show={saved.shown} />
       </div>
       <div className={styles.card}>
-        <Row icon={SunMoon} title="Appearance" sub={APPEARANCE_SUB[theme]}>
+        <Row icon="sunMoon" title="Appearance" sub={APPEARANCE_SUB[theme]}>
           <div className={styles.segment} role="radiogroup" aria-label="Appearance">
             {APPEARANCE_OPTIONS.map((o) => (
               <button
@@ -216,13 +194,13 @@ function PreferencesSection() {
                   saved.flash();
                 }}
               >
-                <o.icon size={16} strokeWidth={2.5} aria-hidden="true" />
+                <Glyph name={o.icon} size={16} strokeWidth={2.5} />
                 {o.label}
               </button>
             ))}
           </div>
         </Row>
-        <Row icon={Volume2} title="Sound effects" sub="Taps, right answers, rewards and celebrations">
+        <Row icon="soundOn" title="Sound effects" sub="Taps, right answers, rewards and celebrations">
           <Switch
             checked={isSfxEnabled}
             label="Sound effects"
@@ -232,7 +210,7 @@ function PreferencesSection() {
             }}
           />
         </Row>
-        <Row icon={Music} title="Background music" sub="Soft loops while you learn">
+        <Row icon="music" title="Background music" sub="Soft loops while you learn">
           <Switch
             checked={isMusicEnabled}
             label="Background music"
@@ -242,7 +220,7 @@ function PreferencesSection() {
             }}
           />
         </Row>
-        <Row icon={Vibrate} title="Vibration" sub="Haptic taps on this device">
+        <Row icon="vibrate" title="Vibration" sub="Haptic taps on this device">
           <Switch
             checked={haptics}
             label="Vibration"
@@ -330,7 +308,7 @@ function DailyGoalSection({ me, loading, error, onRetry, onSaved }: MeSectionPro
                   <span className={styles.goalName}>{g.label}</span>
                   <span className={styles.goalXp}>{g.value} XP</span>
                   <span className={styles.goalMinutes}>{g.minutes}</span>
-                  {on && pending !== null && <Loader2 size={16} className={`${styles.goalSpin} animate-spin`} aria-hidden="true" />}
+                  {on && pending !== null && <Glyph name="spinner" size={16} className={`${styles.goalSpin} animate-spin`} />}
                 </button>
               );
             })}
@@ -465,8 +443,8 @@ function ProfileSection({ me, loading, error, onRetry, onSaved }: MeSectionProps
                 />
                 {usernameChanged && !localUsernameError && (
                   <span className={styles.inputStatus} aria-hidden="true">
-                    {check.state === 'checking' && <Loader2 size={16} className="animate-spin" />}
-                    {check.state === 'ok' && <Check size={16} strokeWidth={3} className={styles.okIcon} />}
+                    {check.state === 'checking' && <Glyph name="spinner" size={16} className="animate-spin" />}
+                    {check.state === 'ok' && <Glyph name="check" size={16} strokeWidth={3} className={styles.okIcon} />}
                   </span>
                 )}
               </span>
@@ -476,21 +454,21 @@ function ProfileSection({ me, loading, error, onRetry, onSaved }: MeSectionProps
             <div className={styles.field}>
               <span className={styles.fieldLabel}>Email</span>
               <div className={`${styles.input} ${styles.inputReadonly}`}>
-                <Mail size={16} strokeWidth={2.5} aria-hidden="true" />
+                <Glyph name="mail" size={16} strokeWidth={2.5} />
                 <span>{me?.email ?? '—'}</span>
               </div>
             </div>
 
             <Link href="/forgot-password" className={styles.passwordLink} onClick={() => playSound('navTap', 3)}>
-              <KeyRound size={18} strokeWidth={2.5} aria-hidden="true" />
+              <Glyph name="key" size={18} strokeWidth={2.5} />
               <span>Change password</span>
-              <ChevronRight size={16} strokeWidth={2.5} aria-hidden="true" />
+              <Glyph name="chevron" size={16} strokeWidth={2.5} />
             </Link>
 
             {saveError && <p className={styles.inlineError} role="alert">{saveError}</p>}
 
             <button type="button" className={styles.primaryBtn} disabled={!canSave} onClick={() => void save()}>
-              {saving ? <Loader2 size={18} className="animate-spin" aria-hidden="true" /> : null}
+              {saving ? <Glyph name="spinner" size={18} className="animate-spin" /> : null}
               {saving ? 'Saving' : 'Save changes'}
             </button>
           </div>
@@ -555,32 +533,32 @@ function NotificationsSection() {
           <SectionError what="notification settings" onRetry={() => void mutate()} />
         ) : (
           <>
-            <Row icon={Bell} title="Notifications from Tey" sub="Reminders and news on this device">
+            <Row icon="bell" title="Notifications from Tey" sub="Reminders and news on this device">
               <Switch checked={prefs.pushEnabled} label="Notifications" onChange={(v) => void update({ pushEnabled: v })} />
             </Row>
             <div className={`${styles.subRows} ${off ? styles.subRowsOff : ''}`} aria-disabled={off}>
-              <Row icon={Target} title="Streak saver" sub="A nudge before your streak runs out">
+              <Row icon="target" title="Streak saver" sub="A nudge before your streak runs out">
                 <Switch checked={prefs.streakReminders} disabled={off} label="Streak saver" onChange={(v) => void update({ streakReminders: v })} />
               </Row>
-              <Row icon={RefreshCw} title="Practice reminder" sub="Your daily lesson, at your time">
+              <Row icon="refresh" title="Practice reminder" sub="Your daily lesson, at your time">
                 <Switch checked={prefs.dailyReminders} disabled={off} label="Practice reminder" onChange={(v) => void update({ dailyReminders: v })} />
               </Row>
-              <Row icon={Check} title="Milestones" sub="Level ups, streak records, badges">
+              <Row icon="check" title="Milestones" sub="Level ups, streak records, badges">
                 <Switch checked={prefs.milestones} disabled={off} label="Milestones" onChange={(v) => void update({ milestones: v })} />
               </Row>
-              <Row icon={UserRound} title="Come-back nudges" sub="If you've been away a few days">
+              <Row icon="user" title="Come-back nudges" sub="If you've been away a few days">
                 <Switch checked={prefs.reengagement} disabled={off} label="Come-back nudges" onChange={(v) => void update({ reengagement: v })} />
               </Row>
-              <Row icon={Trophy} title="League updates" sub="Someone passes you, the week is ending, your result">
+              <Row icon="trophy" title="League updates" sub="Someone passes you, the week is ending, your result">
                 <Switch checked={prefs.leagueUpdates ?? true} disabled={off} label="League updates" onChange={(v) => void update({ leagueUpdates: v })} />
               </Row>
-              <Row icon={MessagesSquare} title="Community" sub="Replies, mentions and new posts in the course you're focused on">
+              <Row icon="bubble" title="Community" sub="Replies, mentions and new posts in the course you're focused on">
                 <Switch checked={prefs.communityActivity ?? true} disabled={off} label="Community" onChange={(v) => void update({ communityActivity: v })} />
               </Row>
-              <Row icon={BookOpen} title="Course updates" sub="Picking up a course you started">
+              <Row icon="book" title="Course updates" sub="Picking up a course you started">
                 <Switch checked={prefs.courseOffers ?? true} disabled={off} label="Course updates" onChange={(v) => void update({ courseOffers: v })} />
               </Row>
-              <Row icon={Bell} title="Reminder time" sub="When your practice reminder arrives">
+              <Row icon="bell" title="Reminder time" sub="When your practice reminder arrives">
                 <select
                   className={styles.select}
                   value={prefs.preferredHour ?? ''}
@@ -608,8 +586,80 @@ function NotificationsSection() {
 
 // ─── Subscriptions ────────────────────────────────────────────────────────
 
+/** Teyro Pro: the plan itself, how it renews, and where to manage it. */
+function ProPlanRow() {
+  const { data: pro } = useSWR<ProStatus>('/api/pro/status', fetcher);
+  const [opening, setOpening] = useState(false);
+  const [portalError, setPortalError] = useState<string | null>(null);
+  if (!pro?.enabled) return null;
+  const fmt = (iso: string | null) =>
+    iso ? new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+
+  const openPortal = async (flow?: 'payment_method_update') => {
+    setOpening(true);
+    setPortalError(null);
+    try {
+      const { url } = await proApi.portal(flow, '/dashboard/settings');
+      window.location.assign(url);
+    } catch (err) {
+      setPortalError(err instanceof ProApiError ? err.message : 'Billing is unavailable right now.');
+      setOpening(false);
+    }
+  };
+
+  if (!pro.isPro) {
+    return (
+      <div className={styles.subRow}>
+        <span className={styles.rowText}>
+          <span className={styles.rowTitle}>Teyro Pro</span>
+          <span className={styles.rowSub}>Every course, no daily limit, unlimited hearts.</span>
+        </span>
+        <Link href="/pro?m=SETTINGS&returnTo=%2Fdashboard%2Fsettings" className={styles.primaryBtn} onClick={() => playSound('navTap', 2)}>
+          See plans
+        </Link>
+      </div>
+    );
+  }
+
+  const line =
+    pro.status === 'PAST_DUE'
+      ? `Payment failed · access until ${fmt(pro.graceUntil)}`
+      : pro.status === 'TRIALING'
+        ? `Free trial until ${fmt(pro.trialEndsAt)}${pro.cancelAtPeriodEnd ? ' · cancelled' : ''}`
+        : pro.provider === 'MESOMB'
+          ? `Paid with Mobile Money · access until ${fmt(pro.currentPeriodEnd)}`
+          : pro.cancelAtPeriodEnd
+            ? `Cancelled · access until ${fmt(pro.currentPeriodEnd)}`
+            : `Renews ${fmt(pro.currentPeriodEnd)}`;
+
+  return (
+    <div className={styles.subRow}>
+      <span className={styles.rowText}>
+        <span className={styles.rowTitle}>Teyro Pro · {pro.plan === 'YEARLY' ? 'Yearly' : 'Monthly'}</span>
+        <span className={styles.rowSub}>{line}</span>
+        {portalError && <span className={styles.inlineError} role="alert">{portalError}</span>}
+      </span>
+      {pro.provider === 'MESOMB' ? (
+        <Link href="/pro?m=SETTINGS&returnTo=%2Fdashboard%2Fsettings" className={styles.secondaryBtn} onClick={() => playSound('navTap', 2)}>
+          Renew
+        </Link>
+      ) : (
+        <button
+          type="button"
+          className={styles.secondaryBtn}
+          disabled={opening}
+          onClick={() => void openPortal(pro.status === 'PAST_DUE' ? 'payment_method_update' : undefined)}
+        >
+          {pro.status === 'PAST_DUE' ? 'Update card' : 'Manage'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function SubscriptionsSection() {
   const { data, error, isLoading, mutate } = useSWR<Subscription[]>('/api/payment/my-subscriptions', fetcher);
+  const { data: pro } = useSWR<ProStatus>('/api/pro/status', fetcher);
   const [cancelTarget, setCancelTarget] = useState<Subscription | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
@@ -651,13 +701,14 @@ function SubscriptionsSection() {
         <h2 id="subscriptions-h" className={styles.sectionTitle}>Subscriptions</h2>
       </div>
       <div className={styles.card}>
+        <ProPlanRow />
         {isLoading ? (
           <SkeletonRows count={2} />
         ) : error ? (
           <SectionError what="subscriptions" onRetry={() => void mutate()} />
-        ) : subs.length === 0 ? (
+        ) : subs.length === 0 && pro?.enabled ? null : subs.length === 0 ? (
           <div className={styles.empty}>
-            <CreditCard size={28} strokeWidth={2.25} aria-hidden="true" />
+            <Glyph name="card" size={28} strokeWidth={2.25} />
             <p className={styles.emptyTitle}>No subscriptions</p>
             <p className={styles.emptySub}>Unlocked courses show up here, with their renewal date.</p>
             <Link href="/dashboard/explore" className={styles.secondaryBtn} onClick={() => playSound('navTap', 2)}>
@@ -767,7 +818,7 @@ function AccountSection() {
       </div>
       <div className={styles.accountActions}>
         <button type="button" className={styles.secondaryBtn} onClick={() => void logout()}>
-          <LogOut size={18} strokeWidth={2.5} aria-hidden="true" /> Log out
+          <Glyph name="logout" size={18} strokeWidth={2.5} /> Log out
         </button>
         <button
           type="button"
@@ -779,7 +830,7 @@ function AccountSection() {
             setConfirming(true);
           }}
         >
-          <Trash2 size={18} strokeWidth={2.5} aria-hidden="true" /> Delete account
+          <Glyph name="trash" size={18} strokeWidth={2.5} /> Delete account
         </button>
       </div>
 

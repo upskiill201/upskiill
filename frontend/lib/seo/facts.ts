@@ -25,7 +25,8 @@ export const TEYRO = {
   // settings DAILY_GOALS: 20/50/100/200 XP ≈ 5/10/15/20 min
   dailyTime: '5 to 20 minutes a day — you pick the goal',
   // homepage FAQ: many courses free; paid courses give 2 free lessons
-  price: 'Free to start. Many courses are free end to end; paid courses let you try the first two lessons free',
+  // pro.config: free tier + PRO_PRICES_MINOR
+  price: 'Free to start: Chapter 1 of your course and 2 lessons a day. Teyro Pro opens every course for $12.99 a month or $59.99 a year, with a 7-day free trial',
   priceShort: 'Free to start',
   // gamification.service.ts computeRefill + refillLivesWithXp
   hearts: '5 hearts; one comes back every 4 hours, or refill all five with 120 coins you earn by learning',

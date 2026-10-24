@@ -12,6 +12,8 @@ import {
 export interface VerificationEmailData {
   firstName: string;
   code: string;
+  /** Bound into the link so it can only ever verify this one account. */
+  email: string;
   role?: string;
 }
 
@@ -25,7 +27,7 @@ export function renderVerificationEmail(
   const teyImageUrl = `${appUrl}/User%20onbarding%20Assets/Tey_welcome.PNG`;
   const isCreator =
     data.role === 'INSTRUCTOR' || data.role?.toLowerCase() === 'creator';
-  const magicLink = `${appUrl}/verify-email?token=${encodeURIComponent(data.code)}`;
+  const magicLink = `${appUrl}/verify-email?token=${encodeURIComponent(data.code)}&email=${encodeURIComponent(data.email)}`;
 
   const subject = isCreator
     ? `Hey ${data.firstName ? name : 'there'}! Confirm your Teyro Creator Account 👀`

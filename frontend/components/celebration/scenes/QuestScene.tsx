@@ -9,7 +9,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Check } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import SceneShell from '../SceneShell';
 import CelebrationMascot from '../CelebrationMascot';
 import { TypewriterBubble } from '../ScenePrimitives';
@@ -91,7 +91,7 @@ export default function QuestScene({ scene, onAdvance }: QuestSceneProps) {
               {row.highlight && !reducedMotion && <div className={styles.questShine} />}
               <div className={styles.questRowTop}>
                 <span className={styles.questRowLabel} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                  {done && <Check size={16} strokeWidth={3.4} color="var(--success-green)" aria-hidden />}
+                  {done && <Glyph name="check" size={16} strokeWidth={3.4} color="var(--success-green)" />}
                   {row.label}
                 </span>
                 <span className={styles.questRowEnd}>

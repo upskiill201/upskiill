@@ -8,18 +8,8 @@
 
 import DOMPurify from 'dompurify';
 import { motion, useReducedMotion } from 'framer-motion';
-import {
-  BookOpen,
-  ExternalLink,
-  FileText,
-  Folder,
-  LayoutTemplate,
-  Link as LinkIcon,
-  Presentation,
-  Sheet,
-  Video,
-  type LucideIcon,
-} from 'lucide-react';
+import { Emblem, type EmblemName } from '@/components/art/Emblem';
+import { Glyph } from '@/components/art/Glyph';
 import type { LessonResource } from '@/lib/lesson/content';
 import { playHaptic } from '@/lib/haptics';
 import { StepHeading } from './StepHeading';
@@ -27,16 +17,16 @@ import { TeySays } from '../TeySays';
 
 const sanitize = (raw: string) => DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
 
-function resourceKind(type: string | null | undefined): { icon: LucideIcon; color: string; label: string } {
+function resourceKind(type: string | null | undefined): { icon: EmblemName; color: string; label: string } {
   const t = (type ?? 'link').toLowerCase();
-  if (/fig|design|template/.test(t)) return { icon: LayoutTemplate, color: 'var(--brand-purple)', label: 'Template' };
-  if (/pdf|doc/.test(t)) return { icon: FileText, color: 'var(--lesson-wrong)', label: 'Guide' };
-  if (/video|mp4|youtube/.test(t)) return { icon: Video, color: 'var(--brand-indigo)', label: 'Video' };
-  if (/xls|csv|sheet|data/.test(t)) return { icon: Sheet, color: 'var(--lesson-correct)', label: 'Data sheet' };
-  if (/ppt|slides|presentation/.test(t)) return { icon: Presentation, color: 'var(--warning)', label: 'Slides' };
-  if (/zip|rar|folder|source|file/.test(t)) return { icon: Folder, color: 'var(--color-brand)', label: 'Files' };
-  if (/link|url|website/.test(t)) return { icon: LinkIcon, color: 'var(--color-brand)', label: 'Link' };
-  return { icon: BookOpen, color: 'var(--brand-purple)', label: 'Notes' };
+  if (/fig|design|template/.test(t)) return { icon: 'template', color: 'var(--brand-purple)', label: 'Template' };
+  if (/pdf|doc/.test(t)) return { icon: 'doc', color: 'var(--lesson-wrong)', label: 'Guide' };
+  if (/video|mp4|youtube/.test(t)) return { icon: 'video', color: 'var(--brand-indigo)', label: 'Video' };
+  if (/xls|csv|sheet|data/.test(t)) return { icon: 'sheet', color: 'var(--lesson-correct)', label: 'Data sheet' };
+  if (/ppt|slides|presentation/.test(t)) return { icon: 'slides', color: 'var(--warning)', label: 'Slides' };
+  if (/zip|rar|folder|source|file/.test(t)) return { icon: 'folder', color: 'var(--color-brand)', label: 'Files' };
+  if (/link|url|website/.test(t)) return { icon: 'link', color: 'var(--color-brand)', label: 'Link' };
+  return { icon: 'book', color: 'var(--brand-purple)', label: 'Notes' };
 }
 
 function sizeLabel(bytes: number | null | undefined) {
@@ -67,7 +57,7 @@ export function DeepenStep({
         <ul className="flex flex-col gap-3">
           {resources.slice(0, 8).map((r, i) => {
             const kind = resourceKind(r.type);
-            const Icon = kind.icon;
+            const glyph = kind.icon;
             const size = sizeLabel(r.sizeBytes);
             return (
               <motion.li
@@ -86,9 +76,9 @@ export function DeepenStep({
                 >
                   <span
                     className="shrink-0 w-12 h-12 rounded-[14px] flex items-center justify-center"
-                    style={{ backgroundColor: kind.color, boxShadow: `0 3px 0 color-mix(in srgb, ${kind.color} 75%, black)` }}
+                    style={{ backgroundColor: `color-mix(in srgb, ${kind.color} 14%, var(--bg-card))`, boxShadow: `0 3px 0 color-mix(in srgb, ${kind.color} 35%, var(--bg-card))` }}
                   >
-                    <Icon className="w-6 h-6 text-white stroke-[2.5]" aria-hidden="true" />
+                    <Emblem name={glyph} size={30} />
                   </span>
                   <span className="flex-1 min-w-0">
                     <span className="block truncate text-[16px] font-extrabold text-ink">
@@ -98,7 +88,7 @@ export function DeepenStep({
                       {size ? `${kind.label} · ${size}` : kind.label}
                     </span>
                   </span>
-                  <ExternalLink className="shrink-0 w-5 h-5 text-[var(--text-muted)]" aria-hidden="true" />
+                  <Glyph name="external" className="shrink-0 w-5 h-5 text-[var(--text-muted)]" />
                 </a>
               </motion.li>
             );

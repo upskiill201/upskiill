@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         message: '(text, from downstairs) Are you okay?? Is he scary?? Did you say the ask??',
         prompt: 'Remi is mid-meeting. What does he do?',
         options: [
-          { text: 'Nothing now. He\'ll reply after the meeting.' },
           { text: 'Types a long reply under the table', why: 'Mr Kamau will notice. So will Mrs Achieng.' },
+          { text: 'Nothing now. He\'ll reply after the meeting.' },
           { text: 'Sends "HELP"', why: 'Funny. Also unprofessional, and he\'s doing fine.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Emeka unmutes: "I\'d like to table the Mombasa route." They\'re in Nairobi. What does he want?',
         options: [
-          { text: 'To raise the Mombasa route for discussion now' },
           { text: 'To postpone the Mombasa route', why: 'That\'s the American meaning. In Kenya and the UK, table = bring it up.' },
           { text: 'A bigger table', why: 'No furniture today.' },
+          { text: 'To raise the Mombasa route for discussion now' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -136,11 +136,11 @@ const lesson: OriginalLesson = {
         message: 'Agreed. Two more weeks. Good work, Remi. Five minutes back for everyone.',
         prompt: 'Mr Kamau leaves. What does Remi say?',
         options: [
-          { text: 'Thank you! Minutes will be with Mrs Achieng this afternoon.' },
           { text: 'Thanks bro!', why: 'Save "bro" for Zanele. (There\'s a whole chapter about this coming.)' },
+          { text: 'Thank you! Minutes will be with Mrs Achieng this afternoon.' },
           { text: 'Nothing, he\'s gone', why: 'A one-line thanks and what happens next is perfect.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -178,11 +178,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Best subject line for Remi\'s follow-up?',
         options: [
-          { text: 'Supplier review (Friday): decisions and next steps' },
           { text: 'Meeting!!', why: 'Which meeting? Mrs Achieng has forty a week.' },
           { text: 'Minutes (probably)', why: 'Sounds unsure. They\'re his minutes: own them.' },
+          { text: 'Supplier review (Friday): decisions and next steps' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

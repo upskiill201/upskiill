@@ -2,18 +2,18 @@
 
 /**
  * "Here's your plan" — everything the creator told Tey, turned into what
- * happens next. Every line is a fact about how Teyro works today (first two
- * lessons free, 70% default share, the community after two lessons, the
+ * happens next. Every line is a fact about how Teyro works today (paid from
+ * the Teyro Pro pool by minutes, the community after two lessons, the
  * four-phase lesson) plus a pace estimate from their weekly hours. Rows land
  * one by one with a climbing tick.
  */
 
 import { useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { BookOpen, Dumbbell, Lightbulb, Microscope, Rocket, Users, PiggyBank, TrendingUp, HandHeart } from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
+import { CREATOR_POOL_PCT } from '@/lib/launch';
 import { trackLabel, topicLabel } from '@/lib/creator/categories';
 import {
-  DEFAULT_CREATOR_SHARE_PCT,
   FIRST_COURSE_LESSONS,
   LESSONS_PER_WEEK,
   weeksToFirstCourse,
@@ -25,30 +25,30 @@ import { creatorIcon } from '../creatorIcons';
 import styles from '../CreatorOnboarding.module.css';
 
 const PHASES = [
-  { label: 'Learn', Icon: BookOpen, text: 'Short videos, text or audio' },
-  { label: 'Apply', Icon: Dumbbell, text: 'Practice right away' },
-  { label: 'Reflect', Icon: Lightbulb, text: 'Lock it in' },
-  { label: 'Deepen', Icon: Microscope, text: 'Extra resources' },
+  { label: 'Learn', glyph: 'book' as GlyphName, text: 'Short videos, text or audio' },
+  { label: 'Apply', glyph: 'dumbbell' as GlyphName, text: 'Practice right away' },
+  { label: 'Reflect', glyph: 'bulb' as GlyphName, text: 'Lock it in' },
+  { label: 'Deepen', glyph: 'search' as GlyphName, text: 'Extra resources' },
 ];
 
-const GOAL_LINE: Record<CreatorGoal, { Icon: typeof Users; title: string; text: string }> = {
+const GOAL_LINE: Record<CreatorGoal, { glyph: GlyphName; title: string; text: string }> = {
   earn: {
-    Icon: PiggyBank,
-    title: `You keep ${DEFAULT_CREATOR_SHARE_PCT}% of every sale`,
-    text: 'Learners try your first 2 lessons free, then subscribe to keep going.',
+    glyph: 'coinDollar',
+    title: 'Paid every month from Teyro Pro',
+    text: `${CREATOR_POOL_PCT}% of every Pro learner's payment is shared among creators, by the minutes learners spend in their courses.`,
   },
   audience: {
-    Icon: TrendingUp,
+    glyph: 'upRight',
     title: 'New learners find you',
     text: 'Learners browsing your track find your course in Explore, not just your followers.',
   },
   impact: {
-    Icon: HandHeart,
+    glyph: 'heart',
     title: 'Built so learners finish',
     text: 'Streaks, leagues and reminders from Tey keep your learners coming back every day.',
   },
   community: {
-    Icon: Users,
+    glyph: 'users',
     title: 'Your own community',
     text: 'Every course gets a community. Learners join after their second lesson, and you run it.',
   },
@@ -107,10 +107,10 @@ export function CreatorPlanScreen({ answers }: { answers: CreatorAnswers }) {
       <motion.section className={styles.planCard} {...row(1)}>
         <span className={styles.planKicker}>Every lesson, four steps</span>
         <ol className={styles.phases}>
-          {PHASES.map(({ label, Icon, text }) => (
+          {PHASES.map(({ label, glyph, text }) => (
             <li key={label}>
               <span className={styles.phaseIcon} aria-hidden="true">
-                <Icon size={20} strokeWidth={2.4} />
+                <Glyph name={glyph} size={20} strokeWidth={2.4} />
               </span>
               <strong>{label}</strong>
               <span>{text}</span>
@@ -123,7 +123,7 @@ export function CreatorPlanScreen({ answers }: { answers: CreatorAnswers }) {
         <span className={styles.planKicker}>Your first course</span>
         <div className={styles.planFacts}>
           <span className={styles.planTile} aria-hidden="true">
-            <Rocket size={24} strokeWidth={2.25} />
+            <Glyph name="rocket" size={24} strokeWidth={2.2} />
           </span>
           <div>
             <strong>
@@ -140,7 +140,7 @@ export function CreatorPlanScreen({ answers }: { answers: CreatorAnswers }) {
       <motion.section className={`${styles.planCard} ${styles.planHighlight}`} {...row(3)}>
         <div className={styles.planFacts}>
           <span className={styles.planTile} aria-hidden="true">
-            <goal.Icon size={24} strokeWidth={2.25} />
+            <Glyph name={goal.glyph} size={24} strokeWidth={2.2} />
           </span>
           <div>
             <strong>{goal.title}</strong>

@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         code: 'members = ["Ada", "Tunde", "Bisi"]\nprint(members[1])',
         language: 'python',
         options: [
-          { text: 'Tunde' },
           { text: 'Ada', why: 'Ada is at 0. [1] is the second member.' },
           { text: 'Bisi', why: 'That\'s [2].' },
+          { text: 'Tunde' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -141,11 +141,11 @@ const lesson: OriginalLesson = {
         message: 'Month 1 is [0], month 2 is [1]... I keep getting it off by one.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Everyone does at first. Write it down once: position = month - 1. Then use members[month - 1].' },
           { text: 'Start your list with an empty item.', why: 'That breaks len() and every count.' },
           { text: 'Python is wrong.', why: 'It\'s a convention, and a consistent one.' },
+          { text: 'Everyone does at first. Write it down once: position = month - 1. Then use members[month - 1].' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

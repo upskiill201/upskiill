@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import Image from 'next/image';
+import { Art, type ArtName } from '@/components/art/Art';
 import styles from './NavTile.module.css';
 
 // Tones resolve to design tokens; the ones without a token of their own are
@@ -22,22 +23,28 @@ export const NAV_TONES = {
 export type NavTone = keyof typeof NAV_TONES;
 
 const IMAGE_PX = { sm: 20, md: 28, lg: 32 } as const;
+/** Teyro's drawings fill more of the tile than a glyph: they carry their own colour and shape. */
+const ART_PX = { sm: 26, md: 34, lg: 42 } as const;
 
 interface NavTileProps {
-  icon: LucideIcon;
+  /** A stock glyph on a tinted tile (the creator studio still uses these). */
+  icon?: LucideIcon;
   /** A full-colour PNG from /Icons; drawn instead of the glyph when set. */
   image?: string;
+  /** One of Teyro's own drawings (components/art); wins over both. */
+  art?: ArtName;
   tone: NavTone;
   active?: boolean;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
-export function NavTile({ icon: Icon, image, tone, active = false, size = 'md', className }: NavTileProps) {
+export function NavTile({ icon: Icon, image, art, tone, active = false, size = 'md', className }: NavTileProps) {
   const classes = [
     styles.tile,
     size !== 'md' && styles[size],
-    image && styles.image,
+    (image || art) && styles.image,
+    art && styles.art,
     active && styles.active,
     className,
   ]
@@ -50,11 +57,13 @@ export function NavTile({ icon: Icon, image, tone, active = false, size = 'md', 
       style={{ '--tile-tone': NAV_TONES[tone] } as CSSProperties}
       aria-hidden
     >
-      {image ? (
+      {art ? (
+        <Art name={art} size={ART_PX[size]} wiggle={active} />
+      ) : image ? (
         <Image src={image} alt="" width={IMAGE_PX[size]} height={IMAGE_PX[size]} />
-      ) : (
+      ) : Icon ? (
         <Icon strokeWidth={active ? 2.5 : 2} />
-      )}
+      ) : null}
     </span>
   );
 }

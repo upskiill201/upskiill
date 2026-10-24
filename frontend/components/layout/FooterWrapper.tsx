@@ -14,6 +14,9 @@ export default function FooterWrapper() {
     // Student auth screens are app screens too (Duolingo-style, full-bleed).
     pathname === '/login' ||
     pathname === '/signup' ||
+    pathname === '/forgot-password' ||
+    pathname === '/reset-password' ||
+    pathname === '/verify-email' ||
     pathname?.startsWith('/onboarding') ||
     pathname?.startsWith('/dashboard') ||
     // The lesson route (/learn/…) — not /learn-coding, /learn-ai, /learn-online.

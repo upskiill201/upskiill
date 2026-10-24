@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask "what is being asked of ME" instead of "summarise this"?',
         options: [
-          { text: 'A summary covers everything; Ada needs the questions she must answer' },
           { text: 'Summaries are always wrong', why: 'They are useful, just not focused on her.' },
+          { text: 'A summary covers everything; Ada needs the questions she must answer' },
           { text: 'It is shorter to type', why: 'It is about getting the right answer, not typing less.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         message: "Sorry for the giant thread! TL;DR: can you do Friday's launch, and can you send the final logo? And did Grace get the brand guide?",
         prompt: 'Which reply is best?',
         options: [
-          { text: '1. Friday works. 2. Final logo attached. 3. Yes, Grace has the brand guide.' },
           { text: 'Sounds great, thanks!', why: 'Three questions, zero answers.' },
           { text: 'Friday works! (one answer only)', why: 'Two questions are still open.' },
+          { text: '1. Friday works. 2. Final logo attached. 3. Yes, Grace has the brand guide.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -166,11 +166,11 @@ const lesson: OriginalLesson = {
         message: 'The AI summary said nothing was asked of you, but I asked about the logo in message 14!',
         prompt: 'What should Ada take from this?',
         options: [
-          { text: 'Always check the summary against the thread; questions asked in passing get missed.' },
           { text: 'AI summaries are useless.', why: 'They are useful; just check them.' },
+          { text: 'Always check the summary against the thread; questions asked in passing get missed.' },
           { text: 'Lucía should not ask in message 14.', why: 'People ask where they ask. Check.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -191,11 +191,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The thread called "Logo" is now about the budget. What should Ada do?',
         options: [
-          { text: 'Start a new email with a subject like "Budget for launch ads"' },
           { text: 'Keep replying under "Logo"', why: 'Nobody will find the budget discussion later.' },
           { text: 'Ignore the budget part', why: 'It still needs an answer, just in the right place.' },
+          { text: 'Start a new email with a subject like "Budget for launch ads"' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

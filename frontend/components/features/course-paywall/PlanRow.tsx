@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import type { LucideIcon } from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import type { PlanPricing } from '@/lib/pricing-engine';
 import styles from './PlanRow.module.css';
 
@@ -10,7 +10,7 @@ interface PlanRowProps {
   selected: boolean;
   onSelect: () => void;
   /** Ribbon chip pinned to the top edge, e.g. BEST VALUE · SAVE 50%. Must be true. */
-  badge?: { icon: LucideIcon; text: string };
+  badge?: { icon: GlyphName; text: string };
   /**
    * What this plan would cost at the other plan's rate — the monthly price ×
    * 12 on the yearly row — struck through as the price anchor. Real numbers
@@ -38,7 +38,6 @@ const money = (n: number) => `$${n.toFixed(2)}`;
  *   - Anchors and savings are computed from the real ladder, never invented.
  */
 export default function PlanRow({ plan, selected, onSelect, badge, anchorPrice, discountedPrice, format = money }: PlanRowProps) {
-  const BadgeIcon = badge?.icon;
   const isYearly = plan.plan === 'YEARLY';
   const perMonth = plan.effectiveMonthly ?? plan.price;
   const hasCoupon = discountedPrice !== undefined && plan.formattedPrice !== 'FREE';
@@ -52,9 +51,9 @@ export default function PlanRow({ plan, selected, onSelect, badge, anchorPrice, 
       onClick={onSelect}
       whileTap={{ scale: 0.98 }}
     >
-      {badge && BadgeIcon && (
+      {badge && (
         <span className={styles.badgeChip}>
-          <BadgeIcon size={10} strokeWidth={2.75} />
+          <Glyph name={badge.icon} size={10} strokeWidth={2.75} />
           <span>{badge.text}</span>
         </span>
       )}

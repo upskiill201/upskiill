@@ -9,7 +9,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, RefreshCw, Snowflake, Wrench } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
 import { monthOf, shiftMonth, useStreakCalendar } from '@/hooks/useStreak';
@@ -72,7 +72,7 @@ export default function StreakCalendar() {
     <div className={styles.card}>
       <div className={styles.head}>
         <button type="button" className={styles.navBtn} onClick={() => go(-1)} aria-label="Previous month">
-          <ChevronLeft size={20} strokeWidth={3} />
+          <Glyph name="chevronLeft" size={20} strokeWidth={3} />
         </button>
         <h3 className={styles.month} aria-live="polite">{label}</h3>
         <button
@@ -82,7 +82,7 @@ export default function StreakCalendar() {
           disabled={month >= thisMonth}
           aria-label="Next month"
         >
-          <ChevronRight size={20} strokeWidth={3} />
+          <Glyph name="chevron" size={20} strokeWidth={3} />
         </button>
       </div>
 
@@ -107,7 +107,7 @@ export default function StreakCalendar() {
         <div className={styles.error} role="alert">
           <span>Couldn&apos;t load this month.</span>
           <button type="button" className={styles.retry} onClick={() => void mutate()}>
-            <RefreshCw size={14} strokeWidth={2.75} aria-hidden="true" /> Try again
+            <Glyph name="refresh" size={14} strokeWidth={2.75} /> Try again
           </button>
         </div>
       ) : isLoading || !data ? (
@@ -157,10 +157,10 @@ export default function StreakCalendar() {
                       picked === d.date ? styles.picked : ''
                     }`}
                   >
-                    {d.status === 'frozen' ? <Snowflake size={16} strokeWidth={2.75} aria-hidden="true" /> : d.dayNumber}
+                    {d.status === 'frozen' ? <Glyph name="snowflake" size={16} strokeWidth={2.75} /> : d.dayNumber}
                     {d.status === 'repaired' && (
                       <span className={styles.repairMark} aria-hidden="true">
-                        <Wrench size={10} strokeWidth={3} />
+                        <Glyph name="wrench" size={10} strokeWidth={3} />
                       </span>
                     )}
                   </span>

@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The model wrongly flags Amina, who was always going to come. With a reminder call, what\'s the cost?',
         options: [
-          { text: 'Small: a call she didn\'t need' },
           { text: 'Huge: she\'s banned', why: 'A reminder call bans no one. That\'s why it\'s a good action.' },
           { text: 'None at all, ever', why: 'There\'s a small cost: Bisi\'s time and an extra call.' },
+          { text: 'Small: a call she didn\'t need' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why decide the action BEFORE building the model?',
         options: [
-          { text: 'The action decides what the model must predict, when, and which mistakes matter most' },
           { text: 'It doesn\'t matter when you decide', why: 'A model built without an action often answers the wrong question.' },
           { text: 'So the model can do the action itself', why: 'People act. The model ranks.' },
+          { text: 'The action decides what the model must predict, when, and which mistakes matter most' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         message: 'I can only make about ten calls an evening.',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Then the model should rank bookings by risk, so your ten calls go to the people most likely to miss.' },
           { text: 'Then call everyone.', why: 'She can\'t. A ranked list makes ten calls count.' },
+          { text: 'Then the model should rank bookings by risk, so your ten calls go to the people most likely to miss.' },
           { text: 'Then the model is useless.', why: 'Limited calls is exactly when a good ranking helps most.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

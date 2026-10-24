@@ -26,12 +26,14 @@ export interface RawRunResult {
   exprResults: boolean[];
   timedOut: boolean;
   ms: number;
+  /** TypeScript only: the type errors the checker found (the program still runs). */
+  typeErrors?: { code: number; line: number | null; column: number | null; message: string }[];
 }
 
 export interface RunOptions {
   /** Lines fed to input(), in order. */
   stdin?: string[];
-  /** Python expressions evaluated in the program's namespace after it runs. */
+  /** Expressions evaluated in the program's scope after it runs (Python, or JavaScript for TypeScript). */
   exprs?: string[];
   timeoutMs?: number;
 }
@@ -58,6 +60,52 @@ const PACKAGE_IMPORTS: Record<string, RegExp> = {
 /** Which extra packages a program imports (pandas, numpy, scikit-learn). */
 export function packagesFor(code: string): string[] {
   return Object.keys(PACKAGE_IMPORTS).filter((p) => PACKAGE_IMPORTS[p].test(code));
+}
+
+/**
+ * scikit-learn pulls in scipy too: about 70 MB on top of pandas. It never
+ * downloads without the learner saying yes (the "ML tools" screen in
+ * PythonPad), and the yes is remembered on this device.
+ */
+const BIG_PACKAGE = 'scikit-learn';
+const ML_TOOLS_KEY = 'teyro.mlTools.allowed';
+/** A big download on a slow phone connection needs far longer than pandas. */
+const BIG_LOAD_TIMEOUT_MS = 6 * 60_000;
+const mlToolsListeners = new Set<() => void>();
+/** Set by a yes in private mode, where localStorage can't remember it. */
+let allowedThisSession = false;
+
+function mlToolsAllowed(): boolean {
+  try {
+    return window.localStorage.getItem(ML_TOOLS_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+/** Does this code need the learner's OK before it can run (the ~70 MB ML tools)? */
+export function needsMlToolsDownload(code: string): boolean {
+  if (typeof window === 'undefined') return false;
+  if (!packagesFor(code).includes(BIG_PACKAGE)) return false;
+  return !loadedPackages.has(BIG_PACKAGE) && !mlToolsAllowed() && !allowedThisSession;
+}
+
+/** The learner said yes: remember it, and start the download for this code. */
+export function allowMlToolsDownload(code?: string): void {
+  allowedThisSession = true;
+  try {
+    window.localStorage.setItem(ML_TOOLS_KEY, '1');
+  } catch {
+    /* private mode: the yes still holds for this session */
+  }
+  mlToolsListeners.forEach((fn) => fn());
+  warmPython(code);
+}
+
+/** Re-render when the ML tools are allowed (another pad on the page may have said yes). */
+export function onMlToolsAllowed(fn: () => void): () => void {
+  mlToolsListeners.add(fn);
+  return () => mlToolsListeners.delete(fn);
 }
 let nextId = 1;
 let queue: Promise<unknown> = Promise.resolve();
@@ -136,7 +184,7 @@ async function ensurePackages(packages: string[]): Promise<void> {
         packageLoads.delete(key);
         setStatus('error');
         reject(new Error('The data tools took too long to load. Check your connection and try again.'));
-      }, LOAD_TIMEOUT_MS);
+      }, missing.includes(BIG_PACKAGE) ? BIG_LOAD_TIMEOUT_MS : LOAD_TIMEOUT_MS);
       const onMessage = (e: MessageEvent) => {
         if (e.data?.id !== id) return;
         if (e.data.type !== 'packagesLoaded' && e.data.type !== 'packagesError') return;
@@ -166,7 +214,10 @@ async function ensurePackages(packages: string[]): Promise<void> {
  */
 export function warmPython(code?: string): void {
   if (typeof window === 'undefined' || typeof Worker === 'undefined') return;
-  const packages = code ? packagesFor(code) : [];
+  // Never start the big ML download just because a screen opened.
+  const packages = (code ? packagesFor(code) : []).filter(
+    (p) => p !== BIG_PACKAGE || loadedPackages.has(p) || allowedThisSession || mlToolsAllowed(),
+  );
   const warm = packages.length ? ensurePackages(packages) : startWorker();
   warm.catch(() => {
     /* reported through the status, and again on the next run */

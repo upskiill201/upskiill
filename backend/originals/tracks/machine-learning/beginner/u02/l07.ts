@@ -44,11 +44,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does df["wait_days"] > 14 give you on its own?',
         options: [
-          { text: 'A column of True and False, one per row' },
           { text: 'The rows with long waits', why: 'Not yet: you put it inside df[ ] to keep those rows.' },
+          { text: 'A column of True and False, one per row' },
           { text: 'One True or False', why: 'It checks every row at once.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         message: '151 bookings match my rule. Is that a lot?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'About 6% of 2,400. The useful question is how many of those 151 actually missed. That\'s grouping and rates: coming up.' },
           { text: 'It proves the rule works.', why: 'Matching the rule says nothing about whether they missed.' },
           { text: 'It\'s too few, give up.', why: 'The count alone tells us little. We need the no-show rate.' },
+          { text: 'About 6% of 2,400. The useful question is how many of those 151 actually missed. That\'s grouping and rates: coming up.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

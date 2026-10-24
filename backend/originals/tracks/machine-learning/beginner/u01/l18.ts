@@ -20,8 +20,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Which takes most of the time in a real ML project?',
-      options: ['The question, the data and testing', 'Typing the model code', 'Choosing a model name'],
-      answer: 0,
+      options: ['Typing the model code', 'The question, the data and testing', 'Choosing a model name'],
+      answer: 1,
       explanation: 'Training is often a few lines. Getting the question, the data and the test right is the real work.',
     },
   ],
@@ -55,21 +55,21 @@ const lesson: OriginalLesson = {
         message: 'The model knows patients miss when it rains. So it understands rain?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'It knows rain = 1 went with more no-shows in the examples. It has no idea what rain is.' },
           { text: 'Yes, it understands weather now.', why: 'It sees a number pattern, nothing more.' },
           { text: 'Models can\'t use rain at all.', why: 'They can use it as a feature.' },
+          { text: 'It knows rain = 1 went with more no-shows in the examples. It has no idea what rain is.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
         prompt: 'Chidi: "I failed maths at school, so ML isn\'t for me." Best reply?',
         options: [
-          { text: 'Using ML well needs clear thinking and percentages; the tools do the heavy maths' },
           { text: 'He\'s right, give up', why: 'This course needs nothing beyond percentages.' },
+          { text: 'Using ML well needs clear thinking and percentages; the tools do the heavy maths' },
           { text: 'Learn calculus first', why: 'Not needed to build and test useful models.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -88,11 +88,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Two models: a simple one at 74%, a complicated one at 75%. The clinics need to understand it. Which might Halima pick?',
         options: [
-          { text: 'The simple one: nearly as good, and easy to explain' },
           { text: 'Always the complicated one', why: '1% isn\'t worth a model nobody trusts.' },
           { text: 'Neither: both are useless', why: 'Both may beat the lazy guess. We\'d check.' },
+          { text: 'The simple one: nearly as good, and easy to explain' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -126,11 +126,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which belief will help Halima most?',
         options: [
-          { text: 'My clinic knowledge is part of building a good model' },
           { text: 'The computer will do all the thinking', why: 'It does the counting. People choose the question, data and action.' },
           { text: 'Only engineers can do ML', why: 'The people who know the problem build the most useful models.' },
+          { text: 'My clinic knowledge is part of building a good model' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

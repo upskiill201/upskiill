@@ -81,21 +81,21 @@ const lesson: OriginalLesson = {
         message: "I've asked the AI about electric current five times. Still nothing. Maybe I'm just bad at Physics.",
         prompt: 'What should Kofi say?',
         options: [
-          { text: "You're not bad at it, you need a new angle. Ask it to explain current using water in a pipe. And bring it to Thursday's call." },
           { text: 'Ask it a sixth time.', why: 'Same question, same angle, same result.' },
+          { text: "You're not bad at it, you need a new angle. Ask it to explain current using water in a pipe. And bring it to Thursday's call." },
           { text: 'Skip that topic.', why: 'It will be in the exam.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Why did Efua\'s jollof explanation work when the AI\'s didn\'t?',
         options: [
-          { text: 'It used something Kofi already knew well' },
           { text: 'It was longer', why: 'It was much shorter.' },
           { text: 'Efua used harder words', why: 'She used everyday words.' },
+          { text: 'It used something Kofi already knew well' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',

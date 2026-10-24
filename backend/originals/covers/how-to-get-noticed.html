@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=block" rel="stylesheet" />
+<style>
+  /* Teyro Originals cover: How to Get Noticed by Employers (Get Hired, Get Ahead, Level 1).
+     A still frame of a motion-graphics scene: a one-page CV gets green ticks, a
+     profile card pops up and a "Your profile was viewed" notification flies in.
+     No Tey, no real company logos. */
+  :root {
+    --brand: #0172FD; --brand-dark: #0060D9; --brand-deep: #0050B3;
+    --ink: #071233; --ink-soft: #3B4A6B; --mist: #E8F1FF; --white: #FFFFFF;
+    --green: #22C55E; --green-dark: #16A34A; --yellow: #FFD43B; --amber-dark: #B45309;
+    --purple: #9333EA; --pink: #EC4899; --pink-dark: #9D174D; --indigo: #6352FF; --line: #D6E2F5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 1000px; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--brand); overflow: hidden; position: relative; }
+  .blob { position: absolute; border-radius: 50%; background: var(--brand-dark); }
+  .speed { position: absolute; height: 10px; border-radius: 999px; background: var(--white); transform: rotate(-18deg); transform-origin: left center; }
+  .ring { position: absolute; border-radius: 50%; border: 6px solid var(--white); }
+
+  .copy { position: absolute; left: 100px; top: 150px; width: 680px; z-index: 5; }
+  .pill { display: inline-flex; align-items: center; gap: 12px; background: var(--white); color: var(--purple); font-weight: 800; font-size: 26px; letter-spacing: .08em; text-transform: uppercase; padding: 14px 26px; border-radius: 999px; box-shadow: 0 6px 0 var(--brand-deep); }
+  .pill i { width: 14px; height: 14px; border-radius: 50%; background: var(--purple); display: inline-block; }
+  h1 { margin-top: 40px; color: var(--white); font-weight: 800; font-size: 112px; line-height: .98; letter-spacing: -0.035em; }
+  h1 em { font-style: normal; display: inline-block; margin-top: 18px; font-size: 64px; letter-spacing: -0.02em; color: var(--ink); background: var(--yellow); padding: 6px 22px 12px; border-radius: 24px; box-shadow: 0 8px 0 var(--amber-dark); }
+  .sub { margin-top: 40px; color: var(--mist); font-weight: 700; font-size: 32px; line-height: 1.3; width: 620px; }
+
+  .stage { position: absolute; left: 830px; top: 70px; width: 720px; height: 860px; transform: rotate(-4deg); }
+
+  /* CV page */
+  .cv { position: absolute; left: 40px; top: 90px; width: 420px; height: 560px; background: var(--white); border-radius: 26px; box-shadow: 0 12px 0 var(--brand-deep); padding: 34px 32px; }
+  .cvName { font-weight: 800; font-size: 34px; color: var(--ink); letter-spacing: -0.02em; }
+  .cvSub { margin-top: 6px; font-weight: 700; font-size: 16px; color: var(--ink-soft); }
+  .cvHead { margin-top: 24px; font-weight: 800; font-size: 15px; letter-spacing: .12em; color: var(--brand); }
+  .cvRow { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+  .cvLine { height: 12px; border-radius: 999px; background: var(--line); }
+  .tick { width: 30px; height: 30px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 0 var(--green-dark); flex: none; }
+
+  /* Profile card */
+  .card { position: absolute; left: 330px; top: 300px; width: 360px; background: var(--white); border-radius: 28px; box-shadow: 0 12px 0 #0a2a66; overflow: hidden; z-index: 4; }
+  .banner { height: 90px; background: linear-gradient(90deg, #ffb224, #f0438a); }
+  .avatar { position: absolute; left: 28px; top: 40px; width: 104px; height: 104px; border-radius: 50%; border: 6px solid var(--white); background: #7a4a2a; overflow: hidden; }
+  .avatar .hp { position: absolute; left: 10px; top: 14px; width: 72px; height: 50px; border: 8px solid var(--ink); border-bottom: none; border-radius: 40px 40px 0 0; }
+  .avatar .shirt { position: absolute; left: 6px; bottom: -20px; width: 80px; height: 46px; border-radius: 40px 40px 0 0; background: #e8250c; }
+  .cardBody { padding: 66px 28px 26px; }
+  .cardName { font-weight: 800; font-size: 28px; color: var(--ink); }
+  .cardHead { margin-top: 8px; font-weight: 700; font-size: 17px; line-height: 1.35; color: var(--ink-soft); }
+  .connect { margin-top: 18px; display: inline-flex; align-items: center; gap: 8px; background: var(--brand); color: var(--white); font-weight: 800; font-size: 18px; padding: 10px 20px; border-radius: 999px; box-shadow: 0 4px 0 var(--brand-deep); }
+
+  /* Notification */
+  .notif { position: absolute; left: 180px; top: -10px; display: flex; align-items: center; gap: 16px; background: var(--white); border-radius: 22px; padding: 18px 24px; box-shadow: 0 8px 0 var(--brand-deep); transform: rotate(5deg); z-index: 6; }
+  .bell { width: 48px; height: 48px; border-radius: 50%; background: var(--yellow); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 0 var(--amber-dark); }
+  .notif b { display: block; font-weight: 800; font-size: 22px; color: var(--ink); }
+  .notif span { font-weight: 700; font-size: 17px; color: var(--ink-soft); }
+
+  .chip { position: absolute; padding: 14px 22px; border-radius: 18px; font-weight: 800; font-size: 24px; color: var(--white); white-space: nowrap; }
+  .ghost { opacity: .25; color: transparent !important; box-shadow: none !important; }
+  .ghost2 { opacity: .12; color: transparent !important; box-shadow: none !important; }
+  .c-pink { background: var(--pink); box-shadow: 0 6px 0 var(--pink-dark); }
+  .c-ind { background: var(--indigo); box-shadow: 0 6px 0 #3F33B8; }
+  .xp { position: absolute; left: 30px; top: 700px; background: var(--white); color: var(--brand); font-weight: 800; font-size: 30px; padding: 14px 24px; border-radius: 22px; box-shadow: 0 7px 0 var(--brand-deep); transform: rotate(-6deg); }
+  .spark { position: absolute; }
+</style>
+</head>
+<body>
+  <div class="blob" style="width:820px;height:820px;right:-220px;top:-300px;opacity:.55"></div>
+  <div class="blob" style="width:540px;height:540px;left:-220px;bottom:-280px;opacity:.45"></div>
+  <div class="speed" style="left:-40px;top:930px;width:420px;opacity:.10"></div>
+  <div class="speed" style="left:300px;top:965px;width:260px;opacity:.16"></div>
+  <div class="speed" style="left:760px;top:120px;width:150px;opacity:.16"></div>
+  <div class="speed" style="left:1380px;top:915px;width:260px;opacity:.12"></div>
+  <div class="ring" style="width:150px;height:150px;left:740px;top:760px;opacity:.12"></div>
+  <div class="ring" style="width:60px;height:60px;left:1520px;top:60px;opacity:.25"></div>
+
+  <div class="copy">
+    <span class="pill"><i></i>Teyro Original · Career</span>
+    <h1>How to Get<br/>Noticed<br/><em>by Employers</em></h1>
+    <p class="sub">CV, cover letter and profile that get read, even with no experience.</p>
+  </div>
+
+  <div class="stage">
+    <div class="cv">
+      <div class="cvName">Clinton Ndi</div>
+      <div class="cvSub">Final-year Computer Science · Buea</div>
+      <div class="cvHead">PROJECTS</div>
+      <div class="cvRow"><span class="tick"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="cvLine" style="width:260px"></span></div>
+      <div class="cvRow"><span class="tick"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="cvLine" style="width:220px"></span></div>
+      <div class="cvHead">EXPERIENCE</div>
+      <div class="cvRow"><span class="tick"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="cvLine" style="width:240px"></span></div>
+      <div class="cvRow"><span style="width:30px"></span><span class="cvLine" style="width:200px"></span></div>
+      <div class="cvHead">SKILLS</div>
+      <div class="cvRow"><span class="cvLine" style="width:300px"></span></div>
+      <div class="cvRow"><span class="cvLine" style="width:180px"></span></div>
+    </div>
+
+    <div class="card">
+      <div class="banner"></div>
+      <div class="avatar"><div class="hp"></div><div class="shirt"></div></div>
+      <div class="cardBody">
+        <div class="cardName">Clinton Ndi</div>
+        <div class="cardHead">Final-year CS student · Built a savings tracker used by 42 people</div>
+        <span class="connect"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Connect</span>
+      </div>
+    </div>
+
+    <div class="notif">
+      <span class="bell"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071233" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span>
+      <div><b>A recruiter viewed your profile</b><span>Njangi Pay · just now</span></div>
+    </div>
+
+    <div class="chip c-pink ghost2" style="left:-150px;top:320px">CV</div>
+    <div class="chip c-pink ghost" style="left:-112px;top:328px">CV</div>
+    <div class="chip c-pink" style="left:-74px;top:336px;transform:rotate(-8deg)">CV</div>
+    <div class="chip c-ind ghost2" style="left:-120px;top:520px">Cover letter</div>
+    <div class="chip c-ind ghost" style="left:-84px;top:514px">Cover letter</div>
+    <div class="chip c-ind" style="left:-48px;top:508px;transform:rotate(6deg)">Cover letter</div>
+
+    <div class="xp">+20 XP</div>
+    <svg class="spark" style="left:700px;top:230px" width="54" height="54" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#fff"/></svg>
+    <svg class="spark" style="left:520px;top:760px" width="40" height="40" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#FFD43B"/></svg>
+  </div>
+</body>
+</html>

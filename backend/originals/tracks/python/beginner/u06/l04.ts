@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         code: 'members = ["Ada", "Tunde", "Bisi"]\nmembers[1] = "Tobi"\nprint(members)',
         language: 'python',
         options: [
-          { text: "['Ada', 'Tobi', 'Bisi']" },
           { text: "['Tobi', 'Tunde', 'Bisi']", why: '[1] is the second item.' },
           { text: "['Ada', 'Tunde', 'Bisi', 'Tobi']", why: 'Assigning replaces; it doesn\'t add.' },
+          { text: "['Ada', 'Tobi', 'Bisi']" },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -121,11 +121,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'After members[4] = "Ngozi Okafor", how long is the list?',
         options: [
-          { text: 'The same as before' },
           { text: 'One longer', why: 'Replacing doesn\'t add an item.' },
+          { text: 'The same as before' },
           { text: 'One shorter', why: 'Nothing was removed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -133,11 +133,11 @@ const lesson: OriginalLesson = {
         message: 'Why can lists change but strings can\'t?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Design choice: text is safer when it can\'t change underneath you; a list of members is meant to be edited.' },
           { text: 'Strings are broken.', why: 'It\'s deliberate.' },
           { text: 'They both can.', why: 'name[0] = "N" is a TypeError.' },
+          { text: 'Design choice: text is safer when it can\'t change underneath you; a list of members is meant to be edited.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

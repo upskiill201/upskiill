@@ -15,33 +15,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, type CSSProperties } from 'react';
 import useSWR from 'swr';
-import {
-  Activity,
-  BellRing,
-  Video,
-  BarChart3,
-  BookOpen,
-  Bot,
-  CreditCard,
-  ExternalLink,
-  FolderInput,
-  Gauge,
-  GraduationCap,
-  LifeBuoy,
-  LogOut,
-  Menu,
-  Send,
-  Smartphone,
-  Sparkles,
-  Tag,
-  Timer,
-  UserCheck,
-  Users,
-  Wallet,
-  WalletCards,
-  X,
-  type LucideIcon,
-} from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import { TeyMark } from '@/components/brand/TeyMark';
 import { adminFetcher } from './AdminUI';
 import styles from './AdminShell.module.css';
@@ -57,7 +31,7 @@ interface Badges {
 interface NavLink {
   href: string;
   label: string;
-  icon: LucideIcon;
+  icon: GlyphName;
   tone: string;
   badge?: (b: Badges) => number;
   /** A calmer dot (in progress, not waiting on anyone). */
@@ -70,26 +44,27 @@ interface NavGroup {
 }
 
 const NAV: NavGroup[] = [
-  { label: null, items: [{ href: '/admin', label: 'Overview', icon: Gauge, tone: 'var(--color-brand)' }] },
+  { label: null, items: [{ href: '/admin', label: 'Overview', icon: 'gauge', tone: 'var(--color-brand)' }] },
   {
     label: 'Learning side',
     items: [
-      { href: '/admin/learning', label: 'Learning', icon: GraduationCap, tone: 'var(--success-green)' },
-      { href: '/admin/users', label: 'Users', icon: Users, tone: 'var(--brand-purple)' },
-      { href: '/admin/reach', label: 'Reach', icon: BellRing, tone: 'var(--error-red)' },
-      { href: '/admin/subscribers', label: 'Subscribers', icon: WalletCards, tone: 'var(--warning)' },
+      { href: '/admin/learning', label: 'Learning', icon: 'cap', tone: 'var(--success-green)' },
+      { href: '/admin/onboarding', label: 'Onboarding', icon: 'funnel', tone: 'var(--color-brand)' },
+      { href: '/admin/users', label: 'Users', icon: 'users', tone: 'var(--brand-purple)' },
+      { href: '/admin/reach', label: 'Reach', icon: 'bellRing', tone: 'var(--error-red)' },
+      { href: '/admin/subscribers', label: 'Subscribers', icon: 'card', tone: 'var(--warning)' },
     ],
   },
   {
     label: 'Creator side',
     items: [
-      { href: '/admin/creators/insights', label: 'Creators at a glance', icon: BarChart3, tone: 'var(--color-brand)' },
-      { href: '/admin/creators', label: 'Creators', icon: UserCheck, tone: 'var(--brand-purple)' },
-      { href: '/admin/courses', label: 'Courses & review', icon: BookOpen, tone: 'var(--success-green)', badge: (b) => b.review },
+      { href: '/admin/creators/insights', label: 'Creators at a glance', icon: 'chart', tone: 'var(--color-brand)' },
+      { href: '/admin/creators', label: 'Creators', icon: 'userCheck', tone: 'var(--brand-purple)' },
+      { href: '/admin/courses', label: 'Courses & review', icon: 'book', tone: 'var(--success-green)', badge: (b) => b.review },
       {
         href: '/admin/courses/import',
         label: 'Import a course',
-        icon: FolderInput,
+        icon: 'folderIn',
         tone: 'var(--warning)',
         badge: (b) => b.importsFailed,
         info: (b) => b.importsRunning,
@@ -99,28 +74,29 @@ const NAV: NavGroup[] = [
   {
     label: 'Money',
     items: [
-      { href: '/admin/payments', label: 'Payments', icon: CreditCard, tone: 'var(--success-green)' },
-      { href: '/admin/payouts', label: 'Payouts', icon: Wallet, tone: 'var(--warning)', badge: (b) => b.payouts },
-      { href: '/admin/coupons', label: 'Coupons', icon: Tag, tone: 'var(--error-red)' },
+      { href: '/admin/pro', label: 'Pro & payments', icon: 'crown', tone: 'var(--warning)' },
+      { href: '/admin/payments', label: 'Payments', icon: 'card', tone: 'var(--success-green)' },
+      { href: '/admin/payouts', label: 'Payouts', icon: 'wallet', tone: 'var(--warning)', badge: (b) => b.payouts },
+      { href: '/admin/coupons', label: 'Coupons', icon: 'tag', tone: 'var(--error-red)' },
     ],
   },
   {
     label: 'Care',
-    items: [{ href: '/admin/support', label: 'Support', icon: LifeBuoy, tone: 'var(--color-brand)', badge: (b) => b.support }],
+    items: [{ href: '/admin/support', label: 'Support', icon: 'lifebuoy', tone: 'var(--color-brand)', badge: (b) => b.support }],
   },
   {
     label: 'Website',
-    items: [{ href: '/admin/site', label: 'Homepage video', icon: Video, tone: 'var(--brand-purple)' }],
+    items: [{ href: '/admin/site', label: 'Homepage video', icon: 'video', tone: 'var(--brand-purple)' }],
   },
   {
     label: 'Automation',
     items: [
-      { href: '/admin/rules', label: 'Tey rules', icon: Sparkles, tone: 'var(--brand-purple)' },
-      { href: '/admin/ai', label: 'AI providers', icon: Bot, tone: 'var(--color-brand)' },
-      { href: '/admin/deliveries', label: 'Deliveries', icon: Send, tone: 'var(--success-green)' },
-      { href: '/admin/queue', label: 'Queue', icon: Timer, tone: 'var(--warning)' },
-      { href: '/admin/health', label: 'Health', icon: Activity, tone: 'var(--error-red)' },
-      { href: '/admin/whatsapp', label: 'WhatsApp', icon: Smartphone, tone: 'var(--success-green)' },
+      { href: '/admin/rules', label: 'Tey rules', icon: 'sparkle', tone: 'var(--brand-purple)' },
+      { href: '/admin/ai', label: 'AI providers', icon: 'bot', tone: 'var(--color-brand)' },
+      { href: '/admin/deliveries', label: 'Deliveries', icon: 'send', tone: 'var(--success-green)' },
+      { href: '/admin/queue', label: 'Queue', icon: 'clock', tone: 'var(--warning)' },
+      { href: '/admin/health', label: 'Health', icon: 'activity', tone: 'var(--error-red)' },
+      { href: '/admin/whatsapp', label: 'WhatsApp', icon: 'phone', tone: 'var(--success-green)' },
     ],
   },
 ];
@@ -174,7 +150,7 @@ export function AdminShell({ children, userName }: { children: React.ReactNode; 
             </span>
           </Link>
           <button type="button" className={styles.closeBtn} onClick={() => setOpen(false)} aria-label="Close menu">
-            <X size={20} />
+            <Glyph name="close" size={20} />
           </button>
         </div>
 
@@ -183,7 +159,6 @@ export function AdminShell({ children, userName }: { children: React.ReactNode; 
             <div key={gi} className={styles.navGroup}>
               {group.label && <span className={styles.navGroupLabel}>{group.label}</span>}
               {group.items.map((item) => {
-                const Icon = item.icon;
                 const count = badges && item.badge ? item.badge(badges) : 0;
                 const info = badges && item.info ? item.info(badges) : 0;
                 const on = active === item.href;
@@ -197,7 +172,7 @@ export function AdminShell({ children, userName }: { children: React.ReactNode; 
                     aria-current={on ? 'page' : undefined}
                   >
                     <span className={styles.navIcon} aria-hidden="true">
-                      <Icon size={18} strokeWidth={2.4} />
+                      <Glyph name={item.icon} size={18} strokeWidth={2.4} />
                     </span>
                     <span className={styles.navLabel}>{item.label}</span>
                     {count > 0 ? (
@@ -222,7 +197,7 @@ export function AdminShell({ children, userName }: { children: React.ReactNode; 
       <div className={styles.mainCol}>
         <header className={styles.topbar}>
           <button type="button" className={styles.menuBtn} onClick={() => setOpen(true)} aria-label="Open menu">
-            <Menu size={20} />
+            <Glyph name="menu" size={20} />
           </button>
           <Link href="/admin" className={styles.topBrand}>
             <TeyMark size={30} />
@@ -230,10 +205,10 @@ export function AdminShell({ children, userName }: { children: React.ReactNode; 
           </Link>
           <div className={styles.topRight}>
             <Link href="/dashboard" className={styles.topLink} target="_blank">
-              <ExternalLink size={15} aria-hidden="true" /> Learner app
+              <Glyph name="external" size={15} strokeWidth={2.6} /> Learner app
             </Link>
             <Link href="/creator" className={styles.topLink} target="_blank">
-              <ExternalLink size={15} aria-hidden="true" /> Creator studio
+              <Glyph name="external" size={15} strokeWidth={2.6} /> Creator studio
             </Link>
             <span className={styles.account}>
               <span className={styles.avatar} aria-hidden="true">
@@ -242,7 +217,7 @@ export function AdminShell({ children, userName }: { children: React.ReactNode; 
               <span className={styles.accountName}>{userName ?? 'Admin'}</span>
             </span>
             <button type="button" className={styles.logout} onClick={() => void logout()} aria-label="Log out">
-              <LogOut size={17} />
+              <Glyph name="logout" size={17} strokeWidth={2.6} />
             </button>
           </div>
         </header>

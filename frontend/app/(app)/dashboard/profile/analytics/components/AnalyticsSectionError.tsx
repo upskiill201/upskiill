@@ -1,4 +1,4 @@
-import { RefreshCw } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 
 /**
  * Local, section-scoped error state. One section failing (e.g. the heatmap
@@ -15,7 +15,7 @@ export function AnalyticsSectionError({ label, onRetry }: { label: string; onRet
           onClick={onRetry}
           className="flex items-center gap-1.5 text-sm font-semibold text-[#0172FD] hover:text-[#00459E]"
         >
-          <RefreshCw size={14} /> Try again
+          <Glyph name="refresh" size={14} /> Try again
         </button>
       )}
     </div>

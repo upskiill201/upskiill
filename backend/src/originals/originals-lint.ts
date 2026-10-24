@@ -65,7 +65,7 @@ function lintLesson(
   push: (level: LintIssue['level'], message: string) => void,
 ) {
   // ── Server rules: the same checks publishing runs ──────────────────────
-  const blocks = buildContentBlocks(lesson, keys.lesson(track, level, unit, lesson));
+  const blocks = buildContentBlocks(lesson, keys.lesson(track, level, unit, lesson), track.runner);
   const state = phaseStateFromBlocks(blocks);
   for (const e of [...(state.learn?.errors ?? []), ...(state.apply?.errors ?? [])]) push('error', e);
 
@@ -89,6 +89,20 @@ function lintLesson(
   }
   for (const c of lesson.learn) {
     if (c.kind === 'check' && !c.options[c.answer]) push('error', `Quick check "${c.question}": answer index ${c.answer} has no option.`);
+    // Prompt Lab: picking exactly the goal reply's parts must bring the goal
+    // back (the player picks the most specific reply, ties to the first), and
+    // the bare prompt must not already finish it.
+    if (c.kind === 'promptLab' && c.replies[c.goal]) {
+      const replyFor = (picked: Set<number>) => {
+        let best = -1;
+        c.replies.forEach((r, i) => {
+          if (r.uses.every((u) => picked.has(u)) && (best < 0 || r.uses.length > c.replies[best].uses.length)) best = i;
+        });
+        return best;
+      };
+      if (replyFor(new Set(c.replies[c.goal].uses)) !== c.goal) push('error', `Prompt Lab "${c.task}": the goal reply can never come back.`);
+      if (c.replies[c.goal].uses.length === 0) push('error', `Prompt Lab "${c.task}": the bare prompt already reaches the goal.`);
+    }
   }
 
   // ── Structure ───────────────────────────────────────────────────────────
@@ -204,8 +218,9 @@ export function lintTrack(track: OriginalTrackDef): LintIssue[] {
     levels.add(level.level);
     if (level.units.length === 0) issues.push({ level: 'warning', where, message: 'No units written yet: nothing to load for this level.' });
     const planned = level.units.length + level.upcomingUnits;
-    if (track.format === 'short' ? planned < 5 : planned < 10) {
-      const target = track.format === 'short' ? 'a short course has 5' : 'a full level has 10–15';
+    const fiveUnits = track.format === 'short' || track.format === 'focused';
+    if (fiveUnits ? planned < 5 : planned < 10) {
+      const target = track.format === 'short' ? 'a short course has 5' : track.format === 'focused' ? 'a focused course has 5' : 'a full level has 10–15';
       issues.push({ level: 'warning', where, message: `${planned} units planned; ${target}.` });
     }
     // Lessons 1–5 are the free stretch; lesson 5 must be the first Checkpoint.

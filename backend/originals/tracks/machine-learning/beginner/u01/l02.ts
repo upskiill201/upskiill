@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         message: 'ML is hype. Name one thing it does that I actually use.',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Your bank\'s fraud text last month. And your keyboard finishing "see you tom..." for you.' },
           { text: 'It drives all the cars in Lagos.', why: 'That\'s not true, and Chidi would know it.' },
+          { text: 'Your bank\'s fraud text last month. And your keyboard finishing "see you tom..." for you.' },
           { text: 'Nothing yet. It\'s all in the future.', why: 'It\'s already in tools he uses every day.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Your maps app says 40 minutes. Where could that guess come from?',
         options: [
-          { text: 'Many past trips on the same roads at similar times' },
           { text: 'The speed limit and nothing else', why: 'Then it would ignore traffic. Learning from past trips is what makes it useful.' },
           { text: 'It knows the future', why: 'It\'s a guess from patterns, and sometimes it\'s wrong.' },
+          { text: 'Many past trips on the same roads at similar times' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -144,11 +144,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do all these tools have in common?',
         options: [
-          { text: 'They learned from lots of examples and make guesses about new ones' },
           { text: 'They are all always right', why: 'Spam sometimes reaches your inbox. Guesses can be wrong.' },
+          { text: 'They learned from lots of examples and make guesses about new ones' },
           { text: 'They were all written as long lists of rules', why: 'The rules were learned, not typed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',
@@ -156,11 +156,11 @@ const lesson: OriginalLesson = {
         message: 'So what would OUR model learn from, and what would it guess?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'It learns from past appointments and whether the patient came. It guesses whether a new booking will be missed.' },
           { text: 'It learns from the internet and guesses everything.', why: 'Afiya\'s model learns from Afiya\'s own appointments.' },
           { text: 'It learns from the nurses\' names.', why: 'Names don\'t explain who misses. Waits, reminders and distance might.' },
+          { text: 'It learns from past appointments and whether the patient came. It guesses whether a new booking will be missed.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

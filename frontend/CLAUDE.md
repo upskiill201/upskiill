@@ -31,12 +31,15 @@ For complex builder interfaces, use the `/creator/courses` Promo Banner as the v
 - Large builder panels: `16px`
 - Pills and badges: `999px`
 
-### Icon Libraries
-Only two icon libraries are permitted across the entire codebase:
-- `lucide-react` — for all UI and form icons
-- `react-icons/fa` — for feature, brand, and social icons
+### Icons: Teyro's own, never stock ⛔ (founder protocol, 2026-10-23)
+**Never use stock icons.** No `lucide-react`, no icon font, no icon pack in new or touched UI. Every icon is drawn for Teyro:
+- `components/art/Art.tsx` — illustrations (flat, chunky, darker underside + highlight, 64-unit grid), coloured only through `art.module.css` classes derived from the brand tokens. For answers, rewards, menu items, empty states, hero moments.
+- `components/art/Glyph.tsx` — small chunky UI glyphs (back, close, check, chevron, menu, mail, eye, lock, sound…) in `currentColor`.
+- Need one that doesn't exist? Draw it there, check it on `/dev/onboarding-art` on white, then use it.
+- Touching a screen that still has lucide icons? Replace them on that screen as part of the change.
+- The only exception: third-party **brand logos** (Google, TikTok, YouTube…) from `react-icons/fa`.
 
-No other icon library. No emoji as icons. No inline SVG icons unless they are GSAP-animated brand moments.
+No emoji as icons.
 
 ### Logo
 ```

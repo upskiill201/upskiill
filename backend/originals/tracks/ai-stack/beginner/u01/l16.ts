@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The pitch says "99% accurate". What\'s the best first question?',
         options: [
-          { text: '"Accurate on what questions, and how did you measure it?"' },
           { text: '"Can it be 100%?"', why: 'The number means nothing until you know the test.' },
           { text: '"Which colour is the logo?"', why: 'Ask about the test, not the brand.' },
+          { text: '"Accurate on what questions, and how did you measure it?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         code: 'checklist = ["Compute", "Model", "Data"]\nchecklist.append("Privacy")\nprint(checklist[-1])',
         language: 'python',
         options: [
-          { text: 'Privacy' },
           { text: 'Data', why: '.append() adds Privacy at the end, so it\'s now the last item.' },
           { text: '4', why: 'It prints the last item, not the length.' },
+          { text: 'Privacy' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -141,11 +141,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask "what happens when it\'s wrong?" about the application layer?',
         options: [
-          { text: 'Good apps plan for mistakes: a way to correct, report or reach a human' },
           { text: 'Because the app is always wrong', why: 'Every system is sometimes wrong; good ones plan for it.' },
+          { text: 'Good apps plan for mistakes: a way to correct, report or reach a human' },
           { text: 'It isn\'t a useful question', why: 'It\'s one of the most important.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

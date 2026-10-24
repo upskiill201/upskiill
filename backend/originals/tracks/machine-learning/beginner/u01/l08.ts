@@ -35,11 +35,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a model do?',
         options: [
-          { text: 'Takes features in and gives a prediction out' },
           { text: 'Stores every appointment ever made', why: 'That\'s a database. A model makes guesses.' },
           { text: 'Tells the future for certain', why: 'It says what\'s likely, not what\'s certain.' },
+          { text: 'Takes features in and gives a prediction out' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A model says a patient has a 0.8 chance of missing. What does that mean?',
         options: [
-          { text: 'Out of 10 patients like this, about 8 would miss' },
           { text: 'The patient will definitely miss', why: '0.8 is likely, not certain.' },
+          { text: 'Out of 10 patients like this, about 8 would miss' },
           { text: 'The patient is 80% late', why: 'It\'s the chance of missing, not lateness.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -97,11 +97,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Bisi can make 3 calls. Who should she call first?',
         options: [
-          { text: 'The patients with the highest chance of missing' },
           { text: 'The patients with the lowest chance', why: 'They\'ll probably come anyway.' },
+          { text: 'The patients with the highest chance of missing' },
           { text: 'Random patients', why: 'The chances tell her where a call helps most.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -135,11 +135,11 @@ const lesson: OriginalLesson = {
         message: 'I don\'t want "likely". I want "will".',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'Nobody can promise "will": people get sick, buses break down. "Likely" is honest, and it still tells us who to help first.' },
           { text: 'OK, I\'ll make it say "will".', why: 'That would be dishonest: it\'s still a guess.' },
           { text: 'Then we can\'t use machine learning.', why: 'Likely is useful. It just isn\'t certain.' },
+          { text: 'Nobody can promise "will": people get sick, buses break down. "Likely" is honest, and it still tells us who to help first.' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

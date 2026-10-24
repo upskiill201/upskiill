@@ -19,7 +19,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Compass, Sparkles } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { playHaptic } from '@/lib/haptics';
 import { EXPLORE_HREF, type Enrollment } from '@/hooks/useCourse';
 import styles from './CurrentQuestCard.module.css';
@@ -40,13 +40,13 @@ function Mascot({ line }: { line: string }) {
 
       <div className={styles.mascotStage}>
         <span className={styles.sparkle1}>
-          <Sparkles size={18} className="text-sky-200" />
+          <Glyph name="sparkle" size={18} className="text-sky-200" />
         </span>
         <span className={styles.sparkle2}>
-          <Sparkles size={16} className="text-sky-200" />
+          <Glyph name="sparkle" size={16} className="text-sky-200" />
         </span>
         <span className={styles.sparkle3}>
-          <Sparkles size={14} className="text-sky-200" />
+          <Glyph name="sparkle" size={14} className="text-sky-200" />
         </span>
 
         <div className={styles.mascotImg}>
@@ -101,7 +101,7 @@ export default function CurrentQuestCard({ enrollment, loading = false, onPlay }
             }}
             className={styles.continueBtn}
           >
-            <Compass size={17} strokeWidth={2.8} />
+            <Glyph name="compass" size={17} strokeWidth={2.8} />
             <span>Explore courses</span>
           </button>
         </div>
@@ -175,7 +175,7 @@ export default function CurrentQuestCard({ enrollment, loading = false, onPlay }
           className={styles.continueBtn}
         >
           <span>{cta}</span>
-          <ArrowRight size={17} strokeWidth={2.8} />
+          <Glyph name="arrow" size={17} strokeWidth={2.8} />
         </button>
       </div>
 

@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         message: 'Speed round! What\'s "churn"? Not an acronym, but GO.',
         prompt: 'Remi answers.',
         options: [
-          { text: 'Customers who stop buying from you.' },
           { text: 'Making butter.', why: 'Technically also true. Not at Synergix.' },
           { text: 'New leads.', why: 'The opposite end of the pipeline.' },
+          { text: 'Customers who stop buying from you.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -130,11 +130,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'You\'re writing to someone outside your company for the first time. What do you do with acronyms?',
         options: [
-          { text: 'Spell them out, or cut them' },
           { text: 'Use as many as possible to sound expert', why: 'Remi tried that with Kestrel.' },
+          { text: 'Spell them out, or cut them' },
           { text: 'Invent new ones', why: 'Never in shared writing.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',

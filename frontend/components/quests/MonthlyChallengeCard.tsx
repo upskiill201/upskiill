@@ -12,7 +12,7 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { Clock, Target } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { useState } from 'react';
 import { useGamification } from '@/context/GamificationContext';
 import { useRewardChest } from '@/hooks/useRewardChest';
@@ -110,7 +110,7 @@ export function MonthlyChallengeCard({ quest, onChanged }: { quest: MonthlyQuest
         </p>
         {!earned && (
           <span className="inline-flex items-center gap-1 text-[13px] font-extrabold" style={{ color: 'var(--warning)' }}>
-            <Clock className="w-4 h-4 stroke-[2.6]" aria-hidden="true" />
+            <Glyph name="clock" size={16} strokeWidth={2.6} />
             {quest.daysRemaining} {quest.daysRemaining === 1 ? 'day' : 'days'} left
           </span>
         )}
@@ -158,7 +158,7 @@ export function MonthlyChallengeCard({ quest, onChanged }: { quest: MonthlyQuest
       </div>
 
       <p className="flex items-start gap-2 rounded-[14px] px-3 py-2.5 text-[13px] font-semibold text-[var(--text-secondary)]" style={{ backgroundColor: 'var(--bg-section)' }}>
-        <Target className="w-4 h-4 mt-[1px] shrink-0" aria-hidden="true" />
+        <Glyph name="target" size={16} strokeWidth={2.4} className="mt-[1px] shrink-0" />
         <span>
           A <strong className="text-ink">goal day</strong> is a day you earn your {quest.dailyGoalXp} XP daily goal and finish a lesson.
         </span>

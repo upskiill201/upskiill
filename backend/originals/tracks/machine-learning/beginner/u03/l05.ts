@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         message: '1 out of 4? Your sticky note got 3. Why bother?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'One neighbour is the weakest version. With several neighbours and more features, it can catch patterns my note can\'t.' },
           { text: 'You\'re right, give up.', why: 'This is the first step, not the last.' },
+          { text: 'One neighbour is the weakest version. With several neighbours and more features, it can catch patterns my note can\'t.' },
           { text: 'Four patients prove it\'s better.', why: 'Four patients prove nothing either way.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         code: 'print(round(((21 - 3) ** 2 + (9 - 2) ** 2) ** 0.5, 2))',
         language: 'python',
         options: [
-          { text: '19.31' },
           { text: '25', why: '18 + 7 isn\'t how distance works.' },
           { text: '373', why: 'That\'s before the square root.' },
+          { text: '19.31' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

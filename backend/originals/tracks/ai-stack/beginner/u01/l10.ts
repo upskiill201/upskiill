@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'For the demo, should I say it can answer anything?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Say it answers from the help page, and that orders, guardrails and the chat box come next. Honest demos build trust.' },
           { text: 'Yes, promise everything.', why: 'It can\'t check orders yet. Overpromising backfires.' },
+          { text: 'Say it answers from the help page, and that orders, guardrails and the chat box come next. Honest demos build trust.' },
           { text: 'Don\'t demo it at all.', why: 'Showing early work, honestly, is useful.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         code: 'build = ["Data", "Orchestration", "Application", "Evaluation"]\nprint(build[1])',
         language: 'python',
         options: [
-          { text: 'Orchestration' },
           { text: 'Data', why: 'Positions start at 0, so [1] is the second item.' },
           { text: '4', why: 'That would be len(build).' },
+          { text: 'Orchestration' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',

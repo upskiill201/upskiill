@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         message: "Summary from memory is so slow. I'll just shorten my notes while looking at them.",
         prompt: 'What should Kofi say?',
         options: [
-          { text: "With your notes open it's copying, just shorter. From memory is what makes it stick." },
           { text: 'Good shortcut.', why: 'It skips the thinking.' },
           { text: 'Skip summaries completely.', why: 'They work, when done from memory.' },
+          { text: "With your notes open it's copying, just shorter. From memory is what makes it stick." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -86,11 +86,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why add the AI\'s fixes in a different colour?',
         options: [
-          { text: 'The coloured bits show exactly what you didn\'t know' },
           { text: 'It looks nicer', why: 'Maybe, but the point is spotting weak points.' },
+          { text: 'The coloured bits show exactly what you didn\'t know' },
           { text: 'Teachers require it', why: 'It is a revision trick, not a rule.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

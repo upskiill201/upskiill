@@ -38,11 +38,11 @@ const lesson: OriginalLesson = {
         code: 'print(3 ** 2)',
         language: 'python',
         options: [
-          { text: '9' },
           { text: '6', why: 'That\'s 3 * 2. ** means power.' },
+          { text: '9' },
           { text: '32', why: 'It\'s maths, not joining digits.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         message: 'The chain message says "everyone wins". Python says it needs 649,539 people in 10 months.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'Exactly. Growth by powers runs out of people fast, and the last ones in lose. Don\'t join.' },
           { text: 'Join early, then.', why: 'Early people are paid with the later people\'s losses.' },
           { text: 'Python must be wrong.', why: 'The maths is simple and right.' },
+          { text: 'Exactly. Growth by powers runs out of people fast, and the last ones in lose. Don\'t join.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

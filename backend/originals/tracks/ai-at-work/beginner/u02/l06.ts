@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         message: "I emailed our IT team three times about new laptops and got nothing. What am I doing wrong?",
         prompt: 'What should Ada suggest?',
         options: [
-          { text: "Put the ask and date in the subject, ask in the first line, give the reason, and make it a yes/no question." },
           { text: 'Email more often.', why: 'A fourth unclear email gets the same result.' },
           { text: 'Write a longer email with more background.', why: 'More text buries the ask further.' },
+          { text: "Put the ask and date in the subject, ask in the first line, give the reason, and make it a yes/no question." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -167,11 +167,11 @@ const lesson: OriginalLesson = {
         message: "Ada, your emails are the only ones I answer from my phone in the lift. How?",
         prompt: "What's Ada's honest answer?",
         options: [
-          { text: 'I put the ask first and make the reply small, so you can answer in one tap.' },
           { text: 'I send them at the perfect time of day.', why: 'Timing helps a little; the structure does the work.' },
+          { text: 'I put the ask first and make the reply small, so you can answer in one tap.' },
           { text: 'My emails are just shorter.', why: 'Short helps, but the ask-first structure is the real trick.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

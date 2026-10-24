@@ -59,11 +59,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can "Noted." sound cold?',
         options: [
-          { text: 'One word and a full stop can read as "I heard you and I\'m not pleased"' },
           { text: 'It\'s grammatically wrong', why: 'It\'s fine grammatically. It\'s the tone.' },
           { text: 'It\'s a legal term', why: 'Not really. It\'s about tone.' },
+          { text: 'One word and a full stop can read as "I heard you and I\'m not pleased"' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

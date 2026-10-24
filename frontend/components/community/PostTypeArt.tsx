@@ -3,13 +3,12 @@
 /**
  * A post type's illustrated badge (public/art/posts, from scripts/gen-art.mjs)
  * — the chunky tile on every post, the filter chips and the post page. Types
- * without art (GENERAL, PROGRESS…) fall back to their lucide glyph.
+ * without art (GENERAL, PROGRESS…) fall back to their glyph.
  */
 
 import React from 'react';
 import Image from 'next/image';
-import { Hash } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 
 export const POST_TYPE_ART = new Set([
   'QUESTION',
@@ -26,13 +25,13 @@ interface Props {
   postType: string;
   size?: number;
   /** Glyph for types without art. */
-  fallback?: LucideIcon;
+  fallback?: GlyphName;
   className?: string;
 }
 
-export default function PostTypeArt({ postType, size = 20, fallback: Fallback = Hash, className }: Props) {
+export default function PostTypeArt({ postType, size = 20, fallback = 'hash', className }: Props) {
   if (!POST_TYPE_ART.has(postType)) {
-    return <Fallback size={Math.round(size * 0.8)} strokeWidth={2.75} aria-hidden="true" className={className} />;
+    return <Glyph name={fallback} size={Math.round(size * 0.8)} strokeWidth={2.75} className={className} />;
   }
   return <Image src={`/art/posts/${postType}.svg`} alt="" width={size} height={size} className={className} />;
 }

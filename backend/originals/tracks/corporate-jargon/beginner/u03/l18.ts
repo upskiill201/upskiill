@@ -20,8 +20,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Ada says her bank has to "do KYC" before opening an account. What does that mean?',
-      options: ['Check who the customer really is', 'Give the customer a free gift', 'Close the account'],
-      answer: 0,
+      options: ['Give the customer a free gift', 'Close the account', 'Check who the customer really is'],
+      answer: 2,
       explanation: 'KYC = know your customer: identity checks.',
     },
     {

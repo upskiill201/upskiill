@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why are silent bugs worse than crashes here?',
         options: [
-          { text: 'Nobody notices, and the wrong person gets paid' },
           { text: 'They\'re slower', why: 'Speed isn\'t the issue. Wrong results are.' },
+          { text: 'Nobody notices, and the wrong person gets paid' },
           { text: 'They aren\'t worse', why: 'A crash is loud and gets fixed. A silent bug spreads.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         message: 'Four bugs. I feel like a bad programmer.',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'These four are so common they have names. Knowing them means you\'ll catch them in other people\'s code too.' },
           { text: 'You should be faster by now.', why: 'Unhelpful. These trip up experienced people too.' },
           { text: 'Lists are just hard; avoid them.', why: 'Lists are everywhere. Learn the traps instead.' },
+          { text: 'These four are so common they have names. Knowing them means you\'ll catch them in other people\'s code too.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

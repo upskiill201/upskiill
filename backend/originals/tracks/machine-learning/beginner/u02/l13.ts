@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does df["wait_weeks"] = df["wait_days"] / 7 do?',
         options: [
-          { text: 'Adds a column with every row\'s wait in weeks' },
           { text: 'Changes wait_days into weeks', why: 'wait_days stays. A new column is added.' },
+          { text: 'Adds a column with every row\'s wait in weeks' },
           { text: 'Needs a loop to work', why: 'Column maths happens to every row at once.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         message: 'Is it cheating to add my own columns?',
         prompt: "Miracle's best reply?",
         options: [
-          { text: 'It\'s the opposite: it\'s how your nurse knowledge gets into the model. Chapter 8 is all about it. Just only use things known before the appointment.' },
           { text: 'Yes, only use what Emmanuel sent.', why: 'Making useful columns is a core ML skill.' },
+          { text: 'It\'s the opposite: it\'s how your nurse knowledge gets into the model. Chapter 8 is all about it. Just only use things known before the appointment.' },
           { text: 'Add as many as possible, from anything.', why: 'Only clues known before the day, or the model cheats.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',

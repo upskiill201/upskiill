@@ -79,11 +79,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The table has 4 patients and 3 feature columns. How many examples?',
         options: [
-          { text: '4' },
           { text: '3', why: 'Columns are features. Examples are rows.' },
           { text: '12', why: 'That counts cells, not patients.' },
+          { text: '4' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -98,11 +98,11 @@ const lesson: OriginalLesson = {
         message: 'I can add a column: "did the nurse call them after they missed?" More features is better, right?',
         prompt: "Halima's best reply?",
         options: [
-          { text: 'That one only exists after they\'ve missed. We have to guess before the day, so it can\'t be a feature.' },
           { text: 'Yes, add every column we have.', why: 'A clue from after the appointment would let the model cheat. Chapter 4.' },
+          { text: 'That one only exists after they\'ve missed. We have to guess before the day, so it can\'t be a feature.' },
           { text: 'Columns don\'t matter.', why: 'Choosing the right features matters a lot (Chapter 8).' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

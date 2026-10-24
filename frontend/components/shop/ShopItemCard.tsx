@@ -11,7 +11,7 @@
 
 import React, { useMemo } from 'react';
 import Image from 'next/image';
-import { Check, Lock } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import ShopItemArt from '../shop-engine/ShopItemArt';
 import { rarityStyle } from '@/lib/shop/cosmetics';
 import type { ShopItem } from '@/lib/shop/types';
@@ -95,12 +95,12 @@ export default function ShopItemCard({
         />
         {locked && (
           <span className={styles.lockPin} aria-hidden>
-            <Lock size={13} strokeWidth={2.8} />
+            <Glyph name="lock" size={13} strokeWidth={2.8} />
           </span>
         )}
         {item.equipped && (
           <span className={styles.equippedPin} aria-label="Equipped">
-            <Check size={13} strokeWidth={3} />
+            <Glyph name="check" size={13} strokeWidth={3} />
           </span>
         )}
       </div>
@@ -137,12 +137,12 @@ export default function ShopItemCard({
       <div className={styles.action}>
         {item.grantOnly ? (
           <span className={styles.grantOnly}>
-            <Lock size={12} strokeWidth={2.8} />
+            <Glyph name="lock" size={12} strokeWidth={2.8} />
             Earned only
           </span>
         ) : locked ? (
           <button type="button" className={styles.lockedBtn} aria-disabled="true" onClick={explain}>
-            <Lock size={14} strokeWidth={2.8} aria-hidden="true" />
+            <Glyph name="lock" size={14} strokeWidth={2.8} />
             LOCKED
           </button>
         ) : item.soldOut ? (

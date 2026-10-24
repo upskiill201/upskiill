@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         message: 'I got 2 moles for the O₂ one. The AI says 1. The AI is wrong, right?',
         prompt: 'What should Kofi say?',
         options: [
-          { text: 'Compare your working with the worked example, step by step. Check how many O atoms are in O₂.' },
           { text: 'Yes, the AI is always wrong.', why: 'Not this time. And the step-by-step compare would show it.' },
+          { text: 'Compare your working with the worked example, step by step. Check how many O atoms are in O₂.' },
           { text: 'Just copy the AI\'s answer.', why: 'He would still not know why he went wrong.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -121,11 +121,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: "Kofi gets the 'now me' question wrong. What's the fastest way to find his mistake?",
         options: [
-          { text: 'Compare his working with the example, step by step' },
           { text: 'Ask for the answer and move on', why: 'He would make the same mistake in the test.' },
           { text: 'Start the topic again from scratch', why: 'He only needs to find one step.' },
+          { text: 'Compare his working with the example, step by step' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -39,11 +39,11 @@ const lesson: OriginalLesson = {
         code: 'members = ["Ada", "Tunde"]\nother = members\nother.append("Ola")\nprint(members)',
         language: 'python',
         options: [
-          { text: "['Ada', 'Tunde', 'Ola']" },
           { text: "['Ada', 'Tunde']", why: 'other and members are the same list.' },
+          { text: "['Ada', 'Tunde', 'Ola']" },
           { text: 'An error', why: 'It runs. That\'s the surprise.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         code: 'members = ["Ada", "Tunde"]\nother = members.copy()\nother.append("Ola")\nprint(members)',
         language: 'python',
         options: [
-          { text: "['Ada', 'Tunde']" },
           { text: "['Ada', 'Tunde', 'Ola']", why: '.copy() made a separate list.' },
           { text: 'None', why: '.copy() returns a new list.' },
+          { text: "['Ada', 'Tunde']" },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         message: 'So should I .copy() every list, just in case?',
         prompt: "Arjun's best reply?",
         options: [
-          { text: 'No. Copy when you\'re about to change one version and need the other to stay as it was. Otherwise sharing is fine.' },
           { text: 'Yes, always.', why: 'Copying everywhere wastes memory and hides which list is the real one.' },
+          { text: 'No. Copy when you\'re about to change one version and need the other to stay as it was. Otherwise sharing is fine.' },
           { text: 'Never copy lists.', why: 'Backups and boards need copies.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
