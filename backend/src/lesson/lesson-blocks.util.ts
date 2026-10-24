@@ -18,7 +18,7 @@ export const MAX_VIDEO_SECONDS = 15 * 60;
 
 // exercises: 30 so a Teyro Originals Checkpoint (25–30 exercises) fits.
 const LIMITS = { learnCards: 30, exercises: 30, options: 6, lines: 30, pairs: 8, blanks: 6, bank: 12 };
-const RICH = { beats: 14, choiceOptions: 4, turns: 10, replies: 3, steps: 8, notes: 6, hotspots: 8, statements: 6, stdin: 10, checks: 8 };
+const RICH = { beats: 14, choiceOptions: 4, turns: 10, replies: 3, steps: 8, notes: 6, hotspots: 8, statements: 6, stdin: 10, checks: 8, labParts: 6, labReplies: 8 };
 const CAST = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'yaw', 'juno', 'walt', 'leo', 'dana', 'nora', 'mags', 'rafa', 'wes', 'ines', 'hal', 'tomoko', 'mateus', 'lars', 'hazel', 'benny', 'ruth'];
 const BLANK_RE = /\[\[(\d+)\]\]/g;
 
@@ -161,6 +161,19 @@ function richLearnCardProblem(c: any): string | null {
       return statements.some((s: any) => blank(s?.text) || blank(s?.explain) || typeof s?.isFact !== 'boolean')
         ? 'A Myth or Fact statement is missing its text, answer or explanation.'
         : null;
+    }
+    case 'promptLab': {
+      const parts = list(c.parts);
+      const replies = list(c.replies);
+      if (blank(c.task) || blank(c.base)) return 'A Prompt Lab is missing its task or starting prompt.';
+      if (parts.length < 2 || parts.length > RICH.labParts) return `A Prompt Lab needs 2 to ${RICH.labParts} prompt parts.`;
+      if (parts.some((p: any) => blank(p?.label) || blank(p?.text))) return 'A Prompt Lab part is missing its label or text.';
+      if (replies.length < 2 || replies.length > RICH.labReplies) return `A Prompt Lab needs 2 to ${RICH.labReplies} replies.`;
+      if (replies.some((r: any) => blank(r?.text) || blank(r?.note))) return 'A Prompt Lab reply is missing its text or note.';
+      if (replies.some((r: any) => list(r?.uses).some((u: any) => !Number.isInteger(u) || u < 0 || u >= parts.length)))
+        return 'A Prompt Lab reply uses a part that does not exist.';
+      if (!replies.some((r: any) => list(r?.uses).length === 0)) return 'A Prompt Lab needs a reply for the bare prompt (uses: []).';
+      return Number.isInteger(c.goal) && c.goal >= 0 && c.goal < replies.length ? null : 'A Prompt Lab has no goal reply marked.';
     }
     case 'tryIt':
       if (blank(c.code)) return 'A Try it live card has no code.';
