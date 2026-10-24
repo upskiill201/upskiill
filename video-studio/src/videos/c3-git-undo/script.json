@@ -1,0 +1,53 @@
+{
+  "slug": "c3-git-undo",
+  "account": "teyro",
+  "title": "Git can undo almost anything: 4 commands",
+  "sources": [
+    "git-scm.com/docs/git-reflog: reflogs record when branch tips and other refs were updated in the local repository; unreachable entries expire after gc.reflogExpireUnreachable, default 30 days (reachable: 90 days)",
+    "git-scm.com/docs/git-restore: restore paths in the working tree (from the index by default; --staged restores the index from HEAD)",
+    "git-scm.com/docs/git-stash: saves local modifications away and reverts the working directory to match HEAD; restore later with apply/pop",
+    "git-scm.com/docs/git-revert: records new commits that reverse the effect of earlier commits (history is not rewritten, so it is safe on pushed branches)",
+    "teyro.app: coding track, short daily lessons, real code with instant feedback, a few minutes a day"
+  ],
+  "voice": "cgSgspJ2msm6clMCkdW9",
+  "model": "eleven_multilingual_v2",
+  "fps": 30,
+  "lines": [
+    {
+      "id": "h1",
+      "text": "You didn't lose that code. | Git *secretly* kept it."
+    },
+    {
+      "id": "h2",
+      "text": "Here are *four* commands | that undo almost *anything.*"
+    },
+    {
+      "id": "i1",
+      "text": "The first is git *reflog.* | It's a diary of everywhere your branch has been, | so after a bad reset, | you find the old commit | and jump straight *back.*"
+    },
+    {
+      "id": "i1b",
+      "text": "By default, | Git keeps those lost commits | for *thirty days.*"
+    },
+    {
+      "id": "i2",
+      "text": "The second is git *restore.* | Broke a file you haven't committed? | One command puts it back | the way it was *before* your edits."
+    },
+    {
+      "id": "i3",
+      "text": "The third is git *stash.* | Halfway through something | and need to switch branches? | Stash *parks* your changes, | and stash *pop* brings them back."
+    },
+    {
+      "id": "i4",
+      "text": "And finally, git *revert.* | Already pushed a bad commit to *GitHub?* | Don't rewrite history. | Revert adds a *new* commit that undoes it, | so nobody else's work *breaks.*"
+    },
+    {
+      "id": "s1",
+      "text": "Reflog, restore, stash and revert. | That's your *undo* button."
+    },
+    {
+      "id": "c1",
+      "text": "If you want to practise real code like this, | a few minutes a day, | the link's in my *bio.* | It's called *Teyro.*"
+    }
+  ]
+}

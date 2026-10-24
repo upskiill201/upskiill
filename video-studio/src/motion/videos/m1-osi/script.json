@@ -1,0 +1,254 @@
+{
+  "slug": "m1-osi",
+  "compId": "M1-osi",
+  "title": "The OSI model, explained",
+  "look": "neon",
+  "voice": "TX3LPaxmHKxFdv7VOQHJ",
+  "model": "eleven_multilingual_v2",
+  "speed": 1.08,
+  "music": "soft synthwave ambient bed, warm retro analog pads, a gentle arpeggio far in the background, subtle low pulse, no drums, no vocals, calm and curious, background music for a narrated tech explainer",
+  "hook": {
+    "archetype": "slow-motion of one second",
+    "igCaptionLine1": "Your photo crosses 5,000 km in about a second 🌍",
+    "igCaptionLine2": "This is everything that happens in that second 👇"
+  },
+  "sources": [
+    {
+      "claim": "OSI reference model has seven layers (application … physical)",
+      "url": "https://www.iso.org/standard/20269.html",
+      "note": "ISO/IEC 7498-1:1994",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "Internet (TCP/IP) model: link, internet, transport, application",
+      "url": "https://www.rfc-editor.org/rfc/rfc1122",
+      "note": "RFC 1122 §1.1.3",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "Ethernet payload (MTU) 1,500 bytes",
+      "url": "https://www.rfc-editor.org/rfc/rfc894",
+      "note": "RFC 894",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "IPv4 header ≥ 20 bytes",
+      "url": "https://www.rfc-editor.org/rfc/rfc791",
+      "note": "RFC 791",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "TCP header ≥ 20 bytes; lost segments are retransmitted; segments carry sequence numbers",
+      "url": "https://www.rfc-editor.org/rfc/rfc9293",
+      "note": "RFC 9293",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "1,460 bytes per piece = 1,500 − 20 (IP) − 20 (TCP)",
+      "url": "https://www.rfc-editor.org/rfc/rfc9293",
+      "note": "derived from the three RFCs above (typical Ethernet MSS)",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "UDP: no retransmission, used for real-time media",
+      "url": "https://www.rfc-editor.org/rfc/rfc768",
+      "note": "RFC 768",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "MAC address = 48-bit local hardware address",
+      "url": "https://standards.ieee.org/products-programs/regauth/",
+      "note": "IEEE 802 / EUI-48",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "Lagos → London ≈ 5,000 km",
+      "url": "computed",
+      "note": "great-circle distance 5,012 km (6.52N 3.38E → 51.51N 0.13W)",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "300 KB photo ÷ 1,460 B ≈ 206 pieces",
+      "url": "computed",
+      "note": "illustrative photo size, shown as an example on screen",
+      "checked": "2026-10-09"
+    },
+    {
+      "claim": "Teyro lines: 'a few minutes a day', 'the fun way to finish learning coding and AI'",
+      "url": "https://teyro.app",
+      "note": "homepage title + FAQ copy",
+      "checked": "2026-10-09"
+    }
+  ],
+  "teyro": {
+    "bridgeChips": [
+      "Coding",
+      "AI",
+      "A few minutes a day"
+    ],
+    "outroHeadline": "The fun way to finish learning coding and AI.",
+    "outroAsk": "Search Teyro"
+  },
+  "lines": [
+    {
+      "id": "title",
+      "chapter": "00",
+      "text": "The OSI model, explained."
+    },
+    {
+      "id": "o1",
+      "chapter": "00",
+      "text": "This is Tomi, in Lagos. | She takes a photo of her *jollof*, | and taps send."
+    },
+    {
+      "id": "o2",
+      "chapter": "00",
+      "text": "About one second later, | her sister sees it in London, | five thousand kilometres away."
+    },
+    {
+      "id": "o3",
+      "chapter": "00",
+      "text": "In that one second, | the photo passes through *seven* layers. | Engineers call it the OSI model."
+    },
+    {
+      "id": "o4",
+      "chapter": "00",
+      "text": "Let's ride along with the photo."
+    },
+    {
+      "id": "l7a",
+      "chapter": "Layer 7 · Application",
+      "text": "Layer seven. *Application.* | The trip starts inside Tomi's chat app."
+    },
+    {
+      "id": "l7b",
+      "chapter": "Layer 7 · Application",
+      "text": "The app says: | deliver this photo, | to this person."
+    },
+    {
+      "id": "l7c",
+      "chapter": "Layer 7 · Application",
+      "text": "This is the layer of apps, | and the rules they speak, | like HTTP for websites, | and DNS for finding addresses."
+    },
+    {
+      "id": "l6a",
+      "chapter": "Layer 6 · Presentation",
+      "text": "Layer six. *Presentation.* | The photo gets ready for the road."
+    },
+    {
+      "id": "l6b",
+      "chapter": "Layer 6 · Presentation",
+      "text": "First it's compressed, | so it's smaller. | Then it's *encrypted*, | so anyone who grabs it | sees only noise."
+    },
+    {
+      "id": "l5a",
+      "chapter": "Layer 5 · Session",
+      "text": "Layer five. *Session.* | Tomi's phone and the chat server | open a conversation, | and keep it open while they talk."
+    },
+    {
+      "id": "l4a",
+      "chapter": "Layer 4 · Transport",
+      "text": "Layer four. *Transport.* | The photo is about three hundred kilobytes. | Way too big for one trip."
+    },
+    {
+      "id": "l4b",
+      "chapter": "Layer 4 · Transport",
+      "text": "So it gets *cut* | into pieces of fourteen hundred and sixty bytes, | and every piece gets a number."
+    },
+    {
+      "id": "l4c",
+      "chapter": "Layer 4 · Transport",
+      "text": "That's *TCP*. | If piece number seven goes missing, | TCP asks for it again."
+    },
+    {
+      "id": "l4d",
+      "chapter": "Layer 4 · Transport",
+      "text": "A video call can't wait for that, | so it uses UDP instead. | Faster, | but lost pieces stay lost."
+    },
+    {
+      "id": "l4e",
+      "chapter": "Layer 4 · Transport",
+      "text": "But numbered pieces | still don't know where to go."
+    },
+    {
+      "id": "bridge",
+      "chapter": "bridge",
+      "text": "Quick thing. | Want to understand tech like this, | a few minutes a day? | That is what you get on Teyro."
+    },
+    {
+      "id": "back",
+      "chapter": "bridge",
+      "text": "Okay. | Back to the photo."
+    },
+    {
+      "id": "l3a",
+      "chapter": "Layer 3 · Network",
+      "text": "Layer three. *Network.* | Every piece gets a label | with the destination IP address. | Like writing the final address on a parcel."
+    },
+    {
+      "id": "l2a",
+      "chapter": "Layer 2 · Data link",
+      "text": "Layer two. *Data link.* | But first, | the piece has to reach Tomi's router, | a few metres away."
+    },
+    {
+      "id": "l2b",
+      "chapter": "Layer 2 · Data link",
+      "text": "So it gets a second, | local label. | A *MAC* address. | Like saying, | first, take this to the post office down the road."
+    },
+    {
+      "id": "l1a",
+      "chapter": "Layer 1 · Physical",
+      "text": "Layer one. *Physical.* | Now the photo stops being a photo."
+    },
+    {
+      "id": "l1b",
+      "chapter": "Layer 1 · Physical",
+      "text": "It's *radio* waves across her room. | Then *voltage* in a copper cable. | Then flashes of *light* in glass fibre, | on the sea floor, | up the coast of West Africa."
+    },
+    {
+      "id": "l1c",
+      "chapter": "Layer 1 · Physical",
+      "text": "Just ones and zeros, | crossing the planet."
+    },
+    {
+      "id": "hop",
+      "chapter": "Crossing",
+      "text": "On the way, | routers read the IP label on every piece, | and each one picks the next hop. | Hop by hop, | all the way to London."
+    },
+    {
+      "id": "enc",
+      "chapter": "Encapsulation",
+      "text": "Notice what happened. | Every layer wrapped the photo | in its own label. | A parcel, | inside a parcel, | inside a parcel. | That's called *encapsulation*."
+    },
+    {
+      "id": "rev",
+      "chapter": "London · in reverse",
+      "text": "In London, | her sister's phone does it all *backwards*. | Light becomes data. | Labels come off, | one layer at a time. | The pieces snap back in order. | The photo unlocks. | And there's the *jollof*."
+    },
+    {
+      "id": "dx1",
+      "chapter": "If it never arrives",
+      "text": "And here's why engineers actually care. | When a message doesn't arrive, | the layers tell you where to look."
+    },
+    {
+      "id": "dx2",
+      "chapter": "If it never arrives",
+      "text": "No signal? | Layer one. | Can't reach your router? | Layer two. | Router's fine, | but nothing beyond it? | Layer three. | Pieces timing out? | Layer four. | App error? | Way up at seven."
+    },
+    {
+      "id": "cav",
+      "chapter": "OSI vs TCP/IP",
+      "text": "To be fair, | the real internet runs on a simpler, | four layer model, | called TCP/IP. | But OSI is still the map | every engineer learns first."
+    },
+    {
+      "id": "punch",
+      "chapter": "end",
+      "text": "Seven layers. | Seven jobs. | One second. | All so a photo of jollof | can cross the *world*."
+    },
+    {
+      "id": "cta",
+      "chapter": "end",
+      "text": "Want to understand the tech you use every day? | Learn it on Teyro."
+    }
+  ]
+}

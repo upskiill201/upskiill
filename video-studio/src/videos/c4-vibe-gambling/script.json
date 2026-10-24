@@ -1,0 +1,60 @@
+{
+  "slug": "c4-vibe-gambling",
+  "account": "teyro",
+  "title": "Vibe coding without the basics is just gambling",
+  "darkFrom": "v1",
+  "sources": [
+    "Stack Overflow Developer Survey 2026, AI section (survey.stackoverflow.co/2026/ai): 48% trust AI when they can easily validate the answers; only 16% extend trust to most tasks",
+    "Stack Overflow Developer Survey 2025, AI section (survey.stackoverflow.co/2025/ai): 45.2% say debugging AI-generated code is more time-consuming",
+    "teyro.app: coding track; short daily lessons; writing and fixing real code within minutes with instant feedback on every answer; streaks; tell Tey your goal and level, path ready in under two minutes; free to start"
+  ],
+  "voice": "cgSgspJ2msm6clMCkdW9",
+  "model": "eleven_multilingual_v2",
+  "fps": 30,
+  "lines": [
+    {
+      "id": "h1",
+      "text": "Vibe coding without the basics | is just *gambling.*"
+    },
+    {
+      "id": "p1",
+      "text": "You type a prompt, | hit *regenerate,* | hit it *again,* | and hope this one *works.*"
+    },
+    {
+      "id": "p2",
+      "text": "Developers know it. | In Stack Overflow's *2026* survey, | nearly *half* said they trust AI | when they can *check* the answer."
+    },
+    {
+      "id": "p3",
+      "text": "In last year's survey, | *45 percent* said | debugging AI code | takes them *longer.*"
+    },
+    {
+      "id": "v1",
+      "text": "Now picture reading what the AI wrote | and spotting the bug | in *seconds.*"
+    },
+    {
+      "id": "o1",
+      "text": "You know what every line *does,* | because you practised lines like it | *yesterday.*"
+    },
+    {
+      "id": "o2",
+      "text": "You write and fix *real code* | in a few minutes a day, | with *instant* feedback on every answer."
+    },
+    {
+      "id": "o3",
+      "text": "And you come back *tomorrow,* | because your *streak* is on the line."
+    },
+    {
+      "id": "r1",
+      "text": "That's learning to code on *Teyro.*"
+    },
+    {
+      "id": "f1",
+      "text": "Short daily lessons, | a path built for *your* goal, | and it's free to *start.*"
+    },
+    {
+      "id": "c1",
+      "text": "Stop rolling the dice. | Go to teyro dot *app.*"
+    }
+  ]
+}

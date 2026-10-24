@@ -5,6 +5,7 @@ import {
   fillBlankBank,
   gradeExercise,
   isResponseComplete,
+  promptLabReply,
   seededShuffle,
   validateApply,
   validateExercise,
@@ -220,5 +221,20 @@ describe('clipped media cards (one part of a long imported video)', () => {
   it('carries the clip into the learner deck', () => {
     const deck = learnCards(readLessonContent({ contentBlocks: { learn: [{ type: 'learnCards', value: [part] }] } }).learn);
     expect(deck.find((c) => c.kind === 'video')).toMatchObject({ startSec: 1200, endSec: 1800 });
+  });
+});
+
+describe('promptLabReply', () => {
+  const replies = [{ uses: [] }, { uses: [0] }, { uses: [0, 1] }, { uses: [2] }];
+
+  it('picks the most specific reply whose parts were all picked', () => {
+    expect(promptLabReply(replies, new Set())).toBe(0);
+    expect(promptLabReply(replies, new Set([0]))).toBe(1);
+    expect(promptLabReply(replies, new Set([0, 1]))).toBe(2);
+    expect(promptLabReply(replies, new Set([1]))).toBe(0);
+  });
+
+  it('breaks ties by the first written reply', () => {
+    expect(promptLabReply(replies, new Set([0, 2]))).toBe(1);
   });
 });

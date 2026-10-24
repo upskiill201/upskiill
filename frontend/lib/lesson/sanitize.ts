@@ -127,10 +127,33 @@ function parseRichCard(c: any, cid: string): RichLearnCard | null {
           ? c.hotspots.slice(0, RICH_LIMITS.hotspots).map((h: any) => ({ phrase: str(h?.phrase, 200), note: str(h?.note, 600) }))
           : [],
       };
+    case 'promptLab': {
+      const parts = Array.isArray(c.parts)
+        ? c.parts.slice(0, RICH_LIMITS.labParts).map((p: any) => ({ label: str(p?.label, 60), text: str(p?.text, 400) }))
+        : [];
+      return {
+        id: cid,
+        kind: 'promptLab',
+        title: optStr(c.title, 200),
+        task: str(c.task, 300),
+        base: str(c.base, 400),
+        parts,
+        replies: Array.isArray(c.replies)
+          ? c.replies.slice(0, RICH_LIMITS.labReplies).map((r: any) => ({
+              uses: Array.isArray(r?.uses) ? r.uses.filter((u: unknown) => Number.isInteger(u)) : [],
+              text: str(r?.text, 2000),
+              note: str(r?.note, 600),
+            }))
+          : [],
+        goal: num(c.goal, -1),
+      };
+    }
     case 'tryIt':
       return {
         id: cid,
         kind: 'tryIt',
+        ...(c.language === 'sql' ? { language: 'sql' as const } : {}),
+        ...(typeof c.database === 'string' ? { database: str(c.database, 40) } : {}),
         title: optStr(c.title, 200),
         code: str(c.code, LIMITS.codeChars),
         caption: optStr(c.caption, 300),
@@ -301,7 +324,8 @@ export function parseExercise(e: any, i: number): Exercise | null {
       return {
         ...base,
         kind: 'writeCode',
-        language: 'python',
+        language: e.language === 'sql' ? 'sql' : 'python',
+        ...(typeof e.database === 'string' ? { database: str(e.database, 40) } : {}),
         starter: str(e.starter, LIMITS.codeChars),
         solution: str(e.solution, LIMITS.codeChars),
         hint: optStr(e.hint, 600),

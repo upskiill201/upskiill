@@ -1,0 +1,196 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=block" rel="stylesheet" />
+<style>
+  /* Teyro Originals cover: AI Tools for Everyday Productivity. A still frame
+     of a motion-graphics scene: prompt parts fly into the prompt bar, the
+     practice AI's timed plan lands, the fridge list gets ticked off and the
+     countdown reads Day 30. No Tey. */
+  :root {
+    --brand: #0172FD;
+    --brand-dark: #0060D9;
+    --brand-deep: #0050B3;
+    --ink: #071233;
+    --muted: #5B6B8C;
+    --purple: #9333EA;
+    --purple-dark: #6B21A8;
+    --indigo: #6352FF;
+    --green: #22C55E;
+    --green-dark: #16A34A;
+    --amber: #F59E0B;
+    --amber-dark: #B45309;
+    --pink: #EC4899;
+    --pink-dark: #9D174D;
+    --note: #FFE27A;
+    --note-dark: #D9A400;
+    --white: #FFFFFF;
+    --mist: #E8F1FF;
+    --line: #E3EAF6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 1000px; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--brand); overflow: hidden; position: relative; }
+
+  .blob { position: absolute; border-radius: 50%; background: var(--brand-dark); }
+  .speed { position: absolute; height: 10px; border-radius: 999px; background: var(--white); transform: rotate(-18deg); transform-origin: left center; }
+  .ring { position: absolute; border-radius: 50%; border: 6px solid var(--white); }
+
+  .copy { position: absolute; left: 100px; top: 140px; width: 680px; z-index: 5; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--white); color: var(--purple);
+    font-weight: 800; font-size: 26px; letter-spacing: .08em; text-transform: uppercase;
+    padding: 14px 26px; border-radius: 999px; box-shadow: 0 6px 0 var(--brand-deep);
+  }
+  .pill i { width: 14px; height: 14px; border-radius: 50%; background: var(--purple); display: inline-block; }
+  h1 { margin-top: 38px; color: var(--white); font-weight: 800; font-size: 100px; line-height: .98; letter-spacing: -0.035em; }
+  h1 em { font-style: normal; color: var(--ink); background: var(--amber); padding: 0 18px 8px; border-radius: 26px; box-shadow: 0 8px 0 var(--amber-dark); display: inline-block; margin-top: 16px; }
+  .sub { margin-top: 38px; color: var(--mist); font-weight: 700; font-size: 32px; line-height: 1.3; width: 620px; }
+
+  .stage { position: absolute; left: 820px; top: 70px; width: 740px; height: 880px; transform: rotate(-4deg); }
+
+  /* Prompt bar with picked parts inside. */
+  .prompt {
+    position: absolute; left: 30px; top: 150px; width: 650px; height: 104px;
+    background: var(--white); border-radius: 30px; box-shadow: 0 10px 0 var(--brand-deep);
+    display: flex; align-items: center; padding: 0 20px 0 30px; gap: 14px; z-index: 3;
+  }
+  .prompt .txt { flex: 1; font-weight: 700; font-size: 28px; color: var(--ink); white-space: nowrap; overflow: hidden; }
+  .prompt .txt b { background: #E3EEFF; color: var(--brand-deep); padding: 2px 8px; border-radius: 10px; }
+  .caret { display: inline-block; width: 4px; height: 34px; background: var(--brand); vertical-align: -6px; margin-left: 4px; border-radius: 2px; }
+  .send { width: 66px; height: 66px; border-radius: 20px; background: var(--brand); display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 0 var(--brand-deep); flex: none; }
+
+  /* Prompt parts flying in, with trails. */
+  .part { position: absolute; display: flex; align-items: center; gap: 10px; padding: 14px 24px; border-radius: 999px; font-weight: 800; font-size: 28px; white-space: nowrap; }
+  .part.on { background: #E3EEFF; color: var(--brand-deep); border: 4px solid var(--white); box-shadow: 0 6px 0 var(--brand-deep); }
+  .part.off { background: var(--white); color: var(--ink); box-shadow: 0 6px 0 var(--brand-deep); }
+  .trail { opacity: .22; color: transparent !important; box-shadow: none !important; border-color: transparent !important; }
+  .trail * { visibility: hidden; }
+  .trail2 { opacity: .1; }
+
+  /* The practice AI's reply. */
+  .reply {
+    position: absolute; left: 110px; top: 320px; width: 560px; height: 380px;
+    background: var(--white); border-radius: 34px 34px 34px 10px; box-shadow: 0 12px 0 var(--green-dark);
+    border: 5px solid var(--green); padding: 28px 34px;
+  }
+  .reply .head { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 21px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .row { margin-top: 18px; display: flex; align-items: center; gap: 18px; font-weight: 800; font-size: 29px; color: var(--ink); }
+  .row .t { width: 96px; flex: none; color: var(--brand); }
+  .row .bar { height: 14px; border-radius: 999px; background: var(--line); }
+
+  /* Fridge list sticky note. */
+  .note {
+    position: absolute; left: -70px; top: 560px; width: 300px; padding: 26px 28px 22px;
+    background: var(--note); border-radius: 10px 10px 26px 10px; box-shadow: 0 9px 0 var(--note-dark);
+    transform: rotate(-9deg); z-index: 4;
+  }
+  .note .pin { position: absolute; left: 50%; top: -14px; width: 30px; height: 30px; margin-left: -15px; border-radius: 50%; background: var(--pink); box-shadow: 0 4px 0 var(--pink-dark); }
+  .note li { list-style: none; display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 27px; color: var(--ink); margin-top: 8px; }
+  .note li s { text-decoration-thickness: 4px; text-decoration-color: rgba(7,18,51,.55); color: rgba(7,18,51,.6); }
+  .box { width: 30px; height: 30px; border-radius: 9px; border: 4px solid var(--ink); flex: none; display: flex; align-items: center; justify-content: center; }
+  .box.done { background: var(--green); border-color: var(--green-dark); }
+
+  /* Countdown chip. */
+  .countdown {
+    position: absolute; left: 470px; top: 40px; display: flex; align-items: center; gap: 14px;
+    background: var(--amber); color: var(--ink); font-weight: 800; font-size: 30px;
+    padding: 16px 26px; border-radius: 22px; box-shadow: 0 7px 0 var(--amber-dark); transform: rotate(7deg); z-index: 4;
+  }
+
+  /* Prompt cards fanned out. */
+  .card { position: absolute; width: 190px; height: 120px; border-radius: 22px; padding: 18px 20px; color: var(--white); font-weight: 800; font-size: 22px; line-height: 1.2; }
+  .card small { display: block; font-size: 16px; letter-spacing: .12em; text-transform: uppercase; opacity: .8; margin-bottom: 6px; }
+  .c1 { background: var(--purple); box-shadow: 0 7px 0 var(--purple-dark); }
+  .c2 { background: var(--pink); box-shadow: 0 7px 0 var(--pink-dark); }
+  .c3 { background: var(--indigo); box-shadow: 0 7px 0 #3F33B8; }
+
+  .spark { position: absolute; }
+</style>
+</head>
+<body>
+  <div class="blob" style="width:820px;height:820px;right:-220px;top:-300px;opacity:.55"></div>
+  <div class="blob" style="width:540px;height:540px;left:-220px;bottom:-280px;opacity:.45"></div>
+
+  <div class="speed" style="left:-40px;top:930px;width:420px;opacity:.10"></div>
+  <div class="speed" style="left:300px;top:960px;width:260px;opacity:.16"></div>
+  <div class="speed" style="left:1380px;top:920px;width:260px;opacity:.12"></div>
+  <div class="ring" style="width:150px;height:150px;left:700px;top:760px;opacity:.12"></div>
+  <div class="ring" style="width:60px;height:60px;left:1520px;top:60px;opacity:.25"></div>
+
+  <div class="copy">
+    <span class="pill"><i></i>Teyro Original · AI</span>
+    <h1>AI Tools for<br/>Everyday<br/><em>Productivity</em></h1>
+    <p class="sub">Lucía's impossible month: thirty days, four big jobs, one AI assistant.</p>
+  </div>
+
+  <div class="stage">
+    <!-- Countdown -->
+    <div class="countdown">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#071233" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Day 30
+    </div>
+
+    <!-- Parts flying into the prompt -->
+    <div class="part on trail trail2" style="left:-150px;top:30px">Context</div>
+    <div class="part on trail" style="left:-95px;top:50px">Context</div>
+    <div class="part on" style="left:-40px;top:68px;transform:rotate(-6deg)">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0050B3" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Context
+    </div>
+    <div class="part on trail" style="left:210px;top:30px">Limits</div>
+    <div class="part on" style="left:230px;top:58px;transform:rotate(5deg)">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0050B3" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Limits
+    </div>
+
+    <div class="prompt">
+      <div class="txt">Plan my Saturday. <b>3 venues, Oaxaca</b> <b>land 9, fly 7</b><span class="caret"></span></div>
+      <div class="send">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+      </div>
+    </div>
+
+    <!-- Format part still flying -->
+    <div class="part off trail trail2" style="left:700px;top:250px">Format</div>
+    <div class="part off trail" style="left:660px;top:262px">Format</div>
+    <div class="part off" style="left:610px;top:274px;transform:rotate(-8deg);z-index:4">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071233" stroke-width="3.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Format
+    </div>
+
+    <!-- Practice AI reply -->
+    <div class="reply">
+      <div class="head">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5B6B8C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01"/></svg>
+        Practice AI
+      </div>
+      <div class="row"><span class="t">9:00</span>Land, taxi</div>
+      <div class="row"><span class="t">10:00</span>Venue 1</div>
+      <div class="row"><span class="t">11:30</span>Venue 2</div>
+      <div class="row"><span class="t">14:30</span>Venue 3</div>
+      <div class="row"><span class="t">17:00</span><span class="bar" style="width:220px"></span></div>
+    </div>
+
+    <!-- Fridge list -->
+    <div class="note">
+      <span class="pin"></span>
+      <ul>
+        <li><span class="box done"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><s>New flat</s></li>
+        <li><span class="box done"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><s>Português</s></li>
+        <li><span class="box"></span>The party</li>
+        <li><span class="box"></span>My job</li>
+      </ul>
+    </div>
+
+    <!-- Prompt cards, fanned so every title shows -->
+    <div class="card c1" style="left:250px;top:745px;transform:rotate(-6deg)"><small>Card #2</small>Compare it</div>
+    <div class="card c2" style="left:400px;top:735px;transform:rotate(2deg)"><small>Card #6</small>Teach me</div>
+    <div class="card c3" style="left:550px;top:715px;transform:rotate(10deg)"><small>Card #8</small>Untangle it</div>
+
+    <svg class="spark" style="left:700px;top:150px" width="54" height="54" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#fff"/></svg>
+    <svg class="spark" style="left:80px;top:330px" width="40" height="40" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F59E0B"/></svg>
+    <svg class="spark" style="left:690px;top:640px" width="34" height="34" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#fff" opacity=".8"/></svg>
+  </div>
+</body>
+</html>
