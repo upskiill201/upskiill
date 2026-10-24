@@ -18,7 +18,7 @@ const NAMES: ArtName[] = [...new Set<ArtName>([
   'seed', 'sprout', 'tree', 'pace5', 'pace10', 'pace20', 'pace30',
   'sunrise', 'sun', 'moon', 'clock',
   'search', 'badge', 'signpost', 'bulb', 'cap', 'compass', 'friends', 'planet', 'xmark',
-  'cards', 'target', 'certificate', 'calendar', 'clipboard', 'gift', 'envelope', 'linkBroken', 'seal',
+  'cards', 'target', 'certificate', 'certificateGoal','calendar', 'clipboard', 'gift', 'envelope', 'linkBroken', 'seal',
 ])];
 
 export default function OnboardingArtBench() {

@@ -33,7 +33,8 @@ import { playPathCue } from '@/lib/audio/pathAudio';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { clearFinishedLesson, peekFinishedLesson } from '@/lib/path/arrival';
 import { playHaptic } from '@/lib/haptics';
-import { buildPathModel, type PathNode, type PathUnit } from '@/lib/path/model';
+import { buildPathModel, certificateGoal, type PathNode, type PathUnit } from '@/lib/path/model';
+import { CertificateGoal } from './CertificateGoal';
 import { MILESTONE_LABEL } from '@/lib/originals';
 import { OriginalsTrail } from './OriginalsTrail';
 import {
@@ -95,6 +96,7 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
   const router = useRouter();
   const reducedMotion = useReducedMotion();
   const model = useMemo(() => buildPathModel(path), [path]);
+  const goal = useMemo(() => certificateGoal(model), [model]);
   const courseId = path.course.id;
 
   const [open, setOpen] = useState<OpenTarget>(null);
@@ -429,6 +431,7 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
               keepouts={keepouts}
               dim={!reached}
               viewHalf={colW / 2}
+              roadGoesOn={!!goal}
             />
             {/* Lands not reached yet wait under a light fog. */}
             {!reached && <div aria-hidden="true" className={styles.fog} />}
@@ -540,6 +543,17 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
           </ol>
         </section>
       ))}
+      {/* The end of the road: the certificate the learner is walking towards. */}
+      {goal && (
+        <CertificateGoal
+          goal={goal}
+          courseId={courseId}
+          courseTitle={path.course.title}
+          land={lands[lands.length - 1].land}
+          fogged={!lands[lands.length - 1].reached}
+          enrolled={path.enrolled}
+        />
+      )}
       </div>
 
       {path.original && <OriginalsTrail original={path.original} levelDone={model.current === null} />}

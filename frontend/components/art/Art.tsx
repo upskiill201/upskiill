@@ -569,6 +569,44 @@ const DRAWINGS = {
       <Sparkle x={45} y={37} r={5} k="w" />
     </>
   ),
+  // The home path's last stop: the course certificate on its plinth. Drawn in
+  // the Gold Medal certificate's colours (navy frame, cream paper, gold
+  // border, ribbon headline, gold medal), never the Tey mascot.
+  certificateGoal: (
+    <>
+      <Ground y={60} rx={24} />
+      <rect x="11" y="51" width="42" height="8" rx="2.4" className={f('bd')} />
+      <rect x="9" y="47.5" width="46" height="5.5" rx="2.6" className={f('b')} />
+      <rect x="12" y="48.6" width="18" height="1.5" rx="0.75" className={f('pp')} opacity="0.5" />
+      <g transform="rotate(-5 32 48)">
+        <rect x="5" y="10" width="54" height="38.5" rx="3.6" className={f('nvd')} />
+        <rect x="5" y="8" width="54" height="38.5" rx="3.6" className={f('nv')} />
+        <rect x="7.5" y="10.5" width="49" height="33.5" rx="2" className={f('pp')} />
+        <rect x="10" y="13" width="44" height="28.5" rx="1.2" className={s('y')} strokeWidth="1.4" />
+        <Sparkle x={10} y={13} r={2.2} k="y" />
+        <Sparkle x={54} y={13} r={2.2} k="y" />
+        <path className={f('yd')} d="M17.5 16h5v4.4h-5l1.6-2.2Z" />
+        <path className={f('yd')} d="M46.5 16h-5v4.4h5l-1.6-2.2Z" />
+        <rect x="20.5" y="14.8" width="23" height="5.2" rx="1.2" className={f('y')} />
+        <rect x="22.5" y="16.7" width="19" height="1.3" rx="0.65" className={f('pp')} opacity="0.7" />
+        <rect x="19" y="23.5" width="26" height="3.2" rx="1.6" className={f('nv')} />
+        <rect x="23" y="29" width="18" height="1.8" rx="0.9" className={f('nv')} opacity="0.3" />
+        <path className={s('b')} strokeWidth="1.2" d="M14.5 35.6c1.4-2.4 2.4 1.2 3.8-.6s2-2.2 3.4 0 1.6.4 2.6-.4" />
+        <rect x="14" y="37.4" width="13" height="1.3" rx="0.65" className={f('nv')} opacity="0.45" />
+        <path className={f('r')} d="M42.4 40l-2.6 10.5 3.4-1.8 1.8 3.2 1.6-10Z" />
+        <path className={f('rd')} d="M49.6 40l2.6 10.5-3.4-1.8-1.8 3.2-1.6-10Z" />
+        <path className={f('yd')} d={scallop(46, 37.8, 7.6, 14)} />
+        <path className={f('y')} d={scallop(46, 36.8, 7.6, 14)} />
+        <circle cx="46" cy="36.8" r="4.9" className={f('yl')} />
+        <path
+          className={f('yd')}
+          d="M46 33.2l1.05 2.2 2.4.3-1.75 1.65.45 2.35L46 38.5l-2.15 1.2.45-2.35-1.75-1.65 2.4-.3Z"
+        />
+      </g>
+      <Sparkle x={58} y={4.5} r={4.2} k="y" />
+      <Sparkle x={5} y={6} r={2.6} k="yl" />
+    </>
+  ),
   calendar: (
     <>
       <Ground />
