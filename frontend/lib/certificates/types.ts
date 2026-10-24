@@ -17,6 +17,8 @@ export interface CertificateData {
   bestStreak: number;
   skills: string[];
   signer: { name: string; title: string };
+  /** The learner confirmed learnerName as their real name (absent on certificates from before that step). */
+  nameConfirmed?: boolean;
 }
 
 export interface Certificate {
@@ -31,6 +33,8 @@ export interface Certificate {
 /** GET /certificates/course/:courseId */
 export type CourseCertificateStatus =
   | { status: 'ISSUED'; certificate: Certificate }
+  /** Earned, but the learner hasn't confirmed the name to print yet (see CertificateNameSheet). */
+  | { status: 'NAME_REQUIRED' }
   | { status: 'IN_PROGRESS'; lessonsDone: number; lessonsTotal: number };
 
 export const CERTIFICATE_SIZE = { width: 1600, height: 1131 } as const;
