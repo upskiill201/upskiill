@@ -18,6 +18,9 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Glyph } from '@/components/art/Glyph';
 import { CHALLENGES, EXAMPLES, HTML_EXAMPLES, RN_EXAMPLES, TS_EXAMPLES, type PlaygroundChallenge } from '@/lib/code/playground';
 import type { RunLanguage } from '@/lib/lesson/blocks';
+
+/** The runners the playground offers (SQL, C and JavaScript live only in their courses). */
+type PlayLanguage = Extract<RunLanguage, 'python' | 'typescript' | 'html' | 'react-native'>;
 import { fireConfetti } from '@/lib/confetti';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { useHydrated } from '@/components/studio/useHydrated';
@@ -27,10 +30,10 @@ import styles from './Playground.module.css';
 
 const DRAFT_KEY = 'teyro.playground.draft';
 /** TypeScript keeps its own draft, so switching language never loses either one. */
-const draftKey = (language: RunLanguage) =>
+const draftKey = (language: PlayLanguage) =>
   language === 'python' ? DRAFT_KEY : `${DRAFT_KEY}.${language === 'typescript' ? 'ts' : language === 'react-native' ? 'rn' : 'html'}`;
-const EXAMPLES_FOR: Record<RunLanguage, typeof EXAMPLES> = { python: EXAMPLES, typescript: TS_EXAMPLES, html: HTML_EXAMPLES, 'react-native': RN_EXAMPLES };
-const PROGRAM_LABEL: Record<RunLanguage, string> = {
+const EXAMPLES_FOR: Record<PlayLanguage, typeof EXAMPLES> = { python: EXAMPLES, typescript: TS_EXAMPLES, html: HTML_EXAMPLES, 'react-native': RN_EXAMPLES };
+const PROGRAM_LABEL: Record<PlayLanguage, string> = {
   python: 'Your Python program',
   typescript: 'Your TypeScript program',
   html: 'Your web page',
@@ -107,14 +110,14 @@ function FreeCode() {
 }
 
 function FreeCodeEditor() {
-  const [language, setLanguage] = useState<RunLanguage>(() => {
+  const [language, setLanguage] = useState<PlayLanguage>(() => {
     const saved = readStore(LANGUAGE_KEY);
     return saved === 'typescript' || saved === 'html' || saved === 'react-native' ? saved : 'python';
   });
   return <FreeCodeFor key={language} language={language} onLanguage={setLanguage} />;
 }
 
-function FreeCodeFor({ language, onLanguage }: { language: RunLanguage; onLanguage: (l: RunLanguage) => void }) {
+function FreeCodeFor({ language, onLanguage }: { language: PlayLanguage; onLanguage: (l: PlayLanguage) => void }) {
   const examples = EXAMPLES_FOR[language];
   // The last draft on this device for this language, else the first example.
   const [code, setCode] = useState(() => readStore(draftKey(language)) ?? examples[0].code);

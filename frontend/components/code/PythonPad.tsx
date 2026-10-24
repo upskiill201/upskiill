@@ -399,7 +399,7 @@ export function RunOutput({ run, language = 'python' }: { run: GradedRun; langua
       {typeErrors.length > 0 && (
         <div className={styles.errorBox}>
           <div className={styles.errorTitle}>
-            <AlertTriangle size={18} aria-hidden="true" />
+            <Glyph name="warning" size={18} />
             {typeErrors.length === 1 ? '1 type error' : `${typeErrors.length} type errors`}
           </div>
           {typeErrors.slice(0, 3).map((d, i) => (
