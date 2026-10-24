@@ -5,6 +5,8 @@ import type {
   OriginalTrackDef,
 } from './originals-authoring.types';
 import type { LintIssue } from './originals-lint';
+import { verifySqlTrack } from './originals-sql-verify';
+import { verifyCTrack } from './originals-c-verify';
 
 /**
  * Runs every piece of Python in a Track before it can be loaded, with the
@@ -251,6 +253,10 @@ export async function verifyTrackCode(
   track: OriginalTrackDef,
 ): Promise<LintIssue[]> {
   if (!hasCode(track)) return [];
+  // SQL tracks run in SQLite (sql.js), the same build the browser uses.
+  if (track.runner === 'sql') return verifySqlTrack(track);
+  // C tracks compile and run in xcc, the same build the browser uses.
+  if (track.runner === 'c') return verifyCTrack(track);
   const allCode: string[] = [];
   for (const level of track.levels)
     for (const unit of level.units)

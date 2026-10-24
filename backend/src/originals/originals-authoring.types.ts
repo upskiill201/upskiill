@@ -15,6 +15,7 @@ export type CodeLanguage =
   | 'html'
   | 'css'
   | 'sql'
+  | 'c'
   | 'bash'
   | 'json'
   | 'java'
@@ -23,9 +24,12 @@ export type CodeLanguage =
   | 'dart'
   | 'plaintext';
 
+/** Languages the in-browser code runner can run (frontend/lib/code). 'sql' = SQLite (sql.js); 'c' = C (xcc, public/c). */
+export type RunLanguage = 'python' | 'sql' | 'c';
+
 /** The shared cast (docs/originals/CAST.md). */
 /** Course-only characters (efua, asante; brian, zanele, achieng, kamau, felix, pauline, emeka, wanjiku; jayden, priya, femi; diego; marta, sofia, tomas, carmen) are listed in CAST.md too. */
-export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel' | 'yaw' | 'hazel' | 'benny' | 'ruth';
+export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel' | 'yaw' | 'juno' | 'walt' | 'leo' | 'dana' | 'ines' | 'hal' | 'tomoko' | 'mateus' | 'lars' | 'hazel' | 'benny' | 'ruth';
 export type Speaker = 'narrator' | 'tey' | CastId;
 
 // ─── Learn cards ───────────────────────────────────────────────────────────
@@ -55,8 +59,11 @@ export type AuthoredCard =
     }
   | { kind: 'explore'; title?: string; text: string; hotspots: { phrase: string; note: string }[] }
   | { kind: 'myth'; statements: { text: string; isFact: boolean; explain: string }[] }
-  /** Try it live: runnable, editable Python. Done once it runs without an error. */
-  | { kind: 'tryIt'; title?: string; code: string; caption?: string; challenge?: string; stdin?: string[]; /** The code is meant to fail (an errors lesson): done on any run. */ expectError?: boolean };
+  /**
+   * Try it live: runnable, editable code in the track's `runner` language. Done once it runs without an error.
+   * SQL: `database` names the practice database it starts from (frontend/public/sql/db); empty when absent.
+   */
+  | { kind: 'tryIt'; title?: string; code: string; caption?: string; challenge?: string; stdin?: string[]; /** The code is meant to fail (an errors lesson): done on any run. */ expectError?: boolean; database?: string };
 
 export type AuthoredCardKind = AuthoredCard['kind'];
 
@@ -119,9 +126,11 @@ export type AuthoredExercise =
   /** `items[i].group` is an index into `groups`. */
   | (ExerciseBase & { kind: 'sortGroups'; groups: string[]; items: { text: string; group: number }[] })
   /**
-   * Write and run (Python): runs in the learner's browser; CHECK unlocks when
+   * Write and run (in the track's `runner` language): runs in the learner's browser; CHECK unlocks when
    * every check passes. `solution` must pass them all (`npm run originals`
-   * runs it); `starter` is what the editor opens with.
+   * runs it); `starter` is what the editor opens with. SQL: `expr` is a query
+   * run after the learner's code that must return a true first value, and
+   * `database` names the practice database the code starts from.
    */
   | (ExerciseBase & {
       kind: 'writeCode';
@@ -130,6 +139,7 @@ export type AuthoredExercise =
       hint?: string;
       checks: AuthoredCodeCheck[];
       stdin?: string[];
+      database?: string;
     });
 
 export type AuthoredExerciseKind = AuthoredExercise['kind'];
@@ -209,5 +219,7 @@ export interface OriginalTrackDef {
    * (Checkpoint at 5, Unit Challenge at 10) and 5 units per level. Default: full-length.
    */
   format?: 'full' | 'short';
+  /** The language every Try it live card and Write and run exercise runs in. Default: Python. 'sql' = SQLite, 'c' = C. */
+  runner?: RunLanguage;
   levels: OriginalLevel[];
 }
