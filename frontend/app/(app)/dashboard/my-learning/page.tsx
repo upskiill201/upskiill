@@ -14,7 +14,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { AlertCircle, Check, Map as MapIcon, MessagesSquare, Plus } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { LearnerRail } from '@/components/layout/LearnerRail';
 import { lessonHref, pickCurrentEnrollment, preloadCourse, useEnrollments, type Enrollment } from '@/hooks/useCourse';
 import { getHomeCourse, setHomeCourse } from '@/lib/homeCourse';
@@ -49,7 +49,7 @@ function CourseTile({ e, i, size }: { e: Enrollment; i: number; size: 'lg' | 'sm
       )}
       {isComplete(e) && (
         <span className={styles.tileDone} aria-label="Course complete">
-          <Check size={size === 'lg' ? 18 : 14} strokeWidth={3.5} />
+          <Glyph name="check" size={size === 'lg' ? 18 : 14} strokeWidth={3.5} />
         </span>
       )}
     </span>
@@ -88,13 +88,13 @@ export default function MyLearningPage() {
             <p className={styles.sub}>Pick up where you left off, or switch what your home path shows.</p>
           </div>
           <Link href="/dashboard/explore" className={styles.addBtn} onClick={() => playSound('navTap', 2)}>
-            <Plus size={18} strokeWidth={3} aria-hidden="true" /> Add a course
+            <Glyph name="plus" size={18} strokeWidth={3} /> Add a course
           </Link>
         </header>
 
         {error && !enrollments ? (
           <div className={styles.errorBox} role="alert">
-            <AlertCircle size={28} aria-hidden="true" />
+            <Glyph name="alert" size={28} />
             <p>We couldn&apos;t load your courses.</p>
             <button type="button" className={styles.ghostBtn} onClick={() => void mutate()}>
               Try again
@@ -151,14 +151,14 @@ export default function MyLearningPage() {
                     {isComplete(current) ? 'Review' : lessonsDone(current) === 0 ? 'Start' : 'Continue'}
                   </Link>
                   <Link href={courseHomeHref(current.course.id)} className={styles.ghostBtn} onClick={() => playSound('navTap', 2)}>
-                    <MapIcon size={18} strokeWidth={2.75} aria-hidden="true" /> Course map
+                    <Glyph name="map" size={18} strokeWidth={2.75} /> Course map
                   </Link>
                   <Link
                     href={`/dashboard/community/${current.course.id}`}
                     className={styles.ghostBtn}
                     onClick={() => playSound('navTap', 3)}
                   >
-                    <MessagesSquare size={18} strokeWidth={2.75} aria-hidden="true" /> Community
+                    <Glyph name="bubble" size={18} strokeWidth={2.75} /> Community
                   </Link>
                 </div>
               </div>

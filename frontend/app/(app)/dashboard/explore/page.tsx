@@ -20,18 +20,7 @@ import useSWR from 'swr';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import {
-  AlertCircle,
-  BookOpen,
-  Check,
-  Compass,
-  LayoutGrid,
-  Search,
-  Sparkles,
-  Star,
-  Users,
-  X,
-} from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { fetcher } from '@/lib/swr';
 import { lessonHref, preloadCourse, useEnrollments, type Enrollment } from '@/hooks/useCourse';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -227,7 +216,7 @@ export default function ExplorePage() {
         {/* ── Search + filters ─────────────────────────────────────────── */}
         <div className={styles.controls}>
           <label className={styles.search}>
-            <Search size={20} strokeWidth={2.75} className={styles.searchIcon} aria-hidden="true" />
+            <Glyph name="search" size={20} strokeWidth={2.75} className={styles.searchIcon} />
             <input
               type="search"
               className={styles.searchInput}
@@ -246,7 +235,7 @@ export default function ExplorePage() {
                   setQuery('');
                 }}
               >
-                <X size={16} strokeWidth={3} />
+                <Glyph name="close" size={16} strokeWidth={3} />
               </button>
             )}
           </label>
@@ -263,7 +252,7 @@ export default function ExplorePage() {
                     aria-pressed={on}
                     onClick={() => pickCategory(cat, i)}
                   >
-                    {cat === ALL ? <LayoutGrid size={18} strokeWidth={2.5} aria-hidden="true" /> : categoryGlyph(cat, 18)}
+                    {cat === ALL ? <Glyph name="grid" size={18} strokeWidth={2.5} /> : categoryGlyph(cat, 18)}
                     {cat === ALL ? 'All skills' : cat}
                   </button>
                 );
@@ -294,7 +283,7 @@ export default function ExplorePage() {
         {/* ── Catalog ──────────────────────────────────────────────────── */}
         {error && !data ? (
           <div className={styles.stateBox} role="alert">
-            <AlertCircle size={32} className={styles.stateIconError} aria-hidden="true" />
+            <Glyph name="alert" size={32} className={styles.stateIconError} />
             <h2 className={styles.stateTitle}>We couldn&apos;t load the courses</h2>
             <p className={styles.stateText}>Check your connection and try again.</p>
             <button
@@ -341,7 +330,7 @@ export default function ExplorePage() {
               <section aria-label="Teyro Originals" className={styles.originals}>
                 <div className={styles.sectionHead}>
                   <h2 className={`${styles.sectionTitle} ${styles.originalsTitle}`}>
-                    <Sparkles size={18} strokeWidth={2.75} aria-hidden="true" />
+                    <Glyph name="sparkle" size={18} strokeWidth={2.75} />
                     Teyro Originals
                   </h2>
                   <span className={styles.originalsNote}>Made by Teyro. One subscription unlocks them all.</span>
@@ -414,20 +403,20 @@ function Meta({ course }: { course: Course }) {
     <span className={styles.meta}>
       {!!course.lessonsCount && (
         <span className={styles.metaItem}>
-          <BookOpen size={14} strokeWidth={2.75} aria-hidden="true" />
+          <Glyph name="book" size={14} strokeWidth={2.75} />
           {course.lessonsCount} lesson{course.lessonsCount === 1 ? '' : 's'}
         </span>
       )}
       {duration && <span className={styles.metaItem}>{duration}</span>}
       {!!course.studentsCount && (
         <span className={styles.metaItem}>
-          <Users size={14} strokeWidth={2.75} aria-hidden="true" />
+          <Glyph name="users" size={14} strokeWidth={2.75} />
           {formatCount(course.studentsCount)}
         </span>
       )}
       {hasRating && (
         <span className={`${styles.metaItem} ${styles.rating}`}>
-          <Star size={14} strokeWidth={2.5} fill="currentColor" aria-hidden="true" />
+          <Glyph name="star" size={14} strokeWidth={2.5} />
           {course.ratingAvg}
         </span>
       )}
@@ -443,7 +432,7 @@ function FeaturedCard({ course, onOpen }: { course: Course; onOpen: () => void }
       </button>
       <div className={styles.featuredBody}>
         <span className={styles.eyebrow}>
-          <Sparkles size={14} strokeWidth={2.75} aria-hidden="true" />
+          <Glyph name="sparkle" size={14} strokeWidth={2.75} />
           {(course.studentsCount ?? 0) > 0 ? 'Most popular' : 'Featured'}
         </span>
         <h2 className={styles.featuredTitle}>{course.title}</h2>
@@ -493,13 +482,13 @@ function CourseCard({
       <span className={styles.tags}>
         {added ? (
           <span className={`${styles.tag} ${styles.tagAdded}`}>
-            <Check size={12} strokeWidth={4} aria-hidden="true" /> Added
+            <Glyph name="check" size={12} strokeWidth={4} /> Added
           </span>
         ) : (
           <span className={`${styles.tag} ${course.isOriginal ? styles.tagOriginal : isFree(course) ? styles.tagFree : ''}`}>
             {course.isOriginal ? (
               <>
-                <Sparkles size={12} strokeWidth={3} aria-hidden="true" /> Teyro Original
+                <Glyph name="sparkle" size={12} strokeWidth={3} /> Teyro Original
               </>
             ) : isFree(course) ? (
               'Free'
@@ -553,7 +542,7 @@ function CourseCard({
           </button>
         ) : (
           <button type="button" className={styles.cardBtn} onClick={onOpen} tabIndex={-1} aria-hidden="true">
-            <Compass size={16} strokeWidth={3} aria-hidden="true" /> View course
+            <Glyph name="compass" size={16} strokeWidth={3} /> View course
           </button>
         )}
       </span>

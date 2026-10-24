@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Sparkles, Zap, Flame, Heart, Award } from 'lucide-react';
+import { Zap, Flame, Heart } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { useGamification } from '@/context/GamificationContext';
 import { useRewardAnimation, RewardItem } from '@/context/RewardAnimationContext';
 import { useCelebration } from '@/context/CelebrationContext';
@@ -167,7 +168,7 @@ export default function RewardRunTestWidget() {
           }
           className={`${styles.testBtn} ${styles.btnXp}`}
         >
-          <Award size={20} className="text-[#0172FD]" />
+          <Glyph name="medal" size={20} className="text-[#0172FD]" />
           <span>+150 XP (Level Up)</span>
         </button>
 
@@ -217,7 +218,7 @@ export default function RewardRunTestWidget() {
           }
           className={styles.comboBtn}
         >
-          <Sparkles size={20} />
+          <Glyph name="sparkle" size={20} />
           <span>Claim Mega Combo: +30 Coins, +50 XP & +1 Heart 🎉</span>
         </button>
       </div>
@@ -319,7 +320,7 @@ export default function RewardRunTestWidget() {
               cursor: 'pointer',
             }}
           >
-            <Sparkles size={16} />
+            <Glyph name="sparkle" size={16} />
             <span>Multi-Reward Flow</span>
           </button>
 
@@ -370,7 +371,7 @@ export default function RewardRunTestWidget() {
               cursor: 'pointer',
             }}
           >
-            <Sparkles size={16} />
+            <Glyph name="sparkle" size={16} />
             <span>Daily Missions</span>
           </button>
 
@@ -504,7 +505,7 @@ export default function RewardRunTestWidget() {
             }}
             style={sceneBtnStyle('#EFF6FF', '#BFDBFE', '#1D4ED8')}
           >
-            <Award size={16} />
+            <Glyph name="medal" size={16} />
             <span>Level Up</span>
           </button>
 
@@ -525,7 +526,7 @@ export default function RewardRunTestWidget() {
             }}
             style={sceneBtnStyle('#FEFCE8', '#FDE047', '#A16207')}
           >
-            <Sparkles size={16} />
+            <Glyph name="sparkle" size={16} />
             <span>Quest Progress</span>
           </button>
 

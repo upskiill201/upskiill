@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import useSWR from 'swr';
-import { Search } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { Modal } from '@/components/ui/Modal';
 import { fetcher } from '@/lib/swr';
 import { setFollowing } from '@/lib/social';
@@ -167,7 +167,7 @@ export function FriendsCard({ onOpen }: { onOpen: (tab: PeopleTab) => void }) {
         }}
       >
         <span className={styles.findIcon}>
-          <Search size={20} strokeWidth={2.75} />
+          <Glyph name="search" size={20} strokeWidth={2.75} />
         </span>
         <span className={styles.personText}>
           <span className={styles.personName}>Find friends</span>

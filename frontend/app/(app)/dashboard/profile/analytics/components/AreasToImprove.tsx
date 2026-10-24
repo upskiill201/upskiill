@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Target } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import type { DashboardResponse } from '../types';
 import { courseHomeHref } from '@/lib/homeCourse';
 
@@ -12,7 +12,7 @@ export function AreasToImprove({ areas }: { areas: DashboardResponse['areasToImp
   return (
     <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
       <div className="flex items-center gap-2 mb-3">
-        <Target size={18} color="#F59E0B" />
+        <Glyph name="target" size={18} color="var(--warning)" />
         <h2 className="text-sm font-extrabold text-[#1F2A44]">Areas to Improve</h2>
       </div>
       <div className="flex flex-col gap-3">

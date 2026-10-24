@@ -16,7 +16,7 @@
 
 import React, { useState } from 'react';
 import useSWR from 'swr';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { fetcher } from '@/lib/swr';
 import { useGamification } from '@/context/GamificationContext';
 import { levelProgress } from '@/lib/level';
@@ -58,9 +58,9 @@ export default function ProfilePage() {
           <div className={styles.skeleton} style={{ height: 320, borderRadius: 20 }} aria-busy="true" aria-label="Loading your profile" />
         ) : me.error || !me.data ? (
           <div className={styles.errorBox} role="alert">
-            <AlertCircle size={20} strokeWidth={2.5} /> Your profile didn&apos;t load.
+            <Glyph name="alert" size={20} strokeWidth={2.5} /> Your profile didn&apos;t load.
             <button type="button" className={styles.linkBtn} onClick={() => void me.mutate()}>
-              <RefreshCw size={14} strokeWidth={2.75} /> Try again
+              <Glyph name="refresh" size={14} strokeWidth={2.75} /> Try again
             </button>
           </div>
         ) : (

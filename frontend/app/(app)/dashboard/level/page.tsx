@@ -14,7 +14,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import useSWR from 'swr';
 import { motion, useReducedMotion } from 'framer-motion';
-import { BookOpen, Check, Gift, Lock, Target, Zap } from 'lucide-react';
+import { Zap } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { useGamification } from '@/context/GamificationContext';
 import { dayKey, monthOf, shiftMonth, useStreakCalendar } from '@/hooks/useStreak';
 import { levelProgress, xpForLevel } from '@/lib/level';
@@ -209,7 +210,7 @@ export default function LevelPage() {
             return (
               <li key={stop.level} className={styles.stop}>
                 <span className={`${styles.stopNode} ${i === 0 ? styles.stopNext : ''}`} aria-hidden="true">
-                  {stop.rewards.length > 0 ? <Gift size={18} strokeWidth={2.5} /> : stop.level}
+                  {stop.rewards.length > 0 ? <Glyph name="gift" size={18} strokeWidth={2.5} /> : stop.level}
                 </span>
                 <div className={styles.stopBody}>
                   <span className={styles.stopTitle}>Level {stop.level}</span>
@@ -225,7 +226,7 @@ export default function LevelPage() {
                         >
                           <ShopItemArt art={r.art} category={r.category} rarity={r.rarity} size="sm" locked />
                           <span className={styles.rewardName}>{r.name}</span>
-                          <Lock size={14} strokeWidth={2.75} aria-label="Locked" className={styles.rewardLock} />
+                          <Glyph name="lock" size={14} strokeWidth={2.75} label="Locked" className={styles.rewardLock} />
                         </Link>
                       ))}
                     </div>
@@ -243,15 +244,15 @@ export default function LevelPage() {
         <h2 className={styles.cardTitle}>How to earn XP</h2>
         <ul className={styles.ways}>
           <li>
-            <span className={styles.wayIcon} aria-hidden="true"><BookOpen size={20} strokeWidth={2.5} /></span>
+            <span className={styles.wayIcon} aria-hidden="true"><Glyph name="book" size={20} strokeWidth={2.5} /></span>
             <span><strong>Finish lessons.</strong> Every step you complete earns XP.</span>
           </li>
           <li>
-            <span className={styles.wayIcon} aria-hidden="true"><Target size={20} strokeWidth={2.5} /></span>
+            <span className={styles.wayIcon} aria-hidden="true"><Glyph name="target" size={20} strokeWidth={2.5} /></span>
             <span><strong>Complete daily quests</strong> and claim their chests.</span>
           </li>
           <li>
-            <span className={styles.wayIcon} aria-hidden="true"><Check size={20} strokeWidth={2.5} /></span>
+            <span className={styles.wayIcon} aria-hidden="true"><Glyph name="check" size={20} strokeWidth={2.5} /></span>
             <span><strong>Open chests.</strong> Daily and streak chests can hold XP.</span>
           </li>
           <li>

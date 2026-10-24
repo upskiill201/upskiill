@@ -13,7 +13,8 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
-import { AlertCircle, Check, Crown, Lock, RefreshCw, Snowflake, Trophy, Wrench } from 'lucide-react';
+import { Snowflake, Wrench } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import StreakCalendar from '@/components/streak/StreakCalendar';
 import { StreakFlame } from '@/components/streak/fx/StreakFlame';
 import { StreakOdometer } from '@/components/streak/fx/StreakOdometer';
@@ -65,10 +66,10 @@ export default function StreakPage() {
     return (
       <div className={styles.page}>
         <div className={styles.errorCard} role="alert">
-          <AlertCircle size={28} strokeWidth={2.5} aria-hidden="true" />
+          <Glyph name="alert" size={28} strokeWidth={2.5} />
           <p>We couldn&apos;t load your streak.</p>
           <button type="button" className={styles.secondaryBtn} onClick={() => void mutate()}>
-            <RefreshCw size={16} strokeWidth={2.75} aria-hidden="true" /> Try again
+            <Glyph name="refresh" size={16} strokeWidth={2.75} /> Try again
           </button>
         </div>
       </div>
@@ -136,7 +137,7 @@ export default function StreakPage() {
           <p className={styles.heroSub}>
             {done ? (
               <>
-                <Check size={16} strokeWidth={3} aria-hidden="true" /> You extended your streak today
+                <Glyph name="check" size={16} strokeWidth={3} /> You extended your streak today
               </>
             ) : frozen ? (
               <>
@@ -251,7 +252,7 @@ export default function StreakPage() {
         <section className={styles.card} aria-label="Longest streak">
           <h2 className={styles.cardTitle}>Longest streak</h2>
           <div className={styles.record}>
-            <Trophy size={28} strokeWidth={2.5} aria-hidden="true" />
+            <Glyph name="trophy" size={28} strokeWidth={2.5} />
             <span className={styles.recordNum}>{data.longestStreak}</span>
             <span className={styles.cardSub}>days</span>
           </div>
@@ -262,7 +263,7 @@ export default function StreakPage() {
       {/* ── Streak Society ── */}
       <section className={`${styles.card} ${styles.society} ${data.streakSocietyUnlocked ? styles.societyOn : ''}`} aria-label="Streak Society">
         <span className={styles.societyIcon} aria-hidden="true">
-          {data.streakSocietyUnlocked ? <Crown size={24} strokeWidth={2.5} /> : <Lock size={22} strokeWidth={2.5} />}
+          {data.streakSocietyUnlocked ? <Glyph name="crown" size={24} strokeWidth={2.5} /> : <Glyph name="lock" size={22} strokeWidth={2.5} />}
         </span>
         <div>
           <h2 className={styles.cardTitle}>Streak Society</h2>

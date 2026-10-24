@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Lock, CornerDownRight } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import MemberAvatar from './MemberAvatar';
 import ProfileLink from './ProfileLink';
 import type { CommentNode } from '@/lib/communityApi';
@@ -187,7 +187,7 @@ export default function CommentThread({
                 className={styles.actionBtn}
                 onClick={() => { setReplyTo(replyTo?.id === c.id ? null : c); }}
               >
-                <CornerDownRight size={12} /> Reply
+                <Glyph name="reply" size={12} /> Reply
               </button>
             )}
             {(c.userId === currentUserId || isModerator) && (
@@ -235,7 +235,7 @@ export default function CommentThread({
 
       {isLocked && (
         <div className={styles.lockedNote}>
-          <Lock size={15} /> Comments are closed{isModerator ? ' — you locked this post.' : '.'}
+          <Glyph name="lock" size={15} /> Comments are closed{isModerator ? ' — you locked this post.' : '.'}
         </div>
       )}
 

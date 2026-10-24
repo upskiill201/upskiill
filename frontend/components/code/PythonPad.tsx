@@ -13,7 +13,7 @@
  */
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { AlertTriangle, Check, Download, Loader2, Play, RotateCcw, Wifi, X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { highlightCode } from '@/lib/lesson/highlight';
 import type { CodeCheck } from '@/lib/lesson/blocks';
 import {
@@ -75,7 +75,7 @@ function MlToolsGate({ code }: { code: string }) {
   return (
     <div className={styles.mlGate} role="region" aria-label="Download the machine learning tools">
       <div className={styles.mlGateIcon} aria-hidden="true">
-        <Download size={22} />
+        <Glyph name="download" size={22} />
       </div>
       <div className={styles.mlGateBody}>
         <p className={styles.mlGateTitle}>Get the machine learning tools</p>
@@ -84,10 +84,10 @@ function MlToolsGate({ code }: { code: string }) {
           70 MB, and your browser usually keeps it, so it&apos;s much quicker next time.
         </p>
         <p className={`${styles.mlGateText} ${mobile ? styles.mlGateWarn : ''}`}>
-          <Wifi size={14} aria-hidden="true" /> {mobile ? 'You look to be on mobile data. Wi-Fi is best for this.' : 'Wi-Fi is best for this.'}
+          <Glyph name="wifi" size={14} /> {mobile ? 'You look to be on mobile data. Wi-Fi is best for this.' : 'Wi-Fi is best for this.'}
         </p>
         <button type="button" className={styles.run} onClick={() => allowMlToolsDownload(code)}>
-          <Download size={18} aria-hidden="true" />
+          <Glyph name="download" size={18} />
           Download (70 MB)
         </button>
       </div>
@@ -205,7 +205,7 @@ export function CodeEditor({
         <span className={styles.fileName}>{fileName}</span>
         {onReset && !readOnly && (
           <button type="button" className={styles.barButton} onClick={onReset} aria-label="Reset the code">
-            <RotateCcw size={14} strokeWidth={2.5} aria-hidden="true" /> Reset
+            <Glyph name="refresh" size={14} strokeWidth={2.5} /> Reset
           </button>
         )}
       </div>
@@ -273,7 +273,7 @@ export function RunOutput({ run }: { run: GradedRun }) {
         <div className={styles.outputBar}>Output</div>
         <div className={styles.errorBox}>
           <div className={styles.errorTitle}>
-            <AlertTriangle size={18} aria-hidden="true" /> Stopped: it ran too long
+            <Glyph name="warning" size={18} /> Stopped: it ran too long
           </div>
           <p className={styles.errorExplain}>{TIMEOUT_MESSAGE}</p>
         </div>
@@ -294,7 +294,7 @@ export function RunOutput({ run }: { run: GradedRun }) {
       {run.error && (
         <div className={styles.errorBox}>
           <div className={styles.errorTitle}>
-            <AlertTriangle size={18} aria-hidden="true" /> {run.error.type}
+            <Glyph name="warning" size={18} /> {run.error.type}
             {run.error.line ? ` on line ${run.error.line}` : ''}
           </div>
           <p className={styles.errorExplain}>{explainError(run.error)}</p>
@@ -317,7 +317,7 @@ export function CheckList({ checks, results }: { checks: CodeCheck[]; results: C
         return (
           <div key={i} className={`${styles.check} ${cls}`}>
             <span className={styles.checkDot} aria-hidden="true">
-              {r?.passed ? <Check size={14} strokeWidth={4} /> : r ? <X size={14} strokeWidth={4} /> : null}
+              {r?.passed ? <Glyph name="check" size={14} strokeWidth={4} /> : r ? <Glyph name="close" size={14} strokeWidth={4} /> : null}
             </span>
             <span>
               {c.message}
@@ -465,7 +465,7 @@ export function PythonPad({
       {!readOnly && !mlGate && (
         <div className={styles.runRow}>
           <button type="button" className={styles.run} onClick={() => void execute()} disabled={running}>
-            {running ? <Loader2 size={18} className="animate-spin" aria-hidden="true" /> : <Play size={18} fill="currentColor" aria-hidden="true" />}
+            {running ? <Glyph name="spinner" size={18} className="animate-spin" /> : <Glyph name="play" size={18} />}
             {running ? (loading ? (usesMlTools ? 'Getting ML tools' : 'Starting Python') : 'Running') : runLabel}
           </button>
           {actions}

@@ -10,7 +10,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState, type CSSProperties } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
-import { ArrowLeft, CheckCheck, RotateCw, Send } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { TEY_POSE_SRC } from '@/components/lesson/TeySays';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { useHydrated } from '@/components/studio/useHydrated';
@@ -73,14 +73,14 @@ export function TicketThreadView({ id, basePath }: { id: string; basePath: strin
   return (
     <div className={u.page}>
       <Link href={basePath} className={u.back}>
-        <ArrowLeft size={18} aria-hidden="true" /> Help & feedback
+        <Glyph name="back" size={18} /> Help & feedback
       </Link>
 
       {error && !thread ? (
         <div className={u.errorBox} role="alert">
           <span>This conversation didn’t load.</span>
           <button type="button" className={u.btnGhostSm} onClick={() => void mutate()}>
-            <RotateCw size={14} aria-hidden="true" /> Try again
+            <Glyph name="refresh" size={14} /> Try again
           </button>
         </div>
       ) : !thread ? (
@@ -153,11 +153,11 @@ export function TicketThreadView({ id, basePath }: { id: string; basePath: strin
             <div className={u.replyActions}>
               {thread.status !== 'CLOSED' && (
                 <button type="button" className={u.btnGhost} onClick={() => void solve()} disabled={busy}>
-                  <CheckCheck size={18} aria-hidden="true" /> Mark as solved
+                  <Glyph name="checkDouble" size={18} /> Mark as solved
                 </button>
               )}
               <button type="submit" className={u.btnPrimary} disabled={busy || !draft.trim()}>
-                <Send size={18} aria-hidden="true" /> Send
+                <Glyph name="send" size={18} /> Send
               </button>
             </div>
           </form>

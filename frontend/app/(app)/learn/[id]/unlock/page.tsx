@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { LogIn } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import StudentShell from '@/components/layout/StudentShell';
 import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
 import JourneySceneShell from '@/components/features/course-unlock/JourneySceneShell';
@@ -430,7 +430,7 @@ function LegacyUnlockPage() {
               className={styles.errorBtn}
               onClick={() => router.push('/login')}
             >
-              <LogIn size={15} />
+              <Glyph name="login" size={15} />
               Log in
             </button>
           ) : (

@@ -17,10 +17,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import useSWR from 'swr';
-import {
-  Sparkles, HelpCircle, Trophy, Megaphone, LayoutGrid, BookOpen, Flame, AlertCircle,
-  PencilLine, ChevronRight, Users, TrendingUp, UserPlus, Check,
-} from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { useRouter } from 'next/navigation';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
@@ -40,7 +37,7 @@ import { getFeed, type DiscoverPayload, type FeedItem, type MyCommunity } from '
 import { courseHomeHref } from '@/lib/homeCourse';
 
 const FILTERS = [
-  { value: 'all', label: 'All', icon: <LayoutGrid size={14} strokeWidth={2.75} /> },
+  { value: 'all', label: 'All', icon: <Glyph name="grid" size={14} strokeWidth={2.75} /> },
   { value: 'question', label: 'Questions', icon: <PostTypeArt postType="QUESTION" size={20} /> },
   { value: 'win', label: 'Wins', icon: <PostTypeArt postType="WIN" size={20} /> },
   { value: 'announcement', label: 'Announcements', icon: <PostTypeArt postType="ANNOUNCEMENT" size={20} /> },
@@ -48,12 +45,12 @@ const FILTERS = [
 
 /** Icon + tint class per structured reason — the floating tab on each card. */
 const REASON_STYLES: Record<string, { icon: React.ReactNode; tint: string }> = {
-  announcement: { icon: <Megaphone size={12} strokeWidth={2.75} />, tint: styles.tabAnnouncement },
-  unanswered: { icon: <HelpCircle size={12} strokeWidth={2.75} />, tint: styles.tabUnanswered },
-  win: { icon: <Trophy size={12} strokeWidth={2.75} />, tint: styles.tabWin },
-  active: { icon: <Flame size={12} strokeWidth={2.75} />, tint: styles.tabActive },
-  course: { icon: <BookOpen size={12} strokeWidth={2.75} />, tint: styles.tabCourse },
-  general: { icon: <Sparkles size={12} strokeWidth={2.75} />, tint: styles.tabGeneral },
+  announcement: { icon: <Glyph name="megaphone" size={12} strokeWidth={2.75} />, tint: styles.tabAnnouncement },
+  unanswered: { icon: <Glyph name="help" size={12} strokeWidth={2.75} />, tint: styles.tabUnanswered },
+  win: { icon: <Glyph name="trophy" size={12} strokeWidth={2.75} />, tint: styles.tabWin },
+  active: { icon: <Glyph name="flame" size={12} strokeWidth={2.75} />, tint: styles.tabActive },
+  course: { icon: <Glyph name="book" size={12} strokeWidth={2.75} />, tint: styles.tabCourse },
+  general: { icon: <Glyph name="sparkle" size={12} strokeWidth={2.75} />, tint: styles.tabGeneral },
 };
 
 interface Person {
@@ -147,7 +144,7 @@ export default function FeedPage() {
             <Avatar size="md" name={me?.fullName ?? 'You'} src={me?.avatarUrl ?? undefined} />
             <span className={styles.composerPlaceholder}>What did you learn today?</span>
             <span className={styles.composerCta}>
-              <PencilLine size={16} strokeWidth={2.75} /> Post
+              <Glyph name="pencil" size={16} strokeWidth={2.75} /> Post
             </span>
           </button>
         )}
@@ -168,7 +165,7 @@ export default function FeedPage() {
 
         {first.error && !first.data ? (
           <div className={shared.errorBanner}>
-            <AlertCircle size={28} />
+            <Glyph name="alert" size={28} />
             <span>{first.error instanceof Error ? first.error.message : 'Could not load your feed.'}</span>
             <Button variant="outline" onClick={() => void first.mutate()}>
               Try again
@@ -208,7 +205,7 @@ export default function FeedPage() {
         {communities.length > 0 && (
           <div className={styles.railCard}>
             <h3 className={styles.railTitle}>
-              <Users size={14} strokeWidth={2.75} /> My communities
+              <Glyph name="users" size={14} strokeWidth={2.75} /> My communities
             </h3>
             <div className={styles.communitiesList}>
               {communities.slice(0, 6).map((c) => (
@@ -229,7 +226,7 @@ export default function FeedPage() {
                       {c.memberCount} {c.memberCount === 1 ? 'member' : 'members'} · {c.totalPosts} posts
                     </div>
                   </div>
-                  <ChevronRight size={16} className={styles.railChevron} />
+                  <Glyph name="chevron" size={16} className={styles.railChevron} />
                 </Link>
               ))}
             </div>
@@ -241,7 +238,7 @@ export default function FeedPage() {
         {discover.data && discover.data.questions.length > 0 && (
           <div className={styles.railCard}>
             <h3 className={styles.railTitle}>
-              <HelpCircle size={14} strokeWidth={2.75} /> Help your community
+              <Glyph name="help" size={14} strokeWidth={2.75} /> Help your community
             </h3>
             {discover.data.questions.map((q) => (
               <Link
@@ -251,7 +248,7 @@ export default function FeedPage() {
                 onClick={() => playSound('navTap', 3)}
               >
                 <span className={`${styles.railIconTile} ${styles.tileBlue}`}>
-                  <HelpCircle size={18} strokeWidth={2.5} />
+                  <Glyph name="help" size={18} strokeWidth={2.5} />
                 </span>
                 <div className={styles.railItemMain}>
                   <div className={styles.railItemTitle}>{q.title}</div>
@@ -266,7 +263,7 @@ export default function FeedPage() {
         {discover.data && discover.data.continueLearning.length > 0 && (
           <div className={styles.railCard}>
             <h3 className={styles.railTitle}>
-              <TrendingUp size={14} strokeWidth={2.75} /> Continue learning
+              <Glyph name="trendUp" size={14} strokeWidth={2.75} /> Continue learning
             </h3>
             {discover.data.continueLearning.map((card) => (
               <Link
@@ -279,7 +276,7 @@ export default function FeedPage() {
                   <Image src={card.thumbnailUrl} alt="" width={40} height={40} className={styles.railThumb} />
                 ) : (
                   <span className={styles.railThumbFallback}>
-                    <BookOpen size={16} />
+                    <Glyph name="book" size={16} />
                   </span>
                 )}
                 <div className={styles.railItemMain}>
@@ -330,7 +327,7 @@ function FriendsCard() {
   return (
     <div className={styles.railCard}>
       <h3 className={styles.railTitle}>
-        <Flame size={14} strokeWidth={2.75} /> Friends
+        <Glyph name="flame" size={14} strokeWidth={2.75} /> Friends
       </h3>
       {friends.slice(0, 5).map((f) => (
         <Link key={f.id} href={`/dashboard/u/${encodeURIComponent(f.id)}`} className={styles.friendRow} onClick={() => playSound('navTap', 1)}>
@@ -357,7 +354,7 @@ function FriendsCard() {
                 onClick={() => !followed[p.id] && void follow(p)}
                 aria-label={followed[p.id] ? `Following ${p.name}` : `Follow ${p.name}`}
               >
-                {followed[p.id] ? <Check size={16} strokeWidth={3} /> : <UserPlus size={16} strokeWidth={2.75} />}
+                {followed[p.id] ? <Glyph name="check" size={16} strokeWidth={3} /> : <Glyph name="userPlus" size={16} strokeWidth={2.75} />}
               </button>
             </div>
           ))}

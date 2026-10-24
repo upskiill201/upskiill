@@ -4,12 +4,8 @@ import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import {
-  Pin, Lock, Flame, Paperclip, BookOpen,
-  MoreHorizontal, Trash2, Link2, BarChart3, Check,
-  HelpCircle, Trophy, Lightbulb, Megaphone, MessagesSquare, FolderOpen, Target, Hash,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { Flame } from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import Avatar from '@/components/ui/Avatar';
 import MemberAvatar from './MemberAvatar';
 import ProfileLink from './ProfileLink';
@@ -52,15 +48,15 @@ const TYPE_LABEL: Record<string, string> = {
 };
 
 /** Each category's icon — the same set as the filter chips. */
-export const TYPE_ICON: Record<string, LucideIcon> = {
-  QUESTION: HelpCircle,
-  TIP: Lightbulb,
-  WIN: Trophy,
-  RESOURCE: FolderOpen,
-  DISCUSSION: MessagesSquare,
-  POLL: BarChart3,
-  ANNOUNCEMENT: Megaphone,
-  CHALLENGE: Target,
+export const TYPE_ICON: Record<string, GlyphName> = {
+  QUESTION: 'help',
+  TIP: 'bulb',
+  WIN: 'trophy',
+  RESOURCE: 'folder',
+  DISCUSSION: 'bubble',
+  POLL: 'chart',
+  ANNOUNCEMENT: 'megaphone',
+  CHALLENGE: 'target',
 };
 
 export function categoryLabel(postType: string): string {
@@ -198,7 +194,7 @@ function PostCard({
       {post.isPinned && (
         <div className={styles.pinnedBar}>
           <span>
-            <Pin size={14} /> Pinned
+            <Glyph name="pin" size={14} /> Pinned
           </span>
         </div>
       )}
@@ -247,7 +243,7 @@ function PostCard({
             {post.editedAt && <span>· edited</span>}
             {post.isLocked && (
               <span className={styles.lockTag}>
-                · <Lock size={12} /> Locked
+                · <Glyph name="lock" size={12} /> Locked
               </span>
             )}
           </div>
@@ -258,7 +254,7 @@ function PostCard({
         {(() => {
           const chip = (
             <>
-              <PostTypeArt postType={post.postType} size={22} fallback={TYPE_ICON[post.postType] ?? Hash} />
+              <PostTypeArt postType={post.postType} size={22} fallback={TYPE_ICON[post.postType] ?? 'hash'} />
               <span className={styles.typeLabel}>{categoryLabel(post.postType)}</span>
             </>
           );
@@ -291,12 +287,12 @@ function PostCard({
               setMenuOpen((o) => !o);
             }}
           >
-            <MoreHorizontal size={17} />
+            <Glyph name="more" size={17} />
           </button>
           {menuOpen && (
             <div className={styles.menu} role="menu">
               <button className={styles.menuItem} onClick={handleCopyLink} role="menuitem">
-                {copied ? <Check size={15} /> : <Link2 size={15} />}
+                {copied ? <Glyph name="check" size={15} /> : <Glyph name="link" size={15} />}
                 {copied ? 'Link copied' : 'Copy link'}
               </button>
               {canModerate && onDeleted && (
@@ -305,7 +301,7 @@ function PostCard({
                   onClick={handleDelete}
                   role="menuitem"
                 >
-                  <Trash2 size={15} /> Delete post
+                  <Glyph name="trash" size={15} /> Delete post
                 </button>
               )}
             </div>
@@ -322,7 +318,7 @@ function PostCard({
 
           {post.lesson && (
             <span className={styles.lessonTag}>
-              <BookOpen size={13} /> {post.lesson.title}
+              <Glyph name="book" size={13} /> {post.lesson.title}
             </span>
           )}
 
@@ -330,12 +326,12 @@ function PostCard({
             <div className={styles.inlineHints}>
               {post.poll && (
                 <span className={styles.hint}>
-                  <BarChart3 size={13} /> Poll · {post.poll.options.length} options
+                  <Glyph name="chart" size={13} /> Poll · {post.poll.options.length} options
                 </span>
               )}
               {post.attachments.length > 0 && (
                 <span className={styles.hint}>
-                  <Paperclip size={13} /> {post.attachments.length} attachment
+                  <Glyph name="paperclip" size={13} /> {post.attachments.length} attachment
                   {post.attachments.length > 1 ? 's' : ''}
                 </span>
               )}

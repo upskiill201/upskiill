@@ -1,6 +1,6 @@
 'use client';
 
-import { Info } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import type { MomoCountry } from '@/lib/mesomb-countries.client';
 import styles from './unlock.module.css';
 
@@ -91,7 +91,7 @@ export default function CountryOperatorPicker({
                 color: 'var(--text-muted, #94a3b8)',
               }}
             >
-              <Info size={12} />
+              <Glyph name="info" size={12} />
               Availability confirmed when you pay — pick another if your provider declines.
             </p>
           )}

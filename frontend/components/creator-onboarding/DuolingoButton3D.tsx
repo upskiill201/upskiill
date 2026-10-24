@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 
 interface DuolingoButton3DProps {
   children: React.ReactNode;
@@ -46,7 +46,7 @@ export default function DuolingoButton3D({
     >
       <span>{isLoading ? 'Saving...' : children}</span>
       {!isLoading && showArrow && (
-        <ArrowRight size={16} strokeWidth={2.5} className="shrink-0" />
+        <Glyph name="arrow" size={16} strokeWidth={2.5} className="shrink-0" />
       )}
     </button>
   );

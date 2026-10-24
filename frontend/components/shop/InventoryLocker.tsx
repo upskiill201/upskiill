@@ -12,7 +12,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Check, Package } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import ShopItemArt from '../shop-engine/ShopItemArt';
 import { rarityStyle, SLOT_LABELS, type CosmeticSlot } from '@/lib/shop/cosmetics';
 import { equipItem, fetchInventory, ShopError } from '@/lib/shop/api';
@@ -85,7 +85,7 @@ export default function InventoryLocker({
   if (cosmetics.length === 0 && consumables.length === 0) {
     return (
       <div className={styles.empty}>
-        <Package size={26} strokeWidth={2} />
+        <Glyph name="package" size={26} strokeWidth={2} />
         <p>
           Your locker is empty. Buy your first item below and it&apos;ll show up here to equip.
         </p>
@@ -138,7 +138,7 @@ export default function InventoryLocker({
                     <span className={styles.chipName}>{item.name}</span>
                     {isEquipped && (
                       <span className={styles.chipCheck}>
-                        <Check size={12} strokeWidth={3.2} />
+                        <Glyph name="check" size={12} strokeWidth={3.2} />
                       </span>
                     )}
                   </motion.button>
