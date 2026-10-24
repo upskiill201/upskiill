@@ -78,6 +78,21 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 - **Grace Keeps the Peace (How to Manage Conflict at Work):** Kinwell's GP booking app launches 21 November. Femi snaps at Grace over step 3 research; "Fine." starts a cold war; Callum (new PM) calls her report "just opinions"; Priya overloads her; Jayden takes the car. Grace's "ward rules for the office" grow to v5.
 - **Personal Finance track (added 2026-10-22):** seven short money courses. **The Kofi trilogy** (Budgeting for Beginners, How to Save Money on a Low Income, How to Stop Impulse Buying): Kofi is now in his first year at KNUST, Kumasi, on GH₵1,500 a month from his mum; Yaw is his roommate, Efua (now also at KNUST) his steady friend, Miracle sends voice notes from Lagos. He finds his money gone by day 12, saves GH₵2,850 for a laptop paid in cash, and beats the 2 a.m. cart. **Ada's Raise** (Needs vs. Wants): after Negotiation Skills, Ada saves less on ₦480,000 than before the raise, then funds ₦900,000 for Lucía's Mexico City conference. **Miracle's Long Game** (Money Habits That Build Long-Term Wealth): her dad, a Maths teacher in Buea, retires at 60 with little saved; Folake turns out to be a quiet long-term saver; Miracle turns down a ₦1.5m bank offer, stays at Afiya on ₦1,250,000, and builds a 40-year map. **Arjun's Windfall** (How to Understand Investment Risk): the Harlow & Finch money leaves Arjun ₹12 lakh; cousin Vikram (options), his uncle (a disputed plot near Mysuru), a "3% a month" WhatsApp scheme and Kavya's crypto; Appa's knee operation; Joel's aunt loses ₹3 lakh to the scheme. **Grace and the Scam Files** (How Scams and Financial Fraud Work): a "Hi Mum" text, Femi's crypto "mentor", a spoofed bank call, a hacked supplier email at Kinwell, Jayden's money-mule DM, Femi's aunt Bimpe's fake credit alert in Lagos; Grace's scam file becomes Kinwell's handout. Family safe word agreed with Jayden and Nan.
 
+## The Esplanade Brass (added 2026-10-24)
+
+They lead **Vibe Coding: Build Apps with AI** ("Second Line", docs/originals/vibe-coding-outline.md): New Orleans, USA, US dollars. Hazel, Benny and Ruth are castIds `hazel`, `benny`, `ruth`.
+
+| Name | Age | Home | Life stage | Personality |
+|---|---|---|---|---|
+| **Hazel Broussard** | 29 | New Orleans, USA (grew up in Gentilly) | Band director and music teacher at Esplanade High School; plays trumpet; teaches private lessons on weekends. Has never written code. | Big-hearted, fast-talking, says "y'all", wants everything done yesterday. Asks for too much at once, then learns to ask for one thing well. Brave about trying; honest about what she doesn't know. |
+| **Benny Castillo** | 16 | New Orleans, USA | Trumpet, band captain, junior at Esplanade High | Fearless, funny, always on his phone, "just ship it". Finds every bug by accident. Learns that "it works on my phone" isn't a test. |
+| **Ruth Kessler** | 66 | New Orleans, USA (Mid-City) | Booster club treasurer; retired software engineer (32 years, mostly bank systems); her grandson Marcus plays sousaphone | Dry, precise, kind under the frown. "Show me." Distrusts AI at first, then distrusts it only when it's unchecked. The reviewer who signs off launch. |
+
+**Fixed relationships:**
+- **Hazel and Benny:** his band director for three years; he calls her "Miss B".
+- **Hazel and Ruth:** Ruth runs the booster club's money; she reviews every change to the band's app before it goes live.
+- Narrated: Principal Dupree (Esplanade High), Mr Lionel (Crescent Coach Lines, the bus), Marcus (Ruth's grandson), band parents. Target: $18,000 for the National Brass Showcase in Washington, D.C.
+
 ## Cameroon (added 2026-10-14, founder)
 
 These three join the shared cast. They first appear in Study Smarter with AI and can return in any Original.
