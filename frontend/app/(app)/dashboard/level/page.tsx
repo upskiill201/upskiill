@@ -14,8 +14,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import useSWR from 'swr';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Zap } from 'lucide-react';
 import { Glyph } from '@/components/art/Glyph';
+import { Mark } from '@/components/art/Mark';
 import { useGamification } from '@/context/GamificationContext';
 import { dayKey, monthOf, shiftMonth, useStreakCalendar } from '@/hooks/useStreak';
 import { levelProgress, xpForLevel } from '@/lib/level';
@@ -256,7 +256,7 @@ export default function LevelPage() {
             <span><strong>Open chests.</strong> Daily and streak chests can hold XP.</span>
           </li>
           <li>
-            <span className={styles.wayIcon} aria-hidden="true"><Zap size={20} strokeWidth={2.5} /></span>
+            <span className={styles.wayIcon} aria-hidden="true"><Mark kind="xp" size={20} /></span>
             <span><strong>Use an XP boost</strong> from the shop to earn more per lesson.</span>
           </li>
         </ul>

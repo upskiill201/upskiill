@@ -14,6 +14,7 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { Emblem } from '@/components/art/Emblem';
 import { Glyph } from '@/components/art/Glyph';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
@@ -182,7 +183,7 @@ export function LessonTopBar({
             className="relative shrink-0 w-9 h-9 rounded-xl flex items-center justify-center cursor-pointer hover:bg-[var(--bg-section)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-brand)]/25"
             style={{ color: musicOn ? 'var(--brand-purple)' : 'var(--text-muted)' }}
           >
-            <Glyph name="music" className="w-5 h-5 stroke-[2.5]" />
+            <Emblem name="music" size={22} className={musicOn ? '' : 'grayscale opacity-60'} />
             {!musicOn && (
               <span aria-hidden="true" className="absolute w-6 h-[2.5px] rounded-full rotate-45" style={{ backgroundColor: 'var(--text-muted)' }} />
             )}
@@ -246,7 +247,7 @@ export function LessonTopBar({
               exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -10, scale: 0.9 }}
               transition={{ type: 'spring', stiffness: 520, damping: 16, delay: reducedMotion ? 0 : 0.5 }}
             >
-              <Glyph name="unlock" className="w-4 h-4 stroke-[3]" />
+              <Emblem name="unlock" size={18} />
               {PHASE_LABEL[stamp.phase]} unlocked
             </motion.div>
           )}

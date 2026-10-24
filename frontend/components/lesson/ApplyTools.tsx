@@ -16,6 +16,7 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
+import { Emblem } from '@/components/art/Emblem';
 import { Glyph } from '@/components/art/Glyph';
 
 export function ApplyTools({
@@ -76,7 +77,7 @@ export function ApplyTools({
             : { color: 'var(--text-muted)', backgroundColor: 'var(--bg-section)', border: '2px solid var(--border)' }
         }
       >
-        <Glyph name="bulb" className={`w-4 h-4 stroke-[2.75] ${hintOn ? 'fill-current' : ''}`} />
+        <Emblem name="bulb" size={18} />
         Hint
         <span className="flex items-center gap-1" aria-hidden="true">
           {Array.from({ length: hintsTotal }, (_, i) => (

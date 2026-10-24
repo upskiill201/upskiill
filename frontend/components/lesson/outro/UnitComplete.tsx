@@ -9,7 +9,7 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { Glyph, type GlyphName } from '@/components/art/Glyph';
+import { Emblem, type EmblemName } from '@/components/art/Emblem';
 import Image from 'next/image';
 import { useEffect } from 'react';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -105,11 +105,11 @@ export function UnitComplete({ unit, line }: { unit: UnitSummary; line: string }
       {course && (
         <div className="mt-3 w-full max-w-[440px] flex gap-3">
           {[
-            { glyph: 'layers' as GlyphName, label: 'Units', value: `${unit.sectionsCompleted}/${unit.sectionsTotal}` },
-            { glyph: 'book' as GlyphName, label: 'Lessons', value: `${unit.courseLessonsCompleted}/${unit.courseLessonsTotal}` },
+            { glyph: 'layers' as EmblemName, label: 'Units', value: `${unit.sectionsCompleted}/${unit.sectionsTotal}` },
+            { glyph: 'book' as EmblemName, label: 'Lessons', value: `${unit.courseLessonsCompleted}/${unit.courseLessonsTotal}` },
           ].map(({ glyph, label, value }) => (
             <div key={label} className="flex-1 rounded-[18px] border-2 border-[var(--border)] p-3 flex items-center gap-2.5">
-              <Glyph name={glyph} className="w-5 h-5 stroke-[2.6] text-[var(--lesson-gold-dark)]" />
+              <Emblem name={glyph} size={24} />
               <span className="text-[14px] font-bold text-[var(--text-secondary)]">{label}</span>
               <span className="ml-auto text-[17px] font-extrabold text-ink tabular-nums">{value}</span>
             </div>

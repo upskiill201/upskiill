@@ -8,7 +8,8 @@
 
 import DOMPurify from 'dompurify';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Glyph, type GlyphName } from '@/components/art/Glyph';
+import { Emblem, type EmblemName } from '@/components/art/Emblem';
+import { Glyph } from '@/components/art/Glyph';
 import type { LessonResource } from '@/lib/lesson/content';
 import { playHaptic } from '@/lib/haptics';
 import { StepHeading } from './StepHeading';
@@ -16,7 +17,7 @@ import { TeySays } from '../TeySays';
 
 const sanitize = (raw: string) => DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
 
-function resourceKind(type: string | null | undefined): { icon: GlyphName; color: string; label: string } {
+function resourceKind(type: string | null | undefined): { icon: EmblemName; color: string; label: string } {
   const t = (type ?? 'link').toLowerCase();
   if (/fig|design|template/.test(t)) return { icon: 'template', color: 'var(--brand-purple)', label: 'Template' };
   if (/pdf|doc/.test(t)) return { icon: 'doc', color: 'var(--lesson-wrong)', label: 'Guide' };
@@ -75,9 +76,9 @@ export function DeepenStep({
                 >
                   <span
                     className="shrink-0 w-12 h-12 rounded-[14px] flex items-center justify-center"
-                    style={{ backgroundColor: kind.color, boxShadow: `0 3px 0 color-mix(in srgb, ${kind.color} 75%, black)` }}
+                    style={{ backgroundColor: `color-mix(in srgb, ${kind.color} 14%, var(--bg-card))`, boxShadow: `0 3px 0 color-mix(in srgb, ${kind.color} 35%, var(--bg-card))` }}
                   >
-                    <Glyph name={glyph} className="w-6 h-6 text-white stroke-[2.5]" />
+                    <Emblem name={glyph} size={30} />
                   </span>
                   <span className="flex-1 min-w-0">
                     <span className="block truncate text-[16px] font-extrabold text-ink">

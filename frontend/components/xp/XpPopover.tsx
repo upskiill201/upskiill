@@ -8,7 +8,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Zap } from 'lucide-react';
+import { Mark } from '@/components/art/Mark';
 import { useGamification } from '@/context/GamificationContext';
 import { prefetchAchievements, type AchievementPreview } from '@/lib/achievements/previewCache';
 import { prefetchCatalog } from '@/lib/shop/previewCache';
@@ -100,7 +100,7 @@ export default function XpPopover({ onClose }: XpPopoverProps) {
         {activeBoostMs !== null && (
           <div className={styles.boostCard}>
             <span className={styles.boostLeft}>
-              <Zap size={18} strokeWidth={2.5} fill="currentColor" aria-hidden />
+              <Mark kind="xp" size={18} />
               XP boost active
             </span>
             <CountdownPill ms={activeBoostMs} label="Ends in" />

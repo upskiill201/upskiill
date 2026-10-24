@@ -11,6 +11,7 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
+import { Emblem } from '@/components/art/Emblem';
 import { Glyph } from '@/components/art/Glyph';
 import Image from 'next/image';
 import { useEffect } from 'react';
@@ -81,12 +82,8 @@ export function LevelComplete({ level, line }: { level: LevelCompletion; line: s
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.9, type: 'spring', stiffness: 300, damping: 22 }}
       >
-        <span className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-          {next ? (
-            <Glyph name="mountain" className="w-6 h-6 stroke-[2.5]" />
-          ) : (
-            <Glyph name="trophy" className="w-6 h-6 stroke-[2.5]" />
-          )}
+        <span className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0">
+          <Emblem name={next ? 'mountain' : 'trophy'} size={30} />
         </span>
         <span className="flex-1 min-w-0">
           {next ? (

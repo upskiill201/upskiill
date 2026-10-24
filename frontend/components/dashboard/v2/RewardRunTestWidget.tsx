@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Zap, Flame, Heart } from 'lucide-react';
+import { Mark } from '@/components/art/Mark';
 import { Glyph } from '@/components/art/Glyph';
 import { useGamification } from '@/context/GamificationContext';
 import { useRewardAnimation, RewardItem } from '@/context/RewardAnimationContext';
@@ -107,7 +107,7 @@ export default function RewardRunTestWidget() {
       <div className={styles.headerRow}>
         <div className={styles.titleGroup}>
           <div className={styles.badgeIcon}>
-            <Zap size={18} className="text-[#0172FD]" />
+            <Mark kind="xp" size={18} />
           </div>
           <div>
             <h3 className={styles.title}>REWARDRUN LAB & TEST BENCH</h3>
@@ -394,7 +394,7 @@ export default function RewardRunTestWidget() {
               cursor: 'pointer',
             }}
           >
-            <Flame size={16} />
+            <Mark kind="streak" size={16} />
             <span>Streak Screen</span>
           </button>
 
@@ -460,7 +460,7 @@ export default function RewardRunTestWidget() {
             }}
             style={sceneBtnStyle('#FFF7ED', '#FED7AA', '#EA580C')}
           >
-            <Flame size={16} />
+            <Mark kind="streak" size={16} />
             <span>Streak Extended</span>
           </button>
 
@@ -473,7 +473,7 @@ export default function RewardRunTestWidget() {
             }}
             style={sceneBtnStyle('#F0F9FF', '#BAE6FD', '#0369A1')}
           >
-            <Heart size={16} />
+            <Mark kind="heart" size={16} />
             <span>Streak Saved</span>
           </button>
 
@@ -492,7 +492,7 @@ export default function RewardRunTestWidget() {
             }}
             style={sceneBtnStyle('#FEF2F2', '#FECACA', '#B91C1C')}
           >
-            <Flame size={16} />
+            <Mark kind="streak" size={16} />
             <span>Streak Lost</span>
           </button>
 
@@ -563,7 +563,7 @@ export default function RewardRunTestWidget() {
             }}
             style={sceneBtnStyle('#F5F3FF', '#DDD6FE', '#6D28D9')}
           >
-            <Zap size={16} />
+            <Mark kind="xp" size={16} />
             <span>Full Chain Queue</span>
           </button>
         </div>

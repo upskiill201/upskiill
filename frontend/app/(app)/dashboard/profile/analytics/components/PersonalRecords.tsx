@@ -1,5 +1,5 @@
-import { Flame, Zap, type LucideIcon } from 'lucide-react';
 import { Glyph, type GlyphName } from '@/components/art/Glyph';
+import { Mark, type MarkKind } from '@/components/art/Mark';
 import { pickRecordsEmptyLine } from '@/lib/tey/analyticsVoice';
 import type { DashboardResponse } from '../types';
 
@@ -20,11 +20,11 @@ export function PersonalRecords({ records }: { records: DashboardResponse['recor
   }
 
   const tiles = [
-    { icon: Flame, color: '#FF9600', value: `${records.longestStreakDays} days`, label: 'Longest Streak' },
-    records.bestXpDay && { icon: Zap, color: '#22C55E', value: `${records.bestXpDay.value} XP`, label: 'Best XP Day' },
+    { mark: 'streak' as MarkKind, color: 'var(--warning)', value: `${records.longestStreakDays} days`, label: 'Longest Streak' },
+    records.bestXpDay && { mark: 'xp' as MarkKind, color: 'var(--success-green)', value: `${records.bestXpDay.value} XP`, label: 'Best XP Day' },
     records.bestLessonsDay && { icon: 'book', color: 'var(--color-brand)', value: `${records.bestLessonsDay.value}`, label: 'Most Lessons/Day' },
     records.bestTimeDay && { icon: 'clock', color: 'var(--brand-purple)', value: formatSeconds(records.bestTimeDay.seconds), label: 'Longest Day' },
-  ].filter(Boolean) as Array<{ icon: GlyphName | LucideIcon; color: string; value: string; label: string }>; // streak + XP keep their marks
+  ].filter(Boolean) as Array<{ icon?: GlyphName; mark?: MarkKind; color: string; value: string; label: string }>; // streak + XP use Teyro's marks
 
   return (
     <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
@@ -35,7 +35,7 @@ export function PersonalRecords({ records }: { records: DashboardResponse['recor
       <div className="grid grid-cols-2 gap-3">
         {tiles.map((t) => (
           <div key={t.label} className="rounded-lg bg-[#F5F7FB] p-3">
-            {typeof t.icon === 'string' ? <Glyph name={t.icon} size={16} color={t.color} /> : <t.icon size={16} color={t.color} />}
+            {t.mark ? <Mark kind={t.mark} size={16} /> : t.icon ? <Glyph name={t.icon} size={16} color={t.color} /> : null}
             <p className="text-base font-extrabold text-[#1F2A44] mt-1">{t.value}</p>
             <p className="text-[11px] font-semibold text-[#94A3B8]">{t.label}</p>
           </div>

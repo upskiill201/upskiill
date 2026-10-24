@@ -13,6 +13,7 @@
  */
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { Emblem } from '@/components/art/Emblem';
 import { Glyph } from '@/components/art/Glyph';
 import { highlightCode } from '@/lib/lesson/highlight';
 import type { CodeCheck } from '@/lib/lesson/blocks';
@@ -273,7 +274,7 @@ export function RunOutput({ run }: { run: GradedRun }) {
         <div className={styles.outputBar}>Output</div>
         <div className={styles.errorBox}>
           <div className={styles.errorTitle}>
-            <Glyph name="warning" size={18} /> Stopped: it ran too long
+            <Emblem name="warning" size={20} /> Stopped: it ran too long
           </div>
           <p className={styles.errorExplain}>{TIMEOUT_MESSAGE}</p>
         </div>
@@ -294,7 +295,7 @@ export function RunOutput({ run }: { run: GradedRun }) {
       {run.error && (
         <div className={styles.errorBox}>
           <div className={styles.errorTitle}>
-            <Glyph name="warning" size={18} /> {run.error.type}
+            <Emblem name="warning" size={20} /> {run.error.type}
             {run.error.line ? ` on line ${run.error.line}` : ''}
           </div>
           <p className={styles.errorExplain}>{explainError(run.error)}</p>

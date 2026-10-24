@@ -20,7 +20,8 @@
 
 import DOMPurify from 'dompurify';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Glyph, type GlyphName } from '@/components/art/Glyph';
+import { Emblem, type EmblemName } from '@/components/art/Emblem';
+import { Glyph } from '@/components/art/Glyph';
 import { useEffect, useMemo, useState } from 'react';
 import { CAST_NAMES, type RichLearnCard, type StorySpeaker } from '@/lib/lesson/blocks';
 import { inlineMarkdown } from '@/lib/lesson/inlineMarkdown';
@@ -144,7 +145,7 @@ function Story({
     <div className="flex flex-col gap-4">
       <Panel className="flex flex-col gap-3.5">
         <p className="flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.08em] text-[var(--brand-purple)]">
-          <Glyph name="sparkle" className="w-4 h-4" />
+          <Emblem name="sparkle" size={18} />
           {card.title ?? 'Story'}
         </p>
         {card.beats.map((b, i) => {
@@ -228,7 +229,7 @@ function Chat({
   return (
     <Panel className="flex flex-col gap-3">
       <p className="flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.08em] text-[var(--color-brand)]">
-        <Glyph name="bubble" className="w-4 h-4" />
+        <Emblem name="bubble" size={18} />
         Chat with Tey
       </p>
       {card.turns.slice(0, shown).map((t, i) => (
@@ -333,8 +334,8 @@ function Steps({
 
 function Compare({ card }: { card: Extract<RichLearnCard, { kind: 'compare' }> }) {
   const sides = [
-    { side: card.before, label: card.before.label ?? 'Before', tone: 'var(--lesson-wrong)', bg: 'var(--lesson-wrong-bg)', glyph: 'close' as GlyphName },
-    { side: card.after, label: card.after.label ?? 'After', tone: 'var(--lesson-correct)', bg: 'var(--lesson-correct-bg)', glyph: 'check' as GlyphName },
+    { side: card.before, label: card.before.label ?? 'Before', tone: 'var(--lesson-wrong)', bg: 'var(--lesson-wrong-bg)', glyph: 'wrong' as EmblemName },
+    { side: card.after, label: card.after.label ?? 'After', tone: 'var(--lesson-correct)', bg: 'var(--lesson-correct-bg)', glyph: 'right' as EmblemName },
   ];
   return (
     <div className="flex flex-col gap-3">
@@ -343,7 +344,7 @@ function Compare({ card }: { card: Extract<RichLearnCard, { kind: 'compare' }> }
         {sides.map(({ side, label, tone, bg, glyph }) => (
           <div key={label} className="rounded-[20px] border-2 p-4" style={{ borderColor: tone, backgroundColor: bg }}>
             <p className="flex items-center gap-1.5 text-[13px] font-extrabold uppercase tracking-[0.08em]" style={{ color: tone }}>
-              <Glyph name={glyph} className="w-4 h-4 stroke-[3]" />
+              <Emblem name={glyph} size={18} />
               {label}
             </p>
             <p className="mt-2 text-[16px] font-semibold leading-[1.55] text-ink whitespace-pre-line">{side.text}</p>
@@ -488,8 +489,8 @@ function Myth({
             <p className="text-[17px] font-extrabold text-ink leading-snug">{s.text}</p>
             <div className="grid grid-cols-2 gap-2.5">
               {[
-                { label: 'Myth', value: false, glyph: 'thumbDown' as GlyphName },
-                { label: 'Fact', value: true, glyph: 'thumbUp' as GlyphName },
+                { label: 'Myth', value: false, glyph: 'thumbDown' as EmblemName },
+                { label: 'Fact', value: true, glyph: 'thumbUp' as EmblemName },
               ].map(({ label, value, glyph }) => (
                 <ChoiceButton
                   key={label}
@@ -502,7 +503,7 @@ function Myth({
                   }}
                 >
                   <span className="flex items-center justify-center gap-2">
-                    <Glyph name={glyph} className="w-5 h-5 stroke-[2.5]" />
+                    <Emblem name={glyph} size={22} />
                     {label}
                   </span>
                 </ChoiceButton>

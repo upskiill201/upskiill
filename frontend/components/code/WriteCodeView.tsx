@@ -11,7 +11,8 @@
 
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Eye, Lightbulb } from 'lucide-react';
+import { Emblem } from '@/components/art/Emblem';
+import { Glyph } from '@/components/art/Glyph';
 import type { ExerciseResponse, WriteCodeExercise } from '@/lib/lesson/blocks';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { PythonPad } from './PythonPad';
@@ -74,7 +75,7 @@ export function WriteCodeView({
                   }}
                   aria-expanded={showHint}
                 >
-                  <Lightbulb size={16} aria-hidden="true" /> Hint
+                  <Emblem name="bulb" size={18} /> Hint
                 </button>
               )}
               {canShowSolution && (
@@ -86,7 +87,7 @@ export function WriteCodeView({
                     onResponse({ ...current, code: exercise.solution, passedCode: null, usedSolution: true });
                   }}
                 >
-                  <Eye size={16} aria-hidden="true" /> Show solution
+                  <Glyph name="eye" size={16} strokeWidth={2.5} /> Show solution
                 </button>
               )}
             </>
@@ -100,7 +101,7 @@ export function WriteCodeView({
           className="rounded-[16px] border-2 p-4 flex gap-3 items-start"
           style={{ borderColor: 'var(--warning)', background: 'color-mix(in srgb, var(--warning) 10%, white)' }}
         >
-          <Lightbulb className="w-5 h-5 shrink-0 mt-0.5 text-[var(--warning)]" aria-hidden="true" />
+          <Emblem name="bulb" size={22} className="mt-0.5" />
           <p className="text-[16px] font-bold leading-snug text-ink">{exercise.hint}</p>
         </motion.div>
       )}

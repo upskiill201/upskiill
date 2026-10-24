@@ -4,8 +4,8 @@ import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Flame } from 'lucide-react';
 import { Glyph, type GlyphName } from '@/components/art/Glyph';
+import { Mark } from '@/components/art/Mark';
 import Avatar from '@/components/ui/Avatar';
 import MemberAvatar from './MemberAvatar';
 import ProfileLink from './ProfileLink';
@@ -223,7 +223,7 @@ function PostCard({
             <span>{timeAgo(post.createdAt)}</span>
             {post.author.streakDays > 0 && (
               <span className={styles.streak}>
-                <Flame size={12} /> {post.author.streakDays}
+                <Mark kind="streak" size={12} /> {post.author.streakDays}
               </span>
             )}
             {origin && (

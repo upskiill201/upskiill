@@ -16,8 +16,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Zap } from 'lucide-react';
 import { Glyph } from '@/components/art/Glyph';
+import { Mark } from '@/components/art/Mark';
 import { useGamification } from '@/context/GamificationContext';
 import { useShopEngine } from '@/context/ShopEngineContext';
 import ShopItemCard from '@/components/shop/ShopItemCard';
@@ -596,7 +596,7 @@ export default function ShopPage() {
           </div>
           {activeBoosts.map((b) => (
             <div key={b.id} className={styles.boostRow}>
-              <Zap size={18} strokeWidth={2.5} fill="currentColor" aria-hidden="true" />
+              <Mark kind="xp" size={18} />
               <span>{b.name} active</span>
               <CountdownPill ms={new Date(b.activeUntil as string).getTime() - Date.now()} label="Ends in" />
             </div>

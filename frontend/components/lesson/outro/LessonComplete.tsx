@@ -10,7 +10,7 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { Glyph, type GlyphName } from '@/components/art/Glyph';
+import { Emblem, type EmblemName } from '@/components/art/Emblem';
 import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -29,7 +29,7 @@ const TONE: Record<StatTone, { color: string; dark: string }> = {
   purple: { color: 'var(--brand-purple)', dark: 'color-mix(in srgb, var(--brand-purple) 78%, black)' },
 };
 
-const ICON: Record<StatCard['id'], GlyphName> = {
+const ICON: Record<StatCard['id'], EmblemName> = {
   xp: 'bolt', // the XP card shows the gem instead
   accuracy: 'target',
   words: 'pencil',
@@ -84,7 +84,7 @@ function Stat({ card, index }: { card: StatCard; index: number }) {
         {card.id === 'xp' ? (
           <Image src="/Icons/gem.png" alt="" aria-hidden="true" width={26} height={26} className="w-6 h-6 md:w-7 md:h-7 shrink-0" />
         ) : (
-          <Glyph name={glyph} className="w-5 h-5 md:w-6 md:h-6 stroke-[3] shrink-0" style={{ color: tone.color }} />
+          <Emblem name={glyph} size={26} />
         )}
         {shown === null ? (
           <span
@@ -166,7 +166,7 @@ function BonusTally({ bonus, delay }: { bonus: XpBonus; delay: number }) {
     bonus.combo > 0 ? { id: 'combo', label: 'Combo bonus', xp: bonus.combo, glyph: 'flame' } : null,
     bonus.perfect > 0 ? { id: 'perfect', label: 'Perfect bonus', xp: bonus.perfect, glyph: 'trophy' } : null,
     bonus.section > 0 ? { id: 'section', label: 'Chapter bonus', xp: bonus.section, glyph: 'bolt' } : null,
-  ].filter(Boolean) as { id: string; label: string; xp: number; glyph: GlyphName }[];
+  ].filter(Boolean) as { id: string; label: string; xp: number; glyph: EmblemName }[];
   useEffect(() => {
     const timers = lines.map((_, i) => setTimeout(() => playSound('bonusTally', i), (delay + i * 0.22) * 1000));
     return () => timers.forEach(clearTimeout);
@@ -184,7 +184,7 @@ function BonusTally({ bonus, delay }: { bonus: XpBonus; delay: number }) {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ delay: delay + i * 0.22, type: 'spring', stiffness: 600, damping: 15 }}
         >
-          <Glyph name={l.glyph} className="w-4 h-4" />
+          <Emblem name={l.glyph} size={18} />
           {l.label} +{l.xp} XP
         </motion.span>
       ))}
@@ -300,11 +300,11 @@ export function LessonComplete({
               transition={{ delay: 0.45 + i * 0.15, type: 'spring', stiffness: 560, damping: 14 }}
             >
               {b.id === 'fastest' ? (
-                <Glyph name="bolt" className="w-4 h-4" />
+                <Emblem name="bolt" size={18} />
               ) : b.id === 'bestRun' ? (
-                <Glyph name="flame" className="w-4 h-4" />
+                <Emblem name="flame" size={18} />
               ) : (
-                <Glyph name="trophy" className="w-4 h-4" />
+                <Emblem name="trophy" size={18} />
               )}
               {b.label}
             </motion.span>

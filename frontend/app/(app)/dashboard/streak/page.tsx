@@ -13,7 +13,6 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Snowflake, Wrench } from 'lucide-react';
 import { Glyph } from '@/components/art/Glyph';
 import StreakCalendar from '@/components/streak/StreakCalendar';
 import { StreakFlame } from '@/components/streak/fx/StreakFlame';
@@ -141,7 +140,7 @@ export default function StreakPage() {
               </>
             ) : frozen ? (
               <>
-                <Snowflake size={16} strokeWidth={3} aria-hidden="true" /> Frozen. A lesson today thaws it
+                <Glyph name="snowflake" size={16} strokeWidth={3} /> Frozen. A lesson today thaws it
               </>
             ) : streak > 0 ? (
               'Do a lesson today to keep it alive'
@@ -172,7 +171,7 @@ export default function StreakPage() {
       {repair && (
         <section className={styles.repairCard} aria-label="Repair your streak">
           <div className={styles.repairIcon} aria-hidden="true">
-            <Wrench size={24} strokeWidth={2.5} />
+            <Glyph name="wrench" size={24} strokeWidth={2.5} />
           </div>
           <div className={styles.repairText}>
             <h2 className={styles.cardTitle}>Repair your {repair.lostStreak}-day streak</h2>
@@ -240,7 +239,7 @@ export default function StreakPage() {
           <div className={styles.freezeRow} aria-label={`${data.freezesAvailable} of ${maxFreezes} equipped`}>
             {Array.from({ length: maxFreezes }).map((_, i) => (
               <span key={i} className={`${styles.freezeSlot} ${i < data.freezesAvailable ? styles.freezeOn : ''}`}>
-                <Snowflake size={22} strokeWidth={2.5} aria-hidden="true" />
+                <Glyph name="snowflake" size={22} strokeWidth={2.5} />
               </span>
             ))}
           </div>

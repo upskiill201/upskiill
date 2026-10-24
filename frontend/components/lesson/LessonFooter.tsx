@@ -9,7 +9,8 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Glyph, type GlyphName } from '@/components/art/Glyph';
+import { Emblem, type EmblemName } from '@/components/art/Emblem';
+import { Glyph } from '@/components/art/Glyph';
 import type { ReactNode } from 'react';
 import { LessonButton, type LessonButtonVariant } from './LessonButton';
 
@@ -42,7 +43,7 @@ export function LessonFooter({
           ? 'var(--lesson-select-bg)'
           : 'var(--bg-card)';
   const ink = tone === 'correct' ? 'var(--lesson-correct-ink)' : tone === 'skip' ? 'var(--lesson-picked-ink)' : 'var(--lesson-wrong-ink)';
-  const mark: GlyphName = tone === 'correct' ? 'check' : tone === 'skip' ? 'chevronsRight' : 'close';
+  const emblem: EmblemName | null = tone === 'correct' ? 'right' : tone === 'skip' ? null : 'wrong';
   const markColor = tone === 'correct' ? 'var(--lesson-correct)' : tone === 'skip' ? 'var(--color-brand)' : 'var(--lesson-wrong)';
 
   return (
@@ -71,7 +72,7 @@ export function LessonFooter({
                   transition={{ type: 'spring', stiffness: 520, damping: 14, delay: 0.05 }}
                   className="hidden md:flex shrink-0 w-[72px] h-[72px] rounded-full bg-white items-center justify-center"
                 >
-                  <Glyph name={mark} className="w-10 h-10 stroke-[4]" style={{ color: markColor }} />
+                  {emblem ? <Emblem name={emblem} size={56} /> : <Glyph name="chevronsRight" className="w-10 h-10 stroke-[4]" style={{ color: markColor }} />}
                 </motion.span>
                 <div className="min-w-0">
                   <p
@@ -79,7 +80,7 @@ export function LessonFooter({
                     style={{ color: ink, fontFamily: 'var(--font-jakarta)' }}
                   >
                     <span className="md:hidden flex w-8 h-8 rounded-full bg-white items-center justify-center">
-                      <Glyph name={mark} className="w-5 h-5 stroke-[4]" style={{ color: markColor }} />
+                      {emblem ? <Emblem name={emblem} size={28} /> : <Glyph name="chevronsRight" className="w-5 h-5 stroke-[4]" style={{ color: markColor }} />}
                     </span>
                     {verdict.title}
                   </p>
