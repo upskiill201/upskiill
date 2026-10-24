@@ -98,7 +98,7 @@ function exportPreview(track: OriginalTrackDef) {
             milestone: lesson.milestone ?? null,
             durationMinutes: lesson.minutes,
             xpReward: lessonXp(lesson),
-            contentBlocks: buildContentBlocks(lesson, key),
+            contentBlocks: buildContentBlocks(lesson, key, track.runner),
           };
         }),
       })),
@@ -240,7 +240,7 @@ async function write(prisma: PrismaClient, track: OriginalTrackDef, instructorId
       for (const [i, lesson] of unit.lessons.entries()) {
         const key = keys.lesson(track, level, unit, lesson);
         const id = stableId(key);
-        const contentBlocks = buildContentBlocks(lesson, key) as unknown as Prisma.InputJsonObject;
+        const contentBlocks = buildContentBlocks(lesson, key, track.runner) as unknown as Prisma.InputJsonObject;
         const data = {
           title: lesson.title,
           shortDescription: lesson.summary,
@@ -298,9 +298,9 @@ async function main() {
 
   let ok = true;
   for (const track of selected) {
-    // Every Try it live card and Write and run solution, run in real Python.
+    // Every Try it live card and Write and run solution, run in real Python (or SQLite for SQL tracks).
     if (hasCode(track)) console.log(`
-(running the Python in ${track.slug}...)`);
+(running the ${track.runner === 'sql' ? 'SQL' : 'Python'} in ${track.slug}...)`);
     ok = report(track, await verifyTrackCode(track)) && ok;
   }
   // The AI Stack's practice toolkit (teyro_ai.py) and shop data: lessons depend on its exact behaviour.

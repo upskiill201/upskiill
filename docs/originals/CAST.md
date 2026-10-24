@@ -78,6 +78,21 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 - **Grace Keeps the Peace (How to Manage Conflict at Work):** Kinwell's GP booking app launches 21 November. Femi snaps at Grace over step 3 research; "Fine." starts a cold war; Callum (new PM) calls her report "just opinions"; Priya overloads her; Jayden takes the car. Grace's "ward rules for the office" grow to v5.
 - **Personal Finance track (added 2026-10-22):** seven short money courses. **The Kofi trilogy** (Budgeting for Beginners, How to Save Money on a Low Income, How to Stop Impulse Buying): Kofi is now in his first year at KNUST, Kumasi, on GH₵1,500 a month from his mum; Yaw is his roommate, Efua (now also at KNUST) his steady friend, Miracle sends voice notes from Lagos. He finds his money gone by day 12, saves GH₵2,850 for a laptop paid in cash, and beats the 2 a.m. cart. **Ada's Raise** (Needs vs. Wants): after Negotiation Skills, Ada saves less on ₦480,000 than before the raise, then funds ₦900,000 for Lucía's Mexico City conference. **Miracle's Long Game** (Money Habits That Build Long-Term Wealth): her dad, a Maths teacher in Buea, retires at 60 with little saved; Folake turns out to be a quiet long-term saver; Miracle turns down a ₦1.5m bank offer, stays at Afiya on ₦1,250,000, and builds a 40-year map. **Arjun's Windfall** (How to Understand Investment Risk): the Harlow & Finch money leaves Arjun ₹12 lakh; cousin Vikram (options), his uncle (a disputed plot near Mysuru), a "3% a month" WhatsApp scheme and Kavya's crypto; Appa's knee operation; Joel's aunt loses ₹3 lakh to the scheme. **Grace and the Scam Files** (How Scams and Financial Fraud Work): a "Hi Mum" text, Femi's crypto "mentor", a spoofed bank call, a hacked supplier email at Kinwell, Jayden's money-mule DM, Femi's aunt Bimpe's fake credit alert in Lagos; Grace's scam file becomes Kinwell's handout. Family safe word agreed with Jayden and Nan.
 
+## The Starlight (added 2026-10-23)
+
+They lead **SQL and Databases for Beginners** ("Save the Starlight", docs/originals/sql-databases-outline.md): Chicago, USA, US dollars. Juno, Walt, Leo and Dana are castIds `juno`, `walt`, `leo`, `dana`.
+
+| Name | Age | Home | Life stage | Personality |
+|---|---|---|---|---|
+| **Juno Park** | 27 | Chicago, USA (grew up in Albany Park) | Projectionist at the Starlight Picture House for four years; has never written SQL | Film-obsessed night owl who labels everything and quotes movies when nervous. Impatient with mess, brilliant once she can see the shape of a problem. |
+| **Walt Abernathy** | 74 | Chicago, USA | Owner of the Starlight, which his grandfather opened in November 1926 | Stubborn, generous, hands out free "comp" tickets to friends. Keeps every booking on an index card in a shoebox; remembers every regular's name and none of their seats. |
+| **Leo Marchetti** | 19 | Chicago, USA | Usher and film student; paints the Starlight's posters | Bets on everything, sceptical of "Juno's spreadsheet thing", then its loudest fan. Makes big mistakes fast and owns them. |
+| **Dana Whitlock** | 40s | Chicago, USA | Development agent for Crane Holdings, which wants the site for condos | Polite, sharp, always has the numbers. Offers Walt $2.4 million. Right that the Starlight can't prove it's a business, until it can. |
+
+**Fixed relationships:**
+- **Juno and Arjun:** met years ago on a classic-film restoration forum; his favourite single-screen cinema in Bengaluru closed in 2019. He mentors her on video calls (10:30 p.m. in Chicago, 9 a.m. in Bengaluru) while she builds the Starlight's database.
+- **Juno, Walt and Leo** work together at the Starlight. Ms Delgado (Lakeview Community Bank, narrated) will lend $40,000 for the roof if the records are clean. Rosa Marin and Jack Murphy (narrated regulars) both hold seat G7 on Fri 2 Oct.
+
 ## Cameroon (added 2026-10-14, founder)
 
 These three join the shared cast. They first appear in Study Smarter with AI and can return in any Original.
