@@ -182,6 +182,17 @@ async function ensurePackages(packages: string[]): Promise<void> {
   missing.forEach((p) => loadedPackages.add(p));
 }
 
+/**
+ * Drop the shared Python so the next Track starts in a fresh one. Pyodide's
+ * memory is fixed: thousands of runs across every Python Track in one process
+ * filled it ("C error: out of memory" in pandas) before the last Tracks ran.
+ */
+function resetPython(): void {
+  pyPromise = null;
+  runnerPromise = null;
+  loadedPackages.clear();
+}
+
 async function getRunner(): Promise<Runner> {
   runnerPromise ??= (async () => {
     const py = await getPython();
@@ -254,7 +265,7 @@ export function hasCode(track: OriginalTrackDef): boolean {
 
 /**
  * Run every Try it live card and Write and run solution in the Track.
- * Loads Python only when there's code to run (a few seconds, once).
+ * Loads Python only when there's code to run (a few seconds, fresh for each Track).
  */
 export async function verifyTrackCode(
   track: OriginalTrackDef,
@@ -279,6 +290,7 @@ export async function verifyTrackCode(
         lesson.learn.forEach((c) => c.kind === 'tryIt' && allCode.push(c.code));
         lesson.apply.items.forEach((e) => e.kind === 'writeCode' && allCode.push(e.solution, e.starter ?? ''));
       }
+  resetPython();
   await ensurePackages([...new Set(allCode.flatMap(packagesFor))]);
   const run = await getRunner();
   const issues: LintIssue[] = [];
