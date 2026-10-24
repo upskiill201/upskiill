@@ -313,6 +313,9 @@
     if (directive) {
       return { type: 'Compile error', message: "'#" + directive[1] + "' isn't something C knows.", line: lineOf(new RegExp('^\\s*#\\s*' + directive[1] + '\\b')) };
     }
+    if (/Illegal token after include/.test(text)) {
+      return { type: 'Compile error', message: 'An #include line has something extra after the header name.', line: lineOf(/^\s*#\s*include\b.*>\s*\S/) };
+    }
     var header = /Cannot open file: (\S+)/.exec(text);
     if (header) {
       return { type: 'Compile error', message: "There's no header called " + header[1] + '.', line: lineOf(/^\s*#\s*include/) };

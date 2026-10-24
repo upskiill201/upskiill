@@ -116,6 +116,7 @@ export function explainCError(err: CError): string {
       if (/Cannot dereference/.test(m)) return `The * on line ${err.line ?? '?'} reads through a pointer, but that value isn't a pointer.`;
       if (/Cannot call except function/.test(m)) return `Something${at} is used like a function, with brackets after it, but it isn't one.`;
       if (/isn't something C knows/.test(m)) return `That # line${at} is misspelled. The usual one is #include <stdio.h>.`;
+      if (/extra after the header name/.test(m)) return `#include lines end right after the > (or the closing "). No semicolon${at}.`;
       if (/no header called/.test(m)) return `That header name${at} is misspelled. The common ones are stdio.h, stdlib.h, string.h, math.h and ctype.h.`;
       if (/Unexpected token|expected/i.test(m)) return `C got confused${at}. Look for a missing ; or bracket on this line or the line just before it.`;
       return `The program didn't compile${at}. Read the message below: it names the problem.`;
