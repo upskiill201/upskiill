@@ -10,5 +10,169 @@
   "leadership-for-beginners": {
     "seeds": ["leadership for beginners", "how to be a good leader", "new manager tips", "leadership skills"],
     "must": ["leader", "manager", "managing", "management"]
+  },
+  "react-native-for-beginners": {
+    "seeds": ["learn react native", "react native for beginners", "react native course", "react native tutorial"],
+    "must": ["react native"]
+  },
+  "c-for-beginners": {
+    "seeds": ["learn c programming", "c programming for beginners", "c language course", "c programming tutorial"],
+    "must": ["c programming", "c language", "learn c ", "c course", "c for beginners", "c tutorial"]
+  },
+  "interactive-web-pages-with-javascript": {
+    "seeds": ["javascript dom", "javascript for web pages", "javascript events", "javascript form validation"],
+    "must": ["javascript", "dom"]
+  },
+  "javascript-for-beginners": {
+    "seeds": ["learn javascript", "javascript for beginners", "javascript course", "javascript tutorial"],
+    "must": ["javascript"]
+  },
+  "working-with-ai-coding-agents": {
+    "seeds": ["ai coding agents", "claude code", "cursor ai", "ai coding assistant"],
+    "must": ["agent", "claude", "cursor", "copilot", "coding assistant", "ai cod"]
+  },
+  "build-and-launch-a-website": {
+    "seeds": ["how to build a website", "how to make a website for beginners", "how to launch a website", "website for small business"],
+    "must": ["website", "web site", "web page"]
+  },
+  "responsive-web-design-with-css": {
+    "seeds": ["responsive web design", "css tutorial", "css flexbox", "css grid"],
+    "must": ["css", "responsive"]
+  },
+  "html-and-css-for-beginners": {
+    "seeds": ["learn html and css", "html and css for beginners", "html tutorial", "html course"],
+    "must": ["html", "css"]
+  },
+  "typescript-for-beginners": {
+    "seeds": ["learn typescript", "typescript for beginners", "typescript tutorial", "typescript vs javascript"],
+    "must": ["typescript"]
+  },
+  "vibe-coding-build-apps-with-ai": {
+    "seeds": ["vibe coding", "vibe coding for beginners", "build an app with ai", "how to build an app without coding"],
+    "must": ["vibe", "app", "ai "]
+  },
+  "ai-tools-for-everyday-productivity": {
+    "seeds": ["ai tools for productivity", "how to use chatgpt", "chatgpt prompts for beginners", "ai tools for work"],
+    "must": ["ai ", "chatgpt", "prompt", "gpt", "claude"]
+  },
+  "the-ai-stack": {
+    "seeds": ["how does ai work", "how are ai products built", "what is an ai agent", "how do large language models work"],
+    "must": ["ai ", "llm", "language model", "agent", "model"]
+  },
+  "study-smarter-with-ai-beginner": {
+    "seeds": ["how to study with ai", "chatgpt for studying", "ai study tips", "use ai to study for exams"],
+    "must": ["study", "chatgpt", "ai "]
+  },
+  "ai-at-work-beginner": {
+    "seeds": ["ai at work", "how to use ai at work", "chatgpt at work", "ai for beginners"],
+    "must": ["ai ", "chatgpt"]
+  },
+  "sql-and-databases-for-beginners": {
+    "seeds": ["learn sql", "sql for beginners", "sql tutorial", "sql course"],
+    "must": ["sql", "database"]
+  },
+  "machine-learning-for-beginners": {
+    "seeds": ["machine learning for beginners", "learn machine learning", "machine learning course", "machine learning tutorial"],
+    "must": ["machine learning"]
+  },
+  "data-science-for-beginners": {
+    "seeds": ["data science for beginners", "learn data science", "data science course", "how to become a data scientist"],
+    "must": ["data scien", "data analy"]
+  },
+  "how-scams-and-financial-fraud-work": {
+    "seeds": ["how scams work", "how to spot a scam", "common financial scams", "how to avoid scams"],
+    "must": ["scam", "fraud", "phishing"]
+  },
+  "how-to-understand-investment-risk": {
+    "seeds": ["what is investment risk", "investment risk for beginners", "types of investment risk", "risk and return"],
+    "must": ["risk"]
+  },
+  "money-habits-that-build-long-term-wealth": {
+    "seeds": ["how to build wealth", "money habits", "how to build wealth from nothing", "habits of wealthy people"],
+    "must": ["wealth", "money habit", "rich"]
+  },
+  "needs-vs-wants-making-better-spending-decisions": {
+    "seeds": ["needs vs wants", "needs and wants examples", "how to stop overspending", "lifestyle creep"],
+    "must": ["needs", "wants", "spending", "lifestyle creep", "overspend"]
+  },
+  "how-to-stop-impulse-buying": {
+    "seeds": ["how to stop impulse buying", "impulse buying", "stop impulse spending", "why do i impulse buy"],
+    "must": ["impulse"]
+  },
+  "how-to-save-money-on-a-low-income": {
+    "seeds": ["how to save money on a low income", "how to save money", "how to start saving money", "emergency fund for beginners"],
+    "must": ["sav", "emergency fund"]
+  },
+  "how-to-motivate-a-team": {
+    "seeds": ["how to motivate a team", "how to motivate employees", "team motivation ideas", "motivating your team"],
+    "must": ["motivat"]
+  },
+  "how-to-set-clear-expectations": {
+    "seeds": ["how to set clear expectations", "setting expectations at work", "how to set expectations with employees", "clear expectations"],
+    "must": ["expectation"]
+  },
+  "how-to-lead-without-being-the-boss": {
+    "seeds": ["how to lead without authority", "leading without being a manager", "how to lead a team without being the boss", "informal leadership"],
+    "must": ["lead", "influence", "authority"]
+  },
+  "speak-like-a-ceo": {
+    "seeds": ["how to speak confidently", "public speaking tips", "how to speak like a ceo", "executive presence"],
+    "must": ["speak", "executive presence", "ceo"]
+  },
+  "clear-writing-at-work": {
+    "seeds": ["how to write clearly", "business writing tips", "email writing at work", "plain language writing"],
+    "must": ["writ"]
+  },
+  "how-to-give-a-convincing-elevator-pitch": {
+    "seeds": ["elevator pitch", "how to write an elevator pitch", "elevator pitch examples", "personal elevator pitch"],
+    "must": ["pitch"]
+  },
+  "how-to-make-people-listen-to-you": {
+    "seeds": ["how to make people listen to you", "how to get people to listen", "how to speak so people listen", "how to be heard in meetings"],
+    "must": ["listen", "heard"]
+  },
+  "the-art-of-small-talk": {
+    "seeds": ["how to make small talk", "small talk topics", "how to start a conversation", "small talk at work"],
+    "must": ["small talk", "conversation"]
+  },
+  "corporate-jargon-beginner": {
+    "seeds": ["corporate jargon", "office jargon meaning", "business buzzwords", "corporate speak"],
+    "must": ["jargon", "buzzword", "corporate"]
+  },
+  "how-to-manage-conflict-at-work": {
+    "seeds": ["how to handle conflict at work", "conflict resolution at work", "dealing with difficult coworkers", "how to resolve conflict"],
+    "must": ["conflict", "coworker", "colleague"]
+  },
+  "how-to-handle-difficult-negotiations": {
+    "seeds": ["how to negotiate", "difficult negotiations", "negotiation tactics", "how to say no politely"],
+    "must": ["negotiat", "say no"]
+  },
+  "negotiation-skills-for-beginners": {
+    "seeds": ["negotiation skills", "negotiation for beginners", "how to negotiate salary", "negotiation tips"],
+    "must": ["negotiat"]
+  },
+  "how-to-price-a-product-or-service": {
+    "seeds": ["how to price a product", "how to price your services", "pricing strategy for small business", "how to set prices"],
+    "must": ["pric"]
+  },
+  "how-to-validate-a-business-idea": {
+    "seeds": ["how to validate a business idea", "business idea validation", "how to test a business idea", "is my business idea good"],
+    "must": ["validat", "business idea"]
+  },
+  "acing-job-interviews": {
+    "seeds": ["how to ace a job interview", "job interview tips", "common interview questions", "how to prepare for an interview"],
+    "must": ["interview"]
+  },
+  "how-to-get-ahead-at-work": {
+    "seeds": ["how to get ahead at work", "how to get promoted", "career growth tips", "how to ask for a promotion"],
+    "must": ["promot", "get ahead", "career"]
+  },
+  "how-to-get-hired": {
+    "seeds": ["how to get hired", "how to get a job with no experience", "how to find a job", "how to network for a job"],
+    "must": ["job", "hired", "hire", "network", "internship"]
+  },
+  "how-to-get-noticed-by-employers": {
+    "seeds": ["how to get noticed by employers", "how to write a cv", "how to write a cover letter", "linkedin profile tips"],
+    "must": ["cv", "resume", "cover letter", "linkedin", "employer"]
   }
 }

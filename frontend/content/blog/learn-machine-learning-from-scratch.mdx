@@ -1,0 +1,89 @@
+---
+title: "Learn Machine Learning From Scratch: Free Path for Beginners"
+description: "How to learn machine learning from scratch for free: the steps, what to learn first, a tiny example in Python, project ideas and free resources."
+publishedDate: "2026-10-25"
+category: ai-learning
+tags: [learn machine learning from scratch, machine learning for beginners, machine learning tutorial for beginners, machine learning course free, learn machine learning in python, learn machine learning free]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn by building one real model"
+  text: "Machine Learning for Beginners: real Python in your browser, no maths degree. 200 short lessons, free to start."
+  href: /courses/machine-learning-for-beginners
+  label: "See the Machine Learning course"
+faq:
+  - question: "How do I learn machine learning from scratch?"
+    answer: "Learn Python basics, learn to handle data, train a simple model, evaluate it on new data, and repeat with different problems."
+  - question: "Is there a free machine learning course?"
+    answer: "Yes. Several providers offer free lessons and Teyro's Machine Learning for Beginners is free to start."
+  - question: "What should I learn first?"
+    answer: "Python basics and data handling before models."
+  - question: "Which library should I use?"
+    answer: "scikit-learn is a popular beginner library for classic machine learning in Python."
+  - question: "What projects can a beginner do?"
+    answer: "Predict house prices from a small dataset, classify flowers or sort messages as spam or not spam."
+---
+
+You don't need a PhD to start with machine learning. You need Python, data and curiosity.
+
+## Direct answer
+
+To learn machine learning from scratch: learn Python basics, learn to load and clean data, train a simple model, test it on data it hasn't seen, and repeat on different problems. Start with classic methods before deep learning. Free courses and public datasets are enough.
+
+## The path
+
+1. **Python basics.** See the [Python course](/courses/python-for-beginners).
+2. **Data skills:** tables, cleaning, charts. See [learn data science from scratch](/blog/learn-data-science-from-scratch).
+3. **Your first model.**
+4. **Evaluate honestly.** Test on unseen data.
+5. **Improve the data,** not just the model.
+6. **Try different problems:** classification, prediction, grouping.
+7. **Learn the theory gradually.**
+
+## A tiny example
+
+```python
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+
+model = KNeighborsClassifier()
+model.fit(X_train, y_train)
+print(model.score(X_test, y_test))
+```
+
+It trains a model on flower measurements and checks it on flowers it hasn't seen.
+
+## Project ideas
+
+- Predict prices from a small dataset
+- Classify messages as spam or not
+- Group customers by behaviour
+
+## Common mistakes
+
+- Testing on the same data you trained on
+- Ignoring messy data
+- Jumping to deep learning too soon
+
+## Related
+
+[Is machine learning easy to learn](/blog/is-machine-learning-easy-to-learn) and [how to start studying AI](/blog/how-to-start-studying-artificial-intelligence).
+
+## Where Teyro fits
+
+Teyro's [Machine Learning for Beginners](/courses/machine-learning-for-beginners) course has you build one real model step by step, with real Python in your browser, 10-minute lessons, no maths degree and nothing to install. It has 200 lessons and is free to start.
+
+## The bottom line
+
+One dataset, one model, honest testing.
+
+## More AI guides
+
+- [Is machine learning easy to learn?](/blog/is-machine-learning-easy-to-learn)
+- [Learn data science from scratch](/blog/learn-data-science-from-scratch)
+- [How AI works](/blog/how-does-ai-work-in-simple-terms)
+- [Machine Learning course](/courses/machine-learning-for-beginners)

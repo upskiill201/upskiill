@@ -22,7 +22,8 @@ const OUT = path.join(HERE, 'out', 'keywords');
 const SEEDS = JSON.parse(fs.readFileSync(path.join(HERE, 'keyword-seeds.json'), 'utf8'));
 const COURSES = JSON.parse(fs.readFileSync(path.join(HERE, 'data', 'courses.json'), 'utf8')).courses;
 
-const DELAY = 130;
+const DELAY = 300;
+class Blocked extends Error {}
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const ALPHA = 'abcdefghijklmnopqrstuvwxyz'.split('');
 const PREFIX = ['how to', 'what is', 'why', 'can', 'is', 'best', 'free', 'when to', 'should i'];
@@ -36,11 +37,15 @@ async function suggest(q, gl = 'us', hl = 'en') {
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
-      if (res.status === 429) { await sleep(5000 * (attempt + 1)); continue; }
+      if (res.status === 429 || res.status === 403) {
+        if (attempt === 2) throw new Blocked(`Google answered ${res.status}`);
+        await sleep(20000 * (attempt + 1));
+        continue;
+      }
       if (!res.ok) return [];
       const json = await res.json();
       return Array.isArray(json[1]) ? json[1] : [];
-    } catch { await sleep(1000); }
+    } catch (e) { if (e instanceof Blocked) throw e; await sleep(1000); }
   }
   return [];
 }
@@ -156,5 +161,21 @@ async function run(slug) {
   console.log(`${slug}: ${rows.length} keywords, ${calls} calls`);
 }
 
+const force = process.argv.includes('--force');
 const wanted = process.argv.slice(2).filter((a) => !a.startsWith('-'));
-for (const slug of wanted.length ? wanted : Object.keys(SEEDS)) await run(slug);
+for (const slug of wanted.length ? wanted : Object.keys(SEEDS)) {
+  const done = path.join(OUT, `${slug}.json`);
+  if (!force && fs.existsSync(done) && JSON.parse(fs.readFileSync(done, 'utf8')).length > 0) {
+    console.log(`${slug}: already done, skipped`);
+    continue;
+  }
+  try {
+    await run(slug);
+  } catch (e) {
+    if (e instanceof Blocked) {
+      console.error(`STOPPED at ${slug}: ${e.message}. Wait a few hours and re-run; finished courses are skipped.`);
+      process.exit(2);
+    }
+    throw e;
+  }
+}
