@@ -8,6 +8,7 @@ import { buildCanonical, SITE_URL } from '@/lib/blog/site';
 import JsonLd from '@/components/features/blog/JsonLd';
 import CourseLanding, { type LandingCourse, type LandingSection } from './CourseLanding';
 import styles from './CourseLanding.module.css';
+import { COURSE_SEO } from '@/lib/seo/courseSeo';
 
 /**
  * /courses/<slug> — a course's public page. Server-rendered from the public
@@ -111,8 +112,10 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   if (!course) notFound();
   await redirectToCanonical(course, slug, searchParams);
   const c = toLanding(course);
-  const title = `${c.title}: Learn Online in Minutes a Day | Teyro`;
+  const seo = COURSE_SEO[c.slug];
+  const title = seo?.title ?? `${c.title}: Learn Online in Minutes a Day | Teyro`;
   const description =
+    seo?.description ??
     c.description ??
     `Learn ${c.title} with short daily lessons, streaks and leagues on Teyro.${c.isOriginal ? ' A Teyro Original, taught by Tey.' : c.price > 0 ? ' Try the first two lessons free.' : ' Free course.'}`;
   const path = coursePath(c.slug);
