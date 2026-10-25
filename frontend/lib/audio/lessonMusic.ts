@@ -4,11 +4,15 @@
  * SOUNDS like doing well (vertical layering: one loop, layers mixed in and
  * out by a single intensity value).
  *
- *   level 0  pad + gentle pluck        (Learn, Reflect, the start of Apply)
+ *   level 0  pad + gentle pluck        (Learn, the start of Apply)
  *   level 1  + soft kick and shaker    (3 in a row)
  *   level 2  + bass line               (5 in a row)
  *   level 3  + arpeggio lead           (7 in a row)
  *   level 4  + claps and sparkle       (10 in a row)
+ *
+ * Reflect keeps the bed going with just the shaker (calm enough to write
+ * to), and the lesson-complete screens get a fuller groove (kick, shaker,
+ * bass) that plays on under the celebration sounds until the lesson closes.
  *
  * A wrong answer drops straight back to level 0 with a filter dip, so a lost
  * run is HEARD — gently. New layers only join on the next bar line, so it
@@ -41,7 +45,7 @@ const ROOTS = [-33, -36, -40, -38]; // C2 A1 F1 G1
 /** The arpeggio walks the chord an octave and a bit up. */
 const ARP = [0, 1, 2, 1, 0, 2, 1, 2];
 
-export type MusicMood = 'learn' | 'apply' | 'reflect';
+export type MusicMood = 'learn' | 'apply' | 'reflect' | 'complete';
 
 interface Engine {
   ctx: AudioContext;
@@ -116,25 +120,25 @@ function playStep(e: Engine, step: number, t: number) {
   const bar = Math.floor(step / 16) % 4;
   // New layers join on the bar line.
   if (inBar === 0 && e.pendingLevel !== e.level) e.level = e.pendingLevel;
-  const L = e.mood === 'apply' ? e.level : 0;
+  const L = e.mood === 'apply' ? e.level : e.mood === 'complete' ? 2 : 0;
   const chord = CHORDS[bar];
-  const soft = e.mood === 'reflect' ? 0.6 : 1;
 
   // Pad: the chord, held for the bar, two detuned voices for width.
   if (inBar === 0) {
     const barLen = STEP * 16;
     for (const n of chord) {
-      voice(e, 'triangle', hz(n + 12), t, barLen * 1.05, 0.05 * soft, 0.4);
-      voice(e, 'sine', hz(n + 12) * 1.004, t, barLen * 1.05, 0.035 * soft, 0.5);
+      voice(e, 'triangle', hz(n + 12), t, barLen * 1.05, 0.05, 0.4);
+      voice(e, 'sine', hz(n + 12) * 1.004, t, barLen * 1.05, 0.035, 0.5);
     }
   }
   // Pluck: root and fifth on beats 1 and 3 — a heartbeat.
-  if (inBar === 0 || inBar === 8) voice(e, 'triangle', hz(chord[0] + 24), t, 0.5, 0.05 * soft);
-  if (inBar === 6 || inBar === 14) voice(e, 'triangle', hz(chord[2] + 24), t, 0.35, 0.03 * soft);
+  if (inBar === 0 || inBar === 8) voice(e, 'triangle', hz(chord[0] + 24), t, 0.5, 0.05);
+  if (inBar === 6 || inBar === 14) voice(e, 'triangle', hz(chord[2] + 24), t, 0.35, 0.03);
 
-  if (L >= 1) {
-    if (inBar === 0 || inBar === 8) kick(e, t, 0.22);
-    if (inBar % 2 === 1) hit(e, t, 0.05, inBar % 4 === 3 ? 0.05 : 0.03, 7000, 'highpass');
+  if (L >= 1 && (inBar === 0 || inBar === 8)) kick(e, t, 0.22);
+  // Shaker: the run's rhythm, and Reflect's quiet pulse.
+  if ((L >= 1 || e.mood === 'reflect') && inBar % 2 === 1) {
+    hit(e, t, 0.05, inBar % 4 === 3 ? 0.05 : 0.03, 7000, 'highpass');
   }
   if (L >= 2 && inBar % 2 === 0) {
     const root = ROOTS[bar];
