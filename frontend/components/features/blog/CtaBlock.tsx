@@ -2,10 +2,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { CtaOverride } from '@/lib/blog/types';
 import { APP_LAUNCHES, gateHref, LEARNER_ENTRY, LEARNER_GATE } from '@/lib/launch';
+import CtaLink from './CtaLink';
 import styles from './CtaBlock.module.css';
 
 interface CtaBlockProps {
   cta?: CtaOverride;
+  /** Where the reader is, e.g. "blog:easy-python-games", recorded with their sign-up */
+  source?: string;
 }
 
 const GATED = {
@@ -25,7 +28,7 @@ const DEFAULTS = {
 // homepage's final-CTA look: flat brand blue, cheering Tey, white 3D button.
 // Plain <Link> + CSS module (NOT components/ui/Button — that component is
 // client-only and would break RSC).
-export default function CtaBlock({ cta }: CtaBlockProps) {
+export default function CtaBlock({ cta, source }: CtaBlockProps) {
   // While the app is closed (lib/launch.ts) any CTA that would have sent the
   // reader into it points at the notify-me form instead, and says so — a
   // "Start learning free" label on a waitlist link would be a lie.
@@ -40,9 +43,15 @@ export default function CtaBlock({ cta }: CtaBlockProps) {
       <div className={styles.content}>
         <h2 className={styles.title}>{title}</h2>
         <p className={styles.text}>{text}</p>
-        <Link href={href} className={styles.button}>
-          {label}
-        </Link>
+        {source ? (
+          <CtaLink href={href} className={styles.button} source={source}>
+            {label}
+          </CtaLink>
+        ) : (
+          <Link href={href} className={styles.button}>
+            {label}
+          </Link>
+        )}
         <p className={styles.fineprint}>
           {toWaitlist ? 'No spam · One email when it’s live' : 'Free to start · No credit card needed'}
         </p>
