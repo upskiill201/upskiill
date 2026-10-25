@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { playOnboardingCue } from '@/lib/audio/onboardingAudio';
 import { playHaptic } from '@/lib/haptics';
 import { Art, type ArtName } from '@/components/art/Art';
+import { TeyMark } from '@/components/brand/TeyMark';
 import { Btn, kitCss as css } from '@/components/kit/Kit';
 
 export function SplashStep({ onDone }: { onDone: () => void }) {
@@ -28,7 +29,7 @@ export function SplashStep({ onDone }: { onDone: () => void }) {
         animate={{ scale: [0.4, 1.12, 1], y: 0, opacity: 1 }}
         transition={{ duration: 0.8, times: [0, 0.6, 1], ease: 'easeOut' }}
       >
-        <Image src="/Teyro Logo.png" alt="Teyro" width={132} height={132} priority className="rounded-[28px]" />
+        <TeyMark size={132} priority className="rounded-[28px]" />
       </motion.div>
     </button>
   );
