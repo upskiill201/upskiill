@@ -1,7 +1,7 @@
 import { evaluateProAccess } from './pro-access.service';
 import { mapStripeStatus } from './pro-subscription-sync.service';
 import { routeExitReason } from './pro-paywall.service';
-import { stripeKeyProblem } from './stripe/stripe-pro.client';
+import { liveKeyAllowedOnStaging, stripeKeyProblem } from './stripe/stripe-pro.client';
 import { plansView } from './pro.controller';
 import { bannerFor } from './pro-status';
 import { declineMessage } from './decline-messages';
@@ -101,7 +101,19 @@ describe('routeExitReason (ask why, then answer it)', () => {
 
 describe('stripeKeyProblem (never charge real cards while testing)', () => {
   it('refuses a live key outside production', () => {
-    expect(stripeKeyProblem('sk_live_abc', false)).toMatch(/LIVE/);
+    expect(stripeKeyProblem('sk_live_abc', false, false)).toMatch(/LIVE/);
+  });
+  it('takes a live key on staging only after the opt-in', () => {
+    expect(stripeKeyProblem('sk_live_abc', false, true)).toBeNull();
+    expect(stripeKeyProblem('sk_test_abc', false, true)).toBeNull();
+  });
+  it('opts in only on the deployed staging service, never on a laptop', () => {
+    const staging = { ENVIRONMENT: 'staging', RENDER: 'true', STRIPE_ALLOW_LIVE_KEY: 'true' };
+    expect(liveKeyAllowedOnStaging(staging)).toBe(true);
+    expect(liveKeyAllowedOnStaging({ ...staging, RENDER: undefined })).toBe(false);
+    expect(liveKeyAllowedOnStaging({ ...staging, ENVIRONMENT: 'production' })).toBe(false);
+    expect(liveKeyAllowedOnStaging({ ...staging, ENVIRONMENT: undefined })).toBe(false);
+    expect(liveKeyAllowedOnStaging({ ...staging, STRIPE_ALLOW_LIVE_KEY: 'yes' })).toBe(false);
   });
   it('refuses a test key in production', () => {
     expect(stripeKeyProblem('sk_test_abc', true)).toMatch(/TEST/);

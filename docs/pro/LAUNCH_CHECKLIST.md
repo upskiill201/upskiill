@@ -23,6 +23,7 @@ Everything on `feat/onboarding-pro-rebuild` is built and committed locally, not 
   - `STRIPE_SECRET_KEY`
   - `STRIPE_PRO_WEBHOOK_SECRET`
   - `NEXT_PUBLIC_STRIPE_KEY`
+  - Or, the founder's choice (2026-10-25): live keys on staging. Set `STRIPE_ALLOW_LIVE_KEY=true` there as well, or the Pro client refuses the live key. It only counts on Render with `ENVIRONMENT=staging`, never locally. Payments on staging are then real charges, test cards are declined, and the webhook in step 3 must be a **live** endpoint.
 - [ ] **Production:** set the live values of the same three. Set them only on launch day, with step 5.
 
 ## 2. Stripe objects (bootstrap)
