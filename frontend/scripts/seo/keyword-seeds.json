@@ -1,0 +1,14 @@
+{
+  "python-for-beginners": {
+    "seeds": ["learn python", "python for beginners", "python course", "python programming"],
+    "must": ["python"]
+  },
+  "budgeting-for-beginners": {
+    "seeds": ["how to budget", "budgeting for beginners", "budget on a low income", "monthly budget"],
+    "must": ["budget"]
+  },
+  "leadership-for-beginners": {
+    "seeds": ["leadership for beginners", "how to be a good leader", "new manager tips", "leadership skills"],
+    "must": ["leader", "manager", "managing", "management"]
+  }
+}
