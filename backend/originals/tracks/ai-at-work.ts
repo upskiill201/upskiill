@@ -10,6 +10,7 @@ import u08 from './ai-at-work/beginner/u08';
 import u09 from './ai-at-work/beginner/u09';
 import u11 from './ai-at-work/beginner/u11';
 import u10 from './ai-at-work/beginner/u10';
+import u12 from './ai-at-work/beginner/u12';
 
 /**
  * AI at Work — the pilot Original (docs/ORIGINALS_PLAYBOOK.md §13).
@@ -46,8 +47,8 @@ const track: OriginalTrackDef = {
       skills: ['Prompting', 'AI writing', 'Summarising', 'Fact-checking AI', 'AI workflows'],
       // Cover: frontend/public/originals, designed in originals/covers.
       thumbnailUrl: '/originals/ai-at-work-beginner.jpg',
-      upcomingUnits: 2,
-      units: [u01, u02, u03, u04, u05, u06, u07, u08, u09, u10, u11],
+      upcomingUnits: 1,
+      units: [u01, u02, u03, u04, u05, u06, u07, u08, u09, u10, u11, u12],
     },
   ],
 };
