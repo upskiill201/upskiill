@@ -41,7 +41,11 @@ const RULES = {
 };
 
 const slug = process.argv[2];
-const rules = RULES[slug];
+let rules = RULES[slug];
+if (!rules) {
+  const mod = await import(new URL(`./keyword-rules/${slug}.mjs`, import.meta.url)).catch(() => null);
+  rules = mod?.default;
+}
 if (!rules) throw new Error(`no rules for ${slug}`);
 const rows = JSON.parse(fs.readFileSync(path.join(HERE, 'out', 'keywords', `${slug}.json`), 'utf8'));
 const groups = new Map();

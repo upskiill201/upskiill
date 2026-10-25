@@ -23,4 +23,9 @@ export const COURSE_SEO: Record<string, CourseSeo> = {
     description:
       'Learn how to budget, even on a low income: track your spending, tell needs from wants and build a monthly budget you keep. 50 short lessons, free to start.',
   },
+  'python-for-beginners': {
+    title: 'Learn Python for Beginners: Free to Start | Teyro',
+    description:
+      'Learn Python from zero in short daily lessons. Write and run real code in every lesson, right on your phone. 120 lessons, free to start.',
+  },
 };
