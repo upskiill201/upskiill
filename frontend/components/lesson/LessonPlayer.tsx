@@ -377,7 +377,7 @@ export function LessonPlayer({
     setMusicOn(on);
     saveMusicSetting(on);
     playHaptic('light', false);
-    if (on) startLessonMusic(phase === 'apply' ? 'apply' : phase === 'learn' ? 'learn' : 'reflect');
+    if (on) startLessonMusic(outro ? 'complete' : phase === 'apply' ? 'apply' : phase === 'learn' ? 'learn' : 'reflect');
     else stopLessonMusic(0.4);
   };
   useEffect(() => {
@@ -1021,12 +1021,16 @@ export function LessonPlayer({
 
   const finish = () => {
     if (outro) return;
-    stopLessonMusic(0.5);
     if (adminReviewMode) {
+      stopLessonMusic(0.5);
       playHaptic('success', false);
       onFinished();
       return;
     }
+    // The music plays on through the complete screens: it ducks under the
+    // fanfare, then grows into the finish groove. Closing the lesson stops it.
+    duckMusic(2.4);
+    setMusicMood('complete');
     // The last rung of the phase ladder, then straight into the payoff.
     playHaptic('success', false);
     playSound('phaseUnlock', 3);
