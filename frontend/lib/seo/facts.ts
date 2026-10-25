@@ -34,8 +34,8 @@ export const TEYRO = {
   streaks: 'Daily streak with freezes for busy days and a 48-hour repair window if you slip',
   // league.config.ts
   leagues: 'Weekly leagues with real learners (no bots), Bronze up to Diamond',
-  // missions.service.ts QUEST_POOL, chest.service.ts
-  rewards: 'Three daily quests, a daily chest, streak chests, coins and a shop',
+  // missions.service.ts QUEST_POOL, daily-reward.ts, chest.service.ts (streak chests)
+  rewards: 'Three daily quests, a daily reward, streak chests, coins and a shop',
   // community.service.ts COMMUNITY_UNLOCK_LESSONS = 2
   community: 'Each course has a community you join after your second lesson',
   // homepage: installs to Home Screen, no app store, works offline

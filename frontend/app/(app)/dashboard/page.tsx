@@ -27,7 +27,7 @@ import { useMobileMenu } from '@/components/layout/StudentShell';
 import { StatsBar } from '@/components/ui/StatsBar';
 import LevelProgressionBanner from '@/components/dashboard/v2/LevelProgressionBanner';
 import DailyQuestsCard from '@/components/quests/DailyQuestsCard';
-import DailyChestCard from '@/components/quests/DailyChestCard';
+import StreakChestsCard from '@/components/quests/StreakChestsCard';
 import NotificationBell from '@/components/community/NotificationBell';
 import { CoursePicker } from '@/components/home/CoursePicker';
 import { LearningPath } from '@/components/home/LearningPath';
@@ -269,7 +269,7 @@ export default function DashboardPage() {
           </div>
           <LevelProgressionBanner />
           <DailyQuestsCard />
-          <DailyChestCard />
+          <StreakChestsCard />
         </aside>
       </div>
     </div>

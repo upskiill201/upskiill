@@ -13,7 +13,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { mutate } from 'swr';
 import { fetcher } from '@/lib/swr';
 import { isStudentExperienceRoute } from '@/lib/herald-scope';
-import { notify } from '@/lib/awareness/notices';
 import { isFirstSession } from '@/lib/awareness/firstSession';
 import { useCelebration } from '@/context/CelebrationContext';
 
@@ -162,7 +161,8 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
   // time-sensitive or big things interrupt:
   //   MISSION          → no banner: the Quests tab dot + the after-lesson
   //                      quest screen already tell the learner
-  //   CHEST            → a notice; tap opens the chest
+  //   CHEST            → retired with the daily chest (2026-10-25): the
+  //                      daily reward already covers coming back each day
   //   ACHIEVEMENT      → its full-screen moment, once, on a calm screen
   //   SPIN, WEEKLY_…   → retired (the wheel folds into chests; the weekly
   //                      banner promised a +50 XP that was never paid)
@@ -173,21 +173,6 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
       if (!isStudentExperienceRoute(window.location.pathname)) return;
       if (surfacedRef.current.has(notification.transitionKey)) return;
       if (suppressedRef.current) return;
-
-      if (notification.type === 'CHEST') {
-        if (nativeWidgetsRef.current.has('mystery-chest')) return;
-        surfacedRef.current.add(notification.transitionKey);
-        notify({
-          id: notification.transitionKey,
-          tone: 'good',
-          icon: 'chest',
-          title: 'Your daily chest is ready!',
-          body: "You earned it with today's lesson.",
-          action: 'Open',
-          onTap: () => celebrate({ kind: 'CHEST', dedupeKey: 'daily-chest', source: 'daily-chest' }, { front: true, immediate: true }),
-        });
-        return;
-      }
 
       if (notification.type === 'ACHIEVEMENT' && notification.achievement) {
         if (!CALM_ROUTES.includes(window.location.pathname)) return;
@@ -222,40 +207,20 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
 
     const tzOffset = new Date().getTimezoneOffset();
     const missionsKey = `/api/v2/missions/today?timezoneOffset=${tzOffset}`;
-    const chestKey = `/api/chest/today`;
     const achievementsKey = `/api/gamification/achievements/unseen`;
 
-    // All four checks fire together instead of chained one-after-another —
-    // and routing them through SWR's global `mutate` (instead of a bare
-    // `fetch`) shares the request + cache with DailyChestCard,
-    // TodaysMissionsCard and WeeklyProgressCard, which read the same
-    // endpoints via `useSWR`, so this sweep doesn't duplicate their calls.
-    const [missionsResult, chestResult, achievementsResult] = await Promise.allSettled([
+    // Both checks fire together instead of chained one-after-another — and
+    // routing them through SWR's global `mutate` (instead of a bare `fetch`)
+    // shares the request + cache with the cards that read the same endpoints
+    // via `useSWR`, so this sweep doesn't duplicate their calls.
+    const [missionsResult, achievementsResult] = await Promise.allSettled([
       mutate(missionsKey, fetcher(missionsKey)),
-      mutate(chestKey, fetcher(chestKey)),
       mutate(achievementsKey, fetcher(achievementsKey)),
     ]);
 
     // Missions are read only to refresh the shared cache the Quests tab dot
     // reads — completing one raises no banner of its own.
-    // 2. Check Daily Chest
-    if (chestResult.status === 'fulfilled') {
-      const chestData = chestResult.value as any;
-      if (chestData?.status === 'READY_TO_OPEN' && chestData.id) {
-        const transitionKey = `chest-${chestData.id}-${chestData.chestDay || new Date().toISOString().split('T')[0]}`;
-        enqueueHeraldNotification({
-          id: `herald-chest-${chestData.id}-${Date.now()}`,
-          type: 'CHEST',
-          entityId: chestData.id,
-          transitionKey,
-          title: 'Mystery Chest',
-          subtitle: 'Your daily loot is ready to open!',
-          chestId: chestData.id,
-        });
-      }
-    }
-
-    // 4. Check unseen achievement unlocks — the achievement itself is the
+    // Check unseen achievement unlocks — the achievement itself is the
     // reward (no claim step), so each stays pending until the student views
     // it; the transitionKey is stable per tier rather than time-bucketed.
     if (achievementsResult.status === 'fulfilled') {
@@ -288,12 +253,10 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
 
     if (
       missionsResult.status === 'rejected' ||
-      chestResult.status === 'rejected' ||
       achievementsResult.status === 'rejected'
     ) {
       console.error('Herald checkClaimables: one or more checks failed', {
         missionsResult,
-        chestResult,
         achievementsResult,
       });
     }

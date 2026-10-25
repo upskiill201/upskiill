@@ -267,7 +267,7 @@ export function PlacementStep(props: {
 /** Lines while the chest is being tapped open (it takes a few taps, by design). */
 const TAP_LINES = ['Tap the chest to open it.', 'Again!', 'One more!', 'Almost there!'];
 /** The chest opens on its own animation; past this many taps, something's wrong: open it anyway. */
-const TAPS_BEFORE_FALLBACK = 6;
+const TAPS_BEFORE_FALLBACK = 5;
 
 /** The gift: a real chest, tapped open, with real rewards held until signup. */
 export function ChestStep(props: { coins: number; streakFreezes: number; onContinue: () => void }) {
@@ -297,7 +297,12 @@ export function ChestStep(props: { coins: number; streakFreezes: number; onConti
   const onTap = (i: number) => {
     setTaps(i);
     playHaptic(i >= 3 ? 'heavy' : 'medium');
-    if (i >= TAPS_BEFORE_FALLBACK && !fallback.current) fallback.current = window.setTimeout(reveal, 1500);
+    // Restarted on every tap, and long: the chest feeds a fast tapper's taps
+    // in stage by stage, so it can still be opening ~7s after the last one.
+    if (i >= TAPS_BEFORE_FALLBACK) {
+      if (fallback.current) window.clearTimeout(fallback.current);
+      fallback.current = window.setTimeout(reveal, 12000);
+    }
   };
 
   return (
