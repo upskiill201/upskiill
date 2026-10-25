@@ -5,12 +5,15 @@
  * treasure chest (`components/gamification/TreasureChest.tsx`): rarity label
  * → idle sparkles → "Tap to open!" → server-first open/claim (never
  * celebrate an un-persisted roll) → Rive owns the tap-to-open animation and
- * fires `rewardReveal` → burst sound/haptic/confetti → reward pile drops and
- * bounces onto the shadow ellipse → corner balance ticks up → CONTINUE.
+ * fires `rewardReveal` → burst sound/haptic/confetti → the chest's own
+ * reveal animation plays to the end, the reward chip springs in under it →
+ * corner balance ticks up → CONTINUE.
  *
  * Two reward sources, one experience:
- *  - Daily Chest (`scene.chestId` or omitted): self-fetches /chest/today and
- *    POSTs /chest/:id/open on the first tap, same as before.
+ *  - A stored chest row (`scene.chestId`, e.g. a streak chest): POSTs
+ *    /chest/:id/open on the first tap. With neither `chestId` nor `claim` it
+ *    falls back to /chest/today — the retired daily chest, now reached only
+ *    from the dev benches.
  *  - Any other chest-worthy reward (`scene.claim`): calls the caller's claim
  *    function on the first tap (mirrors CLAIM scene's `claim` pattern) —
  *    e.g. a Monthly Quest milestone. No chest-specific backend involved.
@@ -19,7 +22,7 @@
  * every sound on the studio instruments (lib/audio/lessonSounds.ts chest*
  * cues — one sonic world with the lessons), and one haptic rhythm:
  *   land: soft · taps: selection → light → rigid → medium ·
- *   lid gives: heavy + rigid ("boom-ba") · pile: throttled ticks ·
+ *   lid gives: heavy + rigid ("boom-ba") ·
  *   CONTINUE: medium (the cha-ching).
  */
 
@@ -29,7 +32,7 @@ import { motion, useAnimation, useReducedMotion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import SceneShell from '../SceneShell';
 import ChestArt from '../ChestArt';
-import { ChestAura, CountUpNumber, RarityLabel, RewardPile, TypewriterBubble } from '../ScenePrimitives';
+import { ChestAura, CountUpNumber, RarityLabel, TypewriterBubble } from '../ScenePrimitives';
 import styles from '../Scene.module.css';
 import type { CelebrationCurrency, CelebrationScene } from '@/context/CelebrationContext';
 import {
@@ -94,9 +97,6 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
   const [balanceShown, setBalanceShown] = useState<number>(gamification.coins);
   const [tapCount, setTapCount] = useState(0);
   const shakeControls = useAnimation();
-  /** Last time a pile-landing haptic fired, so the pour's thirty-odd impacts
-   *  don't stomp each other into a single blur. */
-  const lastPileHapticRef = useRef(0);
   const openedRef = useRef(false);
   const riveFailedRef = useRef(false);
   // Mirrors `result` so async Rive callbacks always read the live value
@@ -279,8 +279,8 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
     const r = resultRef.current;
     if (!r) return;
     // Layered reveal: fanfare (the moment) → rush (the reward physically
-    // bursting out) → reward-type flourish (what it actually is). The
-    // per-item chimes from RewardPile land on top of this as they drop.
+    // bursting out) → reward-type flourish (what it actually is). Rive's
+    // own reveal animation carries the picture under it.
     const rare = r.rarityTier === 'rare' || r.rarityTier === 'epic';
     playSound('chestBurst', rare ? 1 : 0);
     // 'heavy' — one solid 35ms thump — NOT 'teyroCelebration' and NOT
@@ -356,14 +356,16 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
    * net, not a wall-clock cap on the animation. The chest needs several taps
    * to reach its reveal and a deliberate tapper can easily take longer than
    * any fixed budget — a wall-clock timer would cut them off and show the
-   * reward early, which is exactly what must never happen. */
+   * reward early, which is exactly what must never happen. 14s because the
+   * chest feeds a fast tapper's taps in stage by stage — it can still be
+   * opening ~7s after the last one. */
   useEffect(() => {
     if (phase !== 'opening' || !result) return;
     const timer = setTimeout(() => {
       if (revealedRef.current) return;
-      console.warn('ChestScene: no reveal and no taps for 10s — completing reveal via safety net.');
+      console.warn('ChestScene: no reveal and no taps for 14s — completing reveal via safety net.');
       finishReveal(result);
-    }, 10000);
+    }, 14000);
     return () => clearTimeout(timer);
     // finishReveal is stable enough here — it only reads refs and setState.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -399,19 +401,12 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
     onAdvance();
   };
 
-  /** How many sprites pour out. Scales with the payout so 50 coins actually
-   *  looks like 50 coins, while a single heart stays a small handful rather
-   *  than a misleading mountain — the headline carries the exact number. */
   /** Winds the aura up as the learner taps. Caps below 1 while merely `ready`
    *  so the pre-tap state still has somewhere to build to — the ramp is the
-   *  anticipation, and starting at full brightness spends it for nothing. */
-  const auraEnergy = phase === 'opening' ? Math.min(1, 0.3 + tapCount * 0.16) : 0.12;
-
-  const pileCount = !result
-    ? 0
-    : result.amount <= 2
-      ? 5
-      : Math.max(8, Math.min(34, Math.round(result.amount * 0.6) + 4));
+   *  anticipation, and starting at full brightness spends it for nothing.
+   *  Once open it settles to a warm glow behind the chest's own reveal. */
+  const auraEnergy =
+    phase === 'opening' ? Math.min(1, 0.3 + tapCount * 0.16) : phase === 'revealed' ? 0.5 : 0.12;
 
   return (
     <SceneShell
@@ -436,64 +431,33 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
         )}
       </h1>
 
-      {/* Stage: rarity label + chest + shadow + pile — grouped tightly so the
+      {/* Stage: rarity label + chest + shadow — grouped tightly so the
           chest reads as one unit, not a headline floating far above it. */}
       <div className={styles.chestStage}>
         {(phase === 'ready' || phase === 'opening') && (
           <RarityLabel tier={result?.rarityTier ?? 'common'} />
         )}
 
-        {/* The Rive chest — hidden once the reward pile has taken over.
-            shakeControls (imperative, not key-remount) replays the pulse on
-            every tap without ever unmounting the Rive canvas underneath —
+        {/* The Rive chest — it stays on stage after `rewardReveal`, so its own
+            animation plays all the way through the reward bursting out (the
+            way onboarding's gift chest does). It used to be swapped for a
+            code-drawn coin pile at the reveal, which cut the animation in
+            half. shakeControls (imperative, not key-remount) replays the pulse
+            on every tap without ever unmounting the Rive canvas underneath —
             remounting here would reload the .riv file on every single tap. */}
-        {phase !== 'revealed' && (
-          <motion.div style={{ position: 'relative', zIndex: 2 }} animate={shakeControls}>
-            {/* Glow, god-rays, sparkle ring and motes, winding up with each
-                tap. Sits behind the chest and never takes pointer events. */}
-            <ChestAura energy={auraEnergy} tapIndex={tapCount} />
-            <ChestArt
-              rewardType={rewardType}
-              active={phase === 'ready' || phase === 'opening'}
-              onStart={beginOpen}
-              onTap={handleTap}
-              onRewardReveal={handleRewardReveal}
-              onError={handleChestError}
-            />
-          </motion.div>
-        )}
-
-        {/* Reward pile drops after the chest reveals */}
-        {phase === 'revealed' && result && (
-          <RewardPile
-            iconSrc={CURRENCY_ICONS[result.currency]}
-            count={pileCount}
-            startDelay={reducedMotion ? 0 : 220}
-            onItemLand={(i) => {
-              if (reducedMotion) return;
-              const progress = pileCount > 1 ? i / (pileCount - 1) : 0;
-              // Metallic clink per coin, detuning down as the heap deadens.
-              // Every landing is voiced — that density IS the cascade — but
-              // each hit is short and quiet enough not to smear.
-              // Every other landing clinks — the cascade stays dense
-              // without thirty-odd voices smearing into noise.
-              if (i % 2 === 0 || progress > 0.9) playSound('chestPile', i);
-              // Throttled by TIME, not by index. Thirty-four landings inside
-              // ~1.5s can't each have their own buzz: every
-              // `navigator.vibrate` call cancels the previous one, so rapid
-              // fire produces one stuttering blur instead of a cascade.
-              // Spacing them out gives a handful of distinct taps that track
-              // the pour. 140ms measured out at ~5 ticks across the cascade;
-              // 220ms only managed 2, which felt like the pile barely landed.
-              const now = performance.now();
-              if (now - lastPileHapticRef.current > 140) {
-                lastPileHapticRef.current = now;
-                playHaptic('selection', false);
-              }
-            }}
+        <motion.div style={{ position: 'relative', zIndex: 2 }} animate={shakeControls}>
+          {/* Glow, god-rays, sparkle ring and motes, winding up with each
+              tap. Sits behind the chest and never takes pointer events. */}
+          <ChestAura energy={auraEnergy} tapIndex={tapCount} />
+          <ChestArt
+            rewardType={rewardType}
+            active={phase === 'ready' || phase === 'opening'}
+            onStart={beginOpen}
+            onTap={handleTap}
+            onRewardReveal={handleRewardReveal}
+            onError={handleChestError}
           />
-        )}
-
+        </motion.div>
       </div>
 
       {phase === 'revealed' && result && (
@@ -523,7 +487,7 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
 
       {/* No tap-progress meter here on purpose. Rive owns the opening
           sequence and never tells the app how far through it is — taps that
-          land mid-animation are absorbed, so the count varies run to run. A
+          land mid-stage are held for it, so a fast tapper's count runs high. A
           filling bar would read as a countdown, complete, and then still
           demand taps. The chest's own shake, sound and escalating copy carry
           the momentum instead. */}

@@ -5,8 +5,7 @@
  * waiting for you here", without interrupting anything.
  *
  *   quests        — daily quests ready to claim, monthly milestones ready to
- *                   claim, today's chest ready to open, and unopened streak
- *                   chests (a number)
+ *                   claim, and unopened streak chests (a number)
  *   leaderboards  — your rank has moved since you last looked (a dot)
  *   profile       — badges you haven't seen yet (a number)
  *
@@ -55,7 +54,6 @@ export function useNavBadges(): NavBadges {
   const opts = { revalidateOnFocus: true, dedupingInterval: 15_000 };
 
   const { data: missions } = useSWR<any>(`/api/v2/missions/today?timezoneOffset=${tz}`, fetcher, opts);
-  const { data: chest } = useSWR<any>('/api/chest/today', fetcher, opts);
   const { data: pending } = useSWR<any>('/api/chest/pending', fetcher, opts);
   const { data: monthly } = useSWR<MonthlyQuest>(monthlyQuestKey(), fetcher, opts);
   const { data: achievements } = useSWR<any>('/api/gamification/achievements/unseen', fetcher, opts);
@@ -69,7 +67,7 @@ export function useNavBadges(): NavBadges {
       ).length
     : 0;
   const claimableMilestones = Array.isArray(monthly?.milestones) ? monthly.milestones.filter((m) => m.claimable).length : 0;
-  const chestReady = (chest?.status === 'READY_TO_OPEN' ? 1 : 0) + (Array.isArray(pending?.chests) ? pending.chests.length : 0);
+  const chestReady = Array.isArray(pending?.chests) ? pending.chests.length : 0;
 
   // Looking at the leaderboard clears its dot.
   const onLeaderboard = pathname.startsWith('/dashboard/leaderboards');

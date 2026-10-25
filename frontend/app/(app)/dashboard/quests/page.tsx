@@ -10,7 +10,7 @@ import { MonthlyChallengeCard } from '@/components/quests/MonthlyChallengeCard';
 import { useMonthlyQuest } from '@/hooks/useMonthlyQuest';
 import { pickErrorHeadline } from '@/lib/tey/errorStateVoice';
 import DailyQuestsCard from '@/components/quests/DailyQuestsCard';
-import DailyChestCard from '@/components/quests/DailyChestCard';
+import StreakChestsCard from '@/components/quests/StreakChestsCard';
 import styles from './QuestsPage.module.css';
 
 /**
@@ -40,12 +40,12 @@ export default function QuestsPage() {
         <DailyQuestsCard variant="page" />
       </div>
 
-      {/* ── Chests ───────────────────────────────────────────────────────────
-          Today's chest and any streak chests. On desktop it also sits in the
-          home rail; on phones and tablets this is its only home (the Quests
-          tab's red dot counts it). */}
-      <div className="mb-6">
-        <DailyChestCard />
+      {/* ── Streak chests ────────────────────────────────────────────────────
+          Only when one is waiting. On desktop it also sits in the home rail;
+          on phones and tablets this is its only home (the Quests tab's red
+          dot counts it). The empty wrapper collapses via :empty. */}
+      <div className="mb-6 empty:hidden">
+        <StreakChestsCard />
       </div>
 
       {loading && !quest ? (

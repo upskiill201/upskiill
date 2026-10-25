@@ -39,6 +39,9 @@
  *   • A `click` after the reveal sends the machine back to `hovering` and
  *     flips `isReveal` false — it re-closes the chest. Post-reveal taps are
  *     dropped outright.
+ *   • A `click` while an opening stage is still playing cuts it short instead
+ *     of advancing it. Taps are paced to the stages (STAGE_MIN_MS) so every
+ *     tap the learner makes moves the chest on and every stage plays whole.
  */
 
 import React, {
@@ -83,6 +86,48 @@ export type { ChestPhase } from '@/lib/chest/chestLifecycle';
 const RIVE_SRC = '/Rive/treasure_chest.riv';
 const STATE_MACHINE = 'State Machine 1';
 const FALLBACK_IMAGE_SRC = '/Tressure box.webp';
+
+/** Tap pacing, measured against the real .riv (2026-10-25, playwright probes
+ * of every stage on fresh instances, then confirmed in the app).
+ *
+ * The asset opens in FIVE clicks: swipe1, swipe2, swipe3, finalStruggle,
+ * opening — and `rewardReveal` follows ~1.1s into `opening` on its own. Two
+ * traps:
+ *   • A click while a stage is still playing does NOT advance it: it cuts the
+ *     stage short and only the NEXT click starts the following one. Forwarded
+ *     raw, a learner tapping at a natural pace needed 10-15 taps and saw every
+ *     swipe chopped off.
+ *   • A click during `opening` re-closes the chest before it reveals.
+ * So the driver holds early taps and feeds them in one at a time: each click
+ * waits for Rive to report the stage the previous one started, then for that
+ * stage's budget counted from the click itself (the stage starts at the click;
+ * in the app the report trails it by ~400-800ms, and timing from the report
+ * made the opening take twice as long). Swipes 1-2 take a click 950ms after
+ * theirs (800 is too early), swipe3 1100ms, finalStruggle ~500ms; each budget
+ * carries ~150ms of margin. Once `opening` starts, nothing more is sent. */
+const STAGE_MIN_MS: [RegExp, number][] = [
+  [/^swipe3/, 1250],
+  [/^swipe\d/, 1100],
+  [/^finalStruggle/, 650],
+];
+const FINAL_STAGE = /^opening/;
+
+/** How long a click waits for Rive to report its stage before the next may go
+ *  anyway — the click was swallowed, or the file was re-exported with new
+ *  stage names. Longer than the ~800ms report lag seen in the app. */
+const STAGE_REPORT_TIMEOUT_MS = 1600;
+/** The file's full opening, and the most taps kept waiting for it. */
+const OPENING_CLICKS = 5;
+
+function stageOf(states: string[]): { final: boolean; ms: number } | null {
+  for (const s of states) {
+    const name = s.trim();
+    if (FINAL_STAGE.test(name)) return { final: true, ms: 0 };
+    const hit = STAGE_MIN_MS.find(([re]) => re.test(name));
+    if (hit) return { final: false, ms: hit[1] };
+  }
+  return null;
+}
 
 /** Diagnostics are always opt-in via `?chestDebug=1`, including in local dev.
  *
@@ -199,6 +244,23 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
   const stateRef = useRef<ChestState>(initialChestState());
   const [phase, setRenderPhase] = useState<ChestPhase>(stateRef.current.phase);
   const bindingRef = useRef<ChestBinding | null>(null);
+  // Tap pacing (see STAGE_MIN_MS): when the playing stage can take its next
+  // click, the taps waiting for it, and whether `opening` has begun (after
+  // which nothing is sent). Every early tap is kept and fed in stage by
+  // stage, so the chest opens in the file's five taps however fast the
+  // learner drums.
+  const clickReadyAtRef = useRef(0);
+  const lastClickAtRef = useRef(0);
+  const heldClicksRef = useRef(0);
+  const heldClickRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const finalStageRef = useRef(false);
+  const pumpRef = useRef<(() => void) | null>(null);
+  const clearHeldClick = useCallback(() => {
+    if (heldClickRef.current) clearTimeout(heldClickRef.current);
+    heldClickRef.current = null;
+    heldClicksRef.current = 0;
+  }, []);
+  useEffect(() => clearHeldClick, [clearHeldClick]);
 
   // Latest-callback refs so Rive's mount-time and event callbacks never fire
   // a stale closure. Assigned in an effect, read only asynchronously.
@@ -259,18 +321,49 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
         }
         case 'FireClick': {
           if (!binding?.ok) return;
-          binding.root.trigger(CHEST_TRIGGER_CLICK)?.trigger();
-          patchDebug({ isReveal: readIsReveal(binding.rewardVm) });
+          const fire = () => {
+            // Waits for Rive to report the stage this click starts; the
+            // stage report then sets the real budget.
+            clickReadyAtRef.current = performance.now() + STAGE_REPORT_TIMEOUT_MS;
+            devLog('click → Rive', { held: heldClicksRef.current });
+            lastClickAtRef.current = performance.now();
+            binding.root.trigger(CHEST_TRIGGER_CLICK)?.trigger();
+            patchDebug({ isReveal: readIsReveal(binding.rewardVm) });
+          };
+          const pump = () => {
+            heldClickRef.current = null;
+            // `opening` reveals on its own, and a click there (or after the
+            // reveal) re-closes the chest — never send one.
+            if (finalStageRef.current || stateRef.current.revealed) {
+              heldClicksRef.current = 0;
+              return;
+            }
+            if (heldClicksRef.current <= 0) return;
+            const wait = clickReadyAtRef.current - performance.now();
+            if (wait > 0) {
+              heldClickRef.current = setTimeout(pump, wait);
+              return;
+            }
+            heldClicksRef.current -= 1;
+            fire();
+            if (heldClicksRef.current > 0) heldClickRef.current = setTimeout(pump, 16);
+          };
+          pumpRef.current = pump;
+          heldClicksRef.current = Math.min(OPENING_CLICKS, heldClicksRef.current + 1);
+          if (!heldClickRef.current) pump();
           return;
         }
         case 'FireReset': {
+          clearHeldClick();
+          clickReadyAtRef.current = 0;
+          finalStageRef.current = false;
           if (!binding?.ok) return;
           binding.root.trigger(CHEST_TRIGGER_RESET)?.trigger();
           return;
         }
       }
     },
-    [patchDebug]
+    [patchDebug, clearHeldClick]
   );
 
   /** Feed one event through the machine and perform whatever comes back.
@@ -427,10 +520,31 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
       dispatch({ type: 'Reveal' });
     };
 
+    // Stage starts set the tap pacing: the next click waits out this stage.
+    const onState = (event: unknown) => {
+      const states = (event as { data?: unknown })?.data;
+      if (!Array.isArray(states)) return;
+      devLog('state', states.join(' / '));
+      const stage = stageOf(states.map(String));
+      if (!stage) return;
+      if (stage.final) finalStageRef.current = true;
+      // Timed from the click, not this report: the stage began at the click
+      // and the report only trails it.
+      clickReadyAtRef.current = Math.max(performance.now(), lastClickAtRef.current + stage.ms);
+      // A tap already waiting goes when this stage allows, not when the
+      // report timeout would have let it.
+      if (heldClicksRef.current > 0 && pumpRef.current) {
+        if (heldClickRef.current) clearTimeout(heldClickRef.current);
+        heldClickRef.current = setTimeout(pumpRef.current, Math.max(0, clickReadyAtRef.current - performance.now()));
+      }
+    };
+
     rive.on(EventType.RiveEvent, handler);
+    rive.on(EventType.StateChange, onState);
     patchDebug({ listenerBound: true });
     return () => {
       rive.off(EventType.RiveEvent, handler);
+      rive.off(EventType.StateChange, onState);
       patchDebug({ listenerBound: false });
     };
   }, [rive, dispatch, patchDebug]);

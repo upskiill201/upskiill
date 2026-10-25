@@ -63,7 +63,7 @@ export const PERSONAS: Persona[] = [
       'Day 2 — One lesson on the bus. Your first streak day and first daily quest',
       'Day 3 — Second lesson unlocks your course community; ask the question you were too shy to ask in class',
       'Day 4 — A busy day: one short lesson keeps the streak alive',
-      'Day 5 — Open your daily chest and spend coins in the shop',
+      'Day 5 — Collect your daily reward and spend coins in the shop',
       'Day 6 — Check the league board; you are probably closer to promotion than you think',
       'Day 7 — A full week. Set a weekly goal for the rest of term',
     ],

@@ -2,7 +2,7 @@
 
 /**
  * LearnerRail — Duolingo's right rail for the main student tabs on desktop:
- * level, today's quests, and the chest. Home builds the same stack itself
+ * level, today's quests, and any streak chests waiting. Home builds the same stack itself
  * (with the course picker and stats on top); the other tabs get their stats
  * from the shell, so this rail starts at the level card.
  *
@@ -16,7 +16,7 @@
 import React from 'react';
 import LevelProgressionBanner from '@/components/dashboard/v2/LevelProgressionBanner';
 import DailyQuestsCard from '@/components/quests/DailyQuestsCard';
-import DailyChestCard from '@/components/quests/DailyChestCard';
+import StreakChestsCard from '@/components/quests/StreakChestsCard';
 import styles from './LearnerRail.module.css';
 
 export function LearnerRail({ children, label = 'Your level and quests' }: { children?: React.ReactNode; label?: string }) {
@@ -25,7 +25,7 @@ export function LearnerRail({ children, label = 'Your level and quests' }: { chi
       {children}
       <LevelProgressionBanner />
       <DailyQuestsCard />
-      <DailyChestCard />
+      <StreakChestsCard />
     </aside>
   );
 }
