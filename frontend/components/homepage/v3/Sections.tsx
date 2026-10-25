@@ -18,12 +18,12 @@ import {
   GraduationCap,
   Laptop,
   Repeat,
-  ShieldCheck,
   Smartphone,
   Sparkles,
   Workflow,
 } from 'lucide-react';
 import Accordion from '@/components/ui/Accordion';
+import { Glyph } from '@/components/art/Glyph';
 import LaunchBadges from '@/components/homepage/v2/LaunchBadges';
 import { APP_LAUNCHES, LEARNER_ENTRY, STUDIO_OPENS } from '@/lib/launch';
 import {
@@ -332,9 +332,10 @@ function Split({
 // ─── Certificates ────────────────────────────────────────────────────────────
 //
 // Every course ends in a certificate (backend/src/certificate): issued on
-// completing every published lesson, verifiable at teyro.app/c/<code>, with a
-// one-tap LinkedIn add. The picture is the real renderer's output
-// (/c/SAMPLE23/image in dev) saved as public/certificate-sample.webp.
+// completing every published lesson, printed with the real name the learner
+// confirms first, verifiable at teyro.app/c/<code>, with a one-tap LinkedIn
+// add. The picture is the real renderer's output (the Gold Medal design,
+// /c/SAMPLE23/image in dev) saved as public/certificate-sample.webp.
 
 export function Certificates() {
   return (
@@ -346,20 +347,24 @@ export function Certificates() {
           Finish it. <em>Prove it.</em>
         </>
       }
-      copy="Complete every lesson of any Teyro course and you earn a certificate with your name, the skills you practised and a credential ID anyone can check."
-      points={['A certificate for every course you finish', 'A QR code and link that verify it in seconds', 'Add it to LinkedIn, download it or print it']}
+      copy="Complete every lesson of any Teyro course and you earn a certificate of achievement: your real name, the skills you practised, your XP and best streak, and a credential ID anyone can check."
+      points={[
+        'Your real name, confirmed by you before it prints',
+        'A QR code and link that verify it in seconds',
+        'Add it to LinkedIn, download it or print it',
+      ]}
       visual={
         <div className={s.certVisual}>
           <Image
             src="/certificate-sample.webp"
-            alt="A Teyro certificate of completion for Python for Beginners"
+            alt="A Teyro certificate of achievement for Python for Beginners, with a gold medal, the learner's stats and a credential ID"
             width={1200}
             height={848}
             sizes="(max-width: 768px) 92vw, 560px"
             className={s.certImg}
           />
           <span className={s.certBadge}>
-            <ShieldCheck size={18} strokeWidth={2.6} aria-hidden="true" />
+            <Glyph name="shieldCheck" size={18} strokeWidth={2.6} />
             Verified by Teyro
           </span>
         </div>
