@@ -953,7 +953,7 @@ type ShapeProps = { stroke?: string; fill?: string };
 function splitCuts(node: ReactNode): { shapes: ReactNode[]; cuts: ReactNode[] } {
   const parts = isValidElement<{ children?: ReactNode }>(node) && typeof node.type !== 'string'
     ? Children.toArray(node.props.children)
-    : [node];
+    : Children.toArray(node);
   const shapes: ReactNode[] = [];
   const cuts: ReactNode[] = [];
   for (const part of parts) {
