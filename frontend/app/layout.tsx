@@ -35,9 +35,9 @@ export const metadata: Metadata = {
   // Describes what actually ships. The previous copy called Teyro an
   // "AI-personalized learning platform"; AI is Phase Two and disarmed, so that
   // was promising a product nobody could use yet.
-  title: 'Teyro — The fun way to finish learning coding and AI',
+  title: 'Teyro — The fun and effective way to learn skills',
   description:
-    'Teyro helps students and career switchers finish the coding and AI skills they start, with short daily lessons, streaks, leagues and friends. Free to start on iPhone, Android and web.',
+    'Learn coding, AI, money, leadership, communication and more in short daily lessons, with streaks, leagues and friends that keep you going. Free to start.',
 
   // ── Keywords ──
   keywords: [
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     'create and sell courses', 'sell courses online', 'course creator platform',
     // Comparison / positioning
     'Duolingo for learning skills', 'Duolingo for coding', 'Duolingo for skill learning',
-    'Duolingo for professional skills', 'Duolingo but for skills',
+    'Duolingo for professional skills', 'learn personal finance online', 'learn leadership skills online', 'learn communication skills online', 'learn negotiation skills', 'learn AI tools', 'learn to code for beginners', 'Duolingo but for skills',
     'platform like Duolingo for skills', 'gamified learning platform for skills',
     'interactive learning like Duolingo', 'skill learning app like Duolingo',
     'Duolingo-style learning for skills', 'gamified skill learning platform',
@@ -91,9 +91,9 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://teyro.app',
     siteName: 'Teyro',
-    title: 'Teyro — The fun way to finish learning coding and AI',
+    title: 'Teyro — The fun and effective way to learn skills',
     description:
-      'Teyro helps students and career switchers finish the coding and AI skills they start, with short daily lessons, streaks, leagues and friends. Free to start on iPhone, Android and web.',
+      'Learn coding, AI, money, leadership, communication and more in short daily lessons, with streaks, leagues and friends that keep you going. Free to start.',
     locale: 'en_US',
     images: [
       {
@@ -109,9 +109,9 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     site: '@teyroapp',
-    title: 'Teyro — The fun way to finish learning coding and AI',
+    title: 'Teyro — The fun and effective way to learn skills',
     description:
-      'Teyro helps students and career switchers finish the coding and AI skills they start, with short daily lessons, streaks, leagues and friends. Free to start on iPhone, Android and web.',
+      'Learn coding, AI, money, leadership, communication and more in short daily lessons, with streaks, leagues and friends that keep you going. Free to start.',
     images: ['/teyro-og.png'],
   },
 

@@ -10,24 +10,8 @@
 
 import React from "react";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
-import {
-  Bell,
-  Check,
-  Crown,
-  Flame,
-  Heart,
-  Home,
-  Lock,
-  MessageCircle,
-  Shield,
-  Snowflake,
-  Star,
-  Trophy,
-  UserRound,
-  Users,
-  X,
-} from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Glyph } from "@/components/art/Glyph";
 import { HomeScreenMock } from "@/components/start/HomeScreenMock";
 import { NotificationPreview } from "@/components/push/NotificationPreview";
 import s from "./Home.module.css";
@@ -91,6 +75,48 @@ export function Pop({
   );
 }
 
+/**
+ * The unit banner on the hero phone. It steps through the subjects Teyro
+ * teaches (one course each, real Originals), so the first screen shows more
+ * than code. Holds on the first one for reduced motion and the deck export.
+ */
+const HERO_UNITS = [
+  { subject: "Coding", title: "Python functions" },
+  { subject: "Money", title: "Build your first budget" },
+  { subject: "Leadership", title: "Run a great one-to-one" },
+  { subject: "AI", title: "Prompts that save an hour" },
+  { subject: "Communication", title: "Speak like a CEO" },
+  { subject: "Business", title: "Price your product" },
+];
+
+function HeroUnit({ still }: { still: boolean }) {
+  const reduce = useReducedMotion() ?? false;
+  const [i, setI] = React.useState(0);
+  React.useEffect(() => {
+    if (still || reduce) return;
+    const id = window.setInterval(() => setI((n) => (n + 1) % HERO_UNITS.length), 2600);
+    return () => window.clearInterval(id);
+  }, [still, reduce]);
+  const unit = HERO_UNITS[i];
+  return (
+    <div className={s.unit}>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          key={unit.subject}
+          className={s.unitInner}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.22, ease: "easeOut" }}
+        >
+          <span className={s.unitNum}>{unit.subject} · Unit 3</span>
+          <span className={s.unitTitle}>{unit.title}</span>
+        </motion.span>
+      </AnimatePresence>
+    </div>
+  );
+}
+
 // ─── Hero: the app's home path, mid-course ──────────────────────────────────
 
 /** `bare`: just the phone — no floating cards, no Tey (pitch-deck export). */
@@ -143,35 +169,32 @@ export function HeroPhone({ bare = false }: { bare?: boolean }) {
               <Image src="/Icons/heart.png" alt="" width={18} height={18} />5
             </span>
           </div>
-          <div className={s.unit}>
-            <span className={s.unitNum}>Section 2 · Unit 3</span>
-            <span className={s.unitTitle}>JavaScript functions</span>
-          </div>
+          <HeroUnit still={bare} />
           <div className={s.path}>
             <span
               className={`${s.node} ${s.nodeDone}`}
               style={{ marginLeft: -40 }}
             >
-              <Check size={26} strokeWidth={4} />
+              <Glyph name="check" size={26} strokeWidth={4} />
             </span>
             <span
               className={`${s.node} ${s.nodeDone}`}
               style={{ marginLeft: 40 }}
             >
-              <Check size={26} strokeWidth={4} />
+              <Glyph name="check" size={26} strokeWidth={4} />
             </span>
             <span
               className={`${s.node} ${s.nodeNow}`}
               style={{ marginTop: 34 }}
             >
               <span className={s.startTag}>START</span>
-              <Star size={28} strokeWidth={2.5} fill="currentColor" />
+              <Glyph name="star" size={28} strokeWidth={2.5} />
             </span>
             <span
               className={`${s.node} ${s.nodeLocked}`}
               style={{ marginLeft: -44 }}
             >
-              <Lock size={22} strokeWidth={3} />
+              <Glyph name="lock" size={22} strokeWidth={3} />
             </span>
             <Image
               src="/art/items/chest-gold.svg"
@@ -183,19 +206,19 @@ export function HeroPhone({ bare = false }: { bare?: boolean }) {
           </div>
           <div className={s.tabbar}>
             <span className={`${s.tab} ${s.tabOn}`}>
-              <Home size={18} strokeWidth={2.75} />
+              <Glyph name="house" size={18} strokeWidth={2.75} />
             </span>
             <span className={s.tab}>
-              <Trophy size={18} strokeWidth={2.75} />
+              <Glyph name="trophy" size={18} strokeWidth={2.75} />
             </span>
             <span className={s.tab}>
-              <Shield size={18} strokeWidth={2.75} />
+              <Glyph name="shield" size={18} strokeWidth={2.75} />
             </span>
             <span className={s.tab}>
-              <Users size={18} strokeWidth={2.75} />
+              <Glyph name="users" size={18} strokeWidth={2.75} />
             </span>
             <span className={s.tab}>
-              <UserRound size={18} strokeWidth={2.75} />
+              <Glyph name="user" size={18} strokeWidth={2.75} />
             </span>
           </div>
         </div>
@@ -223,7 +246,7 @@ export function LessonVisual() {
   return (
     <div className={`${s.card} ${v.lesson}`} aria-hidden="true">
       <div className={v.lessonTop}>
-        <X size={22} strokeWidth={3} className={v.muted} />
+        <Glyph name="close" size={22} strokeWidth={3} className={v.muted} />
         <span className={v.bar}>
           <motion.span
             className={v.barFill}
@@ -234,7 +257,7 @@ export function LessonVisual() {
           />
         </span>
         <span className={v.hearts}>
-          <Heart size={18} fill="currentColor" strokeWidth={0} /> 5
+          <Glyph name="heart" size={18} /> 5
         </span>
       </div>
       <span className={v.kicker}>Apply</span>
@@ -261,7 +284,7 @@ export function LessonVisual() {
       </div>
       <Pop delay={0.9} className={v.correct}>
         <span className={v.correctBadge}>
-          <Check size={22} strokeWidth={4} />
+          <Glyph name="check" size={22} strokeWidth={4} />
         </span>
         <span>
           <strong>Nice! That&apos;s right.</strong>
@@ -291,7 +314,7 @@ export function MethodVisual() {
           className={`${v.phase} ${p.tone}`}
         >
           <span className={v.phaseNum}>
-            {i < 3 ? <Check size={20} strokeWidth={4} /> : i + 1}
+            {i < 3 ? <Glyph name="check" size={20} strokeWidth={4} /> : i + 1}
           </span>
           <span>
             <strong>{p.name}</strong>
@@ -345,12 +368,12 @@ export function StreakVisual() {
             key={d}
             className={`${v.day} ${d === FREEZE_DAY ? v.dayFreeze : d <= TODAY ? v.dayLit : ""} ${d === TODAY ? v.dayToday : ""}`}
           >
-            {d === FREEZE_DAY ? <Snowflake size={14} strokeWidth={3} /> : d}
+            {d === FREEZE_DAY ? <Glyph name="snowflake" size={14} strokeWidth={3} /> : d}
           </span>
         ))}
       </div>
       <div className={v.society}>
-        <Crown size={22} strokeWidth={2.5} />
+        <Glyph name="crown" size={22} strokeWidth={2.5} />
         <span>
           <strong>Streak Society</strong> · a freeze saved day 11
         </span>
@@ -442,7 +465,7 @@ export function FriendsVisual() {
               <span>{f.note}</span>
             </span>
             <span className={v.friendStreak}>
-              <Flame size={16} strokeWidth={2.75} fill="currentColor" />{" "}
+              <Glyph name="flame" size={16} strokeWidth={2.75} />{" "}
               {f.streak}
             </span>
           </Pop>
@@ -462,7 +485,7 @@ export function FriendsVisual() {
             <Image src="/art/ui/like.svg" alt="" width={20} height={20} /> 24
           </span>
           <span>
-            <MessageCircle size={18} strokeWidth={2.5} /> 8
+            <Glyph name="bubble" size={18} strokeWidth={2.5} /> 8
           </span>
           <span className={v.cheer}>Kemi cheered you on</span>
         </span>
@@ -536,7 +559,7 @@ export function RemindersVisual() {
         />
       </div>
       <Pop delay={1.2} className={v.bell}>
-        <Bell size={22} strokeWidth={2.75} />
+        <Glyph name="bell" size={22} strokeWidth={2.75} />
       </Pop>
     </div>
   );

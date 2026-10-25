@@ -320,12 +320,19 @@
 .hudHeart { color: var(--error-red); }
 
 .unit {
+  flex-shrink: 0;
+  overflow: hidden;
   margin: 12px 12px 4px;
   padding: 10px 14px;
   border-radius: 14px;
   background: var(--success-green);
   box-shadow: 0 4px 0 color-mix(in srgb, var(--success-green) 72%, black);
   color: var(--bg-card);
+}
+
+.unitInner {
+  display: block;
+  min-height: 36px;
 }
 
 .unitNum {
@@ -425,97 +432,108 @@
   color: var(--color-brand);
 }
 
-/* ─── Tracks ───────────────────────────────────────────────────────────── */
-.tracks {
+/* ─── Skills ───────────────────────────────────────────────────────────── */
+.skills {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
 }
 
-.track {
+.skills > * {
+  display: flex;
+}
+
+.skill {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 28px;
+  gap: 16px;
+  padding: 24px;
   border: 2px solid var(--border);
   border-bottom-width: 6px;
-  border-radius: 28px;
+  border-radius: 24px;
   background: var(--bg-card);
   text-decoration: none;
   color: inherit;
+  scroll-margin-top: 96px;
   transition: transform 0.15s ease, border-color 0.15s ease;
 }
 
 @media (hover: hover) {
-  .track:hover {
+  .skill:hover {
     transform: translateY(-4px);
-    border-color: color-mix(in srgb, var(--tone) 45%, var(--border));
+    border-color: color-mix(in srgb, var(--color-brand) 45%, var(--border));
   }
 }
 
-.trackHead {
+.skill:active {
+  transform: translateY(2px);
+  border-bottom-width: 4px;
+}
+
+.skill:target {
+  border-color: var(--color-brand);
+}
+
+.skillHead {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.trackIcon {
+.skillArt {
   width: 64px;
   height: 64px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
   border-radius: 20px;
-  background: var(--tone);
-  box-shadow: 0 5px 0 var(--tone-deep);
-  color: var(--bg-card);
+  background: var(--bg-section);
 }
 
-.toneBlue { --tone: var(--color-brand); --tone-deep: var(--color-brand-deep); }
-.tonePurple { --tone: var(--brand-purple); --tone-deep: color-mix(in srgb, var(--brand-purple) 70%, black); }
-
-.trackTitle {
+.skillTitle {
   margin: 0;
   font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
-  font-size: 30px;
+  font-size: 26px;
   font-weight: 800;
+  line-height: 1.1;
   color: var(--color-ink);
 }
 
-.trackSub {
-  margin: 2px 0 0;
+.skillSub {
+  margin: 4px 0 0;
   font-size: 15px;
   font-weight: 600;
+  line-height: 1.4;
   color: var(--text-secondary);
 }
 
-.topics {
+.skillCourses {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.topic {
-  display: inline-flex;
-  align-items: center;
+.skillCourses li {
+  display: flex;
+  align-items: flex-start;
   gap: 8px;
-  padding: 10px 14px;
-  border: 2px solid var(--border);
-  border-radius: 14px;
-  background: var(--bg-section);
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 700;
+  line-height: 1.35;
   color: var(--color-ink);
 }
 
-.topic svg {
-  color: var(--tone);
+.skillCourses svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-brand);
 }
 
-.trackCta {
+.skillCta {
   margin-top: auto;
   display: inline-flex;
   align-items: center;
@@ -524,7 +542,40 @@
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--tone);
+  color: var(--color-brand);
+}
+
+/* Hero: the subjects as chips under the lead. */
+.heroSkills {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.heroSkill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 8px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 999px;
+  background: var(--bg-card);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+@media (hover: hover) {
+  .heroSkill:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--color-brand) 45%, var(--border));
+  }
 }
 
 /* ─── Why it works (three pillars) ─────────────────────────────────────── */
@@ -846,7 +897,12 @@
   .splitFlip .splitCopy {
     order: 0;
   }
-  .tracks,
+  .skills {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .heroSkills {
+    justify-content: center;
+  }
   .pillars,
   .audience {
     grid-template-columns: minmax(0, 1fr);
@@ -875,7 +931,27 @@
     width: 104px;
     right: -2%;
   }
-  .track,
+  .skills {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  /* Phones: compact rows; the course names are one tap away. */
+  .skill {
+    gap: 0;
+    padding: 16px 18px;
+  }
+  .skillCourses,
+  .skillCta {
+    display: none;
+  }
+  .skillArt {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+  }
+  .skillTitle {
+    font-size: 22px;
+  }
   .persona {
     padding: 22px;
   }

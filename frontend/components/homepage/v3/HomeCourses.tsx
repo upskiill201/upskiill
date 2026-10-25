@@ -1,12 +1,12 @@
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { fetchPublicCourses } from '@/lib/courses/public';
 import PublicCourseGrid from '@/components/courses/PublicCourseGrid';
 import { Reveal } from './Visuals';
 import s from './Home.module.css';
 
 /**
- * Real, published courses on the homepage — the newest six, Coding and AI.
+ * Real, published courses on the homepage — the first six (Originals first).
  * Each one opens its public page, where a visitor can start without an
  * account. Renders nothing while there are none (no placeholder courses).
  */
@@ -27,7 +27,7 @@ export default async function HomeCourses() {
         <PublicCourseGrid courses={courses} />
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 32 }}>
           <Link href="/courses" className={s.btnGhost}>
-            See all courses <ArrowRight size={18} strokeWidth={3} aria-hidden="true" />
+            See all courses <Glyph name="arrow" size={18} strokeWidth={3} />
           </Link>
         </div>
       </div>

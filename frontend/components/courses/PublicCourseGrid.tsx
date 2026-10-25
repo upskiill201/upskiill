@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BookOpen, Clock, Users } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { CourseCover } from '@/components/course/CourseCover';
 import { coursePath, formatMinutes, type PublicCourseCard } from '@/lib/courses/public';
 import s from './PublicCourseGrid.module.css';
@@ -44,18 +44,18 @@ export function PublicCourseGrid({ courses, priorityCount = 0 }: { courses: Publ
                 <span className={s.meta}>
                   {c.lessonsCount > 0 && (
                     <span>
-                      <BookOpen size={14} strokeWidth={2.5} aria-hidden="true" /> {c.lessonsCount} lesson
+                      <Glyph name="book" size={14} strokeWidth={2.5} /> {c.lessonsCount} lesson
                       {c.lessonsCount === 1 ? '' : 's'}
                     </span>
                   )}
                   {minutes && (
                     <span>
-                      <Clock size={14} strokeWidth={2.5} aria-hidden="true" /> {minutes}
+                      <Glyph name="clock" size={14} strokeWidth={2.5} /> {minutes}
                     </span>
                   )}
                   {c.studentsCount > 0 && (
                     <span>
-                      <Users size={14} strokeWidth={2.5} aria-hidden="true" /> {c.studentsCount.toLocaleString()}
+                      <Glyph name="users" size={14} strokeWidth={2.5} /> {c.studentsCount.toLocaleString()}
                     </span>
                   )}
                 </span>
