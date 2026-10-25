@@ -1,0 +1,94 @@
+---
+title: "JavaScript DOM Tutorial for Beginners: Change Pages, Handle Events"
+description: "A beginner JavaScript DOM tutorial: what the DOM is, selecting and changing elements, events like clicks and typing, building lists, with working examples."
+publishedDate: "2026-10-25"
+category: skill-building
+tags: [javascript dom, javascript dom manipulation, javascript events, javascript events list, javascript for interactive web pages, javascript dom tutorial, javascript events example]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Make pages come alive on a live page"
+  text: "Interactive Web Pages with JavaScript teaches you to change the page, react to taps and typing, build lists and check forms. 37 short lessons, free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive JavaScript course"
+faq:
+  - question: "What is the DOM?"
+    answer: "The Document Object Model: the browser's live representation of a web page as objects that JavaScript can read and change."
+  - question: "How do I change text on a page with JavaScript?"
+    answer: "Select the element with document.querySelector, then set its textContent."
+  - question: "What are JavaScript events?"
+    answer: "Things that happen on a page, such as clicks, key presses, form submissions and page loads. You listen for them with addEventListener."
+  - question: "Should I use innerHTML or textContent?"
+    answer: "Use textContent for plain text. innerHTML parses HTML and can be unsafe with user-provided text."
+---
+
+HTML and CSS make a page. JavaScript makes it respond. The DOM is how JavaScript talks to the page.
+
+## Direct answer
+
+The DOM (Document Object Model) is the browser's live version of your page. With JavaScript you select elements, change their text and styles, and listen for events such as clicks and typing. The core tools are `querySelector`, `textContent`, `classList` and `addEventListener`.
+
+## Selecting and changing
+
+```html
+<h1 id="title">Hello</h1>
+<button id="btn">Change</button>
+```
+
+```js
+const title = document.querySelector('#title');
+const btn = document.querySelector('#btn');
+
+btn.addEventListener('click', () => {
+  title.textContent = 'Hello, Sam';
+  title.classList.add('highlight');
+});
+```
+
+When the button is clicked, the heading text changes and gets a CSS class.
+
+## Common events
+
+| Event | When it fires |
+| :--- | :--- |
+| `click` | An element is clicked or tapped |
+| `input` | The value of an input changes as you type |
+| `submit` | A form is submitted |
+| `keydown` | A key is pressed |
+| `DOMContentLoaded` | The page has loaded |
+
+## Building a list from data
+
+```js
+const fruits = ['apple', 'banana', 'cherry'];
+const list = document.querySelector('#list');
+
+fruits.forEach((fruit) => {
+  const li = document.createElement('li');
+  li.textContent = fruit;
+  list.appendChild(li);
+});
+```
+
+## textContent vs innerHTML
+
+Use `textContent` for text. `innerHTML` interprets HTML, which can be unsafe if the text comes from users.
+
+## Next steps
+
+Check input in forms: [JavaScript form validation example](/blog/javascript-form-validation-example). New to the language? Read [JavaScript for beginners](/blog/javascript-for-beginners-guide).
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) makes web pages come alive: change what's on the page, react to taps and typing, build lists from data and check forms, on a live page in every lesson. It has 37 lessons and is free to start.
+
+## The bottom line
+
+Select, change, listen. Repeat.
+
+## More coding guides
+
+- [JavaScript form validation example](/blog/javascript-form-validation-example)
+- [JavaScript for beginners](/blog/javascript-for-beginners-guide)
+- [HTML tutorial for beginners](/blog/html-tutorial-for-beginners)
+- [Interactive JavaScript course](/courses/interactive-web-pages-with-javascript)

@@ -1,0 +1,86 @@
+---
+title: "TypeScript vs JavaScript: Differences and Which to Learn First"
+description: "TypeScript vs JavaScript explained: what TypeScript adds, key differences with examples, pros and cons, and why most beginners should learn JavaScript first."
+publishedDate: "2026-10-25"
+category: skill-building
+tags: [typescript vs javascript, typescript vs javascript differences, typescript vs javascript which is better, typescript vs javascript syntax differences, typescript vs javascript examples]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Add types once you know JavaScript"
+  text: "TypeScript for Beginners teaches types with short lessons. 20 lessons, free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript course"
+faq:
+  - question: "What is the difference between TypeScript and JavaScript?"
+    answer: "TypeScript is JavaScript plus a type system. It checks your code for type mistakes before it runs, then compiles to plain JavaScript."
+  - question: "Which should I learn first?"
+    answer: "Most beginners should learn JavaScript first, since TypeScript builds on it."
+  - question: "Is TypeScript better than JavaScript?"
+    answer: "It catches many mistakes earlier and helps in large projects, but adds setup and learning. Which is better depends on your project and team."
+  - question: "Can browsers run TypeScript?"
+    answer: "Not directly. TypeScript is compiled to JavaScript first."
+---
+
+TypeScript is everywhere in modern web development. It isn't a different language so much as JavaScript with safety checks added.
+
+## Direct answer
+
+TypeScript is JavaScript with a type system. You describe what kind of value each variable or function expects, and TypeScript warns you about mistakes before the code runs, then compiles to plain JavaScript. Learn JavaScript first, then add TypeScript when you start larger projects.
+
+## Example
+
+```js
+// JavaScript: runs, then fails or gives an odd result
+function double(n) {
+  return n * 2;
+}
+double("five"); // NaN
+```
+
+```ts
+// TypeScript: caught before running
+function double(n: number): number {
+  return n * 2;
+}
+double("five"); // Error: Argument of type 'string' is not assignable to parameter of type 'number'
+```
+
+## Key differences
+
+| | JavaScript | TypeScript |
+| :--- | :--- | :--- |
+| Types | Checked while running | Checked before running |
+| Setup | Runs in the browser | Needs a compile step |
+| Mistakes | Found later | Many caught early |
+| Learning curve | Gentler | Extra concepts |
+| Large projects | Harder to maintain | Easier to maintain |
+
+## Pros and cons of TypeScript
+
+**Pros:** fewer bugs, better editor help, clearer code in teams.
+
+**Cons:** extra tooling, more to learn, sometimes more typing.
+
+## Which to learn first
+
+JavaScript. See [JavaScript for beginners](/blog/javascript-for-beginners-guide). Once you're comfortable, move on to the [TypeScript tutorial for beginners](/blog/typescript-tutorial-for-beginners).
+
+## In practice
+
+Many teams use TypeScript for web apps and libraries. Plain JavaScript is still common for small scripts and learning.
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course adds types step by step in short lessons. Learn the language first in [JavaScript for Beginners](/courses/javascript-for-beginners). Both are free to start.
+
+## The bottom line
+
+JavaScript first, TypeScript next.
+
+## More coding guides
+
+- [TypeScript tutorial for beginners](/blog/typescript-tutorial-for-beginners)
+- [JavaScript for beginners](/blog/javascript-for-beginners-guide)
+- [Python vs JavaScript for beginners](/blog/python-vs-javascript-for-beginners)
+- [TypeScript course](/courses/typescript-for-beginners)
