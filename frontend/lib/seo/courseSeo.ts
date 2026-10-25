@@ -28,4 +28,9 @@ export const COURSE_SEO: Record<string, CourseSeo> = {
     description:
       'Learn Python from zero in short daily lessons. Write and run real code in every lesson, right on your phone. 120 lessons, free to start.',
   },
+  'leadership-for-beginners': {
+    title: 'Leadership for Beginners: Learn to Lead a Team | Teyro',
+    description:
+      'Learn what new leaders actually do: one-on-ones, clear goals, delegation, feedback and hard conversations. 50 short lessons, free to start.',
+  },
 };
