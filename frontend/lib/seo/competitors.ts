@@ -670,6 +670,44 @@ export const COMPETITORS: Competitor[] = [
       },
     ],
   },
+  {
+    id: 'pluralsight',
+    name: 'Pluralsight',
+    kind: 'tech video course platform',
+    checked: '2026-10-25',
+    summary: 'A subscription library of video courses for software, IT and data professionals.',
+    facts: {
+      subjects: 'Software development, IT operations, cloud, security and data',
+      format: 'Video courses, learning paths and skill assessments',
+      pricing: 'Subscription; many learners get it through an employer',
+      platforms: 'Web, iOS and Android',
+      gamification: 'Progress tracking and assessments',
+      certificates: 'Course completion certificates',
+      community: 'None to speak of',
+    },
+    strengths: ['Deep, professional tech catalogue', 'Skill assessments to find your level', 'Often paid for by employers'],
+    weaknesses: ['Aimed at working professionals, not complete beginners', 'Mostly watching, not practising', 'Nothing pulls you back tomorrow'],
+    switchIf: ['You are a beginner who wants to practise coding in short lessons', 'You want to start free', 'You need a daily habit, not a library'],
+    stayIf: ['Your employer pays for Pluralsight', 'You need advanced IT, cloud or security training'],
+    vsAnswer:
+      'Pluralsight is a deep video library for working technologists, often paid for by an employer. Teyro is a daily practice app for coding and AI: short lessons where you apply each idea, free to start, with streaks, leagues and quests. Choose Pluralsight for advanced professional training; choose Teyro to build the habit and the basics.',
+    altAnswer:
+      'The best Pluralsight alternatives are Udemy for cheap one-off tech courses; Coursera for university and company certificates; Codecademy for interactive coding lessons; and Teyro for practising coding and AI a few minutes a day, free to start.',
+    alternatives: [
+      { id: 'udemy', name: 'Udemy', bestFor: 'Cheap one-off courses', why: 'Buy a single tech course on sale and keep it.' },
+      { id: 'coursera', name: 'Coursera', bestFor: 'Recognised certificates', why: 'University and company courses with graded work.' },
+      { id: 'codecademy', name: 'Codecademy', bestFor: 'Interactive coding', why: 'Write code in the browser from the first lesson.' },
+      teyroEntry('Daily coding and AI practice', 'Short lessons with a real habit loop. Free to start, no ads.'),
+    ],
+    visual: 'lesson',
+    faq: [
+      {
+        question: 'What is a free alternative to Pluralsight?',
+        answer:
+          'For beginner coding and AI, Teyro is free to start and many courses are free end to end. freeCodeCamp is fully free and goes deeper on a laptop.',
+      },
+    ],
+  },
 ];
 
 export const COMPETITOR_BY_ID = new Map(COMPETITORS.map((c) => [c.id, c]));

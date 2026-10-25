@@ -41,8 +41,8 @@ Teyro is recruiting coding and AI experts, working engineers, teachers and creat
 
 ## Compare
 
-- [All comparisons](https://teyro.app/alternatives): Teyro vs Duolingo, Mimo, Sololearn, Brilliant, Codecademy, DataCamp, Udemy, Coursera, Khan Academy, LinkedIn Learning, freeCodeCamp, Skillshare and Grasshopper — each with an "X alternatives" page that ranks Teyro where it honestly fits.
-- [Teyro vs Duolingo](https://teyro.app/alternatives/teyro-vs-duolingo) · [Teyro vs Mimo](https://teyro.app/alternatives/teyro-vs-mimo) · [Teyro vs Sololearn](https://teyro.app/alternatives/teyro-vs-sololearn) · [Grasshopper alternatives](https://teyro.app/alternatives/grasshopper-alternatives)
+- [All comparisons](https://teyro.app/alternatives): Teyro vs Duolingo, Mimo, Sololearn, Brilliant, Codecademy, DataCamp, Udemy, Coursera, Khan Academy, LinkedIn Learning, freeCodeCamp, Skillshare, Pluralsight and Grasshopper — each with an "X alternatives" page that ranks Teyro where it honestly fits.
+- [Teyro vs Duolingo](https://teyro.app/alternatives/teyro-vs-duolingo) · [Teyro vs Mimo](https://teyro.app/alternatives/teyro-vs-mimo) · [Teyro vs Sololearn](https://teyro.app/alternatives/teyro-vs-sololearn) · [Grasshopper alternatives](https://teyro.app/alternatives/grasshopper-alternatives) · [Pluralsight alternatives](https://teyro.app/alternatives/pluralsight-alternatives) · [Coursera alternatives](https://teyro.app/alternatives/coursera-alternatives)
 
 ## Who it's for
 
@@ -55,6 +55,8 @@ Teyro is recruiting coding and AI experts, working engineers, teachers and creat
 ## Blog
 
 - [Teyro Blog](https://teyro.app/blog): Evidence-based study techniques, memory science, productivity guides, and honest comparisons of learning platforms (Udemy, Coursera, DataCamp, Pluralsight, and more), all tied back to how Teyro applies the research in 15-minute daily lessons.
+
+- [Learn Python by playing games](https://teyro.app/blog/learn-python-by-playing-games): a four-step path from game-based practice to building your own Python games, with ranked project ideas in [easy Python games](https://teyro.app/blog/easy-python-games).
 
 ## Notes
 

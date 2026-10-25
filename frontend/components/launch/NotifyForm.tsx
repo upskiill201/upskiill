@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from 'react';
 import { ArrowRight, Check, Loader2, Users } from 'lucide-react';
 import type { WaitlistRole } from '@/lib/launch';
+import { recalledSignupSource } from '@/lib/signupSource';
 import l from './Launch.module.css';
 
 /**
@@ -39,7 +40,7 @@ export function NotifyForm({
       const res = await fetch('/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, role: fixedRole ?? role, source, website }),
+        body: JSON.stringify({ email, role: fixedRole ?? role, source: recalledSignupSource() ?? source, website }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
