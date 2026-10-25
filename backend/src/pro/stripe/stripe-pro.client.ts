@@ -4,20 +4,32 @@ import type Stripe from 'stripe' with { 'resolution-mode': 'import' };
 import { isProductionEnvironment, PRO_STRIPE_API_VERSION } from '../pro.config';
 
 /**
+ * The founder's opt-in to take real payments on staging (2026-10-25). Only
+ * the deployed staging service qualifies: ENVIRONMENT=staging, running on
+ * Render (Render sets RENDER=true itself), and STRIPE_ALLOW_LIVE_KEY=true.
+ * A laptop never does, whatever its .env says.
+ */
+export function liveKeyAllowedOnStaging(env: NodeJS.ProcessEnv = process.env): boolean {
+  return env.ENVIRONMENT === 'staging' && env.RENDER === 'true' && env.STRIPE_ALLOW_LIVE_KEY === 'true';
+}
+
+/**
  * Why Pro checkout is unavailable, or null when the key is safe to use.
  * A live key outside production would turn every local test into a real
  * charge (backend/.env held one on 2026-10-22); a test key in production
- * would hand out "paid" access for test cards. Both refuse.
+ * would hand out "paid" access for test cards. Both refuse, except a live
+ * key on staging after the opt-in above.
  */
 export function stripeKeyProblem(
   key: string | undefined,
   production = isProductionEnvironment(),
+  allowLiveOnStaging = liveKeyAllowedOnStaging(),
 ): string | null {
   if (!key || key.includes('placeholder')) return 'STRIPE_SECRET_KEY is not set';
   const live = key.startsWith('sk_live_') || key.startsWith('rk_live_');
   const test = key.startsWith('sk_test_') || key.startsWith('rk_test_');
   if (!live && !test) return 'STRIPE_SECRET_KEY is not a Stripe secret key';
-  if (live && !production) {
+  if (live && !production && !allowLiveOnStaging) {
     return 'A LIVE Stripe key is configured outside production; use sk_test_ here';
   }
   if (test && production) return 'A TEST Stripe key is configured in production';
@@ -44,6 +56,9 @@ export class StripeProClient {
       this.logger.warn(`Teyro Pro checkout disabled: ${this.problem}`);
       this.client = null;
       return;
+    }
+    if (this.livemode && !isProductionEnvironment()) {
+      this.logger.warn('Teyro Pro checkout is LIVE on staging (STRIPE_ALLOW_LIVE_KEY): payments here are real charges');
     }
     // The CJS typings model the export as a plain function; at runtime it's the class.
     const Ctor = StripeConstructor as unknown as new (key: string, config: Record<string, unknown>) => Stripe;
