@@ -2,6 +2,7 @@ import type { OriginalTrackDef } from '../../src/originals/originals-authoring.t
 import u01 from './c-programming/beginner/u01';
 import u02 from './c-programming/beginner/u02';
 import u03 from './c-programming/beginner/u03';
+import u04 from './c-programming/beginner/u04';
 
 /**
  * C for Beginners — storyline "Ten Sols on Red Mesa". Full length: one
@@ -15,7 +16,7 @@ import u03 from './c-programming/beginner/u03';
  * (runner: 'c', frontend/public/c: xcc built to WebAssembly). Outline and
  * cast: docs/originals/c-outline.md.
  */
-const UNITS = [u01, u02, u03];
+const UNITS = [u01, u02, u03, u04];
 const PLANNED = 10;
 
 const track: OriginalTrackDef = {
