@@ -1,0 +1,81 @@
+---
+title: "useEffect in React Native: Side Effects, Dependencies and Cleanup"
+description: "Learn useEffect for fetching data, timers and subscriptions in React Native. Understand the dependency array, cleanup and common infinite loop bugs."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [useeffect, react native useeffect, useeffect dependency array, useeffect cleanup, react hooks]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "React Native for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/react-native-for-beginners
+  label: "See the React Native for Beginners course"
+faq:
+  - question: "What is useEffect used for?"
+    answer: "Running code that interacts with the outside world, such as fetching data, timers and subscriptions, after rendering."
+  - question: "What does the dependency array do?"
+    answer: "It tells React when to re-run the effect. An empty array runs once after the first render."
+  - question: "Why does my effect run forever?"
+    answer: "The effect updates state that is also in its dependencies, or an object or function dependency changes each render."
+---
+
+Components render. Effects do things after rendering.
+
+## Direct answer
+
+`useEffect(fn, deps)` runs `fn` after rendering. The dependency array controls when it re-runs: `[]` once, `[value]` when `value` changes and no array on every render. Return a function to clean up timers or subscriptions.
+
+## Fetching data
+
+```jsx
+import { useEffect, useState } from "react";
+
+function Users() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      const res = await fetch("https://jsonplaceholder.typicode.com/users");
+      const data = await res.json();
+      if (!cancelled) setUsers(data);
+    }
+    load();
+    return () => { cancelled = true; };
+  }, []);
+
+  return null;
+}
+```
+
+## Timers with cleanup
+
+```jsx
+useEffect(() => {
+  const id = setInterval(() => console.log("tick"), 1000);
+  return () => clearInterval(id);
+}, []);
+```
+
+## Common mistakes
+
+- Missing dependencies.
+- Updating state inside an effect that depends on it.
+- Forgetting cleanup.
+
+## Where Teyro fits
+
+Teyro's [React Native for Beginners](/courses/react-native-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 80 lessons, and you can start free.
+
+## The bottom line
+
+Effects are for syncing with the outside world. Keep dependencies honest.
+
+## More guides
+
+- [React Native vs Flutter](/blog/react-native-vs-flutter)
+- [React Native vs Native Development](/blog/react-native-vs-native)
+- [How to Publish a React Native App to the App Store and Google Play](/blog/publish-react-native-app-to-app-store)
+- [Usestate in react native](/blog/usestate-in-react-native)
+- [React Native for Beginners course](/courses/react-native-for-beginners)

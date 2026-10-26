@@ -1,0 +1,67 @@
+---
+title: "Fluid Typography in CSS: Text That Scales With the Screen"
+description: "Learn fluid typography with clamp() and viewport units to make headings scale smoothly between a minimum and maximum size, without media queries."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [fluid typography, css fluid font size, clamp typography, responsive font size, vw font size]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Responsive Web Design with CSS turns this into short, playable lessons. Free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive Web Design with CSS course"
+faq:
+  - question: "What is fluid typography?"
+    answer: "Text that scales smoothly with the viewport width instead of jumping between sizes at breakpoints."
+  - question: "How do I make fluid font sizes?"
+    answer: "Use clamp with a minimum size, a preferred value using vw and a maximum size."
+  - question: "Is vw alone enough?"
+    answer: "No. Pure vw can get too small or too large and ignores user font settings. Combine it with rem in clamp."
+---
+
+Big headings on desktop shrink gracefully on phones.
+
+## Direct answer
+
+Use the CSS `clamp(min, preferred, max)` function to set a font size that scales with the screen but never goes below a minimum or above a maximum. Combine `rem` and `vw` so users' font preferences still count.
+
+## Example
+
+```css
+h1 {
+  font-size: clamp(2rem, 1.2rem + 4vw, 4rem);
+}
+
+p {
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
+}
+```
+
+## How it works
+
+1. Below the minimum width, the size stays at `2rem`.
+2. In between, it grows with the viewport.
+3. Past the maximum, it stops at `4rem`.
+
+## Tips
+
+- Add a `rem` part to the preferred value so zoom and user settings still work.
+- Test at several widths.
+- Keep line length around 60 to 75 characters with `max-width: 65ch`.
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Fluid type removes many font-size media queries.
+
+## More guides
+
+- [Responsive Images in HTML](/blog/responsive-images-guide)
+- [Flexbox vs Grid](/blog/flexbox-vs-grid)
+- [CSS Container Queries](/blog/css-container-queries)
+- [Clamp css function](/blog/clamp-css-function)
+- [Responsive Web Design with CSS course](/courses/responsive-web-design-with-css)

@@ -1,0 +1,68 @@
+---
+title: "Supabase for Beginners: A Backend for Your AI-Built App"
+description: "Supabase provides a database, authentication and storage for apps. Learn what it offers, how it fits AI-built apps and the security rules to set up."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [supabase, supabase for beginners, supabase database, supabase auth, backend for vibe coding]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Vibe Coding: Build Apps with AI turns this into short, playable lessons. Free to start."
+  href: /courses/vibe-coding-build-apps-with-ai
+  label: "See the Vibe Coding: Build Apps with AI course"
+faq:
+  - question: "What is Supabase?"
+    answer: "An open-source backend platform that offers a Postgres database, authentication, file storage and APIs."
+  - question: "Why do AI app builders use it?"
+    answer: "It gives apps a ready-made backend for data and logins without building a server."
+  - question: "What is row level security?"
+    answer: "Database rules that control which rows each user can read or change."
+---
+
+Apps need somewhere to keep data and a way to know who is signed in.
+
+## Direct answer
+
+Supabase is a backend platform built on a Postgres database. It provides tables, user authentication, file storage and automatically generated APIs, so front-end apps can store data without a custom server. Turn on row level security so users can only access the data they should.
+
+## What you get
+
+- A hosted relational database.
+- Sign-in with email and other providers.
+- File storage.
+- APIs and client libraries.
+
+## Basic idea
+
+1. Create a project.
+2. Design tables.
+3. Turn on **row level security** and write policies.
+4. Use the public key in the browser and keep any service key secret on the server.
+5. Connect your app.
+
+## A simple policy idea
+
+Allow a user to read and write only rows where the row's `user_id` equals their own ID.
+
+## Cautions
+
+- Never expose the service role key in front-end code.
+- Test policies with two different users.
+
+## Where Teyro fits
+
+Teyro's [Vibe Coding: Build Apps with AI](/courses/vibe-coding-build-apps-with-ai) course turns this into short lessons you can play in a few minutes a day. It has 80 lessons, and you can start free.
+
+## The bottom line
+
+A convenient backend for apps, as long as you configure security properly. Check current features and limits on the official site.
+
+## More guides
+
+- [What Is an MVP? How to Build a Minimum Viable Product With AI](/blog/what-is-an-mvp)
+- [Vibe Coding Limitations](/blog/vibe-coding-limitations)
+- [AI-Generated Code Quality](/blog/ai-generated-code-quality)
+- [Vibe coding security](/blog/vibe-coding-security)
+- [Deploy ai built app](/blog/deploy-ai-built-app)
+- [Vibe Coding: Build Apps with AI course](/courses/vibe-coding-build-apps-with-ai)

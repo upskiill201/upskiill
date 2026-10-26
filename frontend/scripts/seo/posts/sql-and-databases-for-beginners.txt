@@ -1,0 +1,626 @@
+=== sql-select-statement
+title: SQL SELECT Statement: How to Read Data From a Table
+desc: Learn the SQL SELECT statement: choosing columns, aliases, DISTINCT, ORDER BY, LIMIT and calculated columns, with simple examples you can run.
+tags: select statement, sql select, sql select examples, sql query basics, how to query a database
+rel: how-to-learn-sql-for-beginners
+q: What does SELECT do in SQL? | It retrieves rows and columns from one or more tables.
+q: How do I select all columns? | Use SELECT star FROM table, but choose specific columns when you can.
+q: How do I sort and limit results? | Use ORDER BY to sort and LIMIT to restrict the number of rows.
+---
+SELECT is the first SQL command everyone learns, and the one you will use most.
+
+## Direct answer
+
+`SELECT` reads data from a table. Name the columns you want, say which table with `FROM`, then optionally filter with `WHERE`, sort with `ORDER BY` and limit with `LIMIT`.
+
+## Basic forms
+
+```sql
+SELECT * FROM customers;
+
+SELECT name, city FROM customers;
+
+SELECT DISTINCT city FROM customers;
+
+SELECT name, price * 1.2 AS price_with_tax
+FROM products
+ORDER BY price DESC
+LIMIT 10;
+```
+
+## Order of a query
+
+| Clause | Purpose |
+| :--- | :--- |
+| `SELECT` | which columns |
+| `FROM` | which table |
+| `WHERE` | which rows |
+| `GROUP BY` | how to group |
+| `ORDER BY` | sort order |
+| `LIMIT` | how many rows |
+
+## Tips
+
+- Avoid `SELECT *` in real applications. Name the columns.
+- Use aliases (`AS`) to make results readable.
+- Keywords are not case sensitive, but uppercase is a common style.
+
+## The bottom line
+
+Start with SELECT and FROM, then add clauses one at a time.
+
+=== sql-where-clause
+title: SQL WHERE Clause: Filter Rows With AND, OR, IN, LIKE and BETWEEN
+desc: Learn how the SQL WHERE clause filters rows, with comparison operators, AND, OR, IN, BETWEEN, LIKE and NULL checks, plus common beginner mistakes.
+tags: where clause, sql where, sql filter, sql like in between, sql null check
+rel: sql-select-statement
+q: What does WHERE do? | It filters rows so only those meeting a condition are returned or changed.
+q: How do I check for NULL? | Use IS NULL or IS NOT NULL. Equals does not work with NULL.
+q: What does LIKE do? | It matches text patterns, where the percent sign means any characters.
+---
+WHERE decides which rows you get.
+
+## Direct answer
+
+`WHERE` filters rows using conditions. Combine conditions with `AND` and `OR`, test lists with `IN`, ranges with `BETWEEN` and text patterns with `LIKE`. Use `IS NULL` for missing values.
+
+## Examples
+
+```sql
+SELECT * FROM orders WHERE total > 100;
+
+SELECT * FROM customers
+WHERE city = 'Lagos' AND active = 1;
+
+SELECT * FROM products WHERE category IN ('books', 'games');
+
+SELECT * FROM orders
+WHERE created_at BETWEEN '2026-01-01' AND '2026-01-31';
+
+SELECT * FROM customers WHERE name LIKE 'A%';
+
+SELECT * FROM customers WHERE phone IS NULL;
+```
+
+## Operators
+
+| Operator | Meaning |
+| :--- | :--- |
+| `=`, `<>` | equal, not equal |
+| `>`, `<`, `>=`, `<=` | comparisons |
+| `AND`, `OR`, `NOT` | combine conditions |
+| `IN` | matches a list |
+| `LIKE` | text pattern |
+
+## Common mistakes
+
+- Using `= NULL` instead of `IS NULL`.
+- Mixing `AND` and `OR` without brackets.
+- Forgetting quotes around text.
+
+## The bottom line
+
+Filter early, use brackets for clarity and test with small queries.
+
+=== inner-join-vs-left-join
+title: INNER JOIN vs LEFT JOIN: The Difference Explained With Examples
+desc: Learn the difference between INNER JOIN and LEFT JOIN in SQL with a simple customers and orders example, plus RIGHT and FULL joins and common mistakes.
+tags: inner join vs left join, sql joins, sql left join, sql inner join, join tables sql
+rel: how-to-learn-sql-for-beginners
+q: What is the difference between INNER JOIN and LEFT JOIN? | INNER JOIN returns only rows with matches in both tables. LEFT JOIN returns all rows from the left table, with NULLs where there is no match.
+q: When should I use LEFT JOIN? | When you want all records from one table even if they have no related records, such as customers with no orders.
+q: Why did my join return too many rows? | The join condition may match multiple rows, or you may be missing a condition.
+---
+Joins combine tables. The type decides what happens to rows with no match.
+
+## Direct answer
+
+`INNER JOIN` returns only rows that match in both tables. `LEFT JOIN` returns every row from the left table and fills in `NULL` for the right table when there is no match. Use a left join to find things like customers who have not ordered.
+
+## Example tables
+
+```text
+customers: id, name
+orders: id, customer_id, total
+```
+
+## INNER JOIN
+
+```sql
+SELECT c.name, o.total
+FROM customers c
+INNER JOIN orders o ON o.customer_id = c.id;
+```
+
+Only customers with orders appear.
+
+## LEFT JOIN
+
+```sql
+SELECT c.name, o.total
+FROM customers c
+LEFT JOIN orders o ON o.customer_id = c.id;
+```
+
+All customers appear. Those without orders show `NULL` for total.
+
+## Find customers with no orders
+
+```sql
+SELECT c.name
+FROM customers c
+LEFT JOIN orders o ON o.customer_id = c.id
+WHERE o.id IS NULL;
+```
+
+## Summary
+
+| Join | Returns |
+| :--- | :--- |
+| `INNER` | matches only |
+| `LEFT` | all left rows plus matches |
+| `RIGHT` | all right rows plus matches |
+| `FULL` | all rows from both |
+
+## The bottom line
+
+Picture two circles. Inner is the overlap. Left is the left circle with its overlap.
+
+=== primary-key-explained
+title: Primary Key in SQL: What It Is and How to Choose One
+desc: A primary key uniquely identifies each row in a table. Learn the rules, natural vs surrogate keys, auto-increment IDs and a simple CREATE TABLE example.
+tags: primary key, sql primary key, what is a primary key, primary key example, surrogate key
+rel: foreign-key-explained
+q: What is a primary key? | A column or set of columns that uniquely identifies each row in a table and cannot be NULL.
+q: Can a table have more than one primary key? | Only one primary key per table, but it can include multiple columns, called a composite key.
+q: What is a surrogate key? | An artificial identifier, such as an auto-incrementing number or UUID, used instead of real-world data.
+---
+Every row needs an identity.
+
+## Direct answer
+
+A primary key is a column, or combination of columns, that uniquely identifies every row in a table. It must be unique and not NULL. Most tables use an artificial ID, called a surrogate key, such as an auto-incrementing number.
+
+## Example
+
+```sql
+CREATE TABLE customers (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT UNIQUE
+);
+```
+
+## Natural vs surrogate
+
+| | Natural key | Surrogate key |
+| :--- | :--- | :--- |
+| Example | email, passport number | id number, UUID |
+| Pros | meaningful | stable, simple |
+| Cons | can change | no meaning on its own |
+
+## Good rules
+
+1. Keep it unique and never NULL.
+2. Do not change it after creation.
+3. Prefer simple keys.
+
+## The bottom line
+
+A stable ID per row makes relationships and updates safe. See [foreign keys](/blog/foreign-key-explained).
+
+=== foreign-key-explained
+title: Foreign Key in SQL: How Tables Relate to Each Other
+desc: A foreign key links a column in one table to the primary key in another. Learn how it works, referential integrity, ON DELETE options and an example.
+tags: foreign key, sql foreign key, what is a foreign key, referential integrity, one to many relationship
+rel: primary-key-explained
+q: What is a foreign key? | A column that refers to the primary key of another table, creating a relationship between them.
+q: What does a foreign key prevent? | It stops you adding rows that point to something that does not exist, and can control what happens when the referenced row is deleted.
+q: What does ON DELETE CASCADE do? | It automatically deletes related rows when the referenced row is deleted.
+---
+Foreign keys keep related data honest.
+
+## Direct answer
+
+A foreign key is a column in one table that points to the primary key in another, linking the two. The database enforces that every value in the foreign key exists in the referenced table, which keeps data consistent. You choose what happens on delete: block, cascade or set to NULL.
+
+## Example
+
+```sql
+CREATE TABLE orders (
+  id INTEGER PRIMARY KEY,
+  customer_id INTEGER NOT NULL,
+  total REAL,
+  FOREIGN KEY (customer_id) REFERENCES customers(id)
+    ON DELETE RESTRICT
+);
+```
+
+## Relationships
+
+| Type | Example |
+| :--- | :--- |
+| One to many | one customer, many orders |
+| Many to many | students and courses, using a join table |
+| One to one | user and profile |
+
+## Delete behaviour
+
+| Option | Result |
+| :--- | :--- |
+| `RESTRICT` | block the delete |
+| `CASCADE` | delete related rows |
+| `SET NULL` | clear the reference |
+
+## The bottom line
+
+Foreign keys make relationships real and protect you from orphan rows.
+
+=== database-normalization-explained
+title: Database Normalization Explained: 1NF, 2NF and 3NF Simply
+desc: Normalization organises tables to reduce duplication and errors. Learn first, second and third normal form with a simple orders example.
+tags: database normalization, normalization in sql, 1nf 2nf 3nf, normal forms, database design basics
+rel: primary-key-explained, foreign-key-explained
+q: What is database normalization? | Structuring tables to reduce duplicated data and avoid update, insert and delete problems.
+q: What are the normal forms? | A series of rules. First normal form removes repeating groups, second removes partial dependencies and third removes transitive dependencies.
+q: Should I always normalize? | Usually for transactional data. Sometimes data is denormalised on purpose for speed or reporting.
+---
+If the same fact lives in many places, it will eventually disagree with itself.
+
+## Direct answer
+
+Normalization is the process of organising tables so each fact is stored once. In first normal form each cell holds one value, in second normal form non-key columns depend on the whole key and in third normal form they depend only on the key, not on other columns.
+
+## A messy table
+
+| order_id | customer | customer_email | items |
+| :--- | :--- | :--- | :--- |
+| 1 | Ada | ada@example.com | pen, book |
+
+## Problems
+
+- Several items in one cell.
+- Customer details repeated for each order.
+
+## Normalised design
+
+```text
+customers(id, name, email)
+orders(id, customer_id, created_at)
+order_items(order_id, product_id, quantity)
+products(id, name, price)
+```
+
+## The three forms
+
+1. **1NF:** one value per cell, no repeating groups.
+2. **2NF:** every column depends on the whole primary key.
+3. **3NF:** columns depend only on the key, not on other non-key columns.
+
+## The bottom line
+
+Store each fact once, then join when you need it.
+
+=== sql-aggregate-functions
+title: SQL Aggregate Functions: COUNT, SUM, AVG, MIN, MAX and GROUP BY
+desc: Learn SQL aggregate functions with GROUP BY and HAVING: counting rows, totals, averages and filtering groups, with clear examples.
+tags: sql aggregate functions, sql group by, count sum avg, sql having, summarise data sql
+rel: sql-select-statement
+q: What are aggregate functions? | Functions that calculate a single result from many rows, such as COUNT, SUM, AVG, MIN and MAX.
+q: What does GROUP BY do? | It groups rows with the same values so aggregates are calculated per group.
+q: What is the difference between WHERE and HAVING? | WHERE filters rows before grouping. HAVING filters groups after aggregation.
+---
+Aggregates turn many rows into one answer.
+
+## Direct answer
+
+Aggregate functions summarise rows: `COUNT`, `SUM`, `AVG`, `MIN` and `MAX`. Use `GROUP BY` to calculate them per group and `HAVING` to filter the groups. Use `WHERE` to filter rows first.
+
+## Examples
+
+```sql
+SELECT COUNT(*) FROM orders;
+
+SELECT SUM(total) AS revenue, AVG(total) AS average_order
+FROM orders;
+
+SELECT customer_id, COUNT(*) AS order_count, SUM(total) AS spent
+FROM orders
+GROUP BY customer_id;
+
+SELECT customer_id, SUM(total) AS spent
+FROM orders
+GROUP BY customer_id
+HAVING SUM(total) > 500
+ORDER BY spent DESC;
+```
+
+## WHERE vs HAVING
+
+| | `WHERE` | `HAVING` |
+| :--- | :--- | :--- |
+| Filters | rows | groups |
+| Runs | before grouping | after grouping |
+
+## Notes
+
+- `COUNT(*)` counts rows, `COUNT(column)` ignores NULLs.
+- Every non-aggregated column in `SELECT` must be in `GROUP BY`.
+
+## The bottom line
+
+Group, aggregate, filter the groups.
+
+=== sql-subqueries
+title: SQL Subqueries Explained: Queries Inside Queries
+desc: A subquery is a query nested inside another. Learn subqueries in WHERE, FROM and SELECT, correlated subqueries and when a join or CTE is clearer.
+tags: subqueries, sql subquery, nested query sql, correlated subquery, sql cte
+rel: sql-aggregate-functions
+q: What is a subquery? | A query inside another query, used to supply values or a temporary table to the outer query.
+q: What is a correlated subquery? | A subquery that refers to columns from the outer query and runs for each outer row.
+q: Should I use a subquery or a join? | Use whichever is clearer. Joins are often faster and easier to read, but subqueries can express some questions naturally.
+---
+Sometimes the answer to one question is needed to ask another.
+
+## Direct answer
+
+A subquery is a `SELECT` nested inside another statement. It can appear in `WHERE` (to compare with a value or list), in `FROM` (as a temporary table) or in `SELECT` (to compute a column). Common table expressions (`WITH`) can make complex queries easier to read.
+
+## Examples
+
+```sql
+-- customers who spent more than average
+SELECT name FROM customers
+WHERE id IN (
+  SELECT customer_id FROM orders
+  GROUP BY customer_id
+  HAVING SUM(total) > (SELECT AVG(total) FROM orders)
+);
+
+-- subquery in FROM
+SELECT city, COUNT(*) FROM (
+  SELECT * FROM customers WHERE active = 1
+) AS active_customers
+GROUP BY city;
+```
+
+## A CTE alternative
+
+```sql
+WITH active AS (
+  SELECT * FROM customers WHERE active = 1
+)
+SELECT city, COUNT(*) FROM active GROUP BY city;
+```
+
+## Tips
+
+- Test the inner query on its own first.
+- Prefer CTEs for long queries.
+- Watch performance on large tables.
+
+## The bottom line
+
+Break a hard question into smaller queries.
+
+=== sql-vs-nosql
+title: SQL vs NoSQL: Differences, Examples and How to Choose
+desc: Compare SQL and NoSQL databases: structure, scaling, consistency and use cases, with examples of each type and a simple way to decide.
+tags: sql vs nosql, relational vs nosql, mongodb vs postgresql, nosql database types, choose a database
+rel: how-to-learn-sql-for-beginners
+q: What is the difference between SQL and NoSQL? | SQL databases store data in structured tables with relationships. NoSQL databases use other models, such as documents, key-value pairs or graphs.
+q: Which should a beginner learn? | SQL, since it is widely used and teaches core data concepts.
+q: Is NoSQL faster? | It depends on the workload. Neither is universally faster.
+---
+Not a competition. A choice of tools.
+
+## Direct answer
+
+SQL databases store data in tables with a fixed structure and relationships, and you query them with SQL. NoSQL databases use flexible models such as documents or key-value pairs. Choose SQL for structured data with relationships and strong consistency, and NoSQL when data is flexible or you need specific scaling patterns.
+
+## Comparison
+
+| | SQL | NoSQL |
+| :--- | :--- | :--- |
+| Structure | tables and schemas | documents, key-value, graph |
+| Relationships | joins | often embedded or manual |
+| Query language | SQL | varies |
+| Consistency | strong by default | varies |
+| Examples | PostgreSQL, MySQL, SQLite | document and key-value stores |
+
+## When to choose which
+
+**SQL:** accounting, orders, users, anything with relationships and reports.
+**NoSQL:** flexible content, caches, event data and some very large-scale workloads.
+
+## Many apps use both
+
+A relational database for core data and a key-value store for caching is common.
+
+## The bottom line
+
+Learn SQL first. It is the foundation.
+
+=== sql-injection-explained
+title: SQL Injection Explained: How It Works and How to Prevent It
+desc: SQL injection happens when user input changes a query's meaning. Learn a simple example, why it is dangerous and how parameterised queries prevent it.
+tags: sql injection, what is sql injection, prevent sql injection, parameterized queries, web security basics
+rel: how-to-learn-sql-for-beginners
+q: What is SQL injection? | An attack where malicious input is inserted into a SQL query so the database runs unintended commands.
+q: How do I prevent it? | Use parameterised queries or prepared statements and never build SQL by joining strings with user input.
+q: Does escaping input work? | It is error-prone. Parameterised queries are the reliable approach.
+---
+One of the oldest web vulnerabilities, and still one of the most common.
+
+## Direct answer
+
+SQL injection occurs when an application builds a query by pasting user input into the SQL text, letting an attacker change the query. Prevent it with parameterised queries (prepared statements), least-privilege database accounts and input validation.
+
+## A vulnerable pattern
+
+```javascript
+// Dangerous: never do this
+const sql = "SELECT * FROM users WHERE email = '" + email + "'";
+```
+
+If `email` is `' OR '1'='1`, the condition becomes always true.
+
+## The fix
+
+```javascript
+// Safe: values are sent separately from the SQL
+const result = await db.query(
+  "SELECT * FROM users WHERE email = $1",
+  [email]
+);
+```
+
+## Other protections
+
+1. Give the app's database user only the permissions it needs.
+2. Validate input types and lengths.
+3. Hide detailed database errors from users.
+4. Keep software updated.
+
+## The bottom line
+
+Never concatenate user input into SQL. Use parameters.
+
+=== database-indexes-explained
+title: Database Indexes Explained: Make Your Queries Faster
+desc: An index helps a database find rows without scanning the whole table. Learn how indexes work, when to add them, the costs and how to check with EXPLAIN.
+tags: database indexes, sql index, create index, index performance, explain query plan
+rel: sql-select-statement, primary-key-explained
+q: What is a database index? | A data structure that helps the database find rows quickly by the values in certain columns.
+q: When should I add an index? | On columns used often in WHERE, JOIN and ORDER BY on large tables.
+q: Do indexes have downsides? | They use storage and slow down inserts and updates a little, so do not index everything.
+---
+An index is like the index at the back of a book.
+
+## Direct answer
+
+A database index lets the database find rows without reading the whole table. Add indexes on columns you frequently filter, join or sort by, especially on large tables. They speed up reads but add cost to writes and storage, so add them deliberately and check with `EXPLAIN`.
+
+## Example
+
+```sql
+CREATE INDEX idx_orders_customer ON orders(customer_id);
+
+EXPLAIN SELECT * FROM orders WHERE customer_id = 42;
+```
+
+## When indexes help
+
+- Filtering by a column on a big table.
+- Joining on a foreign key.
+- Sorting by a column.
+
+## When they do not
+
+- Tiny tables.
+- Columns with very few distinct values.
+- Tables with very heavy writes.
+
+## Tips
+
+- Primary keys are indexed automatically.
+- Index foreign keys used in joins.
+- Measure before and after.
+
+## The bottom line
+
+Index what you query most, and prove it helps.
+
+=== mysql-vs-postgresql
+title: MySQL vs PostgreSQL: Which Database Should You Learn First?
+desc: Compare MySQL and PostgreSQL on features, standards compliance, performance and ecosystem, with advice for beginners choosing a first database.
+tags: mysql vs postgresql, postgres vs mysql, which database to learn, relational databases, sql databases comparison
+rel: sql-vs-nosql
+q: Is PostgreSQL better than MySQL? | Both are excellent. PostgreSQL is known for rich features and standards compliance. MySQL is widely used and simple to start with.
+q: Which should a beginner choose? | Either works. The SQL you learn transfers between them.
+q: Are they free? | Both have open-source editions. Check licensing and hosting costs for your use.
+---
+The SQL is 90 percent the same. The differences show up as you grow.
+
+## Direct answer
+
+MySQL and PostgreSQL are both mature, open-source relational databases. PostgreSQL is known for advanced features and strict standards support. MySQL is popular, widely hosted and easy to begin with. For learning, either is fine because core SQL skills transfer.
+
+## Comparison
+
+| | MySQL | PostgreSQL |
+| :--- | :--- | :--- |
+| Known for | simplicity, wide hosting | advanced features, extensibility |
+| Standards | good | very strong |
+| Data types | solid | rich (arrays, JSON, more) |
+| Common in | web hosting, CMS | modern apps, analytics |
+
+## How to choose
+
+1. **Using WordPress or similar?** MySQL or compatible.
+2. **Building a modern app?** PostgreSQL is a popular choice.
+3. **Just learning?** Start with either, or SQLite.
+
+## The bottom line
+
+Pick one, learn SQL well and move between them easily.
+
+=== sql-practice-questions
+title: SQL Practice Questions for Beginners With Answers
+desc: Ten beginner SQL practice questions with sample tables and solutions covering SELECT, WHERE, ORDER BY, GROUP BY and JOIN. Try them before reading the answers.
+tags: sql practice questions, sql exercises for beginners, sql practice problems, sql practice with answers, learn sql by doing
+rel: sql-practice-for-beginners, how-to-learn-sql-for-beginners
+q: How can I practise SQL? | Use sample databases and exercises, write queries yourself and check your results against expected output.
+q: Do I need to install a database? | Not necessarily. Many tools run SQL in the browser, and SQLite is simple to install.
+q: How often should I practise? | Little and often. Short daily sessions work well.
+---
+You learn SQL by writing it. Try these before you read the answers.
+
+## Sample tables
+
+```text
+customers(id, name, city)
+orders(id, customer_id, total, created_at)
+```
+
+## Questions
+
+1. List all customers.
+2. List customers from "Lagos".
+3. List the 5 largest orders.
+4. Count how many orders exist.
+5. Show total revenue.
+6. Show revenue per customer.
+7. Show customers with more than 3 orders.
+8. List customers with their order totals.
+9. Find customers who have no orders.
+10. Find the average order total.
+
+## Answers
+
+```sql
+-- 1
+SELECT * FROM customers;
+-- 2
+SELECT * FROM customers WHERE city = 'Lagos';
+-- 3
+SELECT * FROM orders ORDER BY total DESC LIMIT 5;
+-- 4
+SELECT COUNT(*) FROM orders;
+-- 5
+SELECT SUM(total) FROM orders;
+-- 6
+SELECT customer_id, SUM(total) FROM orders GROUP BY customer_id;
+-- 7
+SELECT customer_id FROM orders GROUP BY customer_id HAVING COUNT(*) > 3;
+-- 8
+SELECT c.name, o.total FROM customers c JOIN orders o ON o.customer_id = c.id;
+-- 9
+SELECT c.name FROM customers c LEFT JOIN orders o ON o.customer_id = c.id WHERE o.id IS NULL;
+-- 10
+SELECT AVG(total) FROM orders;
+```
+
+## The bottom line
+
+Type the queries yourself, change them and see what happens.

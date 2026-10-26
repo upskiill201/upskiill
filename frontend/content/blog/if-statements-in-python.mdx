@@ -1,0 +1,79 @@
+---
+title: "Python If Statements: if, elif and else Explained for Beginners"
+description: "Learn Python if statements with simple examples: if, elif, else, comparison operators, and, or, not and the most common beginner mistakes."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [if statements python, python if else, python elif, python conditionals, python decision making]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Python for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/python-for-beginners
+  label: "See the Python for Beginners course"
+faq:
+  - question: "How does an if statement work in Python?"
+    answer: "Python checks a condition. If it is true, the indented block under the if runs. Otherwise it moves to elif or else."
+  - question: "What is the difference between elif and else?"
+    answer: "elif checks another condition if the earlier ones were false. else runs when none of the conditions were true."
+  - question: "Why do I get an indentation error?"
+    answer: "Python uses indentation to group code. The lines inside an if must be indented consistently, usually four spaces."
+---
+
+Programs make decisions. In Python, that starts with `if`.
+
+## Direct answer
+
+A Python `if` statement runs a block of code only when a condition is true. Add `elif` to test more conditions and `else` for everything else. Indentation shows which lines belong to each block.
+
+## Basic example
+
+```python
+age = 18
+
+if age >= 18:
+    print("You can vote")
+elif age >= 16:
+    print("Almost there")
+else:
+    print("Too young")
+```
+
+## Comparison operators
+
+| Operator | Meaning |
+| :--- | :--- |
+| `==` | equal to |
+| `!=` | not equal |
+| `>` `<` | greater, less than |
+| `>=` `<=` | greater or equal, less or equal |
+
+## Combining conditions
+
+```python
+if age >= 18 and has_id:
+    print("Welcome in")
+```
+
+Use `and`, `or` and `not` to combine tests.
+
+## Common mistakes
+
+- Using `=` instead of `==` in a condition.
+- Forgetting the colon at the end of the `if` line.
+- Mixing tabs and spaces for indentation.
+
+## Where Teyro fits
+
+Teyro's [Python for Beginners](/courses/python-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 120 lessons, and you can start free.
+
+## The bottom line
+
+Condition, colon, indented block. Practise with small examples until it feels natural.
+
+## More guides
+
+- [Python Virtual Environments](/blog/python-virtual-environments)
+- [What Is pip in Python? How to Install and Manage Packages](/blog/python-pip-explained)
+- [Common Python Errors for Beginners and How to Fix Them](/blog/common-python-errors)
+- [Python for Beginners course](/courses/python-for-beginners)

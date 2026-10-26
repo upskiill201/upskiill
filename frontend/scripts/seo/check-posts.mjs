@@ -2,6 +2,8 @@
 // node scripts/seo/check-posts.mjs        (all untracked or modified .mdx in content/blog)
 import fs from 'node:fs';
 import { execSync } from 'node:child_process';
+import { createRequire } from 'node:module';
+const yaml = createRequire(import.meta.url)('js-yaml');
 const dir = 'content/blog/';
 const slugs = new Set(fs.readdirSync(dir).map((f) => f.replace('.mdx', '')));
 const courses = new Set(JSON.parse(fs.readFileSync('scripts/seo/data/courses.json', 'utf8')).courses.map((c) => c.slug));
@@ -13,6 +15,7 @@ for (const f of files) {
   const title = t.match(/^title: "(.*)"/m)?.[1] ?? '';
   const d = t.match(/^description: "(.*)"/m)?.[1] ?? '';
   const issues = [];
+  try { const fm = t.split(/^---$/m)[1]; const o = yaml.load(fm); if (!o || !Array.isArray(o.tags)) issues.push('tags not a list'); } catch (e) { issues.push('YAML: ' + e.reason); }
   if (title.length > 70 || !title) issues.push(`title ${title.length}`);
   if (d.length > 160 || !d) issues.push(`description ${d.length}`);
   for (const m of t.matchAll(/\]\(\/blog\/([a-z0-9-]+)\)/g)) if (!slugs.has(m[1])) issues.push(`broken /blog/${m[1]}`);

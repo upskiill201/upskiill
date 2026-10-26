@@ -1,0 +1,88 @@
+---
+title: "React Native Styling: StyleSheet, Flexbox and Platform Differences"
+description: "Learn styling in React Native: StyleSheet.create, Flexbox layout defaults, dimensions, shadows, platform differences and organising styles."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [react native styling, stylesheet create, react native flexbox, react native styles, platform specific styles]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "React Native for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/react-native-for-beginners
+  label: "See the React Native for Beginners course"
+faq:
+  - question: "How do I style React Native components?"
+    answer: "Use the style prop with JavaScript objects, usually created with StyleSheet.create."
+  - question: "Does React Native use CSS?"
+    answer: "No. It uses a CSS-like system with camelCase property names in JavaScript."
+  - question: "How is Flexbox different in React Native?"
+    answer: "Layout uses Flexbox by default, and flexDirection defaults to column."
+---
+
+Styling feels like CSS, with a few differences.
+
+## Direct answer
+
+React Native styles are JavaScript objects passed to the `style` prop, usually created with `StyleSheet.create`. Layout uses Flexbox, and the default direction is column. Property names use camelCase, such as `backgroundColor`.
+
+## Example
+
+```jsx
+import { View, Text, StyleSheet } from "react-native";
+
+export default function Card() {
+  return (
+    <View style={styles.card}>
+      <Text style={styles.title}>Hello</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: "#fff",
+  },
+  title: { fontSize: 18, fontWeight: "600" },
+});
+```
+
+## Differences from CSS
+
+| CSS | React Native |
+| :--- | :--- |
+| `background-color` | `backgroundColor` |
+| default row | default column |
+| no units | numbers are density-independent pixels |
+| cascade | no inheritance except some text styles |
+
+## Platform differences
+
+```jsx
+import { Platform } from "react-native";
+const shadow = Platform.select({
+  ios: { shadowOpacity: 0.2, shadowRadius: 6 },
+  android: { elevation: 4 },
+});
+```
+
+## Where Teyro fits
+
+Teyro's [React Native for Beginners](/courses/react-native-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 80 lessons, and you can start free.
+
+## The bottom line
+
+Think Flexbox, write objects, test on both platforms.
+
+## More guides
+
+- [useState in React Native](/blog/usestate-in-react-native)
+- [useEffect in React Native](/blog/useeffect-in-react-native)
+- [React Native vs Flutter](/blog/react-native-vs-flutter)
+- [React native core components](/blog/react-native-core-components)
+- [React Native for Beginners course](/courses/react-native-for-beginners)

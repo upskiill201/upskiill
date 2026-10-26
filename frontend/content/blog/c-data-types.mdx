@@ -1,0 +1,71 @@
+---
+title: "Data Types in C: int, float, char, double and Sizes"
+description: "Learn C's basic data types: int, char, float, double, their typical sizes, modifiers like unsigned and long and how to check sizes with sizeof."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [c data types, data types in c, int float double char, sizeof in c, unsigned int]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "C for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/c-for-beginners
+  label: "See the C for Beginners course"
+faq:
+  - question: "What are the basic data types in C?"
+    answer: "int, char, float and double, along with modifiers such as short, long, signed and unsigned."
+  - question: "How big is an int in C?"
+    answer: "It depends on the system, commonly 4 bytes. Use sizeof to check."
+  - question: "What is the difference between float and double?"
+    answer: "double has more precision and range than float."
+---
+
+C types tell the compiler how much memory a value needs and how to treat it.
+
+## Direct answer
+
+The basic C types are `char` for characters, `int` for whole numbers, `float` for single-precision decimals and `double` for double-precision decimals. Modifiers like `short`, `long` and `unsigned` change the range. Sizes depend on the platform, so use `sizeof` to check.
+
+## Table
+
+| Type | Typical use | Common size |
+| :--- | :--- | :--- |
+| `char` | single character | 1 byte |
+| `int` | whole numbers | 4 bytes |
+| `float` | decimals | 4 bytes |
+| `double` | precise decimals | 8 bytes |
+| `long long` | large integers | 8 bytes |
+
+## Check sizes
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    printf("int: %zu\n", sizeof(int));
+    printf("double: %zu\n", sizeof(double));
+    return 0;
+}
+```
+
+## Cautions
+
+- Integer division truncates: `5 / 2` is `2`.
+- Floating-point numbers are approximate.
+- Mixing signed and unsigned can surprise you.
+
+## Where Teyro fits
+
+Teyro's [C for Beginners](/courses/c-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 78 lessons, and you can start free.
+
+## The bottom line
+
+Choose the smallest type that fits the data safely.
+
+## More guides
+
+- [printf and scanf in C](/blog/printf-and-scanf-in-c)
+- [Bitwise Operators in C](/blog/bitwise-operators-c)
+- [Undefined Behavior in C](/blog/undefined-behavior-c)
+- [Learn c programming for beginners](/blog/learn-c-programming-for-beginners)
+- [C for Beginners course](/courses/c-for-beginners)

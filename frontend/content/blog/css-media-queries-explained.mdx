@@ -1,0 +1,78 @@
+---
+title: "CSS Media Queries Explained: Syntax, Breakpoints and Examples"
+description: "Learn how CSS media queries work: min-width and max-width, common breakpoints, orientation, prefers-color-scheme and a mobile-first example."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [media queries, css media queries, media query examples, min-width max-width, responsive css]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Responsive Web Design with CSS turns this into short, playable lessons. Free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive Web Design with CSS course"
+faq:
+  - question: "What is a media query?"
+    answer: "A CSS rule that applies styles only when conditions such as screen width or user preferences are met."
+  - question: "What is the difference between min-width and max-width?"
+    answer: "min-width applies styles at that width and above. max-width applies styles at that width and below."
+  - question: "Should I use mobile-first?"
+    answer: "Usually yes. Write base styles for small screens and add min-width queries for larger ones."
+---
+
+Media queries are how one stylesheet adapts to many screens.
+
+## Direct answer
+
+A media query applies CSS only when a condition is true, such as a minimum screen width. Write base styles for small screens, then add `@media (min-width: ...)` blocks for larger ones. You can also query orientation, colour scheme and reduced motion.
+
+## Mobile-first example
+
+```css
+.layout {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1100px) {
+  .layout {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+```
+
+## Other useful queries
+
+```css
+@media (prefers-color-scheme: dark) { body { background: #111; color: #eee; } }
+@media (prefers-reduced-motion: reduce) { * { animation: none; } }
+@media (orientation: landscape) { .hero { min-height: 60vh; } }
+@media print { nav { display: none; } }
+```
+
+## Tips
+
+- Choose breakpoints where your design breaks, not for specific devices.
+- Keep queries near the components they change.
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Start small, add queries as the layout needs space. See [breakpoints](/blog/css-breakpoints-guide).
+
+## More guides
+
+- [The Viewport Meta Tag](/blog/viewport-meta-tag)
+- [CSS Breakpoints](/blog/css-breakpoints-guide)
+- [Fluid Typography in CSS](/blog/fluid-typography-css)
+- [What is responsive web design](/blog/what-is-responsive-web-design)
+- [Responsive Web Design with CSS course](/courses/responsive-web-design-with-css)

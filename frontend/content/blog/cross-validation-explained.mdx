@@ -1,0 +1,66 @@
+---
+title: "Cross-Validation Explained: A More Reliable Way to Test Models"
+description: "Cross-validation tests a model on several different splits of the data. Learn k-fold cross-validation, why it beats a single split and a scikit-learn example."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [cross validation, k fold cross validation, cross validation explained, model evaluation, scikit-learn cross val score]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Machine Learning for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/machine-learning-for-beginners
+  label: "See the Machine Learning for Beginners course"
+faq:
+  - question: "What is cross-validation?"
+    answer: "A method that repeatedly trains and tests a model on different parts of the data to get a more reliable performance estimate."
+  - question: "What is k-fold?"
+    answer: "Splitting data into k parts, using each in turn as the test set while training on the rest."
+  - question: "How many folds should I use?"
+    answer: "Five or ten are common choices."
+---
+
+One test split can be lucky or unlucky. Several are fairer.
+
+## Direct answer
+
+Cross-validation estimates how well a model will perform on new data by training and testing on several different splits. In k-fold cross-validation, data is divided into k parts. Each part is the test set once, and the results are averaged.
+
+## Example
+
+```python
+from sklearn.model_selection import cross_val_score
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_iris
+
+X, y = load_iris(return_X_y=True)
+scores = cross_val_score(DecisionTreeClassifier(max_depth=3), X, y, cv=5)
+print(scores.mean(), scores.std())
+```
+
+## Why use it
+
+- More reliable than a single split.
+- Uses all data for both training and testing.
+- Helps compare models and settings.
+
+## Cautions
+
+- Keep a final test set aside.
+- For time series, use time-aware splits.
+
+## Where Teyro fits
+
+Teyro's [Machine Learning for Beginners](/courses/machine-learning-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 200 lessons, and you can start free.
+
+## The bottom line
+
+Average across folds for a steadier estimate.
+
+## More guides
+
+- [Bias and Variance in Machine Learning](/blog/bias-and-variance)
+- [Clustering Explained](/blog/clustering-explained)
+- [Confusion Matrix Explained](/blog/confusion-matrix-explained)
+- [Training and test data](/blog/training-and-test-data)
+- [Machine Learning for Beginners course](/courses/machine-learning-for-beginners)

@@ -1,0 +1,69 @@
+---
+title: "pandas for Beginners: Load, Clean and Summarise Data in Python"
+description: "A beginner path through pandas: load a CSV, inspect it, clean columns, handle duplicates and missing values and create a first summary."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [pandas, pandas for beginners, pandas tutorial, python data analysis, clean data with pandas]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Data Science for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/data-science-for-beginners
+  label: "See the Data Science for Beginners course"
+faq:
+  - question: "What is pandas?"
+    answer: "A Python library for working with tabular data using DataFrames."
+  - question: "How do I load a CSV file?"
+    answer: "Use pd.read_csv with the file path."
+  - question: "What should I do first with a new dataset?"
+    answer: "Look at the first rows, column types, missing values and summary statistics."
+---
+
+pandas turns messy files into answers.
+
+## Direct answer
+
+pandas is Python's main library for tabular data. Load a file with `pd.read_csv`, inspect it with `head`, `info` and `describe`, clean column names, fix types, remove duplicates, handle missing values and then group and summarise.
+
+## A first workflow
+
+```python
+import pandas as pd
+
+df = pd.read_csv("sales.csv")
+df.head()
+df.info()
+
+df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
+df = df.drop_duplicates()
+df["date"] = pd.to_datetime(df["date"])
+df["revenue"] = df["revenue"].fillna(0)
+
+summary = df.groupby("region")["revenue"].sum().sort_values(ascending=False)
+print(summary)
+```
+
+## Habits
+
+1. Keep the raw file untouched.
+2. Write cleaning steps as code.
+3. Check results after each step.
+4. Save the cleaned data separately.
+
+## Where Teyro fits
+
+Teyro's [Data Science for Beginners](/courses/data-science-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Load, inspect, clean, summarise. Repeat on every dataset.
+
+## More guides
+
+- [Outliers](/blog/detect-outliers)
+- [Kaggle for Beginners](/blog/kaggle-for-beginners)
+- [NumPy for Beginners](/blog/numpy-for-beginners)
+- [Pandas dataframe guide](/blog/pandas-dataframe-guide)
+- [Exploratory data analysis](/blog/exploratory-data-analysis)
+- [Data Science for Beginners course](/courses/data-science-for-beginners)

@@ -1,0 +1,74 @@
+---
+title: "localStorage in JavaScript: Save Data in the Browser"
+description: "Learn how to save, read and remove data with localStorage in JavaScript, store objects with JSON, and the limits and privacy cautions to know."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [localstorage, javascript localstorage, localstorage example, save data in browser, localstorage vs sessionstorage]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Interactive Web Pages with JavaScript turns this into short, playable lessons. Free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive Web Pages with JavaScript course"
+faq:
+  - question: "What is localStorage?"
+    answer: "A browser feature that stores small amounts of text data that persists even after the browser is closed."
+  - question: "How do I store an object in localStorage?"
+    answer: "Convert it to a string with JSON.stringify, then parse it back with JSON.parse when reading."
+  - question: "Is localStorage secure?"
+    answer: "No. Do not store passwords, tokens or sensitive information in it."
+---
+
+localStorage lets your page remember things between visits.
+
+## Direct answer
+
+`localStorage` saves key-value pairs as text in the browser. Use `setItem`, `getItem` and `removeItem`. Store objects by converting them to JSON. Data stays until it is cleared, but it is not secure and should not hold sensitive information.
+
+## Basic use
+
+```javascript
+localStorage.setItem("theme", "dark");
+const theme = localStorage.getItem("theme"); // "dark"
+localStorage.removeItem("theme");
+localStorage.clear();
+```
+
+## Storing objects
+
+```javascript
+const todos = [{ text: "Learn JS", done: false }];
+localStorage.setItem("todos", JSON.stringify(todos));
+
+const saved = JSON.parse(localStorage.getItem("todos")) || [];
+```
+
+## localStorage vs sessionStorage
+
+| | `localStorage` | `sessionStorage` |
+| :--- | :--- | :--- |
+| Lasts | until cleared | until the tab closes |
+
+## Limits and cautions
+
+- Only strings are stored.
+- Storage space is small, roughly a few megabytes.
+- Never store passwords or private data.
+- Wrap calls in `try/catch`, since storage can be blocked.
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) course turns this into short lessons you can play in a few minutes a day. It has 37 lessons, and you can start free.
+
+## The bottom line
+
+Great for preferences and small app state. See [web storage](/blog/web-storage-basics).
+
+## More guides
+
+- [JavaScript fetch API](/blog/javascript-fetch-api)
+- [JavaScript Form Validation](/blog/form-validation-javascript)
+- [Event Bubbling and Delegation in JavaScript Explained](/blog/event-bubbling-javascript)
+- [Javascript dom tutorial for beginners](/blog/javascript-dom-tutorial-for-beginners)
+- [Interactive Web Pages with JavaScript course](/courses/interactive-web-pages-with-javascript)

@@ -1,0 +1,75 @@
+---
+title: "JavaScript Form Validation: Check Input Before Submit"
+description: "Learn JavaScript form validation with the submit event, simple checks, error messages and HTML built-in validation, plus why you still validate on the server."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [form validation, javascript form validation, validate form javascript, html5 form validation, client side validation]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Interactive Web Pages with JavaScript turns this into short, playable lessons. Free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive Web Pages with JavaScript course"
+faq:
+  - question: "What is form validation?"
+    answer: "Checking that user input is complete and correct before it is processed."
+  - question: "Is client-side validation enough?"
+    answer: "No. Users can bypass it, so always validate on the server too."
+  - question: "How do I stop a form from submitting?"
+    answer: "Call event.preventDefault() in the submit handler when validation fails."
+---
+
+Good validation catches mistakes early and tells people how to fix them.
+
+## Direct answer
+
+Add a `submit` event listener to the form, check the values, show a clear message for each problem and call `event.preventDefault()` if the form is invalid. Use HTML attributes like `required` and `type="email"` for simple checks. Always validate again on the server.
+
+## Example
+
+```html
+<form id="signup" novalidate>
+  <input id="email" type="email" required>
+  <p id="error" role="alert"></p>
+  <button>Sign up</button>
+</form>
+```
+
+```javascript
+const form = document.querySelector("#signup");
+const email = document.querySelector("#email");
+const error = document.querySelector("#error");
+
+form.addEventListener("submit", (event) => {
+  if (!email.value.includes("@")) {
+    event.preventDefault();
+    error.textContent = "Please enter a valid email.";
+  } else {
+    error.textContent = "";
+  }
+});
+```
+
+## Tips
+
+- Say what is wrong and how to fix it.
+- Do not clear what the user typed.
+- Use `aria-live` or `role="alert"` for accessibility.
+- Validate on the server too.
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) course turns this into short lessons you can play in a few minutes a day. It has 37 lessons, and you can start free.
+
+## The bottom line
+
+Validate early for friendliness and again on the server for safety. See [a full example](/blog/javascript-form-validation-example).
+
+## More guides
+
+- [Event Bubbling and Delegation in JavaScript Explained](/blog/event-bubbling-javascript)
+- [How to Build a Modal Window With HTML, CSS and JavaScript](/blog/javascript-modal-window)
+- [How to Add a Dark Mode Toggle With CSS and JavaScript](/blog/dark-mode-toggle-javascript)
+- [Javascript form validation example](/blog/javascript-form-validation-example)
+- [Interactive Web Pages with JavaScript course](/courses/interactive-web-pages-with-javascript)

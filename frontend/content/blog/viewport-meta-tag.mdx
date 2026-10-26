@@ -1,0 +1,66 @@
+---
+title: "The Viewport Meta Tag: Why Your Site Looks Tiny on Mobile"
+description: "Learn what the viewport meta tag does, the correct tag to use, what the options mean and how to fix a mobile page that looks zoomed out."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [viewport meta tag, viewport meta tag explained, meta viewport mobile, width=device-width, fix mobile zoom]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Responsive Web Design with CSS turns this into short, playable lessons. Free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive Web Design with CSS course"
+faq:
+  - question: "What does the viewport meta tag do?"
+    answer: "It tells mobile browsers to match the page width to the device width instead of pretending to be a wide desktop screen."
+  - question: "What is the correct viewport tag?"
+    answer: "meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"."
+  - question: "Should I disable zooming?"
+    answer: "No. Disabling zoom harms accessibility."
+---
+
+Without this tag, a phone treats your site as a tiny desktop page.
+
+## Direct answer
+
+Add `<meta name="viewport" content="width=device-width, initial-scale=1">` inside the `<head>`. It tells mobile browsers to use the device width and not zoom out to fit a desktop layout. Without it, media queries behave unexpectedly.
+
+## Example
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My site</title>
+</head>
+```
+
+## What the parts mean
+
+| Part | Meaning |
+| :--- | :--- |
+| `width=device-width` | use the screen's real width |
+| `initial-scale=1` | start with no zoom |
+
+## Avoid
+
+- `user-scalable=no` or `maximum-scale=1`, which block pinch-zoom and hurt accessibility.
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+One line in the head makes responsive CSS work on phones.
+
+## More guides
+
+- [CSS Breakpoints](/blog/css-breakpoints-guide)
+- [Fluid Typography in CSS](/blog/fluid-typography-css)
+- [Responsive Images in HTML](/blog/responsive-images-guide)
+- [What is responsive web design](/blog/what-is-responsive-web-design)
+- [Responsive Web Design with CSS course](/courses/responsive-web-design-with-css)

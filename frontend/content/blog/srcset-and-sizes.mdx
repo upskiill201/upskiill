@@ -1,0 +1,71 @@
+---
+title: "srcset and sizes Explained: How Browsers Pick an Image"
+description: "Understand the srcset and sizes attributes: width descriptors, density descriptors, how the browser chooses an image and common mistakes."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [srcset, sizes attribute, srcset explained, responsive image srcset, image width descriptors]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Responsive Web Design with CSS turns this into short, playable lessons. Free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive Web Design with CSS course"
+faq:
+  - question: "What does srcset do?"
+    answer: "It gives the browser a list of image files and their widths so it can choose the best one."
+  - question: "What does the sizes attribute do?"
+    answer: "It tells the browser how wide the image will be displayed, so it can choose from srcset before layout is known."
+  - question: "Do I always need sizes?"
+    answer: "Use it with width descriptors. Without it, the browser assumes the image fills the viewport."
+---
+
+You offer options. The browser picks.
+
+## Direct answer
+
+`srcset` lists image candidates with their pixel widths, such as `photo-800.jpg 800w`. `sizes` describes how wide the image will appear in your layout. The browser uses both, plus screen density, to download the best image.
+
+## Example
+
+```html
+<img
+  src="cat-800.jpg"
+  srcset="cat-400.jpg 400w, cat-800.jpg 800w, cat-1200.jpg 1200w"
+  sizes="(min-width: 1000px) 400px, 100vw"
+  alt="A cat on a windowsill"
+  width="800" height="600">
+```
+
+## Reading it
+
+- Screens 1000 pixels and wider show the image about 400 pixels wide.
+- Smaller screens show it at full width.
+
+## Density descriptors
+
+```html
+<img src="logo.png" srcset="logo.png 1x, logo@2x.png 2x" alt="Logo">
+```
+
+## Mistakes
+
+- Using `w` descriptors without `sizes`.
+- Making files that are not actually the stated width.
+- Forgetting `alt`.
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Provide choices and describe the layout. The browser handles the rest.
+
+## More guides
+
+- [CSS min(), max() and clamp()](/blog/css-min-max-functions)
+- [How to Build a Responsive Navigation Menu With CSS](/blog/responsive-navigation-menu)
+- [rem vs em in CSS](/blog/rem-vs-em)
+- [Responsive images guide](/blog/responsive-images-guide)
+- [Responsive Web Design with CSS course](/courses/responsive-web-design-with-css)

@@ -1,0 +1,63 @@
+---
+title: "AI Coding Security Risks: What to Watch For and How to Reduce Them"
+description: "AI-generated code and agents bring security risks: insecure code, leaked secrets, fake packages, prompt injection and excessive permissions. Here is what to do."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [ai coding security risks, ai generated code security, prompt injection, secrets in prompts, ai agent permissions]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Working with AI Coding Agents turns this into short, playable lessons. Free to start."
+  href: /courses/working-with-ai-coding-agents
+  label: "See the Working with AI Coding Agents course"
+faq:
+  - question: "Is AI-generated code secure?"
+    answer: "Not automatically. It can include vulnerabilities, outdated patterns or unsafe defaults, so it needs the same security review as human code."
+  - question: "What is prompt injection?"
+    answer: "When untrusted text, such as a web page or file, contains instructions that trick an AI agent into doing something unintended."
+  - question: "How can I limit the risk?"
+    answer: "Use least privilege, keep secrets out of prompts, review commands and changes and run in a sandbox where possible."
+---
+
+AI tools speed up good work and mistakes.
+
+## Direct answer
+
+The main risks are insecure generated code, secrets pasted into prompts or committed to repositories, invented or malicious packages, prompt injection from untrusted content and agents with more permissions than they need. Reduce them with review, scanning, least-privilege access and a sandbox.
+
+## Risks and responses
+
+| Risk | What to do |
+| :--- | :--- |
+| Insecure code | review, test, run security scanners |
+| Leaked secrets | use environment variables, secret scanning |
+| Fake or risky packages | verify dependencies before installing |
+| Prompt injection | treat fetched content as untrusted, review actions |
+| Over-permissioned agents | limit access, use read-only where possible |
+| Data exposure | check your tool's data policy |
+
+## Good habits
+
+1. Never paste real secrets into prompts.
+2. Require approval for commands that delete, deploy or send data.
+3. Work on a branch, not directly on production.
+4. Keep dependencies reviewed and pinned.
+5. Follow your organisation's policies.
+
+## Where Teyro fits
+
+Teyro's [Working with AI Coding Agents](/courses/working-with-ai-coding-agents) course turns this into short lessons you can play in a few minutes a day. It has 60 lessons, and you can start free.
+
+## The bottom line
+
+Assume the AI can make mistakes and design your workflow so mistakes are caught.
+
+## More guides
+
+- [Git Worktrees for AI Agents](/blog/git-worktrees-for-ai-agents)
+- [Refactoring With AI](/blog/ai-refactoring-guide)
+- [How to Review AI-Generated Code](/blog/how-to-review-ai-generated-code)
+- [How to review ai generated code](/blog/how-to-review-ai-generated-code)
+- [Ai hallucinations in code](/blog/ai-hallucinations-in-code)
+- [Working with AI Coding Agents course](/courses/working-with-ai-coding-agents)

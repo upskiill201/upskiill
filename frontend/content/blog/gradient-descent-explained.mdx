@@ -1,0 +1,68 @@
+---
+title: "Gradient Descent Explained: How Models Learn Step by Step"
+description: "Gradient descent adjusts model parameters to reduce error. Learn the idea with a hill analogy, the learning rate and a tiny Python example."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [gradient descent, gradient descent explained, learning rate, loss function, optimisation machine learning]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Machine Learning for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/machine-learning-for-beginners
+  label: "See the Machine Learning for Beginners course"
+faq:
+  - question: "What is gradient descent?"
+    answer: "An optimisation method that repeatedly adjusts parameters in the direction that reduces the loss."
+  - question: "What is the learning rate?"
+    answer: "The size of each step. Too large can overshoot and too small is slow."
+  - question: "Does it always find the best answer?"
+    answer: "Not always. It may settle in a local minimum or struggle with poor settings."
+---
+
+Imagine walking downhill in fog, one step at a time.
+
+## Direct answer
+
+Gradient descent is how many models learn. It measures how wrong the model is (the loss), calculates which direction reduces it fastest (the gradient) and moves the parameters a small step that way. The learning rate sets the step size. Repeat until the loss stops improving.
+
+## A tiny example
+
+```python
+# minimise f(x) = (x - 3) ** 2
+x = 0.0
+lr = 0.1
+
+for step in range(50):
+    gradient = 2 * (x - 3)
+    x = x - lr * gradient
+
+print(round(x, 3))  # close to 3
+```
+
+## Learning rate matters
+
+| Too small | Too large |
+| :--- | :--- |
+| very slow | overshoots or diverges |
+
+## Variants
+
+Stochastic and mini-batch gradient descent use subsets of data per step, which is faster for large datasets.
+
+## Where Teyro fits
+
+Teyro's [Machine Learning for Beginners](/courses/machine-learning-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 200 lessons, and you can start free.
+
+## The bottom line
+
+Take small steps downhill. That is how most models learn.
+
+## More guides
+
+- [Classification vs Regression in Machine Learning](/blog/classification-vs-regression)
+- [Cross-Validation Explained](/blog/cross-validation-explained)
+- [Bias and Variance in Machine Learning](/blog/bias-and-variance)
+- [Neural network explained](/blog/neural-network-explained)
+- [Linear regression explained](/blog/linear-regression-explained)
+- [Machine Learning for Beginners course](/courses/machine-learning-for-beginners)

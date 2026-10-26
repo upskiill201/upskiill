@@ -1,0 +1,69 @@
+---
+title: "TypeScript Type Guards and Narrowing Explained"
+description: "Type guards let TypeScript narrow a type inside a block. Learn typeof, instanceof, in, custom type predicates and common narrowing patterns."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [type guards, typescript type guards, typescript narrowing, typeof instanceof, type predicate]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "TypeScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript for Beginners course"
+faq:
+  - question: "What is a type guard?"
+    answer: "A check that tells TypeScript a value has a more specific type inside a block of code."
+  - question: "What is a type predicate?"
+    answer: "A function that returns value is Type, telling TypeScript to narrow the type when it returns true."
+  - question: "What is the difference between typeof and instanceof?"
+    answer: "typeof checks primitive types like string and number. instanceof checks whether an object is an instance of a class."
+---
+
+Narrowing is how TypeScript lets you use the right methods on the right type.
+
+## Direct answer
+
+A type guard is a runtime check that narrows a type within a block. Built-in guards include `typeof`, `instanceof`, `in` and equality checks. You can write custom guards with a type predicate such as `value is Cat`.
+
+## Built-in guards
+
+```typescript
+function format(x: string | number | Date) {
+  if (typeof x === "string") return x.trim();
+  if (typeof x === "number") return x.toFixed(1);
+  if (x instanceof Date) return x.toISOString();
+}
+
+type Fish = { swim: () => void };
+type Bird = { fly: () => void };
+
+function move(animal: Fish | Bird) {
+  if ("swim" in animal) animal.swim();
+  else animal.fly();
+}
+```
+
+## Custom type guard
+
+```typescript
+function isString(value: unknown): value is string {
+  return typeof value === "string";
+}
+```
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 20 lessons, and you can start free.
+
+## The bottom line
+
+Check, then use. TypeScript follows your checks.
+
+## More guides
+
+- [TypeScript Enums](/blog/typescript-enums)
+- [TypeScript Strict Mode](/blog/typescript-strict-mode)
+- [any vs unknown in TypeScript](/blog/any-vs-unknown-typescript)
+- [Typescript union types](/blog/typescript-union-types)
+- [TypeScript for Beginners course](/courses/typescript-for-beginners)

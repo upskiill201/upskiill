@@ -1,0 +1,321 @@
+=== risk-vs-return
+title: Risk vs Return: How Higher Rewards Come With Higher Risk
+desc: Risk and return are linked: higher potential returns usually come with bigger chances of loss. Learn the idea, examples and how to choose your balance.
+tags: risk vs return, risk and return, risk return tradeoff, what is risk return tradeoff, investing risk
+rel: what-is-investment-risk, investment-risk-tolerance
+q: What is the risk-return trade-off? | The idea that higher potential returns usually require accepting higher risk of loss.
+q: Does more risk always mean more return? | No. Risk means a wider range of possible outcomes, not a guaranteed higher return.
+q: How do I choose? | Consider your goals, time horizon, ability to handle losses and need for the money.
+---
+There is no free lunch in investing.
+
+## Direct answer
+
+Risk and return are linked. Investments with higher possible returns generally carry greater risk of losing money or of big swings in value. Lower-risk options like cash tend to grow more slowly. The right balance depends on your goals, timeframe and comfort with losses.
+
+## A simple spectrum
+
+| Lower risk, lower expected return | Higher risk, higher expected return |
+| :--- | :--- |
+| Cash and savings accounts | Individual company shares |
+| Government bonds | Emerging market investments |
+| Short-term deposits | Speculative assets |
+
+## How to choose
+
+1. **Define the goal** and when you need the money.
+2. **Consider how you would feel** if the value dropped 20 percent.
+3. **Match risk to time:** money needed soon belongs in lower-risk places.
+4. **Diversify** to avoid concentrated risk.
+
+## The bottom line
+
+Take only as much risk as you need and can handle. This is general education, not advice.
+
+=== volatility-explained
+title: Volatility Explained: Why Prices Swing and What to Do
+desc: Volatility measures how much an investment's price moves. Learn what it means, why markets swing and how to keep a steady head when values change.
+tags: volatility, what is volatility, market volatility, volatility explained, investing volatility
+rel: risk-vs-return, what-is-investment-risk
+q: What is volatility? | It is how much and how quickly an investment's price moves up and down.
+q: Is volatility the same as risk? | Not exactly. Volatility is one measure of risk, but losing money permanently is another.
+q: How should I react to volatility? | Keep to your plan, avoid panic selling and ensure money you need soon is in lower-risk places.
+---
+Prices move. Knowing that in advance makes it easier to cope.
+
+## Direct answer
+
+Volatility describes how widely and quickly an investment's price changes. High volatility means large swings in both directions. It is a normal part of markets. You can manage it by investing for the long term, diversifying and not holding money you need soon in volatile assets.
+
+## What causes it
+
+- News about the economy or companies.
+- Interest rate changes.
+- Investor mood and uncertainty.
+
+## How to cope
+
+1. **Match investments to your timeline.**
+2. **Diversify.**
+3. **Avoid checking prices constantly.**
+4. **Stick to your plan** unless your circumstances change.
+5. **Keep an emergency fund** so you do not sell in a downturn.
+
+## The bottom line
+
+Volatility is the price of potentially higher returns. This is general education, not advice.
+
+=== asset-allocation-basics
+title: Asset Allocation: How to Split Your Money Across Investments
+desc: Asset allocation divides investments among cash, bonds and shares. Learn how it works, what drives the mix and how it can change as you get older.
+tags: asset allocation, what is asset allocation, asset allocation by age, how to allocate investments, portfolio mix
+rel: diversification-basics, risk-vs-return
+q: What is asset allocation? | It is how you divide your investments among asset classes such as shares, bonds and cash.
+q: What is a good asset allocation? | It depends on your goals, time horizon and risk tolerance. There is no single correct mix.
+q: Does allocation change with age? | Many people shift to lower-risk assets as they near the time they will need the money.
+---
+How you split your money often matters more than which individual investments you pick.
+
+## Direct answer
+
+Asset allocation is the mix of asset classes in your portfolio, such as shares, bonds and cash. A higher share of shares generally means higher potential growth and more volatility. A higher share of bonds and cash means more stability. Your mix should fit your goals, timeline and comfort with risk.
+
+## Factors that shape it
+
+- **Time horizon:** longer horizons can ride out more volatility.
+- **Risk tolerance:** how you feel about losses.
+- **Risk capacity:** how much loss you can afford.
+- **Goals:** growth, income or preservation.
+
+## A gradual shift
+
+Some investors move toward safer assets as they approach a goal. Some funds automate this.
+
+## The bottom line
+
+Choose a mix you can stick with, and review it occasionally. This is general education, not advice.
+
+=== stocks-vs-bonds
+title: Stocks vs Bonds: What's the Difference?
+desc: Stocks are ownership in a company and bonds are loans you give to a borrower. Compare risk, returns, income and how they work together in a portfolio.
+tags: stocks vs bonds, shares vs bonds, what is a bond, what is a stock, difference between stocks and bonds
+rel: asset-allocation-basics, diversification-basics
+q: What is the difference between stocks and bonds? | A stock gives you a share of ownership in a company. A bond is a loan to a government or company that pays interest.
+q: Which is riskier? | Stocks are generally more volatile, while bonds tend to be steadier, though bonds carry their own risks.
+q: Should I own both? | Many investors hold a mix, depending on goals and risk tolerance.
+---
+They are two of the main building blocks of investing.
+
+## Direct answer
+
+A stock represents part ownership in a company, with returns coming from price growth and dividends. A bond is a loan you make to a government or company, which pays interest and returns the original amount at maturity. Stocks generally offer higher potential returns with more volatility. Bonds are usually steadier but not risk-free.
+
+## Comparison
+
+| | Stocks | Bonds |
+| :--- | :--- | :--- |
+| What you get | Ownership | Loan repayment plus interest |
+| Typical return source | Price growth, dividends | Interest |
+| Typical volatility | Higher | Lower |
+| Main risks | Market and company risk | Credit, interest rate and inflation risk |
+
+## How they work together
+
+When stocks fall, bonds sometimes hold up better, which can smooth results, though this is not guaranteed.
+
+## The bottom line
+
+Understand both, then choose a mix that fits you. This is general education, not advice.
+
+=== liquidity-risk
+title: Liquidity Risk: When You Cannot Sell Quickly
+desc: Liquidity risk is the chance you cannot sell an investment fast without taking a loss. Learn examples, how it affects you and how to plan around it.
+tags: liquidity risk, what is liquidity risk, liquid vs illiquid assets, liquidity in investing, illiquid investments
+rel: risk-vs-return, what-is-investment-risk
+q: What is liquidity risk? | It is the risk that you cannot sell an asset quickly at a fair price when you need the cash.
+q: What are examples of illiquid assets? | Property, private business stakes and some collectibles.
+q: How can I reduce liquidity risk? | Keep an emergency fund in cash and avoid putting short-term needs into hard-to-sell assets.
+---
+Having wealth on paper is not the same as having cash.
+
+## Direct answer
+
+Liquidity risk is the risk that you cannot turn an asset into cash quickly without losing value. Cash is highly liquid. Property and private investments are less so. Keep money you may need soon in liquid accounts and be wary of products that lock your money away.
+
+## Examples
+
+- Selling a house can take months.
+- Some funds restrict withdrawals during stress.
+- Collectibles can be hard to sell at a fair price.
+
+## How to plan
+
+1. **Hold an emergency fund** in easy-access savings.
+2. **Match investments to timelines.**
+3. **Check withdrawal rules** and fees before investing.
+4. **Do not rely on illiquid assets** for short-term needs.
+
+## The bottom line
+
+Always ask: "How quickly can I get my money back, and at what cost?" This is general education, not advice.
+
+=== market-crash-what-to-do
+title: Market Crash: What It Is and What to Do When Prices Fall
+desc: A market crash is a sharp, sudden fall in prices. Learn what causes crashes, how markets have recovered in the past and sensible steps to take.
+tags: market crash, stock market crash, what to do in a market crash, market downturn, investing during a crash
+rel: volatility-explained, bear-market-explained
+q: What is a market crash? | A sudden, steep fall in market prices, often in a short period.
+q: Should I sell when the market crashes? | Selling after a fall locks in losses. Many long-term investors stick to their plan, but your circumstances matter.
+q: Do markets recover? | Historically, major markets have recovered from downturns over time, but past performance does not guarantee the future and recovery can take years.
+---
+Crashes are scary, and they are part of investing history.
+
+## Direct answer
+
+A market crash is a sharp, sudden drop in prices. If you have a long time horizon and a plan, many experts suggest avoiding panic selling, keeping your emergency fund separate and continuing regular contributions if you can. If you need the money soon, your plan should have protected it already.
+
+## What to do
+
+1. **Pause before acting.**
+2. **Check your plan and timeline.**
+3. **Do not sell in a panic.**
+4. **Keep contributing** if your finances allow.
+5. **Avoid borrowing to invest.**
+6. **Speak to a qualified adviser** if you are unsure.
+
+## What not to do
+
+- Check prices every hour.
+- Follow social media tips to "buy the dip" without a plan.
+- Pull money you need for essentials.
+
+## The bottom line
+
+Prepare before a crash, keep a cool head during one. This is general education, not advice.
+
+=== portfolio-rebalancing
+title: Portfolio Rebalancing: How and When to Do It
+desc: Rebalancing brings your investments back to your target mix. Learn why drift happens, the two main approaches and how to avoid costs and over-trading.
+tags: portfolio rebalancing, how to rebalance a portfolio, rebalancing investments, when to rebalance, asset allocation drift
+rel: asset-allocation-basics, diversification-basics
+q: What is portfolio rebalancing? | It is adjusting your holdings back to your target asset allocation after market moves have shifted it.
+q: How often should I rebalance? | Some people do it once a year or when a holding drifts a set amount from target. Costs and taxes can matter.
+q: How do I rebalance without selling? | Direct new contributions toward the asset class that is below target.
+---
+If shares rise, your portfolio quietly becomes riskier than you planned.
+
+## Direct answer
+
+Rebalancing means adjusting your investments back to your target mix after price changes have moved it. You can do it on a schedule, such as once a year, or when an asset drifts beyond a set range. You can also rebalance by directing new money to the underweight asset.
+
+## Example
+
+You targeted 60 percent shares and 40 percent bonds. After a strong year, shares are 70 percent. Rebalancing means shifting some back toward bonds.
+
+## Approaches
+
+- **Time-based:** review yearly.
+- **Threshold-based:** act when a holding drifts a set amount.
+- **Cash-flow:** use new contributions.
+
+## Watch for
+
+- Trading costs and taxes.
+- Doing it so often that costs outweigh benefits.
+
+## The bottom line
+
+Rebalancing keeps your risk where you chose it. This is general education, not advice.
+
+=== standard-deviation-investing
+title: Standard Deviation in Investing: A Plain-English Guide
+desc: Standard deviation measures how widely an investment's returns vary. Learn what it tells you about risk, an example and its limits.
+tags: standard deviation investing, standard deviation, what is standard deviation in finance, measuring investment risk, volatility measure
+rel: volatility-explained, risk-vs-return
+q: What is standard deviation in investing? | It is a statistic that measures how much returns vary from their average, used as a measure of volatility.
+q: Does a high standard deviation mean high risk? | It means returns have varied widely, which is one kind of risk, but it does not tell you whether losses are permanent.
+q: Is it enough to judge an investment? | No. Use it alongside other measures and your own goals.
+---
+A number that describes how bumpy the ride has been.
+
+## Direct answer
+
+Standard deviation shows how far an investment's returns have typically moved from their average. A higher number means bigger swings. It is a common measure of volatility, but it does not predict the future or capture every type of risk.
+
+## Simple example
+
+Fund A returns between 4 and 6 percent each year. Fund B returns between -10 and 20 percent. Fund B has a much higher standard deviation.
+
+## Uses and limits
+
+**Uses:** compare how volatile investments have been.
+**Limits:** it is based on past data, treats up and down moves equally and ignores the risk of rare extreme events.
+
+## The bottom line
+
+Use it as one tool among several. This is general education, not advice.
+
+=== bear-market-explained
+title: Bear Market Explained: Meaning, Causes and What Helps
+desc: A bear market is a prolonged fall of about 20 percent or more from recent highs. Learn the meaning, typical causes and how to handle one as an investor.
+tags: bear market, bear market meaning, what is a bear market, bull vs bear market, bear market investing
+rel: market-crash-what-to-do, volatility-explained
+q: What is a bear market? | It is usually defined as a drop of 20 percent or more from recent highs in a market or index, lasting for a period.
+q: What is the difference between a bull and bear market? | A bull market is a period of rising prices and optimism. A bear market is a period of falling prices and pessimism.
+q: How long do bear markets last? | They vary. Some are short and some last longer, so there is no fixed rule.
+---
+Bear markets feel awful in the moment and are normal over long investing lives.
+
+## Direct answer
+
+A bear market is a prolonged period when prices fall around 20 percent or more from recent highs, often alongside pessimism and economic worries. A bull market is the opposite. During a bear market, long-term investors usually focus on their plan, their emergency fund and avoiding panic.
+
+## Common causes
+
+- Economic slowdowns
+- Rising interest rates
+- Financial crises
+- Major shocks
+
+## How to cope
+
+1. **Remind yourself of your time horizon.**
+2. **Keep an emergency fund** so you are not a forced seller.
+3. **Rebalance if your plan says so.**
+4. **Avoid borrowing to invest.**
+5. **Limit news checking.**
+
+## The bottom line
+
+Bear markets are part of investing. This is general education, not advice.
+
+=== risk-capacity-vs-tolerance
+title: Risk Capacity vs Risk Tolerance: What's the Difference?
+desc: Risk tolerance is how you feel about losses. Risk capacity is how much loss you can afford. Learn why you need both before choosing investments.
+tags: risk capacity, risk capacity vs risk tolerance, risk tolerance, how much risk can I afford, investing risk profile
+rel: investment-risk-tolerance, risk-vs-return
+q: What is risk capacity? | It is your financial ability to take losses without damaging your goals or lifestyle.
+q: What is risk tolerance? | It is your emotional comfort with the possibility of losses and swings.
+q: Which matters more? | Both. Choose investments that respect the lower of your capacity and tolerance.
+---
+You might feel fine about risk and still be unable to afford it.
+
+## Direct answer
+
+Risk tolerance is how comfortable you feel with investment losses. Risk capacity is how much loss you could afford financially. A secure income, a long time horizon and a large emergency fund raise capacity. When the two differ, choose investments that fit the lower one.
+
+## Factors that affect capacity
+
+- Income stability
+- Time horizon
+- Emergency fund size
+- Debts and dependants
+- How soon you need the money
+
+## A quick example
+
+Someone who feels fearless about risk but has no emergency fund and big debts has low capacity. Someone with plenty of savings who panics at small losses has low tolerance.
+
+## The bottom line
+
+Respect both. This is general education, not advice.

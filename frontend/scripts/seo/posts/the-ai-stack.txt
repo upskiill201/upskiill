@@ -1,0 +1,178 @@
+=== what-are-embeddings-ai
+title: What Are Embeddings in AI? A Plain-English Explanation
+desc: Embeddings turn text, images or other data into lists of numbers that capture meaning. Learn how they work, why they power search and how they are used.
+tags: embeddings, what are embeddings, text embeddings explained, embeddings ai, semantic search
+rel: how-do-large-language-models-work
+q: What is an embedding? | A list of numbers that represents the meaning of a piece of data, such as a sentence, so that similar items are close together.
+q: What are embeddings used for? | Semantic search, recommendations, clustering and retrieval for AI assistants.
+q: Are embeddings the same as the model's answers? | No. Embeddings are a representation. A language model uses them to understand and generate text.
+---
+Computers do not understand words, but they are good with numbers. Embeddings turn meaning into numbers.
+
+## Direct answer
+
+An embedding is a list of numbers that represents the meaning of data such as text. Items with similar meaning get similar numbers, so you can measure how close two pieces of text are. Embeddings power semantic search, recommendations and retrieval in AI applications.
+
+## A simple picture
+
+Imagine a map where each sentence is a point. Sentences about cooking cluster together, while sentences about football form another cluster. An embedding is the coordinates of each point, though real embeddings have hundreds or thousands of dimensions.
+
+## Where they are used
+
+- **Semantic search:** find results by meaning, not exact words.
+- **Recommendations:** suggest items similar to ones you liked.
+- **Clustering:** group similar documents.
+- **Retrieval for AI assistants:** find relevant passages to give a model.
+
+## How similarity is measured
+
+Systems compare embeddings with a measure such as cosine similarity. A higher score means the meanings are closer.
+
+## The bottom line
+
+Embeddings are the bridge between human meaning and machine maths.
+
+=== vector-database-explained
+title: Vector Database Explained: How AI Apps Search by Meaning
+desc: A vector database stores embeddings and finds similar items quickly. Learn what it is, how similarity search works and when you actually need one.
+tags: vector database, what is a vector database, vector search, similarity search, rag vector store
+rel: what-are-embeddings-ai
+q: What is a vector database? | A database designed to store embeddings and quickly find the ones most similar to a query.
+q: Do I always need one for AI apps? | No. For small datasets, simple in-memory search or a regular database with vector support may be enough.
+q: How does it relate to RAG? | Retrieval-augmented generation often uses a vector database to find relevant passages before the model answers.
+---
+Search by meaning needs a different kind of index.
+
+## Direct answer
+
+A vector database stores embeddings and quickly finds the nearest ones to a query embedding. It lets AI applications search by meaning rather than keywords and is a common part of retrieval-augmented generation (RAG). For small projects you may not need a dedicated one.
+
+## How it works
+
+1. **Embed your documents** and store the vectors.
+2. **Embed the user's question.**
+3. **Search for the closest vectors.**
+4. **Return the matching documents** or pass them to a language model.
+
+## When to use one
+
+| Situation | Option |
+| :--- | :--- |
+| Few thousand items | simple in-memory search |
+| Existing SQL database | a vector extension |
+| Large or fast-growing data | a dedicated vector database |
+
+## Things to consider
+
+- Cost and hosting.
+- Update speed.
+- Filtering by metadata.
+- Privacy of the data.
+
+## The bottom line
+
+Pick the simplest option that meets your size and speed needs.
+
+=== llm-temperature-explained
+title: LLM Temperature Explained: What It Does and How to Set It
+desc: Temperature controls how random a language model's output is. Learn what low and high values do, typical uses and how it differs from top-p.
+tags: temperature llm, llm temperature, what is temperature in ai, temperature setting chatgpt, top p
+rel: how-do-large-language-models-work
+q: What is temperature in a language model? | A setting that controls how random the model's word choices are when generating text.
+q: What temperature should I use? | Lower values for factual or code tasks, higher values for creative writing. Try different settings.
+q: Does temperature 0 always give the same answer? | Often close, but not always guaranteed identical across runs.
+---
+Temperature is the creativity dial.
+
+## Direct answer
+
+Temperature controls how random a language model's output is. Low values make answers more predictable and focused, which suits factual and coding tasks. High values add variety, which suits brainstorming and creative writing. Many tools also offer top-p, which limits choices to the most likely words.
+
+## Rough guide
+
+| Setting | Behaviour | Good for |
+| :--- | :--- | :--- |
+| Low | focused, consistent | extraction, code, facts |
+| Medium | balanced | general chat |
+| High | varied, surprising | ideas, stories |
+
+## How it works
+
+The model calculates probabilities for the next word. Low temperature sharpens those probabilities so the likeliest word wins more often. High temperature flattens them so unlikely words get a chance.
+
+## Tips
+
+- Change one setting at a time.
+- High temperature does not make a model smarter, only more varied.
+- For reliable output, pair low temperature with clear instructions.
+
+## The bottom line
+
+Use low for accuracy and higher for imagination.
+
+=== ai-hallucination-explained
+title: AI Hallucination: Why Models Make Things Up and How to Spot It
+desc: AI hallucination is when a model states false information confidently. Learn why it happens, examples, how to check answers and ways to reduce it.
+tags: ai hallucination, what is ai hallucination, why does chatgpt make things up, llm hallucinations, fact check ai
+rel: how-do-large-language-models-work
+q: What is an AI hallucination? | When an AI model produces information that sounds plausible but is false or unsupported.
+q: Why do hallucinations happen? | Language models predict likely text and do not check facts, so they can fill gaps with convincing but wrong details.
+q: How can I reduce them? | Give source material, ask for citations you can verify, use lower temperature and check important claims.
+---
+A model does not know what it does not know. It still answers.
+
+## Direct answer
+
+An AI hallucination is a confident answer that is wrong or made up, such as a fake quote, citation or statistic. It happens because language models generate likely-sounding text instead of looking up verified facts. Reduce the risk by giving the model source material, asking for evidence and checking anything important yourself.
+
+## Common examples
+
+- Invented references or links.
+- Wrong dates, numbers or names.
+- Confident descriptions of things that do not exist.
+
+## How to protect yourself
+
+1. **Verify important facts** with trusted sources.
+2. **Provide the source text** and ask the model to answer only from it.
+3. **Ask it to say when it is unsure.**
+4. **Check any citation** before using it.
+5. **Use tools that retrieve real documents** for current information.
+
+## The bottom line
+
+Treat AI answers as drafts, not facts, especially for health, legal and financial topics.
+
+=== what-is-ai-inference
+title: What Is AI Inference? Training vs Inference Explained
+desc: Training teaches a model. Inference is using it to produce answers. Learn the difference, why inference costs matter and what affects speed.
+tags: inference, what is ai inference, training vs inference, ai inference cost, llm latency
+rel: how-do-large-language-models-work
+q: What is inference in AI? | Using a trained model to produce an output for new input, such as answering a question.
+q: How is it different from training? | Training adjusts the model's parameters using lots of data. Inference uses the finished model.
+q: Why does inference cost money? | Running large models takes computing power for every request.
+---
+Training is learning. Inference is using what was learned.
+
+## Direct answer
+
+Inference is the process of running a trained AI model on new input to get an output, such as a reply to your prompt. Training is the earlier, much heavier process of adjusting the model on data. Inference speed and cost depend on model size, input length and hardware.
+
+## Training vs inference
+
+| | Training | Inference |
+| :--- | :--- | :--- |
+| Purpose | learn patterns | produce outputs |
+| When | before release | every time you use it |
+| Cost | very large, one-off | smaller each time, adds up with usage |
+
+## What affects it
+
+- **Model size:** bigger is usually slower and costlier.
+- **Prompt and output length:** more tokens mean more work.
+- **Hardware:** specialised chips speed it up.
+- **Batching and caching:** reduce cost.
+
+## The bottom line
+
+When you use a chatbot, you are using inference. Costs and speed shape what products are possible.

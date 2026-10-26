@@ -1,0 +1,69 @@
+---
+title: "querySelector and querySelectorAll in JavaScript Explained"
+description: "Learn how to select elements with querySelector and querySelectorAll using CSS selectors, how they differ from getElementById and common mistakes."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [queryselector, javascript queryselector, queryselectorall, select element javascript, document queryselector]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Interactive Web Pages with JavaScript turns this into short, playable lessons. Free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive Web Pages with JavaScript course"
+faq:
+  - question: "What does querySelector do?"
+    answer: "It returns the first element that matches a CSS selector, or null if none match."
+  - question: "What is the difference between querySelector and querySelectorAll?"
+    answer: "querySelector returns one element. querySelectorAll returns a list of all matches."
+  - question: "Why do I get null?"
+    answer: "The element may not exist yet, or the selector may be wrong. Make sure your script runs after the page loads."
+---
+
+If you can select it in CSS, you can select it in JavaScript.
+
+## Direct answer
+
+`document.querySelector(selector)` returns the first element matching a CSS selector. `document.querySelectorAll(selector)` returns a list of all matches. Use `#id`, `.class` or tag names as in CSS.
+
+## Examples
+
+```javascript
+const title = document.querySelector("h1");
+const button = document.querySelector("#save");
+const items = document.querySelectorAll(".item");
+
+items.forEach((item) => {
+  item.classList.add("active");
+});
+```
+
+## getElementById vs querySelector
+
+| | `getElementById` | `querySelector` |
+| :--- | :--- | :--- |
+| Selector | id only | any CSS selector |
+| Returns | one element | first match |
+| Speed | very slightly faster | flexible |
+
+## Common mistakes
+
+- Selecting before the element exists. Put your script at the end of the body or use `defer`.
+- Forgetting `#` or `.`.
+- Treating `querySelectorAll` as an array. It is a list, but `forEach` works on it.
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) course turns this into short lessons you can play in a few minutes a day. It has 37 lessons, and you can start free.
+
+## The bottom line
+
+Use `querySelector` for one element and `querySelectorAll` for many.
+
+## More guides
+
+- [localStorage in JavaScript](/blog/javascript-localstorage)
+- [JavaScript fetch API](/blog/javascript-fetch-api)
+- [JavaScript Form Validation](/blog/form-validation-javascript)
+- [Javascript dom tutorial for beginners](/blog/javascript-dom-tutorial-for-beginners)
+- [Interactive Web Pages with JavaScript course](/courses/interactive-web-pages-with-javascript)

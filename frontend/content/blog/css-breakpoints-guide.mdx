@@ -1,0 +1,65 @@
+---
+title: "CSS Breakpoints: How to Choose Them for Responsive Design"
+description: "Breakpoints are the widths where your layout changes. Learn common values, why content-based breakpoints beat device-based ones and how to test them."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [css breakpoints, responsive breakpoints, common breakpoints, bootstrap breakpoints, mobile first breakpoints]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Responsive Web Design with CSS turns this into short, playable lessons. Free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive Web Design with CSS course"
+faq:
+  - question: "What are common CSS breakpoints?"
+    answer: "Many projects use around 480, 768, 1024 and 1280 pixels, but there is no single standard."
+  - question: "Should I base breakpoints on devices?"
+    answer: "Better to base them on where your content breaks, since device sizes change constantly."
+  - question: "How many breakpoints do I need?"
+    answer: "Often two or three are enough if the layout is flexible."
+---
+
+There is no magic list of breakpoints. Your content decides.
+
+## Direct answer
+
+A breakpoint is a screen width at which your layout changes. Common starting points are about 480, 768, 1024 and 1280 pixels, but the best breakpoints are where your design starts to look bad. Resize the browser, find where it breaks and add a breakpoint there.
+
+## A simple set
+
+```css
+/* base: phones */
+@media (min-width: 640px)  { /* large phones, small tablets */ }
+@media (min-width: 900px)  { /* tablets and small laptops */ }
+@media (min-width: 1200px) { /* desktops */ }
+```
+
+## How to find yours
+
+1. Open DevTools and switch to responsive mode.
+2. Drag the width slowly.
+3. Note where text lines get too long, columns squeeze or things overlap.
+4. Add a query there.
+
+## Tips
+
+- Use fewer breakpoints with flexible units (`%`, `fr`, `clamp()`).
+- Test real devices when you can.
+- Name breakpoints with CSS variables or a comment legend.
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Let the content set the breakpoints.
+
+## More guides
+
+- [Fluid Typography in CSS](/blog/fluid-typography-css)
+- [Responsive Images in HTML](/blog/responsive-images-guide)
+- [Flexbox vs Grid](/blog/flexbox-vs-grid)
+- [Css media queries explained](/blog/css-media-queries-explained)
+- [Responsive Web Design with CSS course](/courses/responsive-web-design-with-css)

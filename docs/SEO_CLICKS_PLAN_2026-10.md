@@ -41,3 +41,10 @@ Pages written this pass (all uncommitted, not pushed): 112 blog posts plus cours
 Helpers: `scripts/seo/top.mjs` (top keywords), `check-posts.mjs` (titles, descriptions, links), `check-render.mjs` (renders every new post), `add-course-seo.mjs`, `set-meta.mjs`.
 
 Left for later (marked "later" in each map): books/PDFs/videos/Reddit, local-language and city pages, sector-specific interview questions, translations.
+
+## Update 2026-10-26: topical authority pass
+
+- Supporting concepts (about 16 per course, 44 courses) are in `frontend/scripts/seo/data/topical-concepts.json`. `scripts/seo/topical.mjs` checks which are missing from the blog and which have the most autocomplete questions around them. Report: `docs/seo/topical-authority.md`.
+- 471 new supporting posts were written for the gap concepts. Sources live in `frontend/scripts/seo/posts/<course>.txt` and are built into `content/blog` by `scripts/seo/build-posts.mjs` (frontmatter, CTA, "Where Teyro fits", More guides, money disclaimer).
+- `scripts/seo/check-posts.mjs` now also validates the frontmatter YAML. One bad tag (starting with `@`) had made every blog page return 500 locally.
+- Nothing is committed or pushed yet. To ship: clean PR on top of `staging`, as for the earlier SEO PRs.

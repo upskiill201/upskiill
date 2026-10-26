@@ -1,0 +1,74 @@
+---
+title: "Bitwise Operators in C: AND, OR, XOR, NOT and Shifts"
+description: "Learn bitwise operators in C with simple examples: AND, OR, XOR, NOT and left and right shifts, plus practical uses like flags and masks."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [bitwise operators, bitwise operators in c, c bit manipulation, bit shift, bitmask]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "C for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/c-for-beginners
+  label: "See the C for Beginners course"
+faq:
+  - question: "What are bitwise operators?"
+    answer: "Operators that work on individual bits of integers, such as & for AND, | for OR, ^ for XOR, ~ for NOT and << and >> for shifts."
+  - question: "What is a bitmask?"
+    answer: "A value used with bitwise operators to read, set or clear specific bits."
+  - question: "How do I check if a bit is set?"
+    answer: "Use AND with a mask, such as value & (1 << n)."
+---
+
+Bits are the lowest level you can work at in C.
+
+## Direct answer
+
+Bitwise operators act on the individual bits of integers. `&` is AND, `|` is OR, `^` is XOR, `~` is NOT and `<<` and `>>` shift bits left and right. They are used for flags, masks, compact data and low-level programming.
+
+## Examples
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    unsigned int a = 5;   // 0101
+    unsigned int b = 3;   // 0011
+
+    printf("%u\n", a & b); // 1  (0001)
+    printf("%u\n", a | b); // 7  (0111)
+    printf("%u\n", a ^ b); // 6  (0110)
+    printf("%u\n", a << 1); // 10 (1010)
+    return 0;
+}
+```
+
+## Common patterns
+
+```c
+flags |= (1u << 3);   // set bit 3
+flags &= ~(1u << 3);  // clear bit 3
+flags ^= (1u << 3);   // toggle bit 3
+if (flags & (1u << 3)) { /* bit 3 is set */ }
+```
+
+## Cautions
+
+- Use unsigned types to avoid surprises with signs.
+- Do not confuse `&` with `&&`.
+
+## Where Teyro fits
+
+Teyro's [C for Beginners](/courses/c-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 78 lessons, and you can start free.
+
+## The bottom line
+
+Learn the four patterns above and you can handle most bit tasks.
+
+## More guides
+
+- [Undefined Behavior in C](/blog/undefined-behavior-c)
+- [Pointers in C Explained for Beginners With Simple Examples](/blog/pointers-in-c)
+- [Arrays in C](/blog/c-arrays-guide)
+- [C data types](/blog/c-data-types)
+- [C for Beginners course](/courses/c-for-beginners)

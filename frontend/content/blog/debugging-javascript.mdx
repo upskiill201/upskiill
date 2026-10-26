@@ -1,0 +1,71 @@
+---
+title: "How to Debug JavaScript: Console, Breakpoints and Common Bugs"
+description: "Learn to debug JavaScript with console.log, browser DevTools, breakpoints and a simple process for finding and fixing common errors."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [javascript debugging, how to debug javascript, chrome devtools debugging, console log debugging, javascript breakpoints]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "JavaScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/javascript-for-beginners
+  label: "See the JavaScript for Beginners course"
+faq:
+  - question: "How do I debug JavaScript?"
+    answer: "Use console.log for quick checks, browser DevTools breakpoints to pause and inspect code, and read error messages carefully."
+  - question: "What is a breakpoint?"
+    answer: "A marker that pauses your code at a certain line so you can inspect variables."
+  - question: "What are common JavaScript errors?"
+    answer: "ReferenceError, TypeError and SyntaxError."
+---
+
+Debugging is a skill, not a talent.
+
+## Direct answer
+
+To debug JavaScript, read the error message, check the line number, use `console.log` to inspect values and use your browser's DevTools to set breakpoints and step through code. Change one thing at a time and re-run.
+
+## A simple process
+
+1. **Reproduce** the bug reliably.
+2. **Read the error** in the console.
+3. **Find the line.**
+4. **Log values** around the problem.
+5. **Form a guess** and test it.
+6. **Fix and re-run.**
+
+## Tools
+
+```javascript
+console.log("value:", value);
+console.table(items);
+console.error("problem");
+debugger; // pauses when DevTools is open
+```
+
+In DevTools, open **Sources**, click a line number to add a breakpoint and use the step buttons.
+
+## Common errors
+
+| Error | Meaning |
+| :--- | :--- |
+| `ReferenceError` | variable not defined |
+| `TypeError` | wrong kind of value, such as calling undefined |
+| `SyntaxError` | code not valid |
+
+## Where Teyro fits
+
+Teyro's [JavaScript for Beginners](/courses/javascript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Slow down, make one change at a time and let the tools show you what is happening.
+
+## More guides
+
+- [ES6 Features Every JavaScript Beginner Should Know](/blog/es6-features-javascript)
+- [let vs const vs var in JavaScript](/blog/let-const-var-javascript)
+- [JavaScript Arrow Functions](/blog/javascript-arrow-functions)
+- [Javascript for beginners guide](/blog/javascript-for-beginners-guide)
+- [JavaScript for Beginners course](/courses/javascript-for-beginners)

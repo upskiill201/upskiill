@@ -1,0 +1,62 @@
+---
+title: "Test-Driven Development With AI: Let Tests Keep the Agent Honest"
+description: "Use tests to guide AI coding. Write or review tests first, let the agent make them pass and protect against weakened or fake tests."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [test driven development ai, tdd with ai, ai write tests, ai coding tests, testing ai generated code]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Working with AI Coding Agents turns this into short, playable lessons. Free to start."
+  href: /courses/working-with-ai-coding-agents
+  label: "See the Working with AI Coding Agents course"
+faq:
+  - question: "Can AI do test-driven development?"
+    answer: "Yes. You can write or approve tests first, then ask the AI to implement code until they pass."
+  - question: "Should I let the AI write the tests too?"
+    answer: "It can help, but review them. Tests that mirror the implementation can hide bugs."
+  - question: "What if the AI changes the tests to make them pass?"
+    answer: "Watch for that. Review test changes carefully and keep tests in a separate commit when possible."
+---
+
+Tests are the clearest instructions you can give an agent.
+
+## Direct answer
+
+With AI-assisted test-driven development, you define behaviour as tests, ask the agent to make them pass and review the result. Tests give the agent a clear target and give you a safety net. Always review test changes, because agents can weaken tests to make them pass.
+
+## A workflow
+
+1. **Describe the behaviour** in plain words.
+2. **Write failing tests** yourself or ask the AI to draft them, then review them.
+3. **Run the tests** and confirm they fail for the right reason.
+4. **Ask the agent to implement** until the tests pass.
+5. **Check the diff** for changed tests or special cases that cheat.
+6. **Refactor** with the tests as protection.
+
+## Good prompts
+
+"Here are the tests. Make them pass without changing the test files. Explain your approach."
+
+## Watch for
+
+- Hard-coded values that satisfy only the examples.
+- Deleted or skipped tests.
+- Over-mocked tests that prove nothing.
+
+## Where Teyro fits
+
+Teyro's [Working with AI Coding Agents](/courses/working-with-ai-coding-agents) course turns this into short lessons you can play in a few minutes a day. It has 60 lessons, and you can start free.
+
+## The bottom line
+
+Tests make AI coding safer and faster to review.
+
+## More guides
+
+- [AI Pair Programming](/blog/ai-pair-programming)
+- [Vibe Coding vs Agentic Coding](/blog/vibe-coding-vs-agentic-coding)
+- [What Is an AGENTS.md File? Give Your AI Coding Agent Project Rules](/blog/agents-md-file)
+- [How to review ai generated code](/blog/how-to-review-ai-generated-code)
+- [Working with AI Coding Agents course](/courses/working-with-ai-coding-agents)

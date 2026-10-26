@@ -1,0 +1,764 @@
+=== css-media-queries-explained
+title: CSS Media Queries Explained: Syntax, Breakpoints and Examples
+desc: Learn how CSS media queries work: min-width and max-width, common breakpoints, orientation, prefers-color-scheme and a mobile-first example.
+tags: media queries, css media queries, media query examples, min-width max-width, responsive css
+rel: what-is-responsive-web-design
+q: What is a media query? | A CSS rule that applies styles only when conditions such as screen width or user preferences are met.
+q: What is the difference between min-width and max-width? | min-width applies styles at that width and above. max-width applies styles at that width and below.
+q: Should I use mobile-first? | Usually yes. Write base styles for small screens and add min-width queries for larger ones.
+---
+Media queries are how one stylesheet adapts to many screens.
+
+## Direct answer
+
+A media query applies CSS only when a condition is true, such as a minimum screen width. Write base styles for small screens, then add `@media (min-width: ...)` blocks for larger ones. You can also query orientation, colour scheme and reduced motion.
+
+## Mobile-first example
+
+```css
+.layout {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1100px) {
+  .layout {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+```
+
+## Other useful queries
+
+```css
+@media (prefers-color-scheme: dark) { body { background: #111; color: #eee; } }
+@media (prefers-reduced-motion: reduce) { * { animation: none; } }
+@media (orientation: landscape) { .hero { min-height: 60vh; } }
+@media print { nav { display: none; } }
+```
+
+## Tips
+
+- Choose breakpoints where your design breaks, not for specific devices.
+- Keep queries near the components they change.
+
+## The bottom line
+
+Start small, add queries as the layout needs space. See [breakpoints](/blog/css-breakpoints-guide).
+
+=== viewport-meta-tag
+title: The Viewport Meta Tag: Why Your Site Looks Tiny on Mobile
+desc: Learn what the viewport meta tag does, the correct tag to use, what the options mean and how to fix a mobile page that looks zoomed out.
+tags: viewport meta tag, viewport meta tag explained, meta viewport mobile, width=device-width, fix mobile zoom
+rel: what-is-responsive-web-design
+q: What does the viewport meta tag do? | It tells mobile browsers to match the page width to the device width instead of pretending to be a wide desktop screen.
+q: What is the correct viewport tag? | meta name="viewport" content="width=device-width, initial-scale=1".
+q: Should I disable zooming? | No. Disabling zoom harms accessibility.
+---
+Without this tag, a phone treats your site as a tiny desktop page.
+
+## Direct answer
+
+Add `<meta name="viewport" content="width=device-width, initial-scale=1">` inside the `<head>`. It tells mobile browsers to use the device width and not zoom out to fit a desktop layout. Without it, media queries behave unexpectedly.
+
+## Example
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My site</title>
+</head>
+```
+
+## What the parts mean
+
+| Part | Meaning |
+| :--- | :--- |
+| `width=device-width` | use the screen's real width |
+| `initial-scale=1` | start with no zoom |
+
+## Avoid
+
+- `user-scalable=no` or `maximum-scale=1`, which block pinch-zoom and hurt accessibility.
+
+## The bottom line
+
+One line in the head makes responsive CSS work on phones.
+
+=== css-breakpoints-guide
+title: CSS Breakpoints: How to Choose Them for Responsive Design
+desc: Breakpoints are the widths where your layout changes. Learn common values, why content-based breakpoints beat device-based ones and how to test them.
+tags: css breakpoints, responsive breakpoints, common breakpoints, bootstrap breakpoints, mobile first breakpoints
+rel: css-media-queries-explained
+q: What are common CSS breakpoints? | Many projects use around 480, 768, 1024 and 1280 pixels, but there is no single standard.
+q: Should I base breakpoints on devices? | Better to base them on where your content breaks, since device sizes change constantly.
+q: How many breakpoints do I need? | Often two or three are enough if the layout is flexible.
+---
+There is no magic list of breakpoints. Your content decides.
+
+## Direct answer
+
+A breakpoint is a screen width at which your layout changes. Common starting points are about 480, 768, 1024 and 1280 pixels, but the best breakpoints are where your design starts to look bad. Resize the browser, find where it breaks and add a breakpoint there.
+
+## A simple set
+
+```css
+/* base: phones */
+@media (min-width: 640px)  { /* large phones, small tablets */ }
+@media (min-width: 900px)  { /* tablets and small laptops */ }
+@media (min-width: 1200px) { /* desktops */ }
+```
+
+## How to find yours
+
+1. Open DevTools and switch to responsive mode.
+2. Drag the width slowly.
+3. Note where text lines get too long, columns squeeze or things overlap.
+4. Add a query there.
+
+## Tips
+
+- Use fewer breakpoints with flexible units (`%`, `fr`, `clamp()`).
+- Test real devices when you can.
+- Name breakpoints with CSS variables or a comment legend.
+
+## The bottom line
+
+Let the content set the breakpoints.
+
+=== fluid-typography-css
+title: Fluid Typography in CSS: Text That Scales With the Screen
+desc: Learn fluid typography with clamp() and viewport units to make headings scale smoothly between a minimum and maximum size, without media queries.
+tags: fluid typography, css fluid font size, clamp typography, responsive font size, vw font size
+rel: clamp-css-function
+q: What is fluid typography? | Text that scales smoothly with the viewport width instead of jumping between sizes at breakpoints.
+q: How do I make fluid font sizes? | Use clamp with a minimum size, a preferred value using vw and a maximum size.
+q: Is vw alone enough? | No. Pure vw can get too small or too large and ignores user font settings. Combine it with rem in clamp.
+---
+Big headings on desktop shrink gracefully on phones.
+
+## Direct answer
+
+Use the CSS `clamp(min, preferred, max)` function to set a font size that scales with the screen but never goes below a minimum or above a maximum. Combine `rem` and `vw` so users' font preferences still count.
+
+## Example
+
+```css
+h1 {
+  font-size: clamp(2rem, 1.2rem + 4vw, 4rem);
+}
+
+p {
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
+}
+```
+
+## How it works
+
+1. Below the minimum width, the size stays at `2rem`.
+2. In between, it grows with the viewport.
+3. Past the maximum, it stops at `4rem`.
+
+## Tips
+
+- Add a `rem` part to the preferred value so zoom and user settings still work.
+- Test at several widths.
+- Keep line length around 60 to 75 characters with `max-width: 65ch`.
+
+## The bottom line
+
+Fluid type removes many font-size media queries.
+
+=== responsive-images-guide
+title: Responsive Images in HTML: srcset, sizes and the picture Element
+desc: Serve the right image to every screen. Learn max-width, srcset, sizes and the picture element, plus tips for performance and layout shift.
+tags: responsive images, srcset sizes, picture element, responsive image html, image optimization
+rel: srcset-and-sizes
+q: How do I make an image responsive? | Set max-width to 100 percent and height to auto in CSS, and provide multiple sizes with srcset.
+q: What is the picture element for? | It lets the browser choose between different image sources, such as different formats or crops for different screens.
+q: How do I avoid layout shift? | Set width and height attributes or use aspect-ratio so space is reserved before the image loads.
+---
+The same big photo on a small phone wastes data and slows the page.
+
+## Direct answer
+
+Make images flexible with `max-width: 100%; height: auto;`, offer several sizes with `srcset` and `sizes`, and use `<picture>` when you need different formats or art direction. Set `width` and `height` to prevent layout shift.
+
+## Basic CSS
+
+```css
+img {
+  max-width: 100%;
+  height: auto;
+}
+```
+
+## srcset
+
+```html
+<img
+  src="photo-800.jpg"
+  srcset="photo-400.jpg 400w, photo-800.jpg 800w, photo-1600.jpg 1600w"
+  sizes="(min-width: 900px) 50vw, 100vw"
+  width="800" height="533"
+  alt="A group of friends hiking at sunrise"
+  loading="lazy">
+```
+
+## picture element
+
+```html
+<picture>
+  <source type="image/avif" srcset="photo.avif">
+  <source type="image/webp" srcset="photo.webp">
+  <img src="photo.jpg" alt="Sunrise over hills" width="800" height="533">
+</picture>
+```
+
+## Tips
+
+- Compress images.
+- Use modern formats like WebP or AVIF with a fallback.
+- Lazy-load images below the fold.
+
+## The bottom line
+
+Right size, right format, reserved space.
+
+=== flexbox-vs-grid
+title: Flexbox vs Grid: Which Should You Use and When?
+desc: Flexbox is one-dimensional and Grid is two-dimensional. Compare them with examples, learn when to use each and how they work together.
+tags: flexbox vs grid, css flexbox vs grid, flexbox or grid, css layout, when to use grid
+rel: css-grid-explained
+q: What is the main difference between Flexbox and Grid? | Flexbox lays out items in one direction, a row or a column. Grid lays out items in rows and columns together.
+q: Which is better? | Neither. Use Flexbox for components and rows of items, and Grid for page and card layouts.
+q: Can I use both together? | Yes. A grid layout can contain flex components.
+---
+They solve different problems, and good developers use both.
+
+## Direct answer
+
+Use Flexbox when you are arranging items along a single line, such as a navigation bar or a row of buttons. Use Grid when you need rows and columns together, such as a page layout or a gallery. They work well combined.
+
+## Comparison
+
+| | Flexbox | Grid |
+| :--- | :--- | :--- |
+| Dimension | one (row or column) | two (rows and columns) |
+| Starts from | content | layout |
+| Good for | nav bars, toolbars, centring | page layouts, galleries |
+
+## Flexbox example
+
+```css
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+```
+
+## Grid example
+
+```css
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+```
+
+## A quick test
+
+If you think in "a row of things", try Flexbox. If you think in "a table of things", try Grid.
+
+## The bottom line
+
+Learn both and combine them.
+
+=== css-container-queries
+title: CSS Container Queries: Style Components Based on Their Container
+desc: Container queries let a component respond to the size of its container, not the viewport. Learn the syntax, when they beat media queries and a card example.
+tags: container queries, css container queries, container query example, responsive components, container query syntax
+rel: css-media-queries-explained
+q: What are container queries? | CSS rules that apply styles to an element based on the size of a parent container rather than the viewport.
+q: How are they different from media queries? | Media queries look at the viewport. Container queries look at the component's container.
+q: Are they supported in browsers? | They are supported in current major browsers. Check compatibility for your audience.
+---
+A card in a narrow sidebar and the same card in a wide main column should both look right.
+
+## Direct answer
+
+Container queries apply styles based on the size of a container element. Mark a parent with `container-type: inline-size`, then use `@container (min-width: ...)` to change its children. They make components reusable wherever they are placed.
+
+## Example
+
+```css
+.card-wrap {
+  container-type: inline-size;
+}
+
+.card {
+  display: grid;
+  gap: 12px;
+}
+
+@container (min-width: 480px) {
+  .card {
+    grid-template-columns: 160px 1fr;
+  }
+}
+```
+
+```html
+<div class="card-wrap">
+  <article class="card">
+    <img src="a.jpg" alt="">
+    <div>Text</div>
+  </article>
+</div>
+```
+
+## When to use
+
+- Reusable components placed in different contexts.
+- Design systems.
+
+## When media queries are better
+
+- Page-level layout decisions.
+- User preferences like dark mode.
+
+## The bottom line
+
+Media queries for the page, container queries for components.
+
+=== clamp-css-function
+title: CSS clamp(): Min, Preferred and Max Values Explained
+desc: clamp() sets a value that stays between a minimum and a maximum. Learn how to use it for font sizes, spacing and widths with clear examples.
+tags: clamp css, css clamp function, clamp font size, clamp min max, css min max functions
+rel: fluid-typography-css
+q: What does clamp do in CSS? | It returns a value that stays between a minimum and a maximum, using a preferred value in between.
+q: What is the syntax? | clamp(minimum, preferred, maximum).
+q: What can I use it for? | Font sizes, padding, margins, widths and any length value.
+---
+One function that replaces many media queries.
+
+## Direct answer
+
+`clamp(min, preferred, max)` returns the preferred value, but never smaller than `min` or larger than `max`. Use it for fluid font sizes, padding and widths that adapt smoothly to the screen.
+
+## Examples
+
+```css
+.container {
+  width: clamp(320px, 90%, 1100px);
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+
+h1 {
+  font-size: clamp(1.75rem, 1rem + 3vw, 3rem);
+}
+```
+
+## Related functions
+
+```css
+width: min(100%, 600px);  /* the smaller of two */
+width: max(50%, 300px);   /* the larger of two */
+```
+
+## Tips
+
+- Combine units like `rem` and `vw`.
+- Test the extremes: narrow phones and wide monitors.
+
+## The bottom line
+
+clamp() makes fluid design simple and readable.
+
+=== srcset-and-sizes
+title: srcset and sizes Explained: How Browsers Pick an Image
+desc: Understand the srcset and sizes attributes: width descriptors, density descriptors, how the browser chooses an image and common mistakes.
+tags: srcset, sizes attribute, srcset explained, responsive image srcset, image width descriptors
+rel: responsive-images-guide
+q: What does srcset do? | It gives the browser a list of image files and their widths so it can choose the best one.
+q: What does the sizes attribute do? | It tells the browser how wide the image will be displayed, so it can choose from srcset before layout is known.
+q: Do I always need sizes? | Use it with width descriptors. Without it, the browser assumes the image fills the viewport.
+---
+You offer options. The browser picks.
+
+## Direct answer
+
+`srcset` lists image candidates with their pixel widths, such as `photo-800.jpg 800w`. `sizes` describes how wide the image will appear in your layout. The browser uses both, plus screen density, to download the best image.
+
+## Example
+
+```html
+<img
+  src="cat-800.jpg"
+  srcset="cat-400.jpg 400w, cat-800.jpg 800w, cat-1200.jpg 1200w"
+  sizes="(min-width: 1000px) 400px, 100vw"
+  alt="A cat on a windowsill"
+  width="800" height="600">
+```
+
+## Reading it
+
+- Screens 1000 pixels and wider show the image about 400 pixels wide.
+- Smaller screens show it at full width.
+
+## Density descriptors
+
+```html
+<img src="logo.png" srcset="logo.png 1x, logo@2x.png 2x" alt="Logo">
+```
+
+## Mistakes
+
+- Using `w` descriptors without `sizes`.
+- Making files that are not actually the stated width.
+- Forgetting `alt`.
+
+## The bottom line
+
+Provide choices and describe the layout. The browser handles the rest.
+
+=== css-min-max-functions
+title: CSS min(), max() and clamp(): When to Use Each
+desc: Compare the CSS comparison functions min, max and clamp with examples for widths, padding and font sizes, and tips on mixing units.
+tags: css min max, css min function, css max function, css comparison functions, responsive width css
+rel: clamp-css-function
+q: What does min do in CSS? | It picks the smallest of its values, useful for setting a maximum size.
+q: What does max do? | It picks the largest of its values, useful for setting a minimum size.
+q: When do I use clamp instead? | When you want both a minimum and a maximum with a flexible value in between.
+---
+Three small functions that give CSS some logic.
+
+## Direct answer
+
+`min()` returns the smallest value, `max()` the largest and `clamp()` keeps a value between a minimum and maximum. Use them to create flexible widths and spacing without media queries.
+
+## Examples
+
+```css
+.box {
+  width: min(100%, 600px);   /* never wider than 600px */
+}
+
+.sidebar {
+  width: max(240px, 20%);    /* at least 240px */
+}
+
+.title {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+}
+```
+
+## Quick guide
+
+| Function | Think of it as |
+| :--- | :--- |
+| `min(a, b)` | a ceiling |
+| `max(a, b)` | a floor |
+| `clamp(a, b, c)` | floor, target and ceiling |
+
+## The bottom line
+
+Fewer media queries, more fluid layouts.
+
+=== responsive-navigation-menu
+title: How to Build a Responsive Navigation Menu With CSS
+desc: Build a mobile-friendly navigation: a simple wrapping nav, a hamburger toggle with a button, accessible markup and breakpoints. Code included.
+tags: responsive navigation, responsive navbar css, hamburger menu, mobile menu, accessible navigation
+rel: css-media-queries-explained
+q: How do I make a navbar responsive? | Use Flexbox for the layout, collapse links into a toggled menu on small screens and use a media query to show them inline on larger screens.
+q: How do I make a hamburger menu accessible? | Use a real button with an accessible name and aria-expanded that updates when the menu opens.
+q: Can I do it without JavaScript? | A simple wrapping nav needs no JavaScript. A toggle needs a little to track state and update aria-expanded.
+---
+Navigation is the first thing that needs to work on a phone.
+
+## Direct answer
+
+Build navigation with a `nav` element and a list of links. On small screens, hide the list and show a toggle button. On wider screens, show the links in a row. Use `aria-expanded` and a real button so the menu is accessible.
+
+## HTML
+
+```html
+<nav aria-label="Main">
+  <button class="menu-btn" aria-expanded="false" aria-controls="menu">Menu</button>
+  <ul id="menu" class="menu">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/contact">Contact</a></li>
+  </ul>
+</nav>
+```
+
+## CSS
+
+```css
+.menu { display: none; list-style: none; padding: 0; }
+.menu.open { display: block; }
+
+@media (min-width: 768px) {
+  .menu-btn { display: none; }
+  .menu { display: flex; gap: 24px; }
+}
+```
+
+## JavaScript
+
+```javascript
+const btn = document.querySelector(".menu-btn");
+const menu = document.querySelector("#menu");
+
+btn.addEventListener("click", () => {
+  const open = menu.classList.toggle("open");
+  btn.setAttribute("aria-expanded", String(open));
+});
+```
+
+## The bottom line
+
+A button, a list and one media query cover most sites.
+
+=== rem-vs-em
+title: rem vs em in CSS: The Difference and When to Use Each
+desc: rem is relative to the root font size and em to the parent. Learn how they compound, examples and a simple rule for choosing between them.
+tags: rem vs em, css rem, css em, rem and em units, relative units css
+rel: css-units-rem-em-px
+q: What is the difference between rem and em? | rem is relative to the root element's font size. em is relative to the current element's font size, which can compound when nested.
+q: Which should I use for font sizes? | rem is predictable. Use em when you want spacing to scale with a component's text size.
+q: Why do em units get confusing? | Because nested elements multiply, so a 1.2em inside another 1.2em becomes larger than expected.
+---
+Both scale with text size, but from different starting points.
+
+## Direct answer
+
+`rem` is based on the root (`html`) font size, so it is consistent everywhere. `em` is based on the element's own font size, so nested elements can compound. Use `rem` for most sizing and `em` for things that should scale with their own text, such as button padding.
+
+## Example
+
+```css
+html { font-size: 100%; }     /* 16px by default */
+
+h1 { font-size: 2rem; }       /* 32px */
+
+.button {
+  font-size: 1rem;
+  padding: 0.5em 1em;         /* scales with the button's text */
+}
+```
+
+## The compounding trap
+
+```css
+ul { font-size: 1.2em; }
+ul ul { font-size: 1.2em; }   /* now 1.44 times the base */
+```
+
+## Rule of thumb
+
+| Use | For |
+| :--- | :--- |
+| `rem` | font sizes, spacing, layout |
+| `em` | component padding that follows its text |
+
+## The bottom line
+
+Default to `rem`, reach for `em` on purpose.
+
+=== responsive-tables-css
+title: Responsive Tables: How to Make HTML Tables Work on Mobile
+desc: Tables are hard on small screens. Learn simple patterns for responsive tables: horizontal scroll, stacked rows and priority columns with CSS.
+tags: responsive tables, responsive table css, html table mobile, scrollable table, stacked table
+rel: what-is-responsive-web-design
+q: How do I make a table responsive? | Wrap it in a container with horizontal scrolling, or restyle rows as stacked blocks on small screens.
+q: Is overflow-x scroll okay? | Yes, for data tables. Add visual cues and keep the first column readable.
+q: Should I use tables for layout? | No. Use tables only for tabular data and use Grid or Flexbox for layout.
+---
+A table with six columns will not fit on a 360 pixel screen.
+
+## Direct answer
+
+The simplest responsive table is to wrap it in a container with `overflow-x: auto` so it scrolls sideways. For a more phone-friendly view, restyle each row as a stacked block with labels from `data-label` attributes.
+
+## Scrolling table
+
+```html
+<div class="table-wrap">
+  <table>...</table>
+</div>
+```
+
+```css
+.table-wrap {
+  overflow-x: auto;
+}
+table {
+  border-collapse: collapse;
+  min-width: 600px;
+}
+```
+
+## Stacked rows
+
+```css
+@media (max-width: 600px) {
+  table, thead, tbody, tr, td { display: block; }
+  thead { position: absolute; left: -9999px; }
+  td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    display: block;
+  }
+}
+```
+
+```html
+<td data-label="Price">12.00</td>
+```
+
+## Tips
+
+- Keep key columns visible.
+- Use `th scope` for accessibility.
+- Do not hide important data.
+
+## The bottom line
+
+Scroll for dense data, stack for short rows.
+
+=== css-aspect-ratio
+title: CSS aspect-ratio: Keep Images and Videos in Proportion
+desc: Learn the aspect-ratio property to keep boxes, images and video embeds in proportion, replace the old padding hack and avoid layout shift.
+tags: aspect ratio css, css aspect-ratio property, responsive video embed, 16 9 aspect ratio, prevent layout shift
+rel: responsive-images-guide
+q: What is the aspect-ratio property? | A CSS property that sets the preferred width to height ratio of an element.
+q: How do I embed a responsive video? | Set aspect-ratio 16 / 9 on the container or iframe and width to 100 percent.
+q: Does aspect-ratio replace the padding hack? | Yes, in modern browsers it is simpler and clearer.
+---
+Layouts jump when images load late. `aspect-ratio` reserves the space.
+
+## Direct answer
+
+The `aspect-ratio` property sets the ratio of an element's width to its height, such as `16 / 9`. It keeps boxes proportional as they scale and reserves space for images and embeds so the layout does not shift.
+
+## Examples
+
+```css
+.video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.avatar {
+  width: 64px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+```
+
+```html
+<iframe class="video" src="https://www.youtube.com/embed/xyz" title="Video"></iframe>
+```
+
+## Tips
+
+- Combine with `object-fit: cover` for photos.
+- Also set `width` and `height` attributes on images.
+
+## The bottom line
+
+One line replaces an old hack and prevents jumpy pages.
+
+=== css-grid-layout-patterns
+title: 5 CSS Grid Layout Patterns Every Beginner Should Know
+desc: Five practical CSS Grid layouts with code: holy grail page, responsive cards, sidebar, masonry-like columns and a centred hero.
+tags: css grid layout, css grid examples, grid layout patterns, holy grail layout, responsive grid
+rel: css-grid-explained
+q: What are common CSS Grid layouts? | Page layouts with header, sidebar, main and footer, responsive card grids and centred content.
+q: How do I centre something with Grid? | Use display grid with place-items center on the container.
+q: Can Grid replace frameworks? | For layout, often yes, though you may still use frameworks for components.
+---
+Five patterns cover most pages.
+
+## Direct answer
+
+The most useful CSS Grid layouts are the page layout with named areas, auto-fitting card grids, sidebar layouts, equal-height columns and centred content. Each takes only a few lines.
+
+## 1. Page layout
+
+```css
+.page {
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "sidebar main"
+    "footer footer";
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+header { grid-area: header; }
+aside  { grid-area: sidebar; }
+main   { grid-area: main; }
+footer { grid-area: footer; }
+```
+
+## 2. Responsive cards
+
+```css
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+```
+
+## 3. Sidebar that stacks on mobile
+
+```css
+.layout { display: grid; gap: 24px; }
+@media (min-width: 800px) {
+  .layout { grid-template-columns: 1fr 300px; }
+}
+```
+
+## 4. Centre anything
+
+```css
+.center {
+  display: grid;
+  place-items: center;
+  min-height: 60vh;
+}
+```
+
+## 5. Full-bleed within a column
+
+```css
+.wrap { display: grid; grid-template-columns: 1fr min(65ch, 100%) 1fr; }
+.wrap > * { grid-column: 2; }
+.wrap > .full { grid-column: 1 / -1; }
+```
+
+## The bottom line
+
+Learn these five and you can build most layouts.

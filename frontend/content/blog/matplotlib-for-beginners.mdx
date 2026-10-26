@@ -1,0 +1,72 @@
+---
+title: "Matplotlib for Beginners: Line, Bar and Scatter Charts in Python"
+description: "Learn Matplotlib basics: making line, bar, scatter and histogram plots, adding titles and labels, and saving figures, with short code examples."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [matplotlib, matplotlib tutorial, python charts, matplotlib for beginners, data visualization python]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Data Science for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/data-science-for-beginners
+  label: "See the Data Science for Beginners course"
+faq:
+  - question: "What is Matplotlib?"
+    answer: "A Python library for creating static, animated and interactive charts."
+  - question: "How do I make a simple chart?"
+    answer: "Import matplotlib.pyplot, call plot or bar with your data, add labels and call show."
+  - question: "How do I save a chart?"
+    answer: "Use plt.savefig with a file name."
+---
+
+Charts turn numbers into understanding.
+
+## Direct answer
+
+Matplotlib creates charts in Python. Import `matplotlib.pyplot` as `plt`, call a plotting function such as `plot`, `bar`, `scatter` or `hist`, add a title and axis labels and show or save the figure.
+
+## Examples
+
+```python
+import matplotlib.pyplot as plt
+
+months = ["Jan", "Feb", "Mar", "Apr"]
+sales = [120, 150, 90, 180]
+
+plt.plot(months, sales, marker="o")
+plt.title("Monthly sales")
+plt.xlabel("Month")
+plt.ylabel("Units")
+plt.show()
+```
+
+```python
+plt.bar(months, sales)
+plt.scatter([1, 2, 3, 4], [2, 4, 5, 8])
+plt.hist([1, 2, 2, 3, 3, 3, 4])
+```
+
+## Good chart habits
+
+1. Choose the right chart: line for trends, bar for comparisons, scatter for relationships.
+2. Label axes and add units.
+3. Keep it simple.
+4. Use colour with purpose and check accessibility.
+5. Save with `plt.savefig("chart.png", dpi=150)`.
+
+## Where Teyro fits
+
+Teyro's [Data Science for Beginners](/courses/data-science-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+A clear chart often communicates more than a table.
+
+## More guides
+
+- [Exploratory Data Analysis (EDA)](/blog/exploratory-data-analysis)
+- [Jupyter Notebook for Beginners](/blog/jupyter-notebook-guide)
+- [Mean, Median and Mode](/blog/mean-median-mode)
+- [What is data science for beginners](/blog/what-is-data-science-for-beginners)
+- [Data Science for Beginners course](/courses/data-science-for-beginners)

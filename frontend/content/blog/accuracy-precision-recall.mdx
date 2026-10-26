@@ -1,0 +1,60 @@
+---
+title: "Accuracy, Precision and Recall: What They Mean and When to Use Each"
+description: "Learn accuracy, precision, recall and F1 with a clear example, why accuracy can mislead on imbalanced data and how to choose the right metric."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [accuracy precision recall, precision vs recall, f1 score, classification metrics, imbalanced data]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Machine Learning for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/machine-learning-for-beginners
+  label: "See the Machine Learning for Beginners course"
+faq:
+  - question: "What is the difference between precision and recall?"
+    answer: "Precision is how many predicted positives were correct. Recall is how many actual positives were found."
+  - question: "Why can accuracy be misleading?"
+    answer: "If one class is rare, a model that always predicts the common class can have high accuracy but be useless."
+  - question: "What is the F1 score?"
+    answer: "The harmonic mean of precision and recall, balancing the two."
+---
+
+One number is rarely enough to judge a model.
+
+## Direct answer
+
+Accuracy is the share of all predictions that are correct. Precision is the share of predicted positives that are truly positive. Recall is the share of actual positives that the model found. Choose the metric by cost: use recall when missing a case is costly and precision when false alarms are costly.
+
+## Example
+
+A fraud model checks 1,000 transactions. 10 are fraud. It flags 8, of which 6 are really fraud.
+
+- Precision = 6 ÷ 8 = 75 percent
+- Recall = 6 ÷ 10 = 60 percent
+
+A model that never flags fraud would have 99 percent accuracy and 0 percent recall.
+
+## When to use which
+
+| Situation | Focus |
+| :--- | :--- |
+| Medical screening | recall |
+| Spam filter (avoid losing real mail) | precision |
+| Balanced need | F1 |
+
+## Where Teyro fits
+
+Teyro's [Machine Learning for Beginners](/courses/machine-learning-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 200 lessons, and you can start free.
+
+## The bottom line
+
+Pick the metric that matches the real-world cost of mistakes.
+
+## More guides
+
+- [Feature Engineering](/blog/feature-engineering-explained)
+- [Gradient Descent Explained](/blog/gradient-descent-explained)
+- [Classification vs Regression in Machine Learning](/blog/classification-vs-regression)
+- [Confusion matrix explained](/blog/confusion-matrix-explained)
+- [Machine Learning for Beginners course](/courses/machine-learning-for-beginners)
