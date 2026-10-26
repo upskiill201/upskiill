@@ -1,0 +1,528 @@
+=== smishing-scams
+title: Smishing: What Text Message Scams Look Like and How to Respond
+desc: Smishing is phishing by text message. Learn the common examples, warning signs, what to do if you click and how to report and block scam texts.
+tags: smishing, smishing scams, text message scams, sms phishing, fake text messages
+rel: how-to-spot-a-scam, common-financial-scams
+q: What is smishing? | It is phishing carried out by SMS or messaging apps, where scammers try to trick you into clicking a link or sharing information.
+q: What should I do if I clicked a link? | Do not enter details, close the page, update passwords, run a security check and contact your bank if you shared financial information.
+q: How do I report scam texts? | Forward them to your country's scam-reporting number or report them in your messaging app, and block the sender.
+---
+A text arrives about a parcel, a bank problem or a prize. It is built to make you act fast.
+
+## Direct answer
+
+Smishing is a scam sent by text message that tries to trick you into clicking a link, calling a number or sharing personal details. Common messages claim a delivery problem, an account lock, a refund or an unpaid toll. Do not click, check the claim through the official app or website, then report and block the sender.
+
+## Common examples
+
+- "Your parcel could not be delivered. Pay a fee."
+- "Your bank account is locked. Verify now."
+- "You have a refund waiting."
+- A message from a "family member" with a new number asking for money.
+
+## Warning signs
+
+1. Urgency or threats.
+2. A link from an unknown number.
+3. Spelling or odd phrasing.
+4. Requests for passwords, codes or payment.
+5. A sender you do not usually hear from.
+
+## What to do
+
+- **Do not click or reply.**
+- **Contact the organisation** using a number or app you already trust.
+- **Report and block** the number.
+- **If you clicked,** change passwords and tell your bank if details were shared.
+
+## The bottom line
+
+Pause, verify independently and never rush because a text says so.
+
+=== romance-scam
+title: Romance Scams: Red Flags and What to Do If You're Targeted
+desc: Romance scams use a fake relationship to get money. Learn the red flags, how the scam unfolds, how to protect yourself and where to report it.
+tags: romance scam, romance scams red flags, online dating scam, catfishing scam, how to spot a romance scammer
+rel: how-to-spot-a-scam, common-financial-scams
+q: What is a romance scam? | A scammer builds a fake romantic relationship online to earn trust and then asks for money or personal information.
+q: What are the warning signs? | They avoid video calls, move quickly to professing love, have a crisis requiring money and ask for unusual payments.
+q: Where can I report it? | Report it to the platform, your bank and your country's fraud reporting service.
+---
+Scammers invest time in your feelings before they ask for money.
+
+## Direct answer
+
+A romance scam is when someone pretends to love you online to gain your trust and then asks for money, gift cards or personal details. Red flags include quick declarations of love, refusing video calls, always having a crisis and asking for unusual payment methods. Never send money to someone you have not met in person.
+
+## How it usually unfolds
+
+1. A friendly contact on a dating app or social media.
+2. Fast, intense affection.
+3. Excuses for not meeting or video calling.
+4. A crisis: medical bill, travel problem, investment opportunity.
+5. Requests for money, often through hard-to-trace methods.
+
+## Protect yourself
+
+- Reverse image search their photos.
+- Insist on video calls early.
+- Never send money, gift cards or crypto.
+- Talk to friends or family about the relationship.
+- Do not share intimate images, which can be used for blackmail.
+
+## If it happens
+
+Stop contact, tell your bank, keep records and report to the platform and fraud authorities. You are not alone, and it is not your fault.
+
+## The bottom line
+
+Real partners do not ask you to send money to prove love.
+
+=== ponzi-scheme
+title: Ponzi Scheme: How It Works and How to Spot One
+desc: A Ponzi scheme pays early investors with money from new ones. Learn how it works, famous warning signs and how to protect yourself before investing.
+tags: ponzi scheme, what is a ponzi scheme, ponzi scheme examples, how ponzi schemes work, investment fraud
+rel: investment-scams, pyramid-scheme-vs-ponzi
+q: What is a Ponzi scheme? | It is an investment fraud where returns to earlier investors are paid from the money of newer investors, not from real profits.
+q: Why do they collapse? | They need a constant flow of new money. When recruits slow, payouts stop and the scheme falls apart.
+q: How can I spot one? | Be wary of guaranteed high returns, secrecy, pressure to reinvest and trouble withdrawing money.
+---
+Returns that look too steady and too high are a warning.
+
+## Direct answer
+
+A Ponzi scheme is a fraud that pays existing investors using money from new investors rather than real profit. It collapses when new money dries up. Warning signs include guaranteed high returns, unclear strategies, pressure to reinvest and difficulty cashing out.
+
+## How it works
+
+1. The operator promises high, steady returns.
+2. Early investors get paid, which builds trust.
+3. They recommend it to others.
+4. New money pays old investors.
+5. When recruitment slows or many withdraw, it collapses.
+
+## Red flags
+
+- Guaranteed or unusually steady returns.
+- A secret or vague strategy.
+- Unlicensed sellers.
+- Pressure to bring in friends.
+- Delays in withdrawing money.
+
+## Protect yourself
+
+- Check the seller and product with your country's financial regulator.
+- Ask how returns are generated.
+- Never invest money you cannot afford to lose.
+- Get independent advice.
+
+## The bottom line
+
+If an investment promises high returns with little risk, assume something is wrong. This is general education, not advice.
+
+=== pyramid-scheme-vs-ponzi
+title: Pyramid Scheme vs Ponzi Scheme: The Differences
+desc: Both depend on new money, but pyramid schemes pay for recruiting while Ponzi schemes claim investment returns. Learn how they differ and how to spot each.
+tags: pyramid scheme, pyramid scheme vs ponzi scheme, what is a pyramid scheme, multi level marketing scam, pyramid scheme examples
+rel: ponzi-scheme, how-to-spot-a-scam
+q: What is a pyramid scheme? | A scheme where participants earn mainly by recruiting others who pay to join, rather than from selling real products.
+q: How is it different from a Ponzi scheme? | A Ponzi scheme promises investment returns paid from new investors. A pyramid scheme pays participants for recruiting.
+q: Is multi-level marketing the same thing? | Not always, but some MLMs resemble pyramid schemes. Check how people earn and whether real sales exist.
+---
+Both collapse. They just fail in different ways.
+
+## Direct answer
+
+In a pyramid scheme, you pay to join and earn mainly by recruiting others, and money flows up through levels. In a Ponzi scheme, you invest and are paid fake "returns" from newer investors' money. Both fail when new money slows and both are illegal in many countries.
+
+## Key differences
+
+| | Pyramid scheme | Ponzi scheme |
+| :--- | :--- | :--- |
+| Promise | Earn by recruiting | Earn by investing |
+| Money flow | Up the levels | From new to old investors |
+| Role of products | Often token | Often vague investments |
+
+## Warning signs
+
+- Pay to join or buy a starter kit.
+- Income depends on recruiting.
+- Pressure to bring in friends and family.
+- Vague answers about real product sales.
+
+## The bottom line
+
+If recruiting matters more than selling, walk away. This is general education, not advice.
+
+=== pig-butchering-scam
+title: Pig Butchering Scam: How It Works and How to Avoid It
+desc: Pig butchering scams build trust over weeks, then push you into fake crypto investments. Learn the steps, warning signs and what to do if you are targeted.
+tags: pig butchering scam, pig butchering, crypto romance scam, fake investment platform, investment fraud
+rel: crypto-scams, romance-scam
+q: What is a pig butchering scam? | A long-con scam where a scammer builds a friendship or romance and then persuades you to put money into a fake investment platform.
+q: Why is it called that? | The scammer "fattens up" the victim's trust and then takes their money.
+q: How can I avoid it? | Be suspicious of strangers who bring up investing, never use platforms recommended by someone you have not met and verify every platform with a regulator.
+---
+It often starts with "Sorry, wrong number."
+
+## Direct answer
+
+A pig butchering scam is a long-running fraud in which a scammer builds trust with a victim, often through a wrong-number message or dating app, and then guides them to invest in a fake platform, usually involving crypto. The app shows fake profits, but withdrawals are blocked or require more fees.
+
+## How it unfolds
+
+1. **Contact:** a random message or friendly chat.
+2. **Trust:** daily messages for weeks.
+3. **The tip:** "my uncle taught me an investment trick".
+4. **A small win:** you invest a little and can withdraw.
+5. **A big investment:** you add more.
+6. **The trap:** withdrawals fail, fees appear, the platform disappears.
+
+## Red flags
+
+- A stranger talking about investing.
+- A platform you cannot find in regulator lists.
+- Pressure to deposit more.
+- Fees to withdraw.
+
+## What to do
+
+Stop sending money, keep records and report it to your bank, platform and authorities.
+
+## The bottom line
+
+Do not invest on the advice of someone you only know online. This is general education, not advice.
+
+=== advance-fee-fraud
+title: Advance Fee Fraud: How the "Pay First, Get Rich" Scam Works
+desc: Advance fee fraud asks you to pay upfront for a bigger reward that never arrives. Learn common versions, red flags and how to protect yourself.
+tags: advance fee fraud, advance fee scam, upfront fee scam, lottery scam, inheritance scam
+rel: common-financial-scams, how-to-spot-a-scam
+q: What is advance fee fraud? | A scam where victims are asked to pay a fee upfront to receive a larger payment, loan, prize or job that never comes.
+q: What are examples? | Lottery wins, inheritance claims, loan approvals and job offers that demand a fee first.
+q: How do I avoid it? | Do not pay to receive money. Verify with official sources and be wary of urgent requests.
+---
+If you must pay to receive a prize, it is not a prize.
+
+## Direct answer
+
+Advance fee fraud asks you to pay a fee first in return for a much larger reward that never arrives. Common versions include lottery prizes you never entered, inheritance claims from strangers, guaranteed loans with upfront fees and jobs that require you to pay for training or equipment.
+
+## Common versions
+
+- "You won a lottery. Pay a processing fee."
+- "A relative left you money. Pay legal costs."
+- "Your loan is approved. Pay the insurance first."
+- "You got the job. Pay for your equipment."
+
+## Warning signs
+
+1. You did not enter or apply.
+2. Payment is requested by gift card, crypto or transfer.
+3. Urgency and secrecy.
+4. Poor spelling or unofficial email addresses.
+
+## What to do
+
+- Stop communicating.
+- Do not pay.
+- Verify using official websites.
+- Report it.
+
+## The bottom line
+
+Legitimate prizes, loans and jobs do not ask you to pay first.
+
+=== impersonation-scams
+title: Impersonation Scams: When Fraudsters Pretend to Be Someone You Trust
+desc: Impersonation scams use fake banks, officials, tech support and family members. Learn the common versions and a routine for checking who is really calling.
+tags: impersonation scam, impersonation scams, bank impersonation scam, fake tech support, government impersonation scam
+rel: smishing-scams, how-to-spot-a-scam
+q: What is an impersonation scam? | A scam where someone pretends to be a trusted person or organisation, such as your bank, a government agency or a family member.
+q: What should I do if someone asks me to move money urgently? | Stop, hang up and call the organisation using a number you find independently.
+q: Can scammers fake caller ID? | Yes. A number on your screen can be spoofed, so do not rely on it.
+---
+The voice sounds official. That is the point.
+
+## Direct answer
+
+In an impersonation scam, fraudsters pretend to be your bank, a government agency, a tech support team, a delivery service or a relative. They create urgency and ask you to share codes, move money or install software. Hang up, then contact the real organisation through a number you look up yourself.
+
+## Common versions
+
+- **Bank fraud team** asking you to move money to a "safe account".
+- **Tax or government officials** threatening penalties.
+- **Tech support** claiming your computer is infected.
+- **Family emergency** from a "relative" with a new number.
+
+## The routine
+
+1. **Stop** and do not act under pressure.
+2. **Do not share** passwords, codes or PINs.
+3. **Hang up** and look up the real number.
+4. **Call back** using that number.
+5. **Report** the attempt.
+
+## Agree a family code word
+
+A secret word helps verify urgent calls or messages from relatives.
+
+## The bottom line
+
+Real organisations do not ask you to move money to a safe account.
+
+=== investment-scams
+title: Investment Scams: 8 Warning Signs Before You Invest
+desc: Investment scams promise high returns with little risk. Learn eight warning signs, how to check a seller and what to do if you think you've been targeted.
+tags: investment scams, investment scam warning signs, how to spot an investment scam, fake investments, check before you invest
+rel: ponzi-scheme, crypto-scams
+q: What are signs of an investment scam? | Guaranteed returns, pressure to act fast, unsolicited offers, unregistered sellers and unclear strategies.
+q: How do I check an investment firm? | Look the firm up on your country's financial regulator register and use contact details you find yourself.
+q: What should I do if I think I've been scammed? | Stop paying, keep records, contact your bank and report it to authorities.
+---
+If it sounds too good to be true, it usually is.
+
+## Direct answer
+
+Investment scams promise high or guaranteed returns with little risk, often through unsolicited calls, messages or social media ads. Check whether the firm is authorised by your financial regulator, never feel rushed and never invest in something you do not understand.
+
+## 8 warning signs
+
+1. Guaranteed returns.
+2. High returns with no risk.
+3. Pressure to act now.
+4. Cold calls, messages or ads from strangers.
+5. A seller who is not registered.
+6. Vague strategy or secret system.
+7. Requests to pay in crypto or gift cards.
+8. Difficulty withdrawing.
+
+## How to check
+
+- Search the regulator's register for the firm and product.
+- Look up the contact details yourself.
+- Read independent reviews and warnings.
+- Ask a trusted adviser.
+
+## The bottom line
+
+Slow down, verify, and walk away from pressure. This is general education, not advice.
+
+=== crypto-scams
+title: Crypto Scams: Common Types and How to Stay Safe
+desc: Crypto scams include fake exchanges, giveaways, rug pulls and phishing. Learn the common types, red flags and safe habits for storing and sending crypto.
+tags: crypto scams, cryptocurrency scams, common crypto scams, rug pull, fake crypto exchange
+rel: investment-scams, pig-butchering-scam
+q: What are common crypto scams? | Fake exchanges, giveaway scams, phishing for wallet keys, rug pulls and fake investment platforms.
+q: Can I get my money back after a crypto scam? | It is often very difficult because transactions are hard to reverse. Report quickly to the platform and authorities.
+q: How do I stay safe? | Use reputable platforms, protect your keys, verify links and never share your recovery phrase.
+---
+Crypto moves fast and is hard to reverse, which is why scammers like it.
+
+## Direct answer
+
+Common crypto scams include fake exchanges and apps, giveaways that ask you to send crypto first, phishing sites that steal wallet keys, rug pulls where developers drop a project and run off with funds, and fake investment platforms. Never share your recovery phrase and double-check every link and address.
+
+## Types to know
+
+- **Giveaway scams:** "send 1, get 2 back".
+- **Phishing:** fake wallet or exchange pages.
+- **Rug pulls:** new tokens abandoned after funds are raised.
+- **Impersonation:** fake support or celebrity endorsements.
+- **Fake platforms:** show fake profits, block withdrawals.
+
+## Safety habits
+
+1. Use well-known platforms and verify the web address.
+2. Never share your seed phrase or private keys.
+3. Turn on two-factor authentication.
+4. Test with small amounts.
+5. Ignore unsolicited investment advice.
+
+## The bottom line
+
+Because transactions are hard to reverse, prevention is your best protection. Crypto is risky. This is general education, not advice.
+
+=== sim-swap-fraud
+title: SIM Swap Fraud: What It Is and How to Protect Your Phone Number
+desc: SIM swap fraud lets criminals take over your phone number to reach your accounts. Learn how it works, warning signs and how to protect yourself.
+tags: sim swap, sim swap fraud, sim swap scam, protect phone number, two factor authentication safety
+rel: identity-theft-basics, smishing-scams
+q: What is SIM swap fraud? | Criminals trick your mobile provider into moving your number to a SIM they control, so they receive your calls and texts, including security codes.
+q: What are the warning signs? | You suddenly lose mobile signal, cannot make calls or receive unexpected notifications about changes to your accounts.
+q: How can I protect myself? | Add a PIN or passcode to your mobile account, use an authenticator app instead of SMS codes and limit personal details online.
+---
+Your phone number can unlock your bank, email and social accounts.
+
+## Direct answer
+
+SIM swap fraud happens when criminals persuade your mobile provider to transfer your number to a new SIM that they control. They then receive your texts and calls, including login codes, and can access your accounts. Protect yourself with a mobile account PIN, authenticator apps and by limiting personal information online.
+
+## Warning signs
+
+- Sudden loss of signal on your phone.
+- Alerts about password changes or logins you did not make.
+- Provider messages about a SIM change you did not request.
+
+## Protect yourself
+
+1. Ask your provider about extra account security such as a PIN.
+2. Use an authenticator app or security key instead of SMS codes where possible.
+3. Do not post your phone number, birth date and address publicly.
+4. Be careful with phishing links.
+
+## If it happens
+
+Contact your provider immediately, then your bank and email provider. Change passwords and report to authorities.
+
+## The bottom line
+
+Do not make your phone number the only key to your accounts.
+
+=== identity-theft-basics
+title: Identity Theft: How It Happens and How to Protect Yourself
+desc: Identity theft is when someone uses your personal details to commit fraud. Learn how it happens, warning signs, protections and what to do if it occurs.
+tags: identity theft, how to prevent identity theft, signs of identity theft, what to do if identity stolen, protect personal information
+rel: sim-swap-fraud, how-to-spot-a-scam
+q: What is identity theft? | It is when someone uses your personal information, such as name, ID number or account details, without your permission, often to commit fraud.
+q: What are the signs? | Unfamiliar transactions, bills for things you did not buy, credit applications you did not make or letters from unknown lenders.
+q: What should I do if it happens? | Contact your bank, change passwords, check your credit report, report to the authorities and keep records.
+---
+Your personal details are valuable to criminals.
+
+## Direct answer
+
+Identity theft is when someone uses your personal information, such as your name, ID number or bank details, to commit fraud. It can happen through phishing, data breaches, stolen mail or oversharing online. Protect yourself with strong unique passwords, two-factor authentication and careful handling of personal documents.
+
+## How it happens
+
+- Phishing emails and texts
+- Data breaches
+- Stolen mail or documents
+- Public Wi-Fi attacks
+- Oversharing on social media
+
+## Protect yourself
+
+1. Use a password manager and unique passwords.
+2. Enable two-factor authentication.
+3. Shred sensitive documents.
+4. Check bank statements and credit reports regularly.
+5. Be careful about what you share online.
+6. Freeze your credit if it is available where you live.
+
+## If you are a victim
+
+Contact your bank and lenders, change passwords, report to the police or fraud service and monitor your credit report.
+
+## The bottom line
+
+Guard your details and check your accounts often.
+
+=== social-engineering-attacks
+title: Social Engineering: How Scammers Manipulate People, Not Computers
+desc: Social engineering tricks people into giving up information or access. Learn common tactics, real-world examples and habits that make you harder to fool.
+tags: social engineering, social engineering attacks, what is social engineering, social engineering examples, scam psychology
+rel: impersonation-scams, how-to-spot-a-scam
+q: What is social engineering? | It is manipulating people into revealing information, sending money or giving access by exploiting trust, fear or urgency.
+q: What are common tactics? | Pretexting, phishing, impersonation, urgency, authority and reciprocity.
+q: How can I defend against it? | Slow down, verify through an independent channel and share information only on a need-to-know basis.
+---
+Attackers often find it easier to trick a person than to hack a system.
+
+## Direct answer
+
+Social engineering is manipulating people into revealing information, sending money or giving access, by using trust, urgency, fear or authority. Typical forms are phishing, pretending to be someone official or building a story that makes you want to help. The defence is to slow down and verify through a separate channel.
+
+## Common tactics
+
+- **Pretexting:** a believable story to get information.
+- **Urgency:** "do this now or lose access".
+- **Authority:** "I am from the bank or police".
+- **Reciprocity:** a small favour followed by a request.
+- **Fear:** "your account will be closed".
+
+## How to protect yourself
+
+1. **Pause** whenever you feel rushed.
+2. **Verify identity** through a number or site you already trust.
+3. **Do not share** passwords or codes.
+4. **Report** suspicious attempts.
+
+## The bottom line
+
+Emotion is the scammer's tool. Slowing down is yours.
+
+=== scam-red-flags
+title: 12 Red Flags of a Scam You Can Spot in Seconds
+desc: Twelve scam red flags, from urgent requests to unusual payment methods, with a quick checklist to use before you click, pay or share details.
+tags: red flags of a scam, scam warning signs, how to recognize a scam, scam checklist, signs of fraud
+rel: how-to-spot-a-scam, common-financial-scams
+q: What are the most common red flags of a scam? | Urgency, requests for unusual payment, too-good-to-be-true offers, unsolicited contact and requests for personal information.
+q: What should I do if I see these signs? | Stop, do not pay or click and verify through an independent channel.
+q: Can scams look professional? | Yes. Scammers copy logos and websites, so rely on behaviour and verification rather than appearance.
+---
+Most scams share the same patterns.
+
+## Direct answer
+
+Common scam red flags include urgency, pressure to keep it secret, requests for payment by gift card or crypto, unsolicited contact, offers that seem too good to be true and requests for passwords or one-time codes. If you see one, stop and verify through a trusted channel.
+
+## 12 red flags
+
+1. Urgency or threats.
+2. Requests for secrecy.
+3. Payment by gift card, crypto or transfer.
+4. Unsolicited contact.
+5. Too-good-to-be-true offers.
+6. Asking for passwords or codes.
+7. Poor spelling or odd phrasing.
+8. Links that do not match the real site.
+9. A new contact claiming to be a friend or relative.
+10. Pressure to invest quickly.
+11. Fees to receive a prize or loan.
+12. Reluctance to meet or call on video.
+
+## A 20-second checklist
+
+- Did I expect this?
+- Who benefits if I act quickly?
+- Can I verify it another way?
+- Am I being asked to pay in an odd way?
+
+## The bottom line
+
+When in doubt, stop, check and ask someone you trust.
+
+=== what-to-do-if-scammed
+title: What to Do If You've Been Scammed: First 24 Hours
+desc: If you have been scammed, act quickly. Follow these steps to contact your bank, secure your accounts, keep evidence, report it and protect yourself.
+tags: what to do if scammed, i was scammed what do i do, report a scam, how to recover from scam, scam victim help
+rel: how-to-spot-a-scam, common-financial-scams
+q: What should I do first if I've been scammed? | Contact your bank immediately, stop sending money and secure your accounts.
+q: Can I get my money back? | Sometimes, depending on the payment method and how fast you act. Ask your bank about reporting and recall options.
+q: Where do I report a scam? | Report it to your bank, the platform used and your country's fraud or consumer protection authority.
+---
+If it happened to you, you are not alone, and you are not foolish. Scammers are professionals.
+
+## Direct answer
+
+If you've been scammed, contact your bank or payment provider straight away, stop all contact with the scammer, change passwords on affected accounts, keep evidence, report it to the platform and your country's fraud authority, and watch for follow-up scams. The sooner you act, the better your chances of limiting the damage.
+
+## First 24 hours
+
+1. **Call your bank** using the number on your card.
+2. **Stop paying or replying.**
+3. **Secure your accounts:** change passwords and enable two-factor authentication.
+4. **Keep evidence:** screenshots, messages, receipts, account numbers.
+5. **Report it** to the platform, the police or fraud service in your country.
+6. **Warn friends and family** if they could be targeted.
+7. **Watch for recovery scams,** where fraudsters offer to get your money back for a fee.
+
+## Look after yourself
+
+Scams cause stress and shame. Talk to someone you trust, and seek support services if you need them.
+
+## The bottom line
+
+Act fast, report it and be kind to yourself.

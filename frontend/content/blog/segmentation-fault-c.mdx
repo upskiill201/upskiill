@@ -1,0 +1,79 @@
+---
+title: "Segmentation Fault in C: Causes and How to Debug It"
+description: "A segmentation fault means your program touched memory it should not. Learn the common causes, how to find the line and how to prevent it."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [segmentation fault, segfault c, segmentation fault causes, debug segfault, core dumped]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "C for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/c-for-beginners
+  label: "See the C for Beginners course"
+faq:
+  - question: "What is a segmentation fault?"
+    answer: "A crash that happens when a program accesses memory it is not allowed to access."
+  - question: "What causes it?"
+    answer: "Dereferencing NULL or uninitialised pointers, going out of array bounds, using freed memory or stack overflow."
+  - question: "How do I find the cause?"
+    answer: "Compile with -g, run under gdb or a sanitizer and look at the line where it crashes."
+---
+
+"Segmentation fault (core dumped)" is the C programmer's rite of passage.
+
+## Direct answer
+
+A segmentation fault means your program tried to read or write memory it does not own. Common causes are dereferencing a `NULL` or uninitialised pointer, writing past an array, using memory after `free` and endless recursion. Use `gdb` or AddressSanitizer to find the exact line.
+
+## Typical bugs
+
+```c
+int *p = NULL;
+*p = 5;                // crash
+
+int arr[3];
+arr[10] = 1;           // out of bounds
+
+char *s = "hello";
+s[0] = 'H';            // string literals are read-only
+```
+
+## How to debug
+
+```bash
+gcc -g -fsanitize=address main.c -o app
+./app
+```
+
+Or with gdb:
+
+```bash
+gcc -g main.c -o app
+gdb ./app
+(gdb) run
+(gdb) bt
+```
+
+## Prevention
+
+- Initialise pointers to `NULL` and check before use.
+- Check array bounds.
+- Free memory once and set pointers to `NULL`.
+
+## Where Teyro fits
+
+Teyro's [C for Beginners](/courses/c-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 78 lessons, and you can start free.
+
+## The bottom line
+
+Find the line, find the pointer, fix the assumption.
+
+## More guides
+
+- [Data Types in C](/blog/c-data-types)
+- [printf and scanf in C](/blog/printf-and-scanf-in-c)
+- [Bitwise Operators in C](/blog/bitwise-operators-c)
+- [Pointers in c](/blog/pointers-in-c)
+- [C memory management](/blog/c-memory-management)
+- [C for Beginners course](/courses/c-for-beginners)

@@ -1,0 +1,201 @@
+=== job-search-strategy
+title: Job Search Strategy: A Weekly Plan That Gets Interviews
+desc: A practical job search strategy: define your target, tailor applications, network, track progress and set weekly goals to keep momentum.
+tags: job search strategy, how to search for a job, job search plan, job hunting tips, weekly job search routine
+rel: how-to-find-a-job, how-to-get-hired-step-by-step
+q: How do I start a job search? | Define the roles you want, update your resume and profiles, and build a list of target employers.
+q: How many applications should I send? | Quality beats quantity. Tailored applications to well-matched roles perform better than mass applying.
+q: How long does a job search take? | It varies widely. Keep a steady weekly routine.
+---
+A search without a plan becomes a mood.
+
+## Direct answer
+
+A good job search strategy defines target roles and employers, prepares a strong resume and profile, applies selectively with tailored materials, uses networking and tracks progress weekly. Set small targets and review what is working.
+
+## A weekly plan
+
+| Activity | Target |
+| :--- | :--- |
+| Tailored applications | 5 |
+| Networking messages | 5 |
+| Follow-ups | 3 |
+| Skill practice | 2 sessions |
+| Review and adjust | 30 minutes |
+
+## Steps
+
+1. **Define** target roles and skills.
+2. **Update** your resume and profile.
+3. **List employers** and watch their openings.
+4. **Tailor each application.**
+5. **Network** for referrals.
+6. **Track** in a spreadsheet.
+
+## The bottom line
+
+Consistency and targeting beat volume.
+
+=== informational-interview
+title: Informational Interviews: How to Ask for One and What to Say
+desc: An informational interview is a conversation to learn about a role or industry. Learn how to ask, what to ask and how to follow up.
+tags: informational interview, informational interview questions, how to ask for an informational interview, career conversation, networking message
+rel: how-to-network-for-a-job, how-to-get-noticed-by-employers
+q: What is an informational interview? | A short conversation with someone in a role or field you are interested in, to learn and build a connection.
+q: How do I ask for one? | Send a brief, specific message with a clear small request, such as 15 minutes.
+q: Is it okay to ask for a job? | No. Ask for advice and insight. Opportunities may follow.
+---
+Ask for advice, not a job.
+
+## Direct answer
+
+An informational interview is a short chat to learn about someone's work. Message them briefly, ask for 15 to 20 minutes, prepare questions, listen and say thank you. Follow up with what you did with their advice.
+
+## Message template
+
+"Hi [name], I admire your work in [field]. I am exploring a move into [role]. Could I ask you three questions over a 15-minute call?"
+
+## Questions
+
+- How did you get into this?
+- What does a typical week look like?
+- What skills matter most?
+- What do you wish you had known?
+- Who else should I talk to?
+
+## The bottom line
+
+Be curious, concise and grateful.
+
+=== job-references-guide
+title: Job References: Who to Ask, How to Ask and What to Share
+desc: Choose good references, ask politely, brief them on the role and say thanks. Includes a request template and what to do with no work references.
+tags: job references, how to ask for a reference, who to use as a reference, reference letter, professional references
+rel: how-to-get-hired-step-by-step, how-to-write-a-cv-with-no-experience
+q: Who should I ask to be a reference? | Managers, colleagues, clients or teachers who know your work well and will speak positively.
+q: Should I ask permission? | Always.
+q: What if I have no work references? | Use teachers, volunteer leaders or people who supervised projects.
+---
+A good reference can tip the decision.
+
+## Direct answer
+
+Choose references who know your work, ask permission, brief them about the role and share your resume. Thank them and update them on the outcome. If you have little work history, ask teachers, mentors or volunteer leaders.
+
+## Request template
+
+"Hi [name], I am applying for [role] and would be grateful if you would act as a reference. I have attached my resume and the job description. Would you be comfortable speaking about [skills]?"
+
+## Tips
+
+1. Ask early.
+2. Give them context.
+3. Thank them.
+4. Tell them the result.
+
+## The bottom line
+
+Prepare your references like you prepare your interview.
+
+=== job-offer-negotiation
+title: Job Offer Negotiation: What to Check and What to Ask For
+desc: Review your job offer carefully: salary, benefits, flexibility, role and start date. Learn what to negotiate, how to ask and when to accept.
+tags: job offer negotiation, how to negotiate a job offer, evaluate a job offer, job offer checklist, negotiate benefits
+rel: how-to-negotiate-salary, negotiate-salary-guide
+q: Can I negotiate a job offer? | Usually yes. Ask politely with reasons, and be open to trade-offs.
+q: What can I negotiate? | Salary, start date, remote work, leave, training budget, title and bonuses.
+q: How long should I take to decide? | Ask for a reasonable time, often a few days, to review.
+---
+An offer is the start of a conversation.
+
+## Direct answer
+
+Review the whole offer: pay, benefits, flexibility, role and growth. Thank them, ask for time, research the market and negotiate politely, with reasons and options. Get the final terms in writing before accepting.
+
+## Checklist
+
+- [ ] Salary and bonus
+- [ ] Leave and benefits
+- [ ] Hours and flexibility
+- [ ] Role and reporting line
+- [ ] Training and growth
+- [ ] Start date
+- [ ] Probation terms
+
+## Script
+
+"Thank you. I am excited about the role. Could I have until Friday to review? I would also like to discuss the salary and start date."
+
+## The bottom line
+
+Be grateful, prepared and clear.
+
+=== hidden-job-market
+title: The Hidden Job Market: How to Find Jobs That Are Not Advertised
+desc: Many roles are filled through networks and referrals before ads appear. Learn how to tap the hidden job market with outreach and networking.
+tags: hidden job market, unadvertised jobs, how to find hidden jobs, referral hiring, cold outreach for jobs
+rel: how-to-network-for-a-job, informational-interview
+q: What is the hidden job market? | Jobs that are filled through referrals, networks or direct contact without public advertising.
+q: How do I access it? | Build relationships, tell people what you are seeking and contact companies directly.
+q: Is it a myth? | It is partly real, since referrals are a major hiring route, though many jobs are advertised.
+---
+Not every job opening begins with an advert.
+
+## Direct answer
+
+To tap the hidden job market, tell your network what you are looking for, ask for introductions, follow companies you like, contact hiring managers with a short, specific message and attend events. Combine this with applying to advertised roles.
+
+## Steps
+
+1. List 20 target companies.
+2. Follow them and their teams.
+3. Reach out to people with a specific, short ask.
+4. Share what you can offer.
+5. Follow up politely.
+
+## Message example
+
+"Hi [name], I admire your team's work on X. I am a [role] with experience in Y. Are you hiring or could you suggest who I should speak to?"
+
+## The bottom line
+
+People hire people they know. Get known.
+
+=== job-application-tracker
+title: Job Application Tracker: A Simple Spreadsheet to Stay Organised
+desc: Track every application with a simple spreadsheet: company, role, date, status, contacts and next steps. Includes columns and follow-up tips.
+tags: job application tracking, job application tracker, job search spreadsheet, track applications, job search organisation
+rel: job-search-strategy
+q: Why track job applications? | To remember where you applied, follow up on time and see what is working.
+q: What should I include? | Company, role, date, link, status, contact and next step.
+q: How often should I update it? | After every action, and review weekly.
+---
+Organisation turns effort into results.
+
+## Direct answer
+
+Keep a spreadsheet with a row per application: company, role, link, date applied, status, contact, follow-up date and notes. Review it weekly to follow up and adjust your approach.
+
+## Suggested columns
+
+| Column | Purpose |
+| :--- | :--- |
+| Company | who |
+| Role | what |
+| Link | find it again |
+| Date applied | timeline |
+| Status | applied, interviewing, offer |
+| Contact | person |
+| Follow-up date | reminder |
+| Notes | learning |
+
+## Habits
+
+1. Add each application immediately.
+2. Set follow-up reminders.
+3. Note what version of your resume you used.
+4. Review results monthly.
+
+## The bottom line
+
+A tracker keeps your search calm and organised.

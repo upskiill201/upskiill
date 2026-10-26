@@ -1,0 +1,61 @@
+---
+title: "Vibe Coding Security: A Checklist Before You Share Your App"
+description: "A security checklist for AI-built apps: authentication, secrets, database rules, input validation, dependencies and privacy, before real users arrive."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [vibe coding security, ai generated app security, secure ai built app, supabase row level security, app security checklist]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Vibe Coding: Build Apps with AI turns this into short, playable lessons. Free to start."
+  href: /courses/vibe-coding-build-apps-with-ai
+  label: "See the Vibe Coding: Build Apps with AI course"
+faq:
+  - question: "Are AI-built apps secure?"
+    answer: "Not by default. Security depends on what the generated code and configuration actually do, so you must check."
+  - question: "What is the biggest mistake?"
+    answer: "Leaving a database open to everyone or exposing secret keys in front-end code."
+  - question: "What should I check before sharing?"
+    answer: "Authentication, authorisation, secrets, database rules, input validation and dependencies."
+---
+
+A working demo is not a safe app.
+
+## Direct answer
+
+Before sharing an AI-built app, check that users must sign in where needed, that each user can only access their own data, that no secret keys are in front-end code or the repository, that database rules are restrictive, that inputs are validated and that dependencies are known and updated.
+
+## Checklist
+
+1. **Authentication works** and cannot be bypassed.
+2. **Authorisation:** users see only their own records.
+3. **Database rules:** no public read or write unless intended.
+4. **Secrets** live in environment variables on the server.
+5. **Input validation** on the server.
+6. **HTTPS** everywhere.
+7. **Dependencies** reviewed and up to date.
+8. **Error messages** do not leak internals.
+9. **Backups** and a way to delete user data.
+10. **Privacy policy** if you collect personal data.
+
+## Test like an attacker
+
+Try to access another user's data by changing an ID in the address, and try sending unexpected input.
+
+## Where Teyro fits
+
+Teyro's [Vibe Coding: Build Apps with AI](/courses/vibe-coding-build-apps-with-ai) course turns this into short lessons you can play in a few minutes a day. It has 80 lessons, and you can start free.
+
+## The bottom line
+
+Ask for a security review before putting real data in an AI-built app.
+
+## More guides
+
+- [How to Deploy an App You Built With AI](/blog/deploy-ai-built-app)
+- [Supabase for Beginners](/blog/supabase-for-beginners)
+- [What Is an MVP? How to Build a Minimum Viable Product With AI](/blog/what-is-an-mvp)
+- [Vibe coding risks](/blog/vibe-coding-risks)
+- [Ai coding security risks](/blog/ai-coding-security-risks)
+- [Vibe Coding: Build Apps with AI course](/courses/vibe-coding-build-apps-with-ai)

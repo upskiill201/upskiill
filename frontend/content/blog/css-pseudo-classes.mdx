@@ -1,0 +1,60 @@
+---
+title: "CSS Pseudo-Classes: hover, focus, first-child and nth-child"
+description: "Learn CSS pseudo-classes like :hover, :focus, :first-child, :nth-child and :not with practical examples, plus the difference from pseudo-elements."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [pseudo classes, css pseudo classes, css hover focus, nth-child, css pseudo elements]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "HTML & CSS for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/html-and-css-for-beginners
+  label: "See the HTML & CSS for Beginners course"
+faq:
+  - question: "What is a pseudo-class?"
+    answer: "A keyword added to a selector to style an element in a particular state, such as when hovered."
+  - question: "What is the difference between a pseudo-class and pseudo-element?"
+    answer: "A pseudo-class selects an element in a state. A pseudo-element selects part of an element, such as its first line or content before it."
+  - question: "How do I style every second item?"
+    answer: "Use :nth-child(2n) or :nth-child(even)."
+---
+
+Pseudo-classes let CSS react to what is happening.
+
+## Direct answer
+
+A pseudo-class starts with a single colon and selects an element in a certain state or position. Common ones are `:hover`, `:focus`, `:active`, `:first-child`, `:last-child`, `:nth-child()` and `:not()`. Pseudo-elements like `::before` use two colons.
+
+## Examples
+
+```css
+a:hover { color: tomato; }
+input:focus { outline: 2px solid #3d5afe; }
+li:first-child { font-weight: bold; }
+tr:nth-child(even) { background: #f5f5f5; }
+button:not(:disabled):hover { background: #eee; }
+
+p::first-line { font-weight: bold; }
+.note::before { content: "Note: "; }
+```
+
+## Accessibility tip
+
+Never remove focus outlines without replacing them with a visible alternative. Keyboard users depend on them.
+
+## Where Teyro fits
+
+Teyro's [HTML & CSS for Beginners](/courses/html-and-css-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Pseudo-classes add interactivity and structure to your styles without extra HTML.
+
+## More guides
+
+- [CSS Transitions](/blog/css-transitions-guide)
+- [CSS Reset vs Normalize](/blog/css-reset-explained)
+- [HTML Attributes Explained](/blog/html-attributes-guide)
+- [Css selectors guide](/blog/css-selectors-guide)
+- [HTML & CSS for Beginners course](/courses/html-and-css-for-beginners)

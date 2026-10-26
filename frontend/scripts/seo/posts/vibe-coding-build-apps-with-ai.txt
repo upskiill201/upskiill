@@ -1,0 +1,446 @@
+=== no-code-vs-vibe-coding
+title: No-Code vs Vibe Coding: Which Is Right for Your App Idea?
+desc: Compare no-code builders with vibe coding on control, cost, speed, skills and limits, and learn which fits your app idea and your experience.
+tags: no code vs vibe coding, no code vs ai coding, vibe coding or no code, build an app without coding, app builder comparison
+rel: what-is-vibe-coding, how-to-build-an-app-without-coding
+q: What is the difference between no-code and vibe coding? | No-code uses visual builders and templates. Vibe coding uses AI to generate real code from descriptions.
+q: Which is easier for beginners? | No-code is often simpler to start. Vibe coding is more flexible but needs more judgement.
+q: Can I move from no-code to code later? | Often with difficulty. Code-based projects are easier to move and extend.
+---
+Both let non-programmers build things. The trade-offs differ.
+
+## Direct answer
+
+No-code tools use visual editors and ready-made components, which makes simple apps quick but limits what you can change. Vibe coding uses AI to generate real code from plain-language descriptions, which is more flexible but needs checking. Pick no-code for standard workflows and vibe coding when you need custom behaviour or want to own the code.
+
+## Comparison
+
+| | No-code | Vibe coding |
+| :--- | :--- | :--- |
+| Output | configured app in a platform | real code you can export |
+| Flexibility | limited by the platform | high |
+| Learning curve | gentle | moderate |
+| Risk | platform lock-in | bugs and security gaps |
+| Best for | forms, internal tools, simple sites | custom apps and prototypes |
+
+## How to choose
+
+1. **Is your idea standard** (forms, bookings, simple database)? Try no-code.
+2. **Need custom logic or full ownership?** Try vibe coding.
+3. **Plan to grow?** Prefer code you own.
+4. **Handling sensitive data?** Be careful with both, and read the provider's data policy.
+
+## The bottom line
+
+Prototype fast with either, then decide what to keep.
+
+=== lovable-ai-app-builder
+title: Lovable AI App Builder: What It Is and What It's Good For
+desc: An overview of Lovable, an AI tool that builds web apps from prompts: how a typical workflow looks, strengths, limits and tips for better results.
+tags: lovable, lovable ai, lovable app builder, ai app builder, build web app with ai
+rel: no-code-vs-vibe-coding, vibe-coding-for-beginners
+q: What is Lovable? | An AI app builder that generates web applications from natural-language prompts and lets you iterate and deploy them.
+q: Do I need to know how to code? | Not to start, but understanding basics helps you guide it and fix problems.
+q: How do I get good results? | Start with a clear description, build in small steps and check each change.
+---
+Prompt, preview, refine. That is the loop.
+
+## Direct answer
+
+Lovable is an AI app builder that creates web apps from plain-language prompts, shows a live preview and lets you refine them through conversation. It is useful for prototypes and simple apps. As with other AI builders, review the output, protect your data and check current features and pricing on its website, since they change.
+
+## A typical workflow
+
+1. **Describe the app:** who it is for and what it does.
+2. **Review the preview.**
+3. **Refine in small steps:** "Add a login page", "Show a list of tasks".
+4. **Connect a backend** if you need data.
+5. **Test the main flows.**
+6. **Deploy** and share.
+
+## Tips for better results
+
+- Be specific about screens, data and behaviour.
+- Add one feature at a time.
+- Keep a list of what works so you can restore it.
+- Check mobile layout.
+
+## Limits
+
+- Complex logic can need manual coding.
+- Generated code needs review for security and quality.
+
+## The bottom line
+
+A fast way to turn an idea into a prototype. Verify before you rely on it.
+
+=== bolt-new-ai-builder
+title: Bolt.new: Build Full-Stack Apps in the Browser With AI
+desc: An overview of Bolt, an AI tool that builds and runs web apps in the browser from prompts: what it does, a typical workflow, strengths and cautions.
+tags: bolt new, bolt.new, bolt ai builder, build apps in browser with ai, vibe coding tools
+rel: lovable-ai-app-builder, no-code-vs-vibe-coding
+q: What is Bolt.new? | An AI-powered tool that generates and runs web applications in the browser from natural-language prompts.
+q: Can I edit the code? | Typically yes, you can view and edit the generated files and export the project. Check current features.
+q: Is it good for production apps? | It is great for prototypes. For production, review the code carefully and add tests and security checks.
+---
+Describe it, watch it build, tweak it.
+
+## Direct answer
+
+Bolt is an AI tool that generates and runs web apps directly in your browser from prompts. You can iterate by chatting, view and edit the code and deploy. It suits prototypes and learning. For anything real, review the code, handle secrets properly and test. Features and pricing change, so check the official site.
+
+## A workflow
+
+1. **Write a clear prompt** with the main features.
+2. **Run the preview** and click through.
+3. **Iterate in small steps.**
+4. **Inspect the code** for anything surprising.
+5. **Export or deploy** when you are happy.
+
+## Good prompts
+
+"Build a habit tracker with a list of habits, a daily check-off button and a weekly summary. Use a simple, clean design."
+
+## Cautions
+
+- Do not paste secrets into prompts.
+- Test edge cases.
+- Keep version history so you can go back.
+
+## The bottom line
+
+A quick path from idea to working prototype. Treat the code like any other code that needs review.
+
+=== replit-agent-overview
+title: Replit Agent: Build and Deploy Apps From a Prompt
+desc: An overview of Replit Agent, an AI feature that plans and builds apps in the Replit environment: what it does, how to use it well and its limits.
+tags: replit agent, replit ai, replit agent tutorial, build app with replit, ai coding in browser
+rel: lovable-ai-app-builder, bolt-new-ai-builder
+q: What is Replit Agent? | An AI feature in Replit that can plan, write and run code for an app based on your instructions.
+q: Do I need to install anything? | Replit runs in the browser, so you can start without a local setup.
+q: How do I keep costs and mistakes under control? | Check current plan limits, keep tasks small and review changes before relying on them.
+---
+Replit puts an editor, a runtime and an AI agent in one tab.
+
+## Direct answer
+
+Replit Agent is an AI feature inside Replit that plans, writes and runs code for apps from your instructions. Because Replit runs in the browser, you can build and preview without local setup. Keep tasks small, review the changes and check current features and limits on Replit's site.
+
+## A typical flow
+
+1. **Describe your app.**
+2. **Review the plan** the agent proposes.
+3. **Let it build,** then test the result.
+4. **Ask for fixes** with specific feedback.
+5. **Deploy** from the same environment.
+
+## Tips
+
+- State your tech preferences, such as language or framework.
+- Ask it to explain files you do not understand.
+- Use version history or checkpoints.
+- Avoid putting secrets in code. Use the secrets feature.
+
+## The bottom line
+
+A convenient all-in-one environment for building and learning. Always review what it produced.
+
+=== v0-by-vercel-overview
+title: v0 by Vercel: Generate UI Components With AI
+desc: An overview of v0, Vercel's AI tool for generating user interfaces from prompts: how to use it, refine results and bring the code into a project.
+tags: v0 dev, v0 by vercel, ai ui generator, generate react components with ai, ai design to code
+rel: lovable-ai-app-builder, bolt-new-ai-builder
+q: What is v0? | An AI tool from Vercel that generates user interface designs and code, commonly with React, from text prompts.
+q: Can I use the code in my own project? | Generally yes, you can copy or export the code. Review it and check the licence and terms.
+q: Is it better for UI or full apps? | It is especially strong for interface components and layouts, with growing support for more.
+---
+Describe a screen, get a starting point.
+
+## Direct answer
+
+v0 is Vercel's AI tool for generating user interfaces from prompts, usually producing React components styled with common libraries. It is useful for layouts, forms and dashboards. Use it as a starting point, refine with follow-up prompts and review accessibility and code quality before using it in a project.
+
+## How to get good results
+
+1. **Describe the purpose** and the user.
+2. **Specify components:** "a pricing table with three plans".
+3. **Mention constraints:** mobile first, accessible, dark mode.
+4. **Iterate** with specific changes.
+5. **Check accessibility:** labels, contrast, focus states.
+
+## After generating
+
+- Copy the code into your project.
+- Replace placeholder data and images.
+- Run lint and tests.
+
+## The bottom line
+
+Great for speed on the UI layer. You still own quality and accessibility. Check current features on the official site.
+
+=== vibe-coding-risks
+title: Vibe Coding Risks: 8 Things That Can Go Wrong (and Fixes)
+desc: Vibe coding is fast but risky. Learn eight common problems, from hidden bugs and security holes to lock-in and unmaintainable code, and how to reduce them.
+tags: vibe coding risks, risks of vibe coding, is vibe coding safe, vibe coding problems, ai generated app risks
+rel: vibe-coding-security, what-is-vibe-coding
+q: What are the risks of vibe coding? | Hidden bugs, security vulnerabilities, code you cannot maintain, data leaks, cost surprises and over-reliance on one tool.
+q: Is vibe coding safe for real products? | It can be if you add review, tests and security checks. It is riskier when nobody understands the code.
+q: How can I reduce the risks? | Start small, review code, write tests, keep secrets safe and use version control.
+---
+Fast building does not remove the need for care.
+
+## Direct answer
+
+Vibe coding risks include hidden bugs, security holes, unmaintainable code, exposed secrets, surprise costs and over-dependence on one tool. Reduce them by working in small steps, keeping version control, adding tests, reviewing sensitive code and understanding what you ship.
+
+## 8 risks and fixes
+
+| Risk | Fix |
+| :--- | :--- |
+| Hidden bugs | test the main flows and edge cases |
+| Security gaps | review auth, input handling and permissions |
+| Exposed secrets | use environment variables, never paste keys in prompts |
+| Unmaintainable code | ask for simple structure, add notes |
+| Dependency problems | verify packages you did not choose |
+| Data privacy | read tool and hosting policies |
+| Cost surprises | check usage limits and billing |
+| Lock-in | keep code in your own repository |
+
+## A good rule
+
+If an app handles money, health or personal data, get an experienced developer to review it.
+
+## The bottom line
+
+Build fast, check carefully, and keep control of the code.
+
+=== vibe-coding-security
+title: Vibe Coding Security: A Checklist Before You Share Your App
+desc: A security checklist for AI-built apps: authentication, secrets, database rules, input validation, dependencies and privacy, before real users arrive.
+tags: vibe coding security, ai generated app security, secure ai built app, supabase row level security, app security checklist
+rel: vibe-coding-risks, ai-coding-security-risks
+q: Are AI-built apps secure? | Not by default. Security depends on what the generated code and configuration actually do, so you must check.
+q: What is the biggest mistake? | Leaving a database open to everyone or exposing secret keys in front-end code.
+q: What should I check before sharing? | Authentication, authorisation, secrets, database rules, input validation and dependencies.
+---
+A working demo is not a safe app.
+
+## Direct answer
+
+Before sharing an AI-built app, check that users must sign in where needed, that each user can only access their own data, that no secret keys are in front-end code or the repository, that database rules are restrictive, that inputs are validated and that dependencies are known and updated.
+
+## Checklist
+
+1. **Authentication works** and cannot be bypassed.
+2. **Authorisation:** users see only their own records.
+3. **Database rules:** no public read or write unless intended.
+4. **Secrets** live in environment variables on the server.
+5. **Input validation** on the server.
+6. **HTTPS** everywhere.
+7. **Dependencies** reviewed and up to date.
+8. **Error messages** do not leak internals.
+9. **Backups** and a way to delete user data.
+10. **Privacy policy** if you collect personal data.
+
+## Test like an attacker
+
+Try to access another user's data by changing an ID in the address, and try sending unexpected input.
+
+## The bottom line
+
+Ask for a security review before putting real data in an AI-built app.
+
+=== deploy-ai-built-app
+title: How to Deploy an App You Built With AI: A Step-by-Step Guide
+desc: Take an AI-built app live: put the code in Git, choose a host, set environment variables, connect a domain and test before sharing it with users.
+tags: deploying ai built app, deploy vibe coded app, host ai generated app, deploy to vercel netlify, ai app to production
+rel: vercel-deploy-tutorial, vibe-coding-security
+q: How do I deploy an app made with AI? | Put the code in a Git repository, connect it to a hosting platform, add environment variables and deploy.
+q: Do I need a database? | Only if your app stores data. Many AI builders connect to a hosted database.
+q: What should I test after deploying? | Sign in, main features, forms, mobile layout and error handling on the live site.
+---
+It runs in the preview. Now make it run for everyone.
+
+## Direct answer
+
+To deploy an AI-built app, export or sync the code to a Git repository, connect it to a host such as Vercel or Netlify, add environment variables for secrets and API keys, run the build and test the live site. Add a custom domain and monitoring when ready.
+
+## Steps
+
+1. **Save the code in Git** with a clear history.
+2. **Run it locally** to confirm it builds.
+3. **Choose a host** that suits your framework.
+4. **Add environment variables** in the host's settings.
+5. **Deploy** and read the logs.
+6. **Test the live site** on desktop and phone.
+7. **Add a domain** and HTTPS.
+8. **Monitor errors** and usage.
+
+## Common problems
+
+| Problem | Likely fix |
+| :--- | :--- |
+| Build fails | read the log, check Node version and scripts |
+| Blank page | check console errors and environment variables |
+| Cannot connect to database | verify keys and allowed origins |
+
+## The bottom line
+
+Version control, environment variables and testing make launches smooth. See [how to deploy on Vercel](/blog/vercel-deploy-tutorial).
+
+=== supabase-for-beginners
+title: Supabase for Beginners: A Backend for Your AI-Built App
+desc: Supabase provides a database, authentication and storage for apps. Learn what it offers, how it fits AI-built apps and the security rules to set up.
+tags: supabase, supabase for beginners, supabase database, supabase auth, backend for vibe coding
+rel: vibe-coding-security, deploy-ai-built-app
+q: What is Supabase? | An open-source backend platform that offers a Postgres database, authentication, file storage and APIs.
+q: Why do AI app builders use it? | It gives apps a ready-made backend for data and logins without building a server.
+q: What is row level security? | Database rules that control which rows each user can read or change.
+---
+Apps need somewhere to keep data and a way to know who is signed in.
+
+## Direct answer
+
+Supabase is a backend platform built on a Postgres database. It provides tables, user authentication, file storage and automatically generated APIs, so front-end apps can store data without a custom server. Turn on row level security so users can only access the data they should.
+
+## What you get
+
+- A hosted relational database.
+- Sign-in with email and other providers.
+- File storage.
+- APIs and client libraries.
+
+## Basic idea
+
+1. Create a project.
+2. Design tables.
+3. Turn on **row level security** and write policies.
+4. Use the public key in the browser and keep any service key secret on the server.
+5. Connect your app.
+
+## A simple policy idea
+
+Allow a user to read and write only rows where the row's `user_id` equals their own ID.
+
+## Cautions
+
+- Never expose the service role key in front-end code.
+- Test policies with two different users.
+
+## The bottom line
+
+A convenient backend for apps, as long as you configure security properly. Check current features and limits on the official site.
+
+=== what-is-an-mvp
+title: What Is an MVP? How to Build a Minimum Viable Product With AI
+desc: An MVP is the simplest version of a product that tests your idea. Learn how to define one, build it quickly with AI tools and learn from real users.
+tags: mvp, what is an mvp, minimum viable product, build mvp with ai, startup mvp
+rel: how-to-validate-a-business-idea, vibe-coding-for-beginners
+q: What is an MVP? | A minimum viable product: the simplest version of a product that lets you test your core idea with real users.
+q: How long should an MVP take? | As short as you can, often weeks rather than months, focused on one core problem.
+q: Can AI help build an MVP? | Yes. AI builders and coding tools can speed up prototypes, though you must test and review.
+---
+Build the smallest thing that teaches you something.
+
+## Direct answer
+
+An MVP (minimum viable product) is the smallest version of your product that solves the core problem for early users. Define one problem, one user and one main feature, build it quickly, put it in front of real people and learn what to do next. AI tools can speed up the build, but not the learning.
+
+## How to define it
+
+1. **Who** is the user?
+2. **What problem** do they have?
+3. **What is the one thing** your product must do?
+4. **What can you leave out** for now?
+
+## Build it
+
+- Use AI builders or no-code tools for a first version.
+- Fake what you can (manual work behind the scenes).
+- Avoid extras like settings pages and perfect design.
+
+## Learn from it
+
+- Watch people use it.
+- Ask what they expected.
+- Measure one number, such as sign-ups or repeat use.
+
+## The bottom line
+
+An MVP is a question you ask the market. Keep it small and listen to the answer.
+
+=== vibe-coding-limitations
+title: Vibe Coding Limitations: What AI App Builders Still Cannot Do Well
+desc: AI app builders are impressive but have limits: complex logic, large codebases, debugging, performance and design judgement. Know them before you start.
+tags: vibe coding limitations, ai coding limits, what ai cannot do in coding, ai app builder problems, when vibe coding fails
+rel: vibe-coding-risks, ai-generated-code-quality
+q: What are the limitations of vibe coding? | Difficulty with complex logic, large projects, subtle bugs, performance, security and long-term maintenance.
+q: Why do AI builders get stuck? | Fixes can cause new problems, context gets crowded and the model may not understand the whole system.
+q: When should I get a developer? | When you handle sensitive data, hit repeated bugs, need scale or plan to build a business on the app.
+---
+Know where the tool ends.
+
+## Direct answer
+
+Vibe coding works well for small apps, prototypes and UI-heavy projects. It struggles with complex business logic, large codebases, deep debugging, performance and security. When fixes keep creating new bugs, the app handles sensitive data or you need to scale, bring in an experienced developer.
+
+## Common limits
+
+- **Loops of fixing:** each fix breaks something else.
+- **Large projects:** the model loses track of the whole system.
+- **Subtle bugs:** things that work in a demo but fail with real data.
+- **Performance:** slow queries and heavy pages.
+- **Maintenance:** code nobody understands.
+
+## What to do
+
+1. Keep the project small and modular.
+2. Use version control.
+3. Add tests for important flows.
+4. Learn the basics of what the code does.
+5. Know when to ask for help.
+
+## The bottom line
+
+Use AI to go faster, not to avoid understanding your own product.
+
+=== ai-generated-code-quality
+title: AI-Generated Code Quality: What Good Looks Like and How to Improve It
+desc: Judge and improve AI-generated code: readability, structure, tests, consistency, error handling and simple prompts that raise quality.
+tags: ai generated code quality, is ai code good, improve ai code quality, ai code best practices, clean code with ai
+rel: how-to-review-ai-generated-code, ai-refactoring-guide
+q: Is AI-generated code good quality? | It varies. It can be clean and correct or messy and subtly wrong, so it needs review and testing.
+q: How can I improve the quality? | Give clear requirements, share your style conventions, ask for tests and review and refactor the output.
+q: What are signs of low quality? | Duplicate code, giant functions, unused code, vague names and missing error handling.
+---
+Quality depends on how you ask and how you check.
+
+## Direct answer
+
+AI-generated code quality ranges from excellent to flawed. Improve it by giving clear requirements, sharing your project's conventions, asking for tests and error handling, and reviewing and refactoring the result. Good code is readable, tested, consistent and does what you intended.
+
+## What good looks like
+
+- Clear names and small functions.
+- Consistent with the rest of the project.
+- Handles errors and edge cases.
+- Covered by tests.
+- No unnecessary dependencies.
+
+## Prompts that raise quality
+
+- "Follow the existing style in `src/utils`."
+- "Add unit tests for edge cases."
+- "Keep the solution simple. Do not add new libraries."
+- "Explain trade-offs before changing anything."
+
+## Red flags
+
+- Large changes for a small request.
+- Unused code and imports.
+- Copy-pasted blocks.
+- Tests that assert nothing.
+
+## The bottom line
+
+The prompt sets the direction and the review sets the standard.

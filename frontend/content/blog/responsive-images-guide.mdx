@@ -1,0 +1,80 @@
+---
+title: "Responsive Images in HTML: srcset, sizes and the picture Element"
+description: "Serve the right image to every screen. Learn max-width, srcset, sizes and the picture element, plus tips for performance and layout shift."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [responsive images, srcset sizes, picture element, responsive image html, image optimization]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Responsive Web Design with CSS turns this into short, playable lessons. Free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive Web Design with CSS course"
+faq:
+  - question: "How do I make an image responsive?"
+    answer: "Set max-width to 100 percent and height to auto in CSS, and provide multiple sizes with srcset."
+  - question: "What is the picture element for?"
+    answer: "It lets the browser choose between different image sources, such as different formats or crops for different screens."
+  - question: "How do I avoid layout shift?"
+    answer: "Set width and height attributes or use aspect-ratio so space is reserved before the image loads."
+---
+
+The same big photo on a small phone wastes data and slows the page.
+
+## Direct answer
+
+Make images flexible with `max-width: 100%; height: auto;`, offer several sizes with `srcset` and `sizes`, and use `<picture>` when you need different formats or art direction. Set `width` and `height` to prevent layout shift.
+
+## Basic CSS
+
+```css
+img {
+  max-width: 100%;
+  height: auto;
+}
+```
+
+## srcset
+
+```html
+<img
+  src="photo-800.jpg"
+  srcset="photo-400.jpg 400w, photo-800.jpg 800w, photo-1600.jpg 1600w"
+  sizes="(min-width: 900px) 50vw, 100vw"
+  width="800" height="533"
+  alt="A group of friends hiking at sunrise"
+  loading="lazy">
+```
+
+## picture element
+
+```html
+<picture>
+  <source type="image/avif" srcset="photo.avif">
+  <source type="image/webp" srcset="photo.webp">
+  <img src="photo.jpg" alt="Sunrise over hills" width="800" height="533">
+</picture>
+```
+
+## Tips
+
+- Compress images.
+- Use modern formats like WebP or AVIF with a fallback.
+- Lazy-load images below the fold.
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Right size, right format, reserved space.
+
+## More guides
+
+- [Flexbox vs Grid](/blog/flexbox-vs-grid)
+- [CSS Container Queries](/blog/css-container-queries)
+- [CSS clamp()](/blog/clamp-css-function)
+- [Srcset and sizes](/blog/srcset-and-sizes)
+- [Responsive Web Design with CSS course](/courses/responsive-web-design-with-css)

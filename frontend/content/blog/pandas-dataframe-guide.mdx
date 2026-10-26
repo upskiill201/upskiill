@@ -1,0 +1,72 @@
+---
+title: "pandas DataFrame: A Beginner's Guide to Rows, Columns and Filters"
+description: "Learn pandas DataFrames: creating them, selecting columns and rows, filtering, sorting, adding columns and grouping, with clear examples."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [dataframe, pandas dataframe, pandas tutorial, pandas filter rows, python data analysis]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Data Science for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/data-science-for-beginners
+  label: "See the Data Science for Beginners course"
+faq:
+  - question: "What is a DataFrame?"
+    answer: "A table-like data structure in pandas with labelled rows and columns."
+  - question: "How do I select a column?"
+    answer: "Use df followed by the column name in square brackets."
+  - question: "How do I filter rows?"
+    answer: "Use a condition inside square brackets, such as df[df[\"age\"] > 30]."
+---
+
+If you know spreadsheets, you already understand DataFrames.
+
+## Direct answer
+
+A pandas DataFrame is a table with labelled rows and columns. Create one from a dictionary or CSV, select columns with `df["name"]`, filter rows with conditions, add columns by assignment and summarise with `groupby`.
+
+## Examples
+
+```python
+import pandas as pd
+
+df = pd.DataFrame({
+    "name": ["Ada", "Ben", "Chi"],
+    "age": [28, 35, 22],
+    "city": ["Lagos", "Accra", "Lagos"],
+})
+
+df["age"]                         # one column
+df[["name", "city"]]              # several columns
+df[df["age"] > 25]                # filter rows
+df.sort_values("age")             # sort
+df["age_next_year"] = df["age"] + 1
+df.groupby("city")["age"].mean()  # average age per city
+```
+
+## Common tasks
+
+| Task | Code |
+| :--- | :--- |
+| Read CSV | `pd.read_csv("file.csv")` |
+| First rows | `df.head()` |
+| Summary | `df.describe()` |
+| Rename | `df.rename(columns={...})` |
+
+## Where Teyro fits
+
+Teyro's [Data Science for Beginners](/courses/data-science-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+DataFrames are the workhorse of data analysis in Python.
+
+## More guides
+
+- [pandas for Beginners](/blog/pandas-for-beginners)
+- [Outliers](/blog/detect-outliers)
+- [Kaggle for Beginners](/blog/kaggle-for-beginners)
+- [Pandas for beginners](/blog/pandas-for-beginners)
+- [Exploratory data analysis](/blog/exploratory-data-analysis)
+- [Data Science for Beginners course](/courses/data-science-for-beginners)

@@ -1,0 +1,72 @@
+---
+title: "CSS Specificity Explained: Why Your Style Is Not Applying"
+description: "Specificity decides which CSS rule wins. Learn how the score works for elements, classes and IDs, the cascade and how to debug conflicting styles."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [css specificity, css specificity explained, css cascade, why is my css not working, important css]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "HTML & CSS for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/html-and-css-for-beginners
+  label: "See the HTML & CSS for Beginners course"
+faq:
+  - question: "What is CSS specificity?"
+    answer: "The rules that decide which style wins when several selectors target the same element."
+  - question: "Which has the highest specificity?"
+    answer: "Inline styles, then IDs, then classes, attributes and pseudo-classes, then elements."
+  - question: "Should I use !important?"
+    answer: "Only as a last resort, because it makes styles hard to maintain."
+---
+
+When two rules disagree, specificity picks the winner.
+
+## Direct answer
+
+CSS specificity is a scoring system. Inline styles beat IDs, IDs beat classes, attributes and pseudo-classes, and those beat element selectors. If specificity is equal, the later rule wins. Keep selectors low in specificity and avoid `!important`.
+
+## The scoring
+
+| Selector type | Weight |
+| :--- | :--- |
+| Inline style | highest |
+| ID (`#nav`) | high |
+| Class, attribute, pseudo-class | medium |
+| Element (`p`) | low |
+
+## Example
+
+```css
+p { color: black; }          /* low */
+.note { color: blue; }       /* medium, wins over p */
+#intro { color: green; }     /* high, wins over .note */
+```
+
+## Debugging
+
+1. Open DevTools and inspect the element.
+2. Look at the Styles panel. Crossed-out rules lost.
+3. Check which selector is more specific, or which comes later.
+
+## Tips
+
+- Use classes for most styling.
+- Avoid chains like `div.container ul li a`.
+- Reorder rules or reduce specificity instead of adding `!important`.
+
+## Where Teyro fits
+
+Teyro's [HTML & CSS for Beginners](/courses/html-and-css-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Understand the order and your CSS stops feeling random.
+
+## More guides
+
+- [CSS Variables (Custom Properties)](/blog/css-variables-guide)
+- [CSS Position Explained](/blog/css-positioning-explained)
+- [CSS Units](/blog/css-units-rem-em-px)
+- [Css selectors guide](/blog/css-selectors-guide)
+- [HTML & CSS for Beginners course](/courses/html-and-css-for-beginners)

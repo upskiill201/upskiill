@@ -1,0 +1,79 @@
+---
+title: "let vs const vs var in JavaScript: Differences and When to Use Each"
+description: "Understand the difference between let, const and var in JavaScript: scope, hoisting, reassignment and a simple rule for choosing which to use."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [javascript variables let const var, let vs const vs var, javascript let, javascript const, javascript var]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "JavaScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/javascript-for-beginners
+  label: "See the JavaScript for Beginners course"
+faq:
+  - question: "What is the difference between let and const?"
+    answer: "let lets you reassign the variable. const does not, though objects and arrays stored in const can still be changed."
+  - question: "Should I use var?"
+    answer: "Modern code rarely uses var because its function scope and hoisting cause surprises. Prefer let and const."
+  - question: "What is scope?"
+    answer: "Scope is where a variable can be used. let and const are block-scoped, while var is function-scoped."
+---
+
+Three keywords declare variables, but only two belong in modern code.
+
+## Direct answer
+
+Use `const` by default, `let` when you need to reassign, and avoid `var`. `let` and `const` are block-scoped and safer. `var` is function-scoped and hoisted in confusing ways.
+
+## Comparison
+
+| | `var` | `let` | `const` |
+| :--- | :--- | :--- | :--- |
+| Scope | function | block | block |
+| Reassign | yes | yes | no |
+| Redeclare | yes | no | no |
+| Hoisting | yes, value is undefined | yes, but unusable before declaration | same as let |
+
+## Examples
+
+```javascript
+const name = "Ada";
+let count = 0;
+count = count + 1;
+
+if (true) {
+  let inside = "block only";
+}
+// inside is not available here
+```
+
+## const does not mean frozen
+
+```javascript
+const list = [1, 2];
+list.push(3);   // allowed
+list = [];      // error
+```
+
+## A simple rule
+
+1. Start with `const`.
+2. Switch to `let` if you need to reassign.
+3. Do not use `var`.
+
+## Where Teyro fits
+
+Teyro's [JavaScript for Beginners](/courses/javascript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Prefer `const`, use `let` when needed and leave `var` to older code.
+
+## More guides
+
+- [JavaScript Arrow Functions](/blog/javascript-arrow-functions)
+- [JavaScript Arrays](/blog/javascript-arrays-guide)
+- [JavaScript Scope Explained](/blog/javascript-scope-explained)
+- [Javascript for beginners guide](/blog/javascript-for-beginners-guide)
+- [JavaScript for Beginners course](/courses/javascript-for-beginners)

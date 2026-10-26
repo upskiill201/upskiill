@@ -1,0 +1,82 @@
+---
+title: "Python Virtual Environments: What They Are and How to Use venv"
+description: "A Python virtual environment keeps each project's packages separate. Learn how to create, activate and delete one with venv, and why you should use them."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [python virtual environment, python venv, how to create virtual environment python, venv activate, python environment]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Python for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/python-for-beginners
+  label: "See the Python for Beginners course"
+faq:
+  - question: "What is a Python virtual environment?"
+    answer: "It is an isolated folder containing its own Python packages so projects do not interfere with each other."
+  - question: "How do I create a virtual environment?"
+    answer: "Run python -m venv .venv in your project folder, then activate it."
+  - question: "Do I need one for every project?"
+    answer: "It is good practice. It avoids version conflicts between projects."
+---
+
+Without virtual environments, every project shares the same packages, and that gets messy fast.
+
+## Direct answer
+
+A virtual environment is an isolated copy of Python tools and packages for one project. Create one with `python -m venv .venv`, activate it, then install packages with pip. Each project then has its own set of versions.
+
+## Create and activate
+
+```bash
+python -m venv .venv
+```
+
+Activate it:
+
+```bash
+# macOS and Linux
+source .venv/bin/activate
+
+# Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+```
+
+When active, your prompt usually shows `(.venv)`.
+
+## Install packages
+
+```bash
+pip install requests
+pip freeze > requirements.txt
+```
+
+## Leave and delete
+
+```bash
+deactivate
+```
+
+To delete it, remove the `.venv` folder. Your code is not affected.
+
+## Why bother
+
+- Avoids conflicts between projects needing different versions.
+- Makes sharing easy with a `requirements.txt`.
+- Keeps your system Python clean.
+
+## Where Teyro fits
+
+Teyro's [Python for Beginners](/courses/python-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 120 lessons, and you can start free.
+
+## The bottom line
+
+One project, one environment. It saves hours of debugging later.
+
+## More guides
+
+- [What Is pip in Python? How to Install and Manage Packages](/blog/python-pip-explained)
+- [Common Python Errors for Beginners and How to Fix Them](/blog/common-python-errors)
+- [Python File Handling](/blog/python-file-handling)
+- [Python pip explained](/blog/python-pip-explained)
+- [Python for Beginners course](/courses/python-for-beginners)

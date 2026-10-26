@@ -1,0 +1,71 @@
+---
+title: "Foreign Key in SQL: How Tables Relate to Each Other"
+description: "A foreign key links a column in one table to the primary key in another. Learn how it works, referential integrity, ON DELETE options and an example."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [foreign key, sql foreign key, what is a foreign key, referential integrity, one to many relationship]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "SQL and Databases for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/sql-and-databases-for-beginners
+  label: "See the SQL and Databases for Beginners course"
+faq:
+  - question: "What is a foreign key?"
+    answer: "A column that refers to the primary key of another table, creating a relationship between them."
+  - question: "What does a foreign key prevent?"
+    answer: "It stops you adding rows that point to something that does not exist, and can control what happens when the referenced row is deleted."
+  - question: "What does ON DELETE CASCADE do?"
+    answer: "It automatically deletes related rows when the referenced row is deleted."
+---
+
+Foreign keys keep related data honest.
+
+## Direct answer
+
+A foreign key is a column in one table that points to the primary key in another, linking the two. The database enforces that every value in the foreign key exists in the referenced table, which keeps data consistent. You choose what happens on delete: block, cascade or set to NULL.
+
+## Example
+
+```sql
+CREATE TABLE orders (
+  id INTEGER PRIMARY KEY,
+  customer_id INTEGER NOT NULL,
+  total REAL,
+  FOREIGN KEY (customer_id) REFERENCES customers(id)
+    ON DELETE RESTRICT
+);
+```
+
+## Relationships
+
+| Type | Example |
+| :--- | :--- |
+| One to many | one customer, many orders |
+| Many to many | students and courses, using a join table |
+| One to one | user and profile |
+
+## Delete behaviour
+
+| Option | Result |
+| :--- | :--- |
+| `RESTRICT` | block the delete |
+| `CASCADE` | delete related rows |
+| `SET NULL` | clear the reference |
+
+## Where Teyro fits
+
+Teyro's [SQL and Databases for Beginners](/courses/sql-and-databases-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Foreign keys make relationships real and protect you from orphan rows.
+
+## More guides
+
+- [Database Normalization Explained](/blog/database-normalization-explained)
+- [SQL Aggregate Functions](/blog/sql-aggregate-functions)
+- [SQL Subqueries Explained](/blog/sql-subqueries)
+- [Primary key explained](/blog/primary-key-explained)
+- [SQL and Databases for Beginners course](/courses/sql-and-databases-for-beginners)

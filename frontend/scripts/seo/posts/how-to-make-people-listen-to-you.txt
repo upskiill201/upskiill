@@ -1,0 +1,253 @@
+=== assertive-communication
+title: Assertive Communication: What It Is and How to Practise It
+desc: Assertive communication states your needs clearly and respectfully. Learn how it differs from passive and aggressive styles, with scripts to practise.
+tags: assertive communication, assertiveness skills, assertive vs aggressive, how to be assertive, communication styles
+rel: how-to-say-no-politely, how-to-speak-confidently
+q: What is assertive communication? | Expressing your thoughts, needs and boundaries clearly and respectfully, while respecting others.
+q: How is it different from aggressive communication? | Aggressive style disregards others. Assertive style respects both sides.
+q: How can I practise? | Use I statements, state facts and requests clearly and rehearse with low-stakes situations.
+---
+Clear and kind, both at once.
+
+## Direct answer
+
+Assertive communication means saying what you think, feel and need directly and respectfully. It sits between passive (not speaking up) and aggressive (steamrolling others). Use "I" statements, be specific, keep a calm tone and listen to the response.
+
+## Three styles
+
+| Style | Sounds like |
+| :--- | :--- |
+| Passive | "It is fine, whatever you want." |
+| Aggressive | "You always get this wrong." |
+| Assertive | "I need the report by Friday. Can you do that?" |
+
+## A simple formula
+
+"When [situation], I feel [feeling], because [reason]. I would like [request]."
+
+## Practise
+
+1. Start with small requests.
+2. Keep your voice steady.
+3. Use short sentences.
+4. Hold your position politely.
+
+## The bottom line
+
+You can be respectful and still be clear.
+
+=== vocal-variety
+title: Vocal Variety: How to Use Pitch, Pace and Volume to Hold Attention
+desc: A flat voice loses listeners. Learn how to vary pitch, pace, volume and pauses to keep people engaged, with simple drills you can practise today.
+tags: vocal variety, vary your voice, monotone voice fix, speaking pace, voice modulation
+rel: confident-voice, pausing-in-speeches
+q: What is vocal variety? | Changing your pitch, pace, volume and pauses to keep your speech engaging.
+q: How do I stop sounding monotone? | Emphasise key words, vary your pace and speak with intent about what matters.
+q: Does it come naturally? | It improves with practice, especially reading aloud and storytelling.
+---
+Same words, different voice, different impact.
+
+## Direct answer
+
+Vocal variety means changing your pitch, pace, volume and pauses so your message stays interesting. Emphasise key words, slow down for important points, speed up slightly for lighter ones and pause for impact. Record yourself and practise reading stories aloud.
+
+## Four tools
+
+| Tool | Use it to |
+| :--- | :--- |
+| Pitch | show emotion and questions |
+| Pace | signal importance and energy |
+| Volume | draw attention |
+| Pauses | let key points land |
+
+## Drill
+
+Read this sentence five ways: "I did not say he stole the money." Emphasise a different word each time and notice how the meaning changes.
+
+## The bottom line
+
+Vary your delivery, and people keep listening.
+
+=== persuasion-techniques-guide
+title: 8 Persuasion Techniques That Work Without Manipulation
+desc: Eight honest persuasion techniques based on psychology: reciprocity, social proof, consistency, liking, authority, scarcity, framing and stories, with cautions.
+tags: persuasion techniques, cialdini principles, principles of persuasion, how to persuade people, ethical influence
+rel: persuasion-at-work, how-to-get-people-to-listen-to-you
+q: What are the principles of persuasion? | Reciprocity, commitment, social proof, liking, authority and scarcity are widely cited principles, popularised by Robert Cialdini.
+q: Is persuasion manipulative? | Not when it is honest, transparent and respects the other person's choice.
+q: Which technique is most effective? | It depends on the person and situation. Understanding their needs matters most.
+---
+Influence is a skill. Using it honestly is a choice.
+
+## Direct answer
+
+Common persuasion techniques include reciprocity (give first), social proof (show others do it), commitment (start small), liking (build rapport), authority (show expertise), scarcity (real limits), framing (present options clearly) and stories. Use them honestly and never to deceive.
+
+## Techniques
+
+1. **Reciprocity:** help first.
+2. **Social proof:** "Most of the team already uses it."
+3. **Commitment:** ask for a small first step.
+4. **Liking:** find common ground.
+5. **Authority:** share evidence and credentials.
+6. **Scarcity:** only when it is true.
+7. **Framing:** present benefits that matter to them.
+8. **Storytelling:** make it human.
+
+## Ethics check
+
+Would you be comfortable if they knew exactly how you were persuading them?
+
+## The bottom line
+
+Persuade by being useful and honest.
+
+=== speaking-up-in-meetings-tips
+title: Speaking Up in Meetings: Scripts for Interrupting, Disagreeing, Adding
+desc: Ready-to-use phrases for meetings: how to jump in politely, disagree respectfully, handle interruptions and make sure your ideas are credited.
+tags: speaking up in meetings, meeting phrases, how to disagree politely at work, how to interrupt politely, get credit for ideas
+rel: speaking-up-in-meetings, how-to-handle-conflict-at-work
+q: How do I interrupt politely? | Use a short phrase such as "Can I add something here?" and wait for a gap.
+q: How do I disagree politely? | Acknowledge the other view and then give your perspective: "I see it differently, and here is why."
+q: How do I make sure my idea is credited? | Restate it, follow up in writing and name it when others build on it.
+---
+Words that help you be heard.
+
+## Direct answer
+
+Use short, polite phrases to jump in, disagree and add ideas. Prepare your key point, signal that you are about to speak, keep it brief and follow up in writing so your contribution is recorded.
+
+## Scripts
+
+| Situation | Say |
+| :--- | :--- |
+| Jump in | "Can I add something here?" |
+| Disagree | "I see it a bit differently. My concern is..." |
+| Build on an idea | "Building on Sam's point..." |
+| Handle interruption | "Let me finish this point, then I will hear yours." |
+| Get credit | "As I suggested earlier, ... Thanks for building on it." |
+
+## Follow up
+
+After the meeting, send a short note: "Following our discussion, my proposal is..."
+
+## The bottom line
+
+A few ready phrases lower the barrier to speaking.
+
+=== eye-contact-tips
+title: Eye Contact: How Much Is Right and How to Make It Natural
+desc: Eye contact builds trust but too much feels intense. Learn how much is comfortable, cultural differences, tips for video calls and what to do if it is hard.
+tags: eye contact, eye contact tips, how to make eye contact, eye contact in presentations, eye contact on video calls
+rel: body-language-for-communication, how-to-speak-confidently
+q: How much eye contact is normal? | Often about half to two-thirds of the time while talking, but it varies by culture and person.
+q: What if eye contact makes me uncomfortable? | Look at the bridge of the nose or the forehead, or glance away briefly to think.
+q: How do I do eye contact on video calls? | Look at the camera while you speak and at the screen while you listen.
+---
+Look at people, not through them.
+
+## Direct answer
+
+Natural eye contact means looking at the person for a few seconds at a time, then glancing away, roughly half to two-thirds of the time while listening and a little less while speaking. Norms vary across cultures. On video, look at the camera when you speak.
+
+## Tips
+
+1. **Hold for three to five seconds,** then look away naturally.
+2. **In groups,** share eye contact around the room.
+3. **On video,** look at the lens when making key points.
+4. **If it is hard,** look at the forehead or nose bridge.
+5. **Respect cultural norms.**
+
+## The bottom line
+
+Warm, steady, not staring.
+
+=== interrupting-and-being-interrupted
+title: Interrupting and Being Interrupted: How to Handle Both at Work
+desc: Learn why people interrupt, how to stop a habit of interrupting and phrases to take back the floor politely when you are cut off.
+tags: interrupting, how to stop interrupting, being interrupted at work, take back the floor, meeting etiquette
+rel: speaking-up-in-meetings-tips, assertive-communication
+q: How do I stop interrupting people? | Pause, jot down your thought and wait until the speaker finishes before replying.
+q: What do I say when I am interrupted? | "I would like to finish my point" delivered calmly.
+q: Is interrupting always rude? | Not always, such as to clarify or in lively discussions, but pay attention to cultural and individual norms.
+---
+Both sides of the habit matter.
+
+## Direct answer
+
+If you tend to interrupt, count a beat after the speaker finishes and note your thought instead of speaking. If you are interrupted, calmly say, "Let me finish this point," and continue. Notice patterns and speak to the person privately if it repeats.
+
+## If you interrupt
+
+1. Write your thought down.
+2. Wait a full second.
+3. Ask a question before offering your view.
+
+## If you are interrupted
+
+- "Hold on, I would like to finish."
+- Raise a hand and keep going.
+- Follow up after the meeting if it keeps happening.
+
+## The bottom line
+
+Listening first makes you easier to listen to.
+
+=== mirroring-in-conversation
+title: Mirroring in Conversation: Build Rapport Without Being Obvious
+desc: Mirroring means subtly matching another person's pace, tone or posture to build rapport. Learn how it works, how to do it naturally and when to avoid it.
+tags: mirroring, mirroring body language, mirroring in conversation, build rapport, active listening techniques
+rel: rapport-building, active-listening-skills
+q: What is mirroring? | Subtly matching aspects of someone's communication, such as pace, tone or posture, to create comfort.
+q: Is mirroring manipulative? | Not when done naturally and with real interest in the other person.
+q: How do I avoid being obvious? | Match the general energy and pace, not exact gestures, and focus on listening.
+---
+People like people who feel like them.
+
+## Direct answer
+
+Mirroring is matching the other person's pace, tone and general posture to build rapport. Do it lightly and naturally, focus on genuine listening and do not copy gestures exactly. Pay attention to their energy and adjust.
+
+## How to do it
+
+1. **Notice their pace** and match it.
+2. **Use similar language** and key words.
+3. **Match energy levels:** calm with calm, upbeat with upbeat.
+4. **Lean slightly** if they lean.
+5. **Stay genuine.**
+
+## Caution
+
+If it feels fake, stop. Interest in the person is more important than technique.
+
+## The bottom line
+
+Be responsive, not robotic.
+
+=== rapport-building
+title: How to Build Rapport Quickly: Simple Habits That Work
+desc: Rapport is the sense of connection and trust. Learn quick habits: smile, use names, find common ground, ask questions and listen with curiosity.
+tags: rapport, how to build rapport, build rapport quickly, connect with people, rapport at work
+rel: the-art-of-small-talk, active-listening-skills
+q: What is rapport? | A feeling of mutual understanding and trust between people.
+q: How do I build rapport quickly? | Be warm, use their name, ask open questions, find common ground and listen.
+q: Can introverts build rapport? | Yes. Thoughtful listening and one-to-one conversations are strong tools.
+---
+Connection makes communication easier.
+
+## Direct answer
+
+Build rapport by being warm, using people's names, asking open questions, finding common ground and listening with real curiosity. Remember details and follow up on them next time.
+
+## Habits
+
+1. Smile and be present.
+2. Use their name.
+3. Ask open questions.
+4. Find shared interests.
+5. Listen and respond to what they said.
+6. Remember details.
+
+## The bottom line
+
+People remember how you made them feel.

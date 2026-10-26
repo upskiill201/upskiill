@@ -1,0 +1,70 @@
+---
+title: "Mean, Median and Mode: Differences, Examples and When to Use Each"
+description: "Mean, median and mode summarise data in different ways. Learn how to calculate each, when to use which and why outliers change the mean."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [mean median mode, mean vs median, how to calculate median, average types, statistics basics]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Data Science for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/data-science-for-beginners
+  label: "See the Data Science for Beginners course"
+faq:
+  - question: "What is the difference between mean, median and mode?"
+    answer: "Mean is the average, median is the middle value and mode is the most common value."
+  - question: "When is median better than mean?"
+    answer: "When data has outliers or is skewed, such as incomes or house prices."
+  - question: "Can there be more than one mode?"
+    answer: "Yes. A dataset can have several modes or none."
+---
+
+Three ways to say "typical", and they can disagree.
+
+## Direct answer
+
+The mean is the sum divided by the count. The median is the middle value when sorted. The mode is the most frequent value. Use the median when data has outliers, because the mean gets pulled toward extreme values.
+
+## Example
+
+Values: 2, 3, 3, 4, 100
+
+- Mean = 112 ÷ 5 = 22.4
+- Median = 3
+- Mode = 3
+
+The 100 pulls the mean up. The median stays near the typical value.
+
+## In Python
+
+```python
+import statistics as st
+
+data = [2, 3, 3, 4, 100]
+print(st.mean(data), st.median(data), st.mode(data))
+```
+
+## Which to use
+
+| Situation | Use |
+| :--- | :--- |
+| Symmetric data | mean |
+| Skewed or outliers | median |
+| Categories | mode |
+
+## Where Teyro fits
+
+Teyro's [Data Science for Beginners](/courses/data-science-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Always look at the data's shape before choosing an average.
+
+## More guides
+
+- [Correlation vs Causation](/blog/correlation-vs-causation)
+- [Data Analyst vs Data Scientist](/blog/data-analyst-vs-data-scientist)
+- [How to Handle Missing Data](/blog/handling-missing-data)
+- [What is data science for beginners](/blog/what-is-data-science-for-beginners)
+- [Data Science for Beginners course](/courses/data-science-for-beginners)

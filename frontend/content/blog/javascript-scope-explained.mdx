@@ -1,0 +1,69 @@
+---
+title: "JavaScript Scope Explained: Global, Function and Block Scope"
+description: "Scope decides where variables can be used in JavaScript. Learn global, function and block scope with simple examples and tips for avoiding bugs."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [javascript scope, global scope, function scope, block scope, javascript scope chain]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "JavaScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/javascript-for-beginners
+  label: "See the JavaScript for Beginners course"
+faq:
+  - question: "What is scope in JavaScript?"
+    answer: "The area of code where a variable can be accessed."
+  - question: "What is the scope chain?"
+    answer: "When a variable is not found in the current scope, JavaScript looks in the outer scope, and so on up to the global scope."
+  - question: "Why avoid global variables?"
+    answer: "They can be changed from anywhere, which makes bugs harder to track."
+---
+
+Scope answers the question: "Where can I use this variable?"
+
+## Direct answer
+
+Scope is where a variable is visible. JavaScript has global scope, function scope and block scope. Variables declared with `let` and `const` are block-scoped, so they only exist inside the nearest curly braces. Inner scopes can read variables from outer scopes, but not the other way around.
+
+## Examples
+
+```javascript
+const globalName = "everywhere";
+
+function demo() {
+  const functionName = "inside function";
+  if (true) {
+    const blockName = "inside block";
+    console.log(globalName, functionName, blockName);
+  }
+  console.log(blockName); // error
+}
+```
+
+## The scope chain
+
+If JavaScript cannot find a variable in the current scope, it checks the one outside it, and so on until it reaches global.
+
+## Tips
+
+- Keep variables as local as possible.
+- Avoid global variables.
+- Use `const` and `let` instead of `var`.
+
+## Where Teyro fits
+
+Teyro's [JavaScript for Beginners](/courses/javascript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Smaller scopes mean fewer surprises.
+
+## More guides
+
+- [JavaScript Closures Explained Simply With Examples](/blog/javascript-closures-explained)
+- [JavaScript Promises Explained](/blog/javascript-promises-explained)
+- [async and await in JavaScript](/blog/async-await-javascript)
+- [Let const var javascript](/blog/let-const-var-javascript)
+- [Javascript closures explained](/blog/javascript-closures-explained)
+- [JavaScript for Beginners course](/courses/javascript-for-beginners)

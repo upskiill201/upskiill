@@ -1,0 +1,74 @@
+---
+title: "SQL Aggregate Functions: COUNT, SUM, AVG, MIN, MAX and GROUP BY"
+description: "Learn SQL aggregate functions with GROUP BY and HAVING: counting rows, totals, averages and filtering groups, with clear examples."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [sql aggregate functions, sql group by, count sum avg, sql having, summarise data sql]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "SQL and Databases for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/sql-and-databases-for-beginners
+  label: "See the SQL and Databases for Beginners course"
+faq:
+  - question: "What are aggregate functions?"
+    answer: "Functions that calculate a single result from many rows, such as COUNT, SUM, AVG, MIN and MAX."
+  - question: "What does GROUP BY do?"
+    answer: "It groups rows with the same values so aggregates are calculated per group."
+  - question: "What is the difference between WHERE and HAVING?"
+    answer: "WHERE filters rows before grouping. HAVING filters groups after aggregation."
+---
+
+Aggregates turn many rows into one answer.
+
+## Direct answer
+
+Aggregate functions summarise rows: `COUNT`, `SUM`, `AVG`, `MIN` and `MAX`. Use `GROUP BY` to calculate them per group and `HAVING` to filter the groups. Use `WHERE` to filter rows first.
+
+## Examples
+
+```sql
+SELECT COUNT(*) FROM orders;
+
+SELECT SUM(total) AS revenue, AVG(total) AS average_order
+FROM orders;
+
+SELECT customer_id, COUNT(*) AS order_count, SUM(total) AS spent
+FROM orders
+GROUP BY customer_id;
+
+SELECT customer_id, SUM(total) AS spent
+FROM orders
+GROUP BY customer_id
+HAVING SUM(total) > 500
+ORDER BY spent DESC;
+```
+
+## WHERE vs HAVING
+
+| | `WHERE` | `HAVING` |
+| :--- | :--- | :--- |
+| Filters | rows | groups |
+| Runs | before grouping | after grouping |
+
+## Notes
+
+- `COUNT(*)` counts rows, `COUNT(column)` ignores NULLs.
+- Every non-aggregated column in `SELECT` must be in `GROUP BY`.
+
+## Where Teyro fits
+
+Teyro's [SQL and Databases for Beginners](/courses/sql-and-databases-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Group, aggregate, filter the groups.
+
+## More guides
+
+- [SQL Subqueries Explained](/blog/sql-subqueries)
+- [SQL vs NoSQL](/blog/sql-vs-nosql)
+- [SQL Injection Explained](/blog/sql-injection-explained)
+- [Sql select statement](/blog/sql-select-statement)
+- [SQL and Databases for Beginners course](/courses/sql-and-databases-for-beginners)

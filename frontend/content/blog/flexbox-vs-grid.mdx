@@ -1,0 +1,76 @@
+---
+title: "Flexbox vs Grid: Which Should You Use and When?"
+description: "Flexbox is one-dimensional and Grid is two-dimensional. Compare them with examples, learn when to use each and how they work together."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [flexbox vs grid, css flexbox vs grid, flexbox or grid, css layout, when to use grid]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Responsive Web Design with CSS turns this into short, playable lessons. Free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive Web Design with CSS course"
+faq:
+  - question: "What is the main difference between Flexbox and Grid?"
+    answer: "Flexbox lays out items in one direction, a row or a column. Grid lays out items in rows and columns together."
+  - question: "Which is better?"
+    answer: "Neither. Use Flexbox for components and rows of items, and Grid for page and card layouts."
+  - question: "Can I use both together?"
+    answer: "Yes. A grid layout can contain flex components."
+---
+
+They solve different problems, and good developers use both.
+
+## Direct answer
+
+Use Flexbox when you are arranging items along a single line, such as a navigation bar or a row of buttons. Use Grid when you need rows and columns together, such as a page layout or a gallery. They work well combined.
+
+## Comparison
+
+| | Flexbox | Grid |
+| :--- | :--- | :--- |
+| Dimension | one (row or column) | two (rows and columns) |
+| Starts from | content | layout |
+| Good for | nav bars, toolbars, centring | page layouts, galleries |
+
+## Flexbox example
+
+```css
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+```
+
+## Grid example
+
+```css
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+```
+
+## A quick test
+
+If you think in "a row of things", try Flexbox. If you think in "a table of things", try Grid.
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Learn both and combine them.
+
+## More guides
+
+- [CSS Container Queries](/blog/css-container-queries)
+- [CSS clamp()](/blog/clamp-css-function)
+- [srcset and sizes Explained](/blog/srcset-and-sizes)
+- [Css grid explained](/blog/css-grid-explained)
+- [Responsive Web Design with CSS course](/courses/responsive-web-design-with-css)

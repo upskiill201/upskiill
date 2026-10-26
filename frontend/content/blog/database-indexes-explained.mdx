@@ -1,0 +1,70 @@
+---
+title: "Database Indexes Explained: Make Your Queries Faster"
+description: "An index helps a database find rows without scanning the whole table. Learn how indexes work, when to add them, the costs and how to check with EXPLAIN."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [database indexes, sql index, create index, index performance, explain query plan]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "SQL and Databases for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/sql-and-databases-for-beginners
+  label: "See the SQL and Databases for Beginners course"
+faq:
+  - question: "What is a database index?"
+    answer: "A data structure that helps the database find rows quickly by the values in certain columns."
+  - question: "When should I add an index?"
+    answer: "On columns used often in WHERE, JOIN and ORDER BY on large tables."
+  - question: "Do indexes have downsides?"
+    answer: "They use storage and slow down inserts and updates a little, so do not index everything."
+---
+
+An index is like the index at the back of a book.
+
+## Direct answer
+
+A database index lets the database find rows without reading the whole table. Add indexes on columns you frequently filter, join or sort by, especially on large tables. They speed up reads but add cost to writes and storage, so add them deliberately and check with `EXPLAIN`.
+
+## Example
+
+```sql
+CREATE INDEX idx_orders_customer ON orders(customer_id);
+
+EXPLAIN SELECT * FROM orders WHERE customer_id = 42;
+```
+
+## When indexes help
+
+- Filtering by a column on a big table.
+- Joining on a foreign key.
+- Sorting by a column.
+
+## When they do not
+
+- Tiny tables.
+- Columns with very few distinct values.
+- Tables with very heavy writes.
+
+## Tips
+
+- Primary keys are indexed automatically.
+- Index foreign keys used in joins.
+- Measure before and after.
+
+## Where Teyro fits
+
+Teyro's [SQL and Databases for Beginners](/courses/sql-and-databases-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Index what you query most, and prove it helps.
+
+## More guides
+
+- [MySQL vs PostgreSQL](/blog/mysql-vs-postgresql)
+- [SQL Practice Questions for Beginners With Answers](/blog/sql-practice-questions)
+- [SQL SELECT Statement](/blog/sql-select-statement)
+- [Sql select statement](/blog/sql-select-statement)
+- [Primary key explained](/blog/primary-key-explained)
+- [SQL and Databases for Beginners course](/courses/sql-and-databases-for-beginners)

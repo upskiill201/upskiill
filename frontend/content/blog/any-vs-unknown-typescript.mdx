@@ -1,0 +1,70 @@
+---
+title: "any vs unknown in TypeScript: Which to Use and Why"
+description: "any turns off type checking. unknown forces you to check first. Learn the difference, examples and why unknown is safer for data you do not control."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [any vs unknown, typescript any, typescript unknown, unknown type, avoid any typescript]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "TypeScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript for Beginners course"
+faq:
+  - question: "What is the difference between any and unknown?"
+    answer: "any disables type checking. unknown accepts any value but requires you to narrow it before use."
+  - question: "Why avoid any?"
+    answer: "It removes type safety and hides bugs."
+  - question: "When should I use unknown?"
+    answer: "For values from outside your code, such as parsed JSON or caught errors."
+---
+
+`any` says "trust me". `unknown` says "prove it".
+
+## Direct answer
+
+Use `unknown` instead of `any` when you do not know a value's type. `any` allows anything and turns off checking. `unknown` accepts any value but you must narrow it with checks before using it.
+
+## Example
+
+```typescript
+let a: any = "hello";
+a.toFixed(); // no error, crashes at runtime
+
+let u: unknown = "hello";
+// u.toUpperCase();  // error
+if (typeof u === "string") {
+  u.toUpperCase();   // fine
+}
+```
+
+## Good use for unknown
+
+```typescript
+function parse(text: string): unknown {
+  return JSON.parse(text);
+}
+
+try {
+  // ...
+} catch (error: unknown) {
+  if (error instanceof Error) console.log(error.message);
+}
+```
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 20 lessons, and you can start free.
+
+## The bottom line
+
+Prefer `unknown`. Treat `any` as a last resort.
+
+## More guides
+
+- [TypeScript With React](/blog/typescript-with-react)
+- [TypeScript Type Assertions](/blog/typescript-type-assertion)
+- [Optional Chaining and Nullish Coalescing in TypeScript](/blog/typescript-optional-chaining)
+- [Typescript type guards](/blog/typescript-type-guards)
+- [TypeScript for Beginners course](/courses/typescript-for-beginners)

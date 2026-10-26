@@ -1,0 +1,76 @@
+---
+title: "Event Bubbling and Delegation in JavaScript Explained"
+description: "Events bubble up from the clicked element to its parents. Learn bubbling, capturing, stopPropagation and event delegation with practical examples."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [event bubbling, event delegation, javascript event propagation, stoppropagation, event capturing]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Interactive Web Pages with JavaScript turns this into short, playable lessons. Free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive Web Pages with JavaScript course"
+faq:
+  - question: "What is event bubbling?"
+    answer: "When an event happens on an element, it also triggers on its parent elements, moving up the DOM."
+  - question: "What is event delegation?"
+    answer: "Attaching one listener to a parent to handle events from many children, using event.target."
+  - question: "How do I stop bubbling?"
+    answer: "Call event.stopPropagation() in the handler."
+---
+
+Click a button inside a card inside a list, and all three can hear it.
+
+## Direct answer
+
+Event bubbling means an event travels from the element where it happened up through its parents. Event delegation uses that: you attach one listener to a parent and check `event.target` to see which child was clicked. It is efficient and works for elements added later.
+
+## Bubbling in action
+
+```html
+<ul id="list">
+  <li>One</li>
+  <li>Two</li>
+</ul>
+```
+
+```javascript
+document.querySelector("#list").addEventListener("click", (event) => {
+  if (event.target.tagName === "LI") {
+    console.log("Clicked", event.target.textContent);
+  }
+});
+```
+
+## Stopping propagation
+
+```javascript
+child.addEventListener("click", (event) => {
+  event.stopPropagation();
+});
+```
+
+Use it sparingly. It can make other code harder to understand.
+
+## Why delegation is useful
+
+- One listener instead of many.
+- Works for items added dynamically.
+- Less memory use.
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) course turns this into short lessons you can play in a few minutes a day. It has 37 lessons, and you can start free.
+
+## The bottom line
+
+Understand bubbling and you can handle events cleanly for lists, menus and tables.
+
+## More guides
+
+- [How to Build a Modal Window With HTML, CSS and JavaScript](/blog/javascript-modal-window)
+- [How to Add a Dark Mode Toggle With CSS and JavaScript](/blog/dark-mode-toggle-javascript)
+- [JavaScript Animation Basics](/blog/javascript-animation-basics)
+- [Javascript event listeners](/blog/javascript-event-listeners)
+- [Interactive Web Pages with JavaScript course](/courses/interactive-web-pages-with-javascript)

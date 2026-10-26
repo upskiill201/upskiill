@@ -1,0 +1,68 @@
+---
+title: "Training and Test Data: Why You Must Split Your Dataset"
+description: "Learn why models are tested on unseen data, how to split into training, validation and test sets and mistakes like data leakage."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [training and test data, train test split, validation set, data leakage, machine learning evaluation]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Machine Learning for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/machine-learning-for-beginners
+  label: "See the Machine Learning for Beginners course"
+faq:
+  - question: "Why split data into training and test sets?"
+    answer: "To measure how well a model performs on new data, not data it has already seen."
+  - question: "What is a validation set?"
+    answer: "A separate portion used to tune settings while keeping the test set untouched until the end."
+  - question: "What is data leakage?"
+    answer: "When information from the test set influences training, making results look better than they really are."
+---
+
+If you grade a student on the questions they practised, you learn nothing about what they know.
+
+## Direct answer
+
+Split your data into a training set to teach the model and a test set to evaluate it on unseen data. Often you also use a validation set for tuning. Keep the test set untouched until the end, and avoid data leakage.
+
+## Example in Python
+
+```python
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+```
+
+## Typical splits
+
+| Set | Purpose | Share |
+| :--- | :--- | :--- |
+| Training | learn patterns | around 60 to 80 percent |
+| Validation | tune settings | around 10 to 20 percent |
+| Test | final check | around 10 to 20 percent |
+
+## Common mistakes
+
+- Scaling or cleaning using the whole dataset before splitting.
+- Repeatedly adjusting the model based on test results.
+- Splitting time series data randomly.
+
+## Where Teyro fits
+
+Teyro's [Machine Learning for Beginners](/courses/machine-learning-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 200 lessons, and you can start free.
+
+## The bottom line
+
+The test set is a final exam. Do not peek.
+
+## More guides
+
+- [Linear Regression Explained](/blog/linear-regression-explained)
+- [Decision Trees Explained](/blog/decision-tree-explained)
+- [Neural Networks Explained in Simple Terms](/blog/neural-network-explained)
+- [Overfitting explained](/blog/overfitting-explained)
+- [Cross validation explained](/blog/cross-validation-explained)
+- [Machine Learning for Beginners course](/courses/machine-learning-for-beginners)

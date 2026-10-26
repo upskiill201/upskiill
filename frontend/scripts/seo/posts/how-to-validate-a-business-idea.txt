@@ -1,0 +1,364 @@
+=== minimum-viable-product-explained
+title: Minimum Viable Product: Meaning, Examples and How to Build One
+desc: A minimum viable product tests your idea with the least effort. Learn the meaning, famous examples, MVP types and how to decide what to include.
+tags: minimum viable product, mvp meaning, mvp examples, how to build an mvp, lean startup mvp
+rel: what-is-an-mvp, how-to-validate-a-business-idea
+q: What is a minimum viable product? | The simplest version of a product that delivers core value and lets you learn from real users.
+q: What are types of MVP? | Landing page, concierge, Wizard of Oz, single-feature product and prototypes.
+q: How do I decide what to include? | Pick the one problem and the smallest set of features that solves it.
+---
+Learn before you build everything.
+
+## Direct answer
+
+A minimum viable product (MVP) is the simplest version of a product that solves a core problem for early users and lets you learn whether the idea works. Build only the features needed to test your biggest assumption, then collect feedback.
+
+## MVP types
+
+| Type | Description |
+| :--- | :--- |
+| Landing page | describe the idea and measure sign-ups |
+| Concierge | deliver the service manually |
+| Wizard of Oz | looks automated, done by hand |
+| Single feature | one core function |
+
+## How to scope one
+
+1. Define the target customer and problem.
+2. List your riskiest assumption.
+3. Choose the smallest test.
+4. Set a success measure.
+5. Build, launch, learn.
+
+## The bottom line
+
+An MVP is a learning tool. Keep it small.
+
+=== customer-discovery-interviews
+title: Customer Discovery Interviews: How to Run Them and What to Ask
+desc: Customer discovery interviews reveal real problems. Learn how to find people, ask unbiased questions, listen for facts and avoid pitching.
+tags: customer discovery, customer interviews, how to interview customers, mom test questions, customer research
+rel: problem-solution-fit, how-to-validate-a-business-idea
+q: What is a customer discovery interview? | A conversation with potential customers to learn about their problems, habits and needs.
+q: What should I ask? | Ask about past behaviour and real examples, not hypothetical future intentions.
+q: How many should I do? | Aim for at least ten with your target group, then look for patterns.
+---
+People are polite. You need facts.
+
+## Direct answer
+
+Run customer discovery interviews by talking to people who match your target customer, asking about specific past experiences, listening for patterns and avoiding pitching your idea. Questions about what they actually did are more reliable than opinions about what they might do.
+
+## Good questions
+
+- "Tell me about the last time you [had this problem]."
+- "What did you do about it?"
+- "What was hardest?"
+- "What else have you tried?"
+- "How much does it cost you in time or money?"
+
+## Avoid
+
+- "Would you buy this?"
+- Leading questions.
+- Pitching.
+
+## After
+
+1. Write notes right away.
+2. Look for repeated problems.
+3. Update your idea.
+
+## The bottom line
+
+Ask about the past, not the future.
+
+=== lean-startup-explained
+title: Lean Startup Explained: Build, Measure, Learn in Plain English
+desc: Lean startup is a method for testing ideas quickly with small experiments. Learn the build-measure-learn loop, key terms and how to apply it to any idea.
+tags: lean startup, lean startup explained, build measure learn, validated learning, pivot or persevere
+rel: minimum-viable-product-explained, how-to-validate-a-business-idea
+q: What is the lean startup method? | An approach by Eric Ries that uses rapid experiments to learn what customers want before investing heavily.
+q: What is build-measure-learn? | Build a small test, measure customer response and learn whether to continue or change.
+q: What is a pivot? | A change in strategy based on what you learned.
+---
+Test the riskiest part first.
+
+## Direct answer
+
+Lean startup is a method of running small experiments to learn quickly. You build a minimum version, measure how customers respond and learn whether to persevere or pivot. It reduces waste by testing assumptions early.
+
+## The loop
+
+1. **Build** the smallest test.
+2. **Measure** what people do.
+3. **Learn** and decide.
+
+## Example
+
+Instead of building an app, create a landing page and see how many people sign up for the waiting list.
+
+## Key ideas
+
+- Validated learning.
+- Minimum viable product.
+- Pivot or persevere.
+
+## The bottom line
+
+Learn first, scale later.
+
+=== product-market-fit-explained
+title: Product-Market Fit: What It Means and How to Recognise It
+desc: Product-market fit means a good product in a market that wants it. Learn signs of fit, how to measure it and what to do when you do not have it yet.
+tags: product market fit, what is product market fit, signs of product market fit, pmf survey, startup growth
+rel: problem-solution-fit, lean-startup-explained
+q: What is product-market fit? | When your product satisfies a strong market demand and customers actively want and keep using it.
+q: How do I know I have it? | Strong retention, word-of-mouth growth and customers who would be very disappointed without it.
+q: What if I do not have it? | Talk to customers, refine the problem or target market and iterate.
+---
+When customers pull the product from you.
+
+## Direct answer
+
+Product-market fit is when a product clearly satisfies a market need, shown by retention, referrals and customers who would be very disappointed if it disappeared. Without it, focus on learning from customers and refining your product before scaling.
+
+## Signs
+
+- Customers return repeatedly.
+- People tell others unprompted.
+- Sales do not need heavy persuasion.
+
+## A simple survey
+
+Ask users: "How would you feel if you could no longer use this?" Many teams look for a large share saying "very disappointed".
+
+## The bottom line
+
+Fit comes from listening and iterating.
+
+=== market-size-estimation
+title: How to Estimate Market Size for a New Business Idea
+desc: Estimate market size with top-down and bottom-up methods. Learn the steps, a worked example and the common mistakes that inflate numbers.
+tags: market size, how to estimate market size, market sizing, bottom up market sizing, top down market sizing
+rel: tam-sam-som-explained, how-to-validate-a-business-idea
+q: What is market size? | The number of potential customers or total revenue available for a product.
+q: What is bottom-up estimation? | Estimating from the number of customers you can reach times what they would pay.
+q: Why do investors mistrust "1 percent of a huge market"? | It is a lazy estimate that ignores how you will reach customers.
+---
+Is the market big enough?
+
+## Direct answer
+
+Estimate market size with a bottom-up method: count the customers you can reach, multiply by what they would pay per year and sanity-check with top-down data. Use real numbers, not wishful percentages.
+
+## Example (bottom-up)
+
+- 5,000 small bakeries in your region.
+- You can reach 20 percent in two years: 1,000.
+- Price: 300 per year.
+- Revenue potential: 300,000 per year.
+
+## Steps
+
+1. Define the customer precisely.
+2. Count how many exist.
+3. Estimate who you can reach.
+4. Multiply by price.
+5. Compare with top-down data.
+
+## The bottom line
+
+Be specific about who and how many.
+
+=== tam-sam-som-explained
+title: TAM, SAM and SOM: Market Sizing Terms Explained With Example
+desc: TAM, SAM and SOM describe total, serviceable and obtainable market. Learn each term with a simple example and how to use them in a plan or pitch.
+tags: tam sam som, tam sam som explained, total addressable market, serviceable market, obtainable market
+rel: market-size-estimation, pitch-deck-basics
+q: What is TAM? | Total Addressable Market: the total demand for a product if you captured every possible customer.
+q: What is SAM? | Serviceable Available Market: the part of TAM that your product and reach can serve.
+q: What is SOM? | Serviceable Obtainable Market: the share of SAM you can realistically win.
+---
+Three circles, each inside the last.
+
+## Direct answer
+
+TAM is the total market for a product category. SAM is the portion you can serve with your product and channels. SOM is the part you can realistically capture in the near term. The smaller numbers are usually more useful for planning.
+
+## Example
+
+A meal planning app:
+- **TAM:** everyone who buys groceries.
+- **SAM:** busy parents in your country who use smartphones.
+- **SOM:** parents you can reach in year one through your channels.
+
+## Tips
+
+- Base SOM on realistic channels.
+- Show your sources.
+
+## The bottom line
+
+Start with SOM and work outward.
+
+=== competitor-analysis-guide
+title: Competitor Analysis: A Simple Framework for Small Businesses
+desc: How to analyse competitors: list them, compare offers, prices and reviews, find gaps and decide how you will be different. Includes a template.
+tags: competitor analysis, how to do competitor analysis, competitor research, competitive analysis template, find your niche
+rel: unique-selling-point, how-to-validate-a-business-idea
+q: What is competitor analysis? | Researching competitors' products, prices, strengths and weaknesses to find your opportunity.
+q: Who counts as a competitor? | Direct competitors, indirect alternatives and the option of doing nothing.
+q: Where do I find information? | Websites, reviews, social media, pricing pages and customer conversations.
+---
+Know what customers can choose instead of you.
+
+## Direct answer
+
+To analyse competitors, list direct and indirect options, compare what they offer, their prices and positioning, read customer reviews to find complaints and gaps and decide how you will be different. Update it regularly.
+
+## Template
+
+| Competitor | Offer | Price | Strength | Weakness |
+| :--- | :--- | :--- | :--- | :--- |
+| A | | | | |
+| B | | | | |
+
+## Steps
+
+1. List competitors.
+2. Capture offers and prices.
+3. Read reviews.
+4. Spot patterns and gaps.
+5. Decide your angle.
+
+## The bottom line
+
+Learn from competitors, then choose your own path.
+
+=== pre-sales-validation
+title: Pre-Sales: How to Test Demand by Selling Before You Build
+desc: Pre-selling tests whether people will pay before you build. Learn how to run a pre-sale, be honest with buyers and use results to decide your next step.
+tags: pre sales, pre sell, presale validation, test demand before building, crowdfunding validation
+rel: minimum-viable-product-explained, customer-discovery-interviews
+q: What is pre-selling? | Offering a product for sale before it exists, to test whether people will pay.
+q: Is it honest? | Yes if you clearly say when it will be delivered and what is included, and refund if you do not deliver.
+q: Why do it? | Payment is stronger evidence of demand than praise.
+---
+Interest is cheap. Money is evidence.
+
+## Direct answer
+
+Pre-selling means taking orders or deposits before building the full product, to test real demand. Be transparent about timing and refunds, set a goal and use the results to decide whether to build.
+
+## How to run one
+
+1. Create a landing page with a clear offer.
+2. Set a price and a delivery timeline.
+3. Promote to your target audience.
+4. Aim for a set number of buyers.
+5. If you reach it, build. If not, learn why.
+
+## Be honest
+
+State what is delivered, when and what happens if you cannot deliver.
+
+## The bottom line
+
+Real commitments tell you more than compliments.
+
+=== target-audience-definition
+title: How to Define Your Target Audience: A Practical Guide
+desc: Define who your product is for: demographics, needs, behaviours and problems. Build a simple customer profile and test it with real people.
+tags: target audience, how to define target audience, customer profile, ideal customer, audience research
+rel: customer-discovery-interviews, pain-point-in-pitch
+q: What is a target audience? | The specific group of people most likely to need and buy your product.
+q: How narrow should it be? | Narrow enough that you can describe them and find them, such as freelance designers in one city.
+q: How do I research them? | Interviews, surveys, communities and analytics.
+---
+"Everyone" is not a target audience.
+
+## Direct answer
+
+Define your target audience by describing who has the problem, what they need, where they spend time and how they make decisions. Start narrow, test with interviews and expand later.
+
+## A simple profile
+
+- **Who:** role, situation.
+- **Problem:** what frustrates them.
+- **Goal:** what they want.
+- **Where to find them:** communities, platforms.
+- **Alternatives:** what they use now.
+
+## Example
+
+"Solo accountants who spend several hours a week chasing client documents."
+
+## The bottom line
+
+A clear audience makes everything else easier.
+
+=== validation-surveys
+title: Surveys for Idea Validation: How to Write Questions That Work
+desc: Surveys can test ideas at scale. Learn how to write neutral questions, avoid bias, choose a sample and combine surveys with interviews.
+tags: surveys, validation survey, how to write a survey, survey questions for startups, customer surveys
+rel: customer-discovery-interviews, target-audience-definition
+q: Are surveys good for validation? | They are good for testing patterns after interviews, but weak for discovering new problems.
+q: What question types work best? | Specific questions about behaviour and priorities, with a mix of multiple choice and short text.
+q: How many responses do I need? | It depends. Aim for enough to see patterns from your target group.
+---
+Surveys measure what you already understand.
+
+## Direct answer
+
+Use surveys after interviews to test patterns. Write neutral questions about past behaviour, avoid leading wording, keep it short and send it to your target audience. Combine results with conversations for depth.
+
+## Good vs bad questions
+
+| Bad | Better |
+| :--- | :--- |
+| Would you love a tool that saves you time? | How do you currently handle X? How long does it take? |
+| Do you like our idea? | What is the biggest problem you face with X? |
+
+## Tips
+
+1. Keep it under 10 questions.
+2. Use plain language.
+3. Include one open question.
+4. Test on a friend first.
+
+## The bottom line
+
+Use surveys to confirm, interviews to discover.
+
+=== smoke-test-landing-page
+title: Smoke Test: Validate an Idea With a Landing Page
+desc: A smoke test uses a simple landing page to measure interest before you build. Learn how to set it up, drive traffic and read the results honestly.
+tags: smoke test, landing page test, validate idea with landing page, waitlist test, conversion test
+rel: pre-sales-validation, minimum-viable-product-explained
+q: What is a smoke test? | A quick experiment, often a landing page, to see whether people take an action such as joining a waitlist.
+q: What conversion rate is good? | It varies. Compare against your own target and across tests.
+q: Can I run one without a product? | Yes, but be honest that the product is coming.
+---
+Does anyone care? Find out in a weekend.
+
+## Direct answer
+
+A smoke test is a simple landing page that describes your idea and asks for an action, such as an email sign-up or pre-order. Drive targeted traffic, measure conversion and compare with a target. Be honest about what exists.
+
+## Steps
+
+1. Write a clear headline and benefit.
+2. Add one call to action.
+3. Set a target, such as 100 visitors and 10 sign-ups.
+4. Send traffic from your target audience.
+5. Review results and talk to sign-ups.
+
+## Cautions
+
+- Do not mislead people.
+- Low conversion may mean a weak message, not a weak idea. Test variations.
+
+## The bottom line
+
+Cheap, fast evidence of interest.

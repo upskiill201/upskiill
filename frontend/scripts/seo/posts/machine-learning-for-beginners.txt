@@ -1,0 +1,607 @@
+=== supervised-vs-unsupervised-learning
+title: Supervised vs Unsupervised Learning: The Difference With Examples
+desc: Supervised learning learns from labelled examples and unsupervised learning finds patterns without labels. See examples, algorithms and how to choose.
+tags: supervised vs unsupervised learning, supervised learning, unsupervised learning, types of machine learning, reinforcement learning
+rel: how-does-ai-work-in-simple-terms, is-machine-learning-easy-to-learn
+q: What is supervised learning? | Training a model on data with known answers, called labels, so it can predict labels for new data.
+q: What is unsupervised learning? | Finding patterns or groups in data without labelled answers.
+q: What is the third type? | Reinforcement learning, where an agent learns by trying actions and receiving rewards.
+---
+The difference is whether the answers are given.
+
+## Direct answer
+
+In supervised learning you train a model on labelled examples, such as emails marked spam or not spam, so it predicts labels for new data. In unsupervised learning there are no labels and the model finds structure on its own, such as grouping similar customers. Reinforcement learning learns from rewards.
+
+## Comparison
+
+| | Supervised | Unsupervised |
+| :--- | :--- | :--- |
+| Data | labelled | unlabelled |
+| Goal | predict | discover structure |
+| Examples | spam detection, price prediction | customer segments, anomaly detection |
+| Algorithms | regression, decision trees | clustering, dimensionality reduction |
+
+## Two kinds of supervised learning
+
+- **Classification:** predict a category.
+- **Regression:** predict a number.
+
+## How to choose
+
+1. Do you have labels? Try supervised.
+2. Exploring unknown data? Try unsupervised.
+3. Learning by trial and feedback? Consider reinforcement learning.
+
+## The bottom line
+
+Labels or no labels decide the approach.
+
+=== overfitting-explained
+title: Overfitting in Machine Learning: What It Is and How to Prevent It
+desc: Overfitting happens when a model memorises training data and fails on new data. Learn the signs, simple examples and fixes such as more data and regularisation.
+tags: overfitting, what is overfitting, underfitting vs overfitting, how to prevent overfitting, machine learning mistakes
+rel: bias-and-variance, training-and-test-data
+q: What is overfitting? | When a model learns the training data too closely, including noise, and performs poorly on new data.
+q: How do I detect it? | Compare performance on training data and on unseen test data. A big gap suggests overfitting.
+q: How can I prevent it? | Use more data, simpler models, regularisation, cross-validation and early stopping.
+---
+A model that memorises the textbook may fail the exam.
+
+## Direct answer
+
+Overfitting is when a machine learning model fits the training data too closely, including its noise, and so performs badly on new data. You spot it when training accuracy is high but test accuracy is much lower. Reduce it with more data, simpler models, regularisation and cross-validation.
+
+## A picture
+
+Imagine fitting a curve through 10 points. A wiggly curve that hits every point is overfitted. A smooth curve that follows the trend generalises better.
+
+## Signs
+
+- High training score, low test score.
+- Performance gets worse on new data as the model grows more complex.
+
+## Fixes
+
+1. **Get more data.**
+2. **Simplify the model.**
+3. **Regularise** to penalise complexity.
+4. **Use cross-validation.**
+5. **Stop training early.**
+6. **Remove noisy features.**
+
+## Underfitting is the opposite
+
+A model too simple to capture the pattern. Both fail to generalise.
+
+## The bottom line
+
+A good model performs well on data it has not seen.
+
+=== training-and-test-data
+title: Training and Test Data: Why You Must Split Your Dataset
+desc: Learn why models are tested on unseen data, how to split into training, validation and test sets and mistakes like data leakage.
+tags: training and test data, train test split, validation set, data leakage, machine learning evaluation
+rel: overfitting-explained, cross-validation-explained
+q: Why split data into training and test sets? | To measure how well a model performs on new data, not data it has already seen.
+q: What is a validation set? | A separate portion used to tune settings while keeping the test set untouched until the end.
+q: What is data leakage? | When information from the test set influences training, making results look better than they really are.
+---
+If you grade a student on the questions they practised, you learn nothing about what they know.
+
+## Direct answer
+
+Split your data into a training set to teach the model and a test set to evaluate it on unseen data. Often you also use a validation set for tuning. Keep the test set untouched until the end, and avoid data leakage.
+
+## Example in Python
+
+```python
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+```
+
+## Typical splits
+
+| Set | Purpose | Share |
+| :--- | :--- | :--- |
+| Training | learn patterns | around 60 to 80 percent |
+| Validation | tune settings | around 10 to 20 percent |
+| Test | final check | around 10 to 20 percent |
+
+## Common mistakes
+
+- Scaling or cleaning using the whole dataset before splitting.
+- Repeatedly adjusting the model based on test results.
+- Splitting time series data randomly.
+
+## The bottom line
+
+The test set is a final exam. Do not peek.
+
+=== linear-regression-explained
+title: Linear Regression Explained: Predict Numbers From Data
+desc: Linear regression fits a straight line to predict a number. Learn the idea, the equation, how error is measured and a short scikit-learn example.
+tags: linear regression, linear regression explained, simple linear regression, regression in machine learning, scikit-learn linear regression
+rel: classification-vs-regression
+q: What is linear regression? | A method that models the relationship between inputs and a numeric output as a straight line or plane.
+q: What is the equation? | y equals m times x plus b for one input, where m is the slope and b is the intercept.
+q: How is the best line chosen? | By minimising the sum of squared differences between predictions and actual values.
+---
+The simplest and most useful predictive model.
+
+## Direct answer
+
+Linear regression predicts a number by fitting a straight line through data. For one input the model is y = m·x + b. It finds the slope and intercept that minimise the squared errors between predictions and real values.
+
+## Example
+
+```python
+from sklearn.linear_model import LinearRegression
+import numpy as np
+
+hours = np.array([[1], [2], [3], [4], [5]])
+score = np.array([52, 58, 65, 70, 78])
+
+model = LinearRegression().fit(hours, score)
+print(model.coef_, model.intercept_)
+print(model.predict([[6]]))
+```
+
+## Measuring error
+
+| Metric | Meaning |
+| :--- | :--- |
+| MAE | average absolute error |
+| MSE | average squared error |
+| R squared | share of variation explained |
+
+## Assumptions
+
+- A roughly linear relationship.
+- Errors that are not wildly uneven.
+- Inputs not strongly overlapping.
+
+## The bottom line
+
+A solid first model for numeric predictions.
+
+=== decision-tree-explained
+title: Decision Trees Explained: How They Make Predictions
+desc: A decision tree asks a series of yes or no questions to reach a prediction. Learn how splits are chosen, strengths, limits and a short example.
+tags: decision tree, decision tree machine learning, decision tree explained, random forest, scikit-learn decision tree
+rel: overfitting-explained
+q: What is a decision tree? | A model that splits data using a sequence of questions about features until it reaches a prediction.
+q: How does it choose splits? | It picks the split that best separates the data, using measures such as Gini impurity or information gain.
+q: What is the weakness of decision trees? | They can overfit easily, which is why ensembles like random forests are popular.
+---
+Twenty questions, but for data.
+
+## Direct answer
+
+A decision tree predicts by asking a chain of questions about a data point's features, such as "is income above X?", moving down branches until it reaches a leaf with a prediction. Trees are easy to interpret, but deep trees overfit. Random forests combine many trees to improve accuracy.
+
+## Example
+
+```python
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_iris
+
+X, y = load_iris(return_X_y=True)
+model = DecisionTreeClassifier(max_depth=3).fit(X, y)
+print(model.predict([[5.1, 3.5, 1.4, 0.2]]))
+```
+
+## Strengths and limits
+
+| Strengths | Limits |
+| :--- | :--- |
+| easy to explain | overfit easily |
+| handles mixed data | unstable to small changes |
+| little preparation needed | less accurate than ensembles |
+
+## Control complexity
+
+Limit `max_depth` or require a minimum number of samples per leaf.
+
+## The bottom line
+
+Great for understanding your data. Use ensembles for accuracy.
+
+=== neural-network-explained
+title: Neural Networks Explained in Simple Terms
+desc: Neural networks are layers of simple units that learn patterns from data. Learn neurons, weights, layers, training and where they are used, without the maths.
+tags: neural network, neural networks explained, what is a neural network, deep learning basics, how neural networks learn
+rel: how-does-ai-work-in-simple-terms, gradient-descent-explained
+q: What is a neural network? | A model made of layers of connected units, called neurons, that learns to map inputs to outputs by adjusting weights.
+q: What is deep learning? | Machine learning using neural networks with many layers.
+q: How does a neural network learn? | It makes predictions, measures error and adjusts weights to reduce the error, repeating many times.
+---
+Inspired by the brain, built from simple maths.
+
+## Direct answer
+
+A neural network is made of layers of simple units. Each unit takes inputs, multiplies them by weights, adds them up and passes the result through a function. By adjusting the weights to reduce errors on training data, the network learns patterns such as recognising images or predicting text.
+
+## The pieces
+
+- **Input layer:** receives the data.
+- **Hidden layers:** transform it step by step.
+- **Output layer:** gives the prediction.
+- **Weights:** numbers that are adjusted during training.
+
+## How it learns
+
+1. Make a prediction.
+2. Measure the error with a loss function.
+3. Adjust weights using [gradient descent](/blog/gradient-descent-explained).
+4. Repeat over many examples.
+
+## Where they are used
+
+Image recognition, speech, translation and language models.
+
+## The bottom line
+
+Many small calculations, tuned together, can learn very complex patterns.
+
+=== accuracy-precision-recall
+title: Accuracy, Precision and Recall: What They Mean and When to Use Each
+desc: Learn accuracy, precision, recall and F1 with a clear example, why accuracy can mislead on imbalanced data and how to choose the right metric.
+tags: accuracy precision recall, precision vs recall, f1 score, classification metrics, imbalanced data
+rel: confusion-matrix-explained
+q: What is the difference between precision and recall? | Precision is how many predicted positives were correct. Recall is how many actual positives were found.
+q: Why can accuracy be misleading? | If one class is rare, a model that always predicts the common class can have high accuracy but be useless.
+q: What is the F1 score? | The harmonic mean of precision and recall, balancing the two.
+---
+One number is rarely enough to judge a model.
+
+## Direct answer
+
+Accuracy is the share of all predictions that are correct. Precision is the share of predicted positives that are truly positive. Recall is the share of actual positives that the model found. Choose the metric by cost: use recall when missing a case is costly and precision when false alarms are costly.
+
+## Example
+
+A fraud model checks 1,000 transactions. 10 are fraud. It flags 8, of which 6 are really fraud.
+
+- Precision = 6 ÷ 8 = 75 percent
+- Recall = 6 ÷ 10 = 60 percent
+
+A model that never flags fraud would have 99 percent accuracy and 0 percent recall.
+
+## When to use which
+
+| Situation | Focus |
+| :--- | :--- |
+| Medical screening | recall |
+| Spam filter (avoid losing real mail) | precision |
+| Balanced need | F1 |
+
+## The bottom line
+
+Pick the metric that matches the real-world cost of mistakes.
+
+=== feature-engineering-explained
+title: Feature Engineering: How to Turn Raw Data Into Model Inputs
+desc: Feature engineering creates useful inputs for models. Learn encoding categories, scaling, dates, missing values and simple ideas that improve results.
+tags: feature engineering, feature engineering machine learning, one hot encoding, feature scaling, data preprocessing
+rel: training-and-test-data
+q: What is feature engineering? | Creating and transforming input variables so a model can learn from them more effectively.
+q: Why scale features? | Some models are sensitive to the size of numbers, so scaling puts features on comparable ranges.
+q: What is one-hot encoding? | Converting a category into separate yes or no columns, one per category.
+---
+Good features often beat fancy models.
+
+## Direct answer
+
+Feature engineering means turning raw data into inputs a model can use well: encoding categories, scaling numbers, extracting parts of dates, handling missing values and creating new combinations. Apply the same transformations to training and test data, and fit them using the training data only.
+
+## Common techniques
+
+| Technique | Example |
+| :--- | :--- |
+| One-hot encoding | colour into red, blue, green columns |
+| Scaling | put values between 0 and 1 |
+| Date features | day of week, month |
+| Ratios | price per square metre |
+| Binning | age into groups |
+
+## Example
+
+```python
+import pandas as pd
+
+df = pd.DataFrame({"city": ["Lagos", "Accra", "Lagos"], "price": [100, 80, 120]})
+df = pd.get_dummies(df, columns=["city"])
+```
+
+## Tips
+
+- Think about what the model needs to know.
+- Avoid leaking the target into features.
+- Keep transformations in a pipeline.
+
+## The bottom line
+
+Spend time on features before spending time on algorithms.
+
+=== gradient-descent-explained
+title: Gradient Descent Explained: How Models Learn Step by Step
+desc: Gradient descent adjusts model parameters to reduce error. Learn the idea with a hill analogy, the learning rate and a tiny Python example.
+tags: gradient descent, gradient descent explained, learning rate, loss function, optimisation machine learning
+rel: neural-network-explained, linear-regression-explained
+q: What is gradient descent? | An optimisation method that repeatedly adjusts parameters in the direction that reduces the loss.
+q: What is the learning rate? | The size of each step. Too large can overshoot and too small is slow.
+q: Does it always find the best answer? | Not always. It may settle in a local minimum or struggle with poor settings.
+---
+Imagine walking downhill in fog, one step at a time.
+
+## Direct answer
+
+Gradient descent is how many models learn. It measures how wrong the model is (the loss), calculates which direction reduces it fastest (the gradient) and moves the parameters a small step that way. The learning rate sets the step size. Repeat until the loss stops improving.
+
+## A tiny example
+
+```python
+# minimise f(x) = (x - 3) ** 2
+x = 0.0
+lr = 0.1
+
+for step in range(50):
+    gradient = 2 * (x - 3)
+    x = x - lr * gradient
+
+print(round(x, 3))  # close to 3
+```
+
+## Learning rate matters
+
+| Too small | Too large |
+| :--- | :--- |
+| very slow | overshoots or diverges |
+
+## Variants
+
+Stochastic and mini-batch gradient descent use subsets of data per step, which is faster for large datasets.
+
+## The bottom line
+
+Take small steps downhill. That is how most models learn.
+
+=== classification-vs-regression
+title: Classification vs Regression in Machine Learning
+desc: Classification predicts categories and regression predicts numbers. Learn the difference with examples, common algorithms and how to choose the right one.
+tags: classification vs regression, classification, regression, machine learning problems, predict category or number
+rel: linear-regression-explained, supervised-vs-unsupervised-learning
+q: What is classification? | Predicting which category an item belongs to, such as spam or not spam.
+q: What is regression? | Predicting a continuous number, such as a house price.
+q: Can the same algorithm do both? | Many algorithms, such as decision trees, have versions for both.
+---
+Is the answer a label or a number?
+
+## Direct answer
+
+Classification predicts a category, such as "spam" or "not spam". Regression predicts a number, such as the price of a house. Ask whether your target is a label or a quantity, then choose algorithms and metrics to match.
+
+## Examples
+
+| Task | Type |
+| :--- | :--- |
+| Is this email spam? | classification |
+| Which digit is this image? | classification |
+| What will this house sell for? | regression |
+| How many units will sell next week? | regression |
+
+## Metrics
+
+- Classification: accuracy, precision, recall, F1.
+- Regression: MAE, MSE, R squared.
+
+## Algorithms
+
+- Classification: logistic regression, decision trees, random forests.
+- Regression: linear regression, decision trees, gradient boosting.
+
+## The bottom line
+
+Label or number: that decides your approach.
+
+=== cross-validation-explained
+title: Cross-Validation Explained: A More Reliable Way to Test Models
+desc: Cross-validation tests a model on several different splits of the data. Learn k-fold cross-validation, why it beats a single split and a scikit-learn example.
+tags: cross validation, k fold cross validation, cross validation explained, model evaluation, scikit-learn cross val score
+rel: training-and-test-data
+q: What is cross-validation? | A method that repeatedly trains and tests a model on different parts of the data to get a more reliable performance estimate.
+q: What is k-fold? | Splitting data into k parts, using each in turn as the test set while training on the rest.
+q: How many folds should I use? | Five or ten are common choices.
+---
+One test split can be lucky or unlucky. Several are fairer.
+
+## Direct answer
+
+Cross-validation estimates how well a model will perform on new data by training and testing on several different splits. In k-fold cross-validation, data is divided into k parts. Each part is the test set once, and the results are averaged.
+
+## Example
+
+```python
+from sklearn.model_selection import cross_val_score
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_iris
+
+X, y = load_iris(return_X_y=True)
+scores = cross_val_score(DecisionTreeClassifier(max_depth=3), X, y, cv=5)
+print(scores.mean(), scores.std())
+```
+
+## Why use it
+
+- More reliable than a single split.
+- Uses all data for both training and testing.
+- Helps compare models and settings.
+
+## Cautions
+
+- Keep a final test set aside.
+- For time series, use time-aware splits.
+
+## The bottom line
+
+Average across folds for a steadier estimate.
+
+=== bias-and-variance
+title: Bias and Variance in Machine Learning: The Trade-Off Explained
+desc: Bias is error from oversimplifying and variance is error from over-sensitivity. Learn the trade-off and how it links to over- and underfitting.
+tags: bias and variance, bias variance tradeoff, high bias high variance, underfitting overfitting, machine learning concepts
+rel: overfitting-explained
+q: What is bias in machine learning? | Error from assumptions that are too simple, which makes a model miss real patterns.
+q: What is variance? | Error from a model being too sensitive to the specific training data, so it changes a lot with new data.
+q: What is the trade-off? | Simpler models have high bias and low variance. Complex models have low bias and high variance. You aim for a balance.
+---
+Like arrows on a target: clustered but off-centre, or centred on average but scattered.
+
+## Direct answer
+
+Bias is error from a model being too simple, so it misses patterns (underfitting). Variance is error from a model being too sensitive to training data, so it does not generalise (overfitting). The bias-variance trade-off is finding a model complex enough to learn the pattern but not so complex that it memorises noise.
+
+## Comparison
+
+| | High bias | High variance |
+| :--- | :--- | :--- |
+| Model | too simple | too complex |
+| Training error | high | low |
+| Test error | high | high |
+| Fix | more complex model, better features | more data, simplify, regularise |
+
+## How to diagnose
+
+Compare training and test errors. Both high suggests bias. Low training and high test suggests variance.
+
+## The bottom line
+
+Aim for the sweet spot where test error is lowest.
+
+=== clustering-explained
+title: Clustering Explained: Group Similar Data With K-Means
+desc: Clustering groups similar items without labels. Learn how k-means works, choosing k, real examples and a short scikit-learn demonstration.
+tags: clustering, k means clustering, clustering machine learning, customer segmentation, unsupervised learning
+rel: supervised-vs-unsupervised-learning
+q: What is clustering? | An unsupervised method that groups data points so those in the same group are more similar to each other than to those in other groups.
+q: How does k-means work? | It picks k centres, assigns each point to the nearest centre, moves the centres to the group averages and repeats.
+q: How do I choose k? | Try different values and compare using methods such as the elbow method or silhouette score, together with business sense.
+---
+Find the groups hiding in your data.
+
+## Direct answer
+
+Clustering groups similar data points without labels. In k-means, you choose the number of groups k, and the algorithm repeatedly assigns points to the nearest centre and moves the centres until groups stabilise. It is used for customer segments, topic grouping and anomaly spotting.
+
+## Example
+
+```python
+from sklearn.cluster import KMeans
+import numpy as np
+
+X = np.array([[1, 2], [1, 4], [1, 0], [10, 2], [10, 4], [10, 0]])
+model = KMeans(n_clusters=2, n_init=10, random_state=0).fit(X)
+print(model.labels_)
+```
+
+## Choosing k
+
+- Elbow method: plot error against k and look for a bend.
+- Silhouette score: higher means better separated groups.
+- Practical meaning: do the groups make sense?
+
+## Cautions
+
+- Scale features first.
+- Results depend on starting points, so run several.
+- Clusters are not always meaningful.
+
+## The bottom line
+
+Clustering finds patterns. You decide whether they matter.
+
+=== confusion-matrix-explained
+title: Confusion Matrix Explained: Read True and False Positives Easily
+desc: A confusion matrix shows correct and incorrect predictions by class. Learn true positives, false positives, true negatives and false negatives with an example.
+tags: confusion matrix, confusion matrix explained, true positive false positive, classification metrics, how to read a confusion matrix
+rel: accuracy-precision-recall
+q: What is a confusion matrix? | A table that compares predicted classes with actual classes to show the types of mistakes a model makes.
+q: What is a false negative? | The model predicted negative but the true answer was positive, a missed case.
+q: How do I get precision and recall from it? | Precision is TP divided by TP plus FP. Recall is TP divided by TP plus FN.
+---
+It shows not just how often a model is wrong, but how.
+
+## Direct answer
+
+A confusion matrix is a table of actual versus predicted classes. For two classes it has four cells: true positives (TP), false positives (FP), true negatives (TN) and false negatives (FN). From it you calculate accuracy, precision and recall.
+
+## Layout
+
+| | Predicted positive | Predicted negative |
+| :--- | :--- | :--- |
+| **Actually positive** | TP | FN |
+| **Actually negative** | FP | TN |
+
+## Example
+
+A disease test on 100 people:
+- TP = 8, FN = 2, FP = 5, TN = 85.
+- Precision = 8 ÷ 13 ≈ 62 percent.
+- Recall = 8 ÷ 10 = 80 percent.
+
+## In scikit-learn
+
+```python
+from sklearn.metrics import confusion_matrix
+print(confusion_matrix(y_true, y_pred))
+```
+
+## The bottom line
+
+Look at the types of errors, not just the total.
+
+=== ml-projects-for-beginners
+title: 10 Machine Learning Projects for Beginners (With Free Datasets)
+desc: Ten beginner machine learning projects with ideas for datasets and steps: house prices, spam filter, iris, digits, churn and more.
+tags: ml projects for beginners, machine learning projects for beginners, beginner machine learning ideas, kaggle datasets for beginners, portfolio ml projects
+rel: learn-machine-learning-from-scratch, is-machine-learning-easy-to-learn
+q: What is a good first machine learning project? | The iris classification or a house price regression, since the data is small and well known.
+q: Where can I find datasets? | Public repositories such as Kaggle, UCI and the built-in datasets in scikit-learn.
+q: How do I make a project stand out? | Explain the problem, show your process and results clearly and document what you learned.
+---
+Projects teach more than tutorials.
+
+## Direct answer
+
+Good beginner machine learning projects use small, clean datasets and a clear question. Start with classification on the iris dataset, predict house prices with regression, build a spam filter and classify handwritten digits. Document your process and results clearly.
+
+## 10 ideas
+
+1. **Iris flower classifier** with a decision tree.
+2. **House price prediction** with linear regression.
+3. **Spam detector** using text features.
+4. **Handwritten digit recognition.**
+5. **Customer churn prediction.**
+6. **Movie recommender** using similarity.
+7. **Titanic survival prediction.**
+8. **Sentiment analysis** of reviews.
+9. **Customer segmentation** with clustering.
+10. **Credit risk model,** with attention to fairness.
+
+## How to do each
+
+1. Define the question.
+2. Explore and clean the data.
+3. Split into training and test sets.
+4. Build a simple baseline first.
+5. Try one improvement at a time.
+6. Evaluate with the right metrics.
+7. Write up what you learned.
+
+## The bottom line
+
+Finish small projects and explain them well. Quality of thinking beats complexity.

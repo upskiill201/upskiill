@@ -1,0 +1,78 @@
+---
+title: "AsyncStorage in React Native: Save Data on the Device"
+description: "Learn how to store data locally in React Native with AsyncStorage: setItem, getItem, JSON values, loading on app start and when to use something else."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [async storage, asyncstorage react native, react native local storage, save data on device, secure storage]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "React Native for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/react-native-for-beginners
+  label: "See the React Native for Beginners course"
+faq:
+  - question: "What is AsyncStorage?"
+    answer: "A simple key-value storage system for saving small amounts of data on a device."
+  - question: "Is it secure?"
+    answer: "No. Do not store passwords or tokens in it. Use secure storage for sensitive data."
+  - question: "How do I store an object?"
+    answer: "Convert it to a JSON string when saving and parse it when reading."
+---
+
+Apps need to remember settings between launches.
+
+## Direct answer
+
+`AsyncStorage` saves small key-value data on the device, asynchronously. Use `setItem`, `getItem` and `removeItem`, and convert objects with `JSON.stringify` and `JSON.parse`. For secrets, use a secure storage library instead.
+
+## Install and use
+
+```bash
+npx expo install @react-native-async-storage/async-storage
+```
+
+```jsx
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+await AsyncStorage.setItem("theme", "dark");
+const theme = await AsyncStorage.getItem("theme");
+
+await AsyncStorage.setItem("profile", JSON.stringify({ name: "Ada" }));
+const profile = JSON.parse(await AsyncStorage.getItem("profile") || "null");
+```
+
+## Load on start
+
+```jsx
+useEffect(() => {
+  (async () => {
+    const saved = await AsyncStorage.getItem("theme");
+    if (saved) setTheme(saved);
+  })();
+}, []);
+```
+
+## When to use something else
+
+| Need | Use |
+| :--- | :--- |
+| Secrets and tokens | secure storage |
+| Larger or relational data | a local database |
+| Data shared across devices | a backend |
+
+## Where Teyro fits
+
+Teyro's [React Native for Beginners](/courses/react-native-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 80 lessons, and you can start free.
+
+## The bottom line
+
+Great for preferences and simple state.
+
+## More guides
+
+- [Fetching Data in React Native](/blog/react-native-api-calls)
+- [Props vs State in React Native](/blog/props-and-state-react-native)
+- [React Native Animations](/blog/react-native-animations)
+- [Usestate in react native](/blog/usestate-in-react-native)
+- [React Native for Beginners course](/courses/react-native-for-beginners)

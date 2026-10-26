@@ -1,0 +1,61 @@
+---
+title: "CSS Selectors Explained: Class, ID, Descendant and More"
+description: "Learn the CSS selectors every beginner needs: element, class, ID, descendant, child, attribute and combined selectors, with clear examples."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [css selectors, css selector types, css class vs id, descendant selector, css attribute selector]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "HTML & CSS for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/html-and-css-for-beginners
+  label: "See the HTML & CSS for Beginners course"
+faq:
+  - question: "What is a CSS selector?"
+    answer: "A pattern that chooses which HTML elements a style rule applies to."
+  - question: "What is the difference between a class and an ID?"
+    answer: "A class can be used on many elements. An ID should be unique on a page."
+  - question: "What is a descendant selector?"
+    answer: "A selector with a space, such as nav a, which selects links anywhere inside a nav."
+---
+
+Selectors are how CSS finds the elements to style.
+
+## Direct answer
+
+A CSS selector picks the elements a rule applies to. The most common are element (`p`), class (`.card`), ID (`#header`), descendant (`nav a`), child (`ul > li`) and attribute (`input[type="email"]`) selectors. You can combine them for precision.
+
+## Examples
+
+```css
+p { color: #333; }                 /* all paragraphs */
+.card { padding: 16px; }           /* class */
+#hero { margin-bottom: 32px; }     /* id */
+nav a { text-decoration: none; }   /* links inside nav */
+ul > li { list-style: square; }    /* direct children only */
+input[type="email"] { border: 1px solid #999; }
+h1, h2, h3 { font-family: sans-serif; }  /* group */
+```
+
+## Tips
+
+- Prefer classes for styling.
+- Keep selectors short.
+- Avoid IDs for styling, since they are hard to override.
+
+## Where Teyro fits
+
+Teyro's [HTML & CSS for Beginners](/courses/html-and-css-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Learn these six and you can target almost anything. See [CSS specificity](/blog/css-specificity-explained) for what happens when rules collide.
+
+## More guides
+
+- [CSS Grid Explained](/blog/css-grid-explained)
+- [CSS Specificity Explained](/blog/css-specificity-explained)
+- [CSS Variables (Custom Properties)](/blog/css-variables-guide)
+- [Css tutorial for beginners](/blog/css-tutorial-for-beginners)
+- [HTML & CSS for Beginners course](/courses/html-and-css-for-beginners)

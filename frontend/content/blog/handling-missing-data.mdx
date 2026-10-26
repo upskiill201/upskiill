@@ -1,0 +1,69 @@
+---
+title: "How to Handle Missing Data: Drop, Fill or Flag?"
+description: "Missing values affect analysis. Learn the types of missingness, options like dropping, filling and flagging and pandas code for each, with cautions."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [missing data, handle missing values pandas, fillna dropna, data cleaning missing values, imputation]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Data Science for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/data-science-for-beginners
+  label: "See the Data Science for Beginners course"
+faq:
+  - question: "How do I find missing values in pandas?"
+    answer: "Use df.isna().sum() to count missing values per column."
+  - question: "Should I delete rows with missing values?"
+    answer: "Only if few rows are affected and the missingness is random. Otherwise you may bias results."
+  - question: "What is imputation?"
+    answer: "Filling missing values with estimates such as the mean, median or a model prediction."
+---
+
+Empty cells are information too.
+
+## Direct answer
+
+To handle missing data, first understand why it is missing. Then choose: drop rows or columns if few are affected, fill values with a sensible estimate such as the median, or add a flag column showing that a value was missing. Document your choice because it can affect results.
+
+## pandas examples
+
+```python
+import pandas as pd
+
+df.isna().sum()                       # count missing per column
+df.dropna(subset=["price"])           # drop rows missing price
+df["age"] = df["age"].fillna(df["age"].median())
+df["income_missing"] = df["income"].isna()
+```
+
+## Choosing a strategy
+
+| Situation | Option |
+| :--- | :--- |
+| A few rows missing | drop |
+| Numeric, skewed | fill with median |
+| Category | fill with "unknown" |
+| Missingness itself informative | add a flag |
+
+## Cautions
+
+- Fill using training data only if you are building a model.
+- Do not fill blindly. Ask why the value is missing.
+
+## Where Teyro fits
+
+Teyro's [Data Science for Beginners](/courses/data-science-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Look, decide, document.
+
+## More guides
+
+- [pandas DataFrame](/blog/pandas-dataframe-guide)
+- [pandas for Beginners](/blog/pandas-for-beginners)
+- [Outliers](/blog/detect-outliers)
+- [Exploratory data analysis](/blog/exploratory-data-analysis)
+- [Pandas for beginners](/blog/pandas-for-beginners)
+- [Data Science for Beginners course](/courses/data-science-for-beginners)

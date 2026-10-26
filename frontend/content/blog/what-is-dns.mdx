@@ -1,0 +1,65 @@
+---
+title: "What Is DNS? How Domain Names Reach Your Website"
+description: "DNS translates domain names into IP addresses. Learn how it works, the main record types (A, CNAME, MX, TXT) and how to fix common propagation delays."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [dns, what is dns, dns records explained, a record cname, dns propagation]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Build and Launch a Website turns this into short, playable lessons. Free to start."
+  href: /courses/build-and-launch-a-website
+  label: "See the Build and Launch a Website course"
+faq:
+  - question: "What is DNS?"
+    answer: "The Domain Name System, which translates names like example.com into the IP addresses computers use."
+  - question: "What are DNS records?"
+    answer: "Settings that tell the internet where to send traffic for your domain, such as to your website or email provider."
+  - question: "How long does DNS propagation take?"
+    answer: "Changes can appear within minutes, but sometimes take up to a day or more depending on caching."
+---
+
+DNS is the internet's phone book.
+
+## Direct answer
+
+DNS (Domain Name System) translates domain names into IP addresses. You manage it with DNS records at your domain registrar or DNS provider. The main records are A (to an IP address), CNAME (alias to another name), MX (email) and TXT (verification and email security).
+
+## Common record types
+
+| Record | Purpose | Example |
+| :--- | :--- | :--- |
+| A | points a name to an IPv4 address | `example.com → 203.0.113.10` |
+| AAAA | points to an IPv6 address | |
+| CNAME | alias to another name | `www → example.com` |
+| MX | where email goes | |
+| TXT | verification, SPF, DKIM | |
+
+## How a visit works
+
+1. You type a domain in your browser.
+2. Your device asks a DNS resolver for the address.
+3. The resolver finds the records.
+4. Your browser connects to that address.
+
+## Propagation
+
+DNS answers are cached. After a change, some people see the old answer until the cache expires, set by the TTL value.
+
+## Where Teyro fits
+
+Teyro's [Build and Launch a Website](/courses/build-and-launch-a-website) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+DNS connects your domain to your host and email. Change one record at a time and check results.
+
+## More guides
+
+- [SSL Certificates and HTTPS](/blog/ssl-certificate-explained)
+- [GitHub Pages Tutorial](/blog/github-pages-tutorial)
+- [Deploy a Website on Netlify](/blog/netlify-deploy-tutorial)
+- [Custom domain setup](/blog/custom-domain-setup)
+- [What is a domain name](/blog/what-is-a-domain-name)
+- [Build and Launch a Website course](/courses/build-and-launch-a-website)

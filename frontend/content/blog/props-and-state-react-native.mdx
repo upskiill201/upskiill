@@ -1,0 +1,74 @@
+---
+title: "Props vs State in React Native: What's the Difference?"
+description: "Props pass data into a component and state holds data it manages. Learn the difference with examples, one-way data flow and lifting state up."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [props and state, react native props, props vs state, lifting state up, react data flow]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "React Native for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/react-native-for-beginners
+  label: "See the React Native for Beginners course"
+faq:
+  - question: "What is the difference between props and state?"
+    answer: "Props are inputs passed from a parent. State is data a component owns and can change."
+  - question: "Can a child change its props?"
+    answer: "No. Props are read-only. The parent must change them."
+  - question: "What is lifting state up?"
+    answer: "Moving state to a common parent so multiple children can share it."
+---
+
+Two ideas run all of React: data in, data owned.
+
+## Direct answer
+
+Props are values passed into a component by its parent and are read-only. State is data that a component owns and can update, causing a re-render. When siblings need the same data, move the state up to their parent and pass it down as props.
+
+## Example
+
+```jsx
+function Greeting({ name }) {          // prop
+  return <Text>Hello {name}</Text>;
+}
+
+export default function App() {
+  const [name, setName] = useState("Ada"); // state
+
+  return (
+    <View>
+      <Greeting name={name} />
+      <TextInput value={name} onChangeText={setName} />
+    </View>
+  );
+}
+```
+
+## Comparison
+
+| | Props | State |
+| :--- | :--- | :--- |
+| Owned by | parent | the component |
+| Can change | no | yes, with the setter |
+| Purpose | configure | remember |
+
+## Lifting state up
+
+Keep state in the closest common parent and pass the value and the setter to children.
+
+## Where Teyro fits
+
+Teyro's [React Native for Beginners](/courses/react-native-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 80 lessons, and you can start free.
+
+## The bottom line
+
+Props flow down, events flow up.
+
+## More guides
+
+- [React Native Animations](/blog/react-native-animations)
+- [React Native Simulator Setup](/blog/react-native-simulator-setup)
+- [What Is Expo? The Easiest Way to Start With React Native](/blog/what-is-expo-react-native)
+- [Usestate in react native](/blog/usestate-in-react-native)
+- [React Native for Beginners course](/courses/react-native-for-beginners)

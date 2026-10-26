@@ -1,0 +1,74 @@
+---
+title: "How to Add a Contact Form to Your Website (With and Without Code)"
+description: "Add a contact form to your site: HTML form basics, form services, spam protection, accessibility and what to do on a static site."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [contact form, add contact form to website, html contact form, static site form, form spam protection]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Build and Launch a Website turns this into short, playable lessons. Free to start."
+  href: /courses/build-and-launch-a-website
+  label: "See the Build and Launch a Website course"
+faq:
+  - question: "How do I add a contact form to a static site?"
+    answer: "Use a form service or your host's built-in form handling, because static pages cannot process submissions on their own."
+  - question: "How do I stop spam?"
+    answer: "Use a honeypot field, rate limits or a privacy-friendly CAPTCHA, and validate on the server."
+  - question: "Do I need to validate the form?"
+    answer: "Yes, in the browser for friendliness and on the server for safety."
+---
+
+A form needs two parts: the page people see and something that receives the data.
+
+## Direct answer
+
+An HTML form collects the information, but you need a backend or a form service to receive it. Static sites can use a form service or the hosting platform's form handling. Add labels, validation and spam protection.
+
+## Basic HTML
+
+```html
+<form action="https://your-form-service.example/submit" method="POST">
+  <label for="name">Name</label>
+  <input id="name" name="name" required>
+
+  <label for="email">Email</label>
+  <input id="email" name="email" type="email" required>
+
+  <label for="message">Message</label>
+  <textarea id="message" name="message" required></textarea>
+
+  <button type="submit">Send</button>
+</form>
+```
+
+## Options for receiving it
+
+- A form service that emails you submissions.
+- Your host's built-in forms.
+- Your own server endpoint.
+
+## Good practice
+
+1. Label every field.
+2. Explain what you do with the data.
+3. Add spam protection.
+4. Show a clear success message.
+5. Do not log sensitive data.
+
+## Where Teyro fits
+
+Teyro's [Build and Launch a Website](/courses/build-and-launch-a-website) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Keep it short, label it well and protect it from spam.
+
+## More guides
+
+- [Website Analytics for Beginners](/blog/website-analytics-basics)
+- [WordPress vs Custom Code](/blog/wordpress-vs-custom-code)
+- [How to Connect a Custom Domain to Your Website](/blog/custom-domain-setup)
+- [Form validation javascript](/blog/form-validation-javascript)
+- [Build and Launch a Website course](/courses/build-and-launch-a-website)

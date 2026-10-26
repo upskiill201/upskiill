@@ -1,0 +1,89 @@
+---
+title: "CSS Grid Explained: Rows, Columns and Layouts for Beginners"
+description: "Learn CSS Grid from scratch: grid-template-columns, gap, fr units, placing items and a simple responsive card layout you can copy."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [css grid, css grid tutorial, grid template columns, fr unit, css grid layout]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "HTML & CSS for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/html-and-css-for-beginners
+  label: "See the HTML & CSS for Beginners course"
+faq:
+  - question: "What is CSS Grid?"
+    answer: "A layout system for arranging items in rows and columns at the same time."
+  - question: "What does fr mean?"
+    answer: "A fraction of the available space in the grid."
+  - question: "When should I use Grid instead of Flexbox?"
+    answer: "Use Grid for two-dimensional layouts and Flexbox for one-dimensional rows or columns."
+---
+
+Grid makes page layouts that used to need hacks into a few lines.
+
+## Direct answer
+
+CSS Grid lays out items in rows and columns. Set `display: grid`, define columns with `grid-template-columns`, add spacing with `gap` and let items flow in. The `fr` unit shares remaining space in proportions.
+
+## Basic grid
+
+```css
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+```
+
+```html
+<div class="grid">
+  <div>1</div><div>2</div><div>3</div>
+  <div>4</div><div>5</div><div>6</div>
+</div>
+```
+
+## Responsive cards without media queries
+
+```css
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+}
+```
+
+## Placing items
+
+```css
+.hero { grid-column: 1 / -1; }  /* span all columns */
+```
+
+## Page layout example
+
+```css
+.page {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  grid-template-areas:
+    "header header"
+    "sidebar main"
+    "footer footer";
+}
+```
+
+## Where Teyro fits
+
+Teyro's [HTML & CSS for Beginners](/courses/html-and-css-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Grid for page and card layouts, Flexbox for rows of items. Learn both.
+
+## More guides
+
+- [CSS Specificity Explained](/blog/css-specificity-explained)
+- [CSS Variables (Custom Properties)](/blog/css-variables-guide)
+- [CSS Position Explained](/blog/css-positioning-explained)
+- [Flexbox vs grid](/blog/flexbox-vs-grid)
+- [HTML & CSS for Beginners course](/courses/html-and-css-for-beginners)

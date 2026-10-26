@@ -1,0 +1,82 @@
+---
+title: "Fetching Data in React Native: fetch, Loading States and Errors"
+description: "Learn how to call an API from React Native with fetch, show loading and error states, handle empty results and avoid common network problems on devices."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [react native api calls, react native fetch, fetch data react native, loading state, error handling]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "React Native for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/react-native-for-beginners
+  label: "See the React Native for Beginners course"
+faq:
+  - question: "How do I call an API in React Native?"
+    answer: "Use the built-in fetch function, usually inside useEffect, and store the result in state."
+  - question: "Why does my API work in the browser but not on my phone?"
+    answer: "You may be using localhost, which refers to the phone itself. Use your computer's local network address or a deployed URL."
+  - question: "How do I show loading and error states?"
+    answer: "Keep separate state for loading and error, and render different UI for each."
+---
+
+Real apps get data from servers. Real apps also handle slow and failing networks.
+
+## Direct answer
+
+Use `fetch` in a `useEffect`, store the result in state and keep separate states for loading and errors. On a device, never use `localhost` for your own server. Use your computer's network address or a deployed URL.
+
+## Example
+
+```jsx
+import { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
+
+export default function Posts() {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("https://jsonplaceholder.typicode.com/posts");
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        setPosts(await res.json());
+      } catch (e) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  if (loading) return <ActivityIndicator />;
+  if (error) return <Text>Something went wrong: {error}</Text>;
+  if (posts.length === 0) return <Text>No posts yet</Text>;
+
+  return (
+    <FlatList
+      data={posts}
+      keyExtractor={(p) => String(p.id)}
+      renderItem={({ item }) => <Text style={{ padding: 12 }}>{item.title}</Text>}
+    />
+  );
+}
+```
+
+## Where Teyro fits
+
+Teyro's [React Native for Beginners](/courses/react-native-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 80 lessons, and you can start free.
+
+## The bottom line
+
+Loading, error, empty and success: handle all four states.
+
+## More guides
+
+- [Props vs State in React Native](/blog/props-and-state-react-native)
+- [React Native Animations](/blog/react-native-animations)
+- [React Native Simulator Setup](/blog/react-native-simulator-setup)
+- [Useeffect in react native](/blog/useeffect-in-react-native)
+- [React Native for Beginners course](/courses/react-native-for-beginners)

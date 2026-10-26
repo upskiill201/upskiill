@@ -1,0 +1,359 @@
+=== price-anchoring
+title: Price Anchoring: How Reference Prices Change What People Pay
+desc: Price anchoring uses a reference price to shape how value is perceived. Learn how it works, ethical examples and when it backfires.
+tags: price anchoring, anchoring pricing, reference price, pricing psychology, was and now price
+rel: how-to-price-a-product, psychological-pricing
+q: What is price anchoring? | Showing a reference price, such as a higher original price or premium option, so other prices seem better value.
+q: Is it ethical? | Yes if the reference price is genuine. Fake "was" prices are misleading and may be illegal.
+q: How can I use it? | Show a premium option alongside your standard one.
+---
+Prices are judged by comparison.
+
+## Direct answer
+
+Price anchoring presents a reference price that makes your price feel fair or attractive: a premium plan beside a standard one or a genuine previous price. It works because people judge value by comparison. Use true reference prices only.
+
+## Examples
+
+- Three plans where the middle one looks best next to a higher-priced option.
+- A real earlier price shown crossed out.
+- A "per day" price that frames cost as small.
+
+## Cautions
+
+- Fake discounts damage trust and may break consumer laws.
+- Do not make the anchor absurd.
+
+## The bottom line
+
+Make comparison honest and helpful.
+
+=== psychological-pricing
+title: Psychological Pricing: Charm Prices, Round Numbers and More
+desc: Psychological pricing uses how people perceive numbers, such as 9.99 or round prices. Learn common tactics, when they work and ethical use.
+tags: psychological pricing, charm pricing, 9.99 pricing, pricing psychology, round number pricing
+rel: price-anchoring, charm-pricing-explained
+q: What is psychological pricing? | Setting prices in ways that influence how customers perceive value, such as ending prices in 9.
+q: Does 9.99 really work? | Many studies and retailers find it can increase sales, though effects vary.
+q: When are round prices better? | For premium or emotional purchases, round prices can feel more refined.
+---
+Numbers are felt as well as calculated.
+
+## Direct answer
+
+Psychological pricing uses perception effects: charm prices ending in 9, round numbers for premium goods, price anchoring and bundles. Test them with real customers because effects vary by product and audience.
+
+## Common tactics
+
+| Tactic | Example |
+| :--- | :--- |
+| Charm pricing | 19.99 |
+| Round pricing | 20 for premium items |
+| Bundle pricing | three for the price of two |
+| Anchoring | premium plan beside standard |
+
+## Tips
+
+1. Test, do not assume.
+2. Be honest.
+3. Keep it consistent with your brand.
+
+## The bottom line
+
+Use psychology to help customers decide, not to trick them.
+
+=== freemium-model-explained
+title: Freemium Pricing: How the Model Works and When It Fits
+desc: Freemium offers a free tier and charges for upgrades. Learn how it works, what to keep free, conversion basics and risks for small businesses.
+tags: freemium, freemium model, freemium pricing, free tier strategy, free vs paid plans
+rel: tiered-pricing-explained, how-to-price-a-product
+q: What is freemium? | A model where a basic version is free and extra features or capacity cost money.
+q: What should be free? | Enough to show value and create habits, but not so much that nobody upgrades.
+q: Is freemium right for every business? | No. It suits products with low marginal cost and clear upgrade value.
+---
+Free users are a cost and a marketing channel.
+
+## Direct answer
+
+Freemium gives users a free version and charges for upgrades. It works when the free tier shows value, the paid tier solves clear extra needs and costs per free user are low. Design the upgrade path carefully and measure conversion.
+
+## Design questions
+
+1. What makes users successful for free?
+2. What do power users need that is worth paying for?
+3. What is the cost of a free user?
+4. How will free users discover the upgrade?
+
+## Risks
+
+- Too much free value.
+- Too little to hook users.
+- Support cost for free users.
+
+## The bottom line
+
+Free is a strategy, not a gift.
+
+=== tiered-pricing-explained
+title: Tiered Pricing: How to Design Good, Better, Best Plans
+desc: Tiered pricing offers several packages at different prices. Learn how to design tiers, name them, avoid confusion and use the middle option effectively.
+tags: tiered pricing, pricing tiers, good better best pricing, pricing plans, pricing page design
+rel: freemium-model-explained, price-anchoring
+q: What is tiered pricing? | Offering multiple packages at different price points with different features or limits.
+q: How many tiers should I have? | Often three, since it is easy to compare.
+q: How do I decide what goes in each tier? | Group features by customer type and value.
+---
+Different customers, different needs, different prices.
+
+## Direct answer
+
+Tiered pricing offers packages, often three, targeting different customer groups. The basic tier covers entry needs, the middle serves most customers and the top tier serves power users. Make the differences clear and base them on customer value.
+
+## Design steps
+
+1. Identify customer segments.
+2. List features and their value to each.
+3. Group into tiers.
+4. Name tiers clearly.
+5. Highlight the recommended tier.
+6. Test and adjust.
+
+## Mistakes
+
+- Too many options.
+- Differences that are unclear.
+- Tiers based on cost to you rather than value to customers.
+
+## The bottom line
+
+Make choosing easy.
+
+=== markup-vs-margin
+title: Markup vs Margin: The Difference and How to Calculate Each
+desc: Markup is profit as a percentage of cost and margin is profit as a percentage of price. Learn the formulas, examples and how to avoid mixing them up.
+tags: markup vs margin, markup vs profit margin, how to calculate markup, margin formula, gross margin
+rel: how-to-price-a-product, break-even-point-explained
+q: What is the difference between markup and margin? | Markup is profit divided by cost. Margin is profit divided by selling price.
+q: How do I convert between them? | Margin equals markup divided by one plus markup. Use the formulas carefully.
+q: Which should I use to set prices? | Many businesses think in margin, since it shows how much of each sale is profit.
+---
+Same numbers, different percentages.
+
+## Direct answer
+
+Markup is the profit as a percentage of cost: (price − cost) ÷ cost. Margin is the profit as a percentage of price: (price − cost) ÷ price. If an item costs 60 and sells for 100, markup is 66.7 percent and margin is 40 percent.
+
+## Example
+
+| | Value |
+| :--- | :--- |
+| Cost | 60 |
+| Price | 100 |
+| Profit | 40 |
+| Markup | 40 ÷ 60 = 66.7% |
+| Margin | 40 ÷ 100 = 40% |
+
+## Setting a price from a target margin
+
+Price = Cost ÷ (1 − margin). For a 40 percent margin on a cost of 60: 60 ÷ 0.6 = 100.
+
+## The bottom line
+
+Choose one and be consistent.
+
+=== break-even-point-explained
+title: Break-Even Point: How to Calculate It and Why It Matters
+desc: The break-even point is where revenue equals costs. Learn the formula, an example and how to use it to set prices and targets.
+tags: break even point, break even analysis, how to calculate break even, break even formula, pricing decisions
+rel: how-to-price-a-product, markup-vs-margin
+q: What is the break-even point? | The sales volume at which total revenue equals total costs, so profit is zero.
+q: What is the formula? | Fixed costs divided by the price per unit minus the variable cost per unit.
+q: How can I use it? | To see how many sales you need and how price changes affect that number.
+---
+How many do I need to sell before I make money?
+
+## Direct answer
+
+Break-even units = fixed costs ÷ (price per unit − variable cost per unit). If fixed costs are 3,000, price is 50 and variable cost is 20, the break-even is 3,000 ÷ 30 = 100 units.
+
+## Example
+
+| Item | Amount |
+| :--- | :--- |
+| Fixed costs per month | 3,000 |
+| Price per unit | 50 |
+| Variable cost per unit | 20 |
+| Contribution per unit | 30 |
+| Break-even | 100 units |
+
+## Uses
+
+- Test whether a price is realistic.
+- Set sales targets.
+- Compare scenarios.
+
+## The bottom line
+
+Know your break-even before you set your price.
+
+=== price-elasticity-explained
+title: Price Elasticity of Demand: What It Is and How to Use It
+desc: Price elasticity shows how demand changes when price changes. Learn the formula, elastic vs inelastic goods and how small businesses can test it.
+tags: price elasticity, price elasticity of demand, elastic vs inelastic, pricing strategy, demand and price
+rel: how-to-price-a-product, psychological-pricing
+q: What is price elasticity? | A measure of how much demand changes when the price changes.
+q: What does elastic mean? | Demand changes a lot when price changes.
+q: How can I estimate it? | Test price changes carefully and compare sales, or use past data.
+---
+If you raise the price, how many customers do you lose?
+
+## Direct answer
+
+Price elasticity of demand is the percentage change in quantity demanded divided by the percentage change in price. Elastic goods see big changes in demand when price moves. Inelastic goods, such as essentials, change less. Test price changes carefully to learn.
+
+## Example
+
+If you raise the price by 10 percent and sales fall by 5 percent, elasticity is −0.5, so demand is inelastic and revenue likely rises.
+
+## How to use it
+
+1. Test small changes.
+2. Watch sales, not just price.
+3. Consider different customer groups.
+
+## The bottom line
+
+Learn how sensitive your customers are before changing prices.
+
+=== hourly-vs-project-pricing
+title: Hourly vs Project Pricing: Which Should Freelancers Choose?
+desc: Compare hourly, project and value-based pricing for freelancers, with pros, cons, how to calculate rates and when to switch models.
+tags: hourly vs project pricing, freelance pricing, how to price freelance work, project based pricing, value pricing
+rel: how-to-price-your-services, how-to-price-a-product
+q: Should I charge hourly or per project? | Hourly suits unclear scope. Project pricing suits clear scope and rewards efficiency.
+q: How do I calculate an hourly rate? | Start from the income you need, add costs and taxes, and divide by billable hours.
+q: What is value-based pricing? | Pricing based on the value your work creates for the client.
+---
+How you charge shapes how you work.
+
+## Direct answer
+
+Hourly pricing is simple and fair when scope is uncertain. Project pricing gives clients certainty and rewards your efficiency. Value-based pricing ties your price to the client's results. Choose by clarity of scope, risk and your experience.
+
+## Comparison
+
+| Model | Pros | Cons |
+| :--- | :--- | :--- |
+| Hourly | simple, covers scope changes | rewards slowness |
+| Project | predictable, rewards efficiency | risk of scope creep |
+| Value-based | high earnings potential | needs trust and evidence |
+
+## Setting a rate
+
+1. Decide your target income.
+2. Add business costs and taxes.
+3. Divide by realistic billable hours.
+4. Compare with the market.
+
+## Tips
+
+- Define scope in writing.
+- Build a buffer for revisions.
+
+## The bottom line
+
+Pick the model that matches the work and revisit it as you grow.
+
+=== discounting-guide
+title: Discounting: When to Offer Discounts and When to Say No
+desc: Discounts can win customers or damage your brand. Learn when to discount, how to structure offers, how to protect margins and alternatives to price cuts.
+tags: discounting, when to offer a discount, discount strategy, how to say no to discounts, protect margins
+rel: how-to-price-a-product, price-anchoring
+q: Should I discount? | Only with a clear reason and goal, such as clearing stock, rewarding volume or winning a first customer.
+q: How do I say no to a discount request? | Explain the value, offer a different package and stay polite.
+q: What are alternatives? | Add value, bundle, give a payment plan or offer a smaller version.
+---
+Once you discount, you teach customers to wait for it.
+
+## Direct answer
+
+Discount with a purpose: clearing stock, rewarding volume or an introductory offer. Set limits, ask for something in return and avoid constant sales that teach customers to wait. If someone asks for a discount, consider adding value or changing the package instead.
+
+## Alternatives to cutting price
+
+- Add a bonus.
+- Bundle products.
+- Offer a smaller package.
+- Give a payment plan.
+
+## Script
+
+"I cannot reduce the price, but I can include X at no extra cost."
+
+## The bottom line
+
+Protect your price and your margin.
+
+=== charm-pricing-explained
+title: Charm Pricing: Does Ending Prices in .99 Work?
+desc: Charm pricing ends prices in 9, such as 19.99. Learn why it may work, evidence and when round prices might be better for your brand.
+tags: charm pricing, 99 pricing, left digit effect, price ending in 9, pricing tests
+rel: psychological-pricing
+q: What is charm pricing? | Setting prices just below a round number, such as 19.99 instead of 20.
+q: Why does it work? | People focus on the first digit, so 19.99 can feel closer to 19 than 20.
+q: Does it work for every product? | Not always. Premium brands often use round prices.
+---
+A tiny difference that can feel big.
+
+## Direct answer
+
+Charm pricing sets prices just below a round number. Studies and retailer experience suggest it can boost sales because people focus on the left-most digit. Test it for your audience, and consider round prices for premium or trust-focused products.
+
+## When to use
+
+- Value-oriented products.
+- Online stores where price is compared.
+
+## When to avoid
+
+- Luxury or service brands where trust and quality matter more.
+
+## Test it
+
+Run a simple A/B test and compare conversion and revenue.
+
+## The bottom line
+
+Let your data decide.
+
+=== pricing-page-design
+title: Pricing Page Design: 10 Tips for Clear Plans That Convert
+desc: Ten tips for designing a pricing page: clear plan names, highlight the best option, show what is included, answer FAQs and make the next step obvious.
+tags: pricing page, pricing page design, pricing page examples, saas pricing page, pricing page tips
+rel: tiered-pricing-explained, price-anchoring
+q: What should a pricing page include? | Plan names, prices, what is included, a recommended option, FAQs and a clear call to action.
+q: How many plans should I show? | Usually two to four.
+q: Should I show prices upfront? | Usually yes for self-serve products, as hidden prices can reduce trust.
+---
+A pricing page should answer "What do I get and what does it cost?" in seconds.
+
+## Direct answer
+
+A good pricing page shows plan names and prices clearly, highlights a recommended plan, lists what is included in simple terms, answers common questions and has an obvious call to action. Keep it honest and easy to compare.
+
+## 10 tips
+
+1. Limit to three or four plans.
+2. Use clear names.
+3. Highlight one recommended plan.
+4. Show monthly and yearly options honestly.
+5. List key features, not every feature.
+6. Add FAQs.
+7. Show a guarantee or trial if you offer one.
+8. Make the button clear.
+9. Use simple language.
+10. Test and improve.
+
+## The bottom line
+
+Clarity builds trust, and trust builds sales.
