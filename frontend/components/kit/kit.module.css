@@ -395,6 +395,14 @@
   background: color-mix(in srgb, var(--success-green) 14%, white);
   border-top-color: transparent;
 }
+/* Dark mode (onboarding follows the clock like the app): a deep green band
+   with light green words, not a bright strip at night. */
+:global(:root[data-theme='dark']) .footer[data-reacting='true'] {
+  background: color-mix(in srgb, var(--success-green) 16%, var(--bg-page));
+}
+:global(:root[data-theme='dark']) .reaction {
+  color: color-mix(in srgb, var(--success-green) 70%, white);
+}
 .footerInner {
   max-width: 640px;
   margin: 0 auto;

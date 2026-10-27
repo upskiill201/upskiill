@@ -60,6 +60,7 @@ import { Art } from '@/components/art/Art';
 import { InstallStep } from './InstallStep';
 import { SplashStep, WelcomeStep } from './IntroSteps';
 import { ChestStep, LessonStep, PlacementStep } from './LessonSteps';
+import { prefetchStart } from '@/lib/onboarding/v3/prefetch';
 import { CommitStep, OutcomeStep, PlanStep, ProjectionStep } from './MomentSteps';
 import { LessonIntroStep, PlacementIntroStep, TasteDoneStep } from './PathSteps';
 import { DailyStep, ExperienceStep, GoalStep, LearnStep, NameStep, SourceStep, TimeStep } from './QuestionSteps';
@@ -177,18 +178,24 @@ export default function OnboardingV3() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, state?.anonymousId]);
 
-  // Music follows the journey; the lesson and the test bring their own.
+  // Music follows the journey; the lesson and the test bring their own. It
+  // keeps playing while they load and hands over once they're on screen
+  // (handOverMusic), so the wait never falls silent.
   useEffect(() => {
     if (!musicStarted.current) return;
-    if (step === 'lesson' || step === 'placement') {
-      stopOnboardingMusic(0.5);
-      return;
-    }
+    if (step === 'lesson' || step === 'placement') return;
     startOnboardingMusic(moodFor(step));
     setOnboardingMood(moodFor(step));
     setOnboardingProgress(progressFor(step, path));
   }, [step, path]);
   useEffect(() => () => stopOnboardingMusic(0.4), []);
+  const handOverMusic = useCallback(() => stopOnboardingMusic(0.5), []);
+
+  // Lesson 1 and the placement test load the moment the course is known, a
+  // dozen screens before either opens, so neither keeps the learner waiting.
+  useEffect(() => {
+    if (course) prefetchStart(course);
+  }, [course]);
 
   // Leaving the tab after earning something they'd lose: the browser's own prompt.
   const hasProgress = !!state && losesProgress(step) && !state.signedUp;
@@ -331,6 +338,7 @@ export default function OnboardingV3() {
       <>
         <LessonStep
           course={course}
+          onReady={handOverMusic}
           onStart={(lessonId) => {
             trackOnboarding(state.anonymousId, step, 'LESSON_START', { stepIndex: STEP_INDEX[step] });
             update((s) => ({ ...s, answers: { ...s.answers, lesson: { courseId: course.id, lessonId } } }));
@@ -372,6 +380,7 @@ export default function OnboardingV3() {
       <>
         <PlacementStep
           course={course}
+          onReady={handOverMusic}
           onExit={() => {
             trackOnboarding(state.anonymousId, step, 'LESSON_EXIT', { stepIndex: STEP_INDEX[step] });
             setQuitOpen(true);

@@ -22,6 +22,7 @@ import { celebrationHaptic, playHaptic } from '@/lib/haptics';
 import { saveSpot } from '@/lib/lesson/resume';
 import type { CatalogCourse } from '@/lib/onboarding/v3/catalog';
 import type { PlacementResult } from '@/lib/onboarding/v3/flow';
+import { firstLessonOf, placementOf } from '@/lib/onboarding/v3/prefetch';
 import type { PlacementTest } from '@/lib/path/testOut';
 import { Art } from '@/components/art/Art';
 import { TASTE_MINUTES, TASTE_QUESTIONS } from './PathSteps';
@@ -120,6 +121,8 @@ export interface TasteResult {
 export function LessonStep(props: {
   course: CatalogCourse;
   onStart: (lessonId: string) => void;
+  /** The lesson is on screen: onboarding's music hands over to the lesson's. */
+  onReady?: () => void;
   onQuit: () => void;
   onDone: (result: TasteResult) => void;
 }) {
@@ -129,9 +132,9 @@ export function LessonStep(props: {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/onboarding-flow/courses/${props.course.id}/first-lesson`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
-      .then((d: { lesson: Record<string, unknown> & { id: string } }) => {
+    // Usually already here: onboarding fetched it when the course was picked.
+    firstLessonOf(props.course.id)
+      .then((d) => {
         if (cancelled) return;
         let blocks = d.lesson.contentBlocks;
         if (typeof blocks === 'string') {
@@ -151,6 +154,12 @@ export function LessonStep(props: {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.course.id, run]);
+
+  const ready = !!data;
+  useEffect(() => {
+    if (ready) props.onReady?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
 
   if (error) {
     return (
@@ -196,6 +205,8 @@ export function LessonStep(props: {
 export function PlacementStep(props: {
   course: CatalogCourse;
   onExit: () => void;
+  /** The test is on screen: onboarding's music hands over. */
+  onReady?: () => void;
   onPlaced: (result: { claim: LessonClaim | null; placement: PlacementResult }) => void;
 }) {
   const [test, setTest] = useState<PlacementTest | null>(null);
@@ -205,14 +216,19 @@ export function PlacementStep(props: {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/onboarding-flow/courses/${props.course.id}/placement`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
-      .then((d: { test: PlacementTest }) => !cancelled && setTest(d.test))
+    placementOf(props.course.id)
+      .then((d) => !cancelled && setTest(d.test))
       .catch(() => !cancelled && setError(true));
     return () => {
       cancelled = true;
     };
   }, [props.course.id, run]);
+
+  const ready = !!test;
+  useEffect(() => {
+    if (ready) props.onReady?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
 
   if (error) {
     return (
