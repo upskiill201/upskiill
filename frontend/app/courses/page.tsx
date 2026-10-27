@@ -15,9 +15,10 @@ import s from '@/components/seo/Seo.module.css';
 
 /**
  * /courses — every published course, public, grouped by subject (the same
- * list the homepage's skills grid reads: lib/courses/subjects.ts). Each card
- * links to the course's own page (/courses/<slug>), where anyone can see the
- * whole path and start learning. Teyro Originals lead each subject.
+ * list the homepage's skills grid reads: lib/courses/subjects.ts), shown as
+ * what you can learn rather than finished courses (founder, 2026-10-27). Each
+ * card links to the course's own page (/courses/<slug>). Teyro Originals lead
+ * each subject.
  */
 
 export const revalidate = 300;
@@ -59,19 +60,19 @@ export default async function CoursesCatalog() {
       <div className={s.hubBand}>
         <header className={s.hubHero}>
           <div className={s.hubCopy}>
-            <span className={s.eyebrow}>Teyro courses</span>
+            <span className={s.eyebrow}>What you can learn</span>
             <h1 className={`${s.display} ${s.hubTitle}`}>
               Learn coding, AI, money and more, <em>a few minutes a day.</em>
             </h1>
             <p className={s.lead}>
-              Pick a course and start straight away — no setup, no long videos. {TEYRO.lessonFormat}.
+              Pick what you want to learn. Tell Teyro your goal and level, and you start at the right lesson: no setup, no long videos. {TEYRO.lessonFormat}.
             </p>
             {groups.length > 0 && (
               <div className={s.pillRow}>
-                {groups.map(({ subject, list }) => (
+                {groups.map(({ subject }) => (
                   <a key={subject.id} href={`#${subject.id}`} className={s.pill}>
                     <Art name={subject.art} size={20} />
-                    {subject.short} · {list.length}
+                    {subject.short}
                   </a>
                 ))}
               </div>
@@ -84,20 +85,20 @@ export default async function CoursesCatalog() {
       </div>
 
       <div className={s.container}>
-        {groups.map(({ subject, list }, i) => (
+        {groups.map(({ subject, list }) => (
           <section key={subject.id} className={s.section} aria-labelledby={subject.id}>
             <SectionHead
               id={subject.id}
-              eyebrow={`${list.length} course${list.length === 1 ? '' : 's'}`}
-              title={`${subject.title} courses`}
+              eyebrow="Learn"
+              title={subject.title}
               lead={subject.sub}
             />
-            <PublicCourseGrid courses={list} priorityCount={i === 0 ? 3 : 0} />
+            <PublicCourseGrid courses={list} />
           </section>
         ))}
         {other.length > 0 && (
           <section className={s.section} aria-labelledby="more">
-            <SectionHead id="more" eyebrow="And more" title="More courses" />
+            <SectionHead id="more" eyebrow="And more" title="More to learn" />
             <PublicCourseGrid courses={other} />
           </section>
         )}

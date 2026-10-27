@@ -32,7 +32,11 @@ export interface Subject {
   short: string;
   sub: string;
   art: ArtName;
-  /** Two real course names the homepage shows on the card. */
+  /**
+   * Two things you can learn, in plain words, on the homepage card: skills,
+   * not course titles, so it reads as what you can learn rather than a
+   * shelf of finished courses (founder, 2026-10-27). Each one is taught today.
+   */
   examples: [string, string];
 }
 
@@ -43,7 +47,7 @@ export const SUBJECTS: Subject[] = [
     short: 'Coding',
     sub: 'From your first line of Python to real mobile apps.',
     art: 'code',
-    examples: ['Python for Beginners', 'Mobile Apps with React Native'],
+    examples: ['Python from scratch', 'Build mobile apps'],
   },
   {
     id: 'ai',
@@ -51,7 +55,7 @@ export const SUBJECTS: Subject[] = [
     short: 'AI',
     sub: 'Put AI to work every day, then build with it.',
     art: 'spark',
-    examples: ['AI Tools for Everyday Productivity', 'Vibe Coding: Build Apps with AI'],
+    examples: ['Get more done with AI', 'Build apps with AI'],
   },
   {
     id: 'data',
@@ -59,7 +63,7 @@ export const SUBJECTS: Subject[] = [
     short: 'Data',
     sub: 'Ask questions of real data and get real answers.',
     art: 'pie',
-    examples: ['SQL and Databases for Beginners', 'Machine Learning for Beginners'],
+    examples: ['Query data with SQL', 'Machine learning basics'],
   },
   {
     id: 'money',
@@ -67,7 +71,7 @@ export const SUBJECTS: Subject[] = [
     short: 'Money',
     sub: 'Budget, save and grow what you earn.',
     art: 'coins',
-    examples: ['Budgeting for Beginners', 'Money Habits That Build Long-Term Wealth'],
+    examples: ['Make a budget that works', 'Money habits that build wealth'],
   },
   {
     id: 'leadership',
@@ -75,7 +79,7 @@ export const SUBJECTS: Subject[] = [
     short: 'Leadership',
     sub: 'Lead people, with or without the title.',
     art: 'mountain',
-    examples: ['Leadership for Beginners', 'How to Motivate a Team'],
+    examples: ['Lead your first team', 'Motivate people'],
   },
   {
     id: 'communication',
@@ -83,7 +87,7 @@ export const SUBJECTS: Subject[] = [
     short: 'Communication',
     sub: 'Speak, write and pitch so people listen.',
     art: 'mic',
-    examples: ['Speak Like a CEO', 'Clear Writing at Work'],
+    examples: ['Speak with confidence', 'Write clearly at work'],
   },
   {
     id: 'negotiation',
@@ -91,7 +95,7 @@ export const SUBJECTS: Subject[] = [
     short: 'Negotiation',
     sub: 'Ask for more and handle conflict calmly.',
     art: 'bubbles',
-    examples: ['Negotiation Skills for Beginners', 'How to Manage Conflict at Work'],
+    examples: ['Negotiate for more', 'Handle conflict calmly'],
   },
   {
     id: 'business',
@@ -99,7 +103,7 @@ export const SUBJECTS: Subject[] = [
     short: 'Business',
     sub: 'Test an idea and price it before you build.',
     art: 'briefcase',
-    examples: ['How to Validate a Business Idea', 'How to Price a Product or Service'],
+    examples: ['Test a business idea', 'Price what you sell'],
   },
   {
     id: 'career',
@@ -107,7 +111,7 @@ export const SUBJECTS: Subject[] = [
     short: 'Career',
     sub: 'Get the job, then get ahead in it.',
     art: 'badge',
-    examples: ['Acing Job Interviews', 'Corporate Jargon'],
+    examples: ['Ace job interviews', 'Decode office jargon'],
   },
 ];
 

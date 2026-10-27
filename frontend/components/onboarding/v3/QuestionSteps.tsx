@@ -14,6 +14,8 @@ import { Art, topicArt, type ArtName } from '@/components/art/Art';
 import { GOALS } from '@/lib/onboarding/goals';
 import type { CatalogCourse } from '@/lib/onboarding/v3/catalog';
 import { DAILY_OPTIONS, EXPERIENCE_OPTIONS, SOURCE_OPTIONS, TIME_OPTIONS } from '@/lib/onboarding/v3/flow';
+import { topicOf } from '@/lib/onboarding/v3/lines';
+import { TASTE_MINUTES } from './PathSteps';
 import { Choice, ChoiceGroup, kitCss as css } from '@/components/kit/Kit';
 
 // ── "I want to learn…" ─────────────────────────────────────────────────────
@@ -26,10 +28,29 @@ function topicRank(category: string) {
   return i === -1 ? 99 : i;
 }
 
+/**
+ * Duolingo lists what you can learn, not a catalogue: the subject and its
+ * picture, no cover, no chapter or lesson counts. The course itself takes
+ * shape as Tey learns about them over the next screens (founder, 2026-10-27).
+ */
 export function LearnStep(props: { courses: CatalogCourse[]; selected?: string; onPick: (course: CatalogCourse) => void }) {
   const groups = new Map<string, CatalogCourse[]>();
   for (const c of props.courses) groups.set(c.category, [...(groups.get(c.category) ?? []), c]);
   const ordered = [...groups.entries()].sort((a, b) => topicRank(a[0]) - topicRank(b[0]) || a[0].localeCompare(b[0]));
+  // Two courses that shorten to the same subject keep their full titles.
+  const counts = new Map<string, number>();
+  for (const c of props.courses) {
+    const t = topicOf(c.title) ?? c.title;
+    counts.set(t, (counts.get(t) ?? 0) + 1);
+  }
+  const subjectOf = (c: CatalogCourse) => {
+    const t = topicOf(c.title) ?? c.title;
+    return (counts.get(t) ?? 0) > 1 ? c.title : t;
+  };
+  const artOf = (c: CatalogCourse) => {
+    const a = topicArt(c.title);
+    return a === 'book' ? topicArt(c.category) : a;
+  };
   let n = 0;
   return (
     <div role="radiogroup" aria-label="I want to learn">
@@ -38,9 +59,6 @@ export function LearnStep(props: { courses: CatalogCourse[]; selected?: string; 
           <h2 className={css.groupHead}>
             <Art name={topicArt(category)} size={34} />
             {category}
-            <span className={css.groupCount}>
-              {courses.length} {courses.length === 1 ? 'course' : 'courses'}
-            </span>
           </h2>
           <div className={css.choices}>
             {courses.map((c) => (
@@ -49,20 +67,10 @@ export function LearnStep(props: { courses: CatalogCourse[]; selected?: string; 
                 index={n++}
                 selected={props.selected === c.id}
                 onSelect={() => props.onPick(c)}
-                label={c.title}
-                sub={`${c.chapters} ${c.chapters === 1 ? 'chapter' : 'chapters'} · ${c.totalLessons} lessons`}
+                label={subjectOf(c)}
                 chevron
-                media={
-                  <span className={css.cover}>
-                    {c.thumbnailUrl ? (
-                      <Image src={c.thumbnailUrl} alt="" fill sizes="64px" className="object-cover" />
-                    ) : (
-                      <span className="absolute inset-0 grid place-items-center">
-                        <Art name={topicArt(category)} size={40} />
-                      </span>
-                    )}
-                  </span>
-                }
+                art={artOf(c)}
+                artSize={44}
               />
             ))}
           </div>
@@ -206,7 +214,30 @@ export function GoalStep({ selected, onPick, topic }: { selected?: string; onPic
 
 const LEVEL_ART: Record<string, ArtName> = { new: 'seed', some: 'sprout', lots: 'tree' };
 
-export function ExperienceStep({ selected, onPick, topic }: { selected?: string; onPick: (id: string) => void; topic?: string }) {
+/**
+ * One screen answers both "how much do you know?" and "where do you start?"
+ * (founder, 2026-10-27): brand new goes to lesson 1, knowing some goes to the
+ * placement test when the course has one, so each answer says where it leads.
+ */
+export function ExperienceStep({
+  selected,
+  onPick,
+  topic,
+  hasPlacement,
+}: {
+  selected?: string;
+  onPick: (id: string) => void;
+  topic?: string;
+  hasPlacement?: boolean;
+}) {
+  const leadsTo = (id: string) =>
+    id === 'new'
+      ? `Start from the very beginning with lesson 1, about ${TASTE_MINUTES} minutes.`
+      : hasPlacement
+        ? 'Take a short test and skip what you already know.'
+        : id === 'some'
+          ? "Warm up with lesson 1, then we'll move quickly."
+          : 'Warm up with lesson 1, then jump ahead in the app.';
   return (
     <ChoiceGroup label={`How much ${topic ?? 'of it'} do you know?`}>
       {EXPERIENCE_OPTIONS.map((o, i) => (
@@ -216,7 +247,7 @@ export function ExperienceStep({ selected, onPick, topic }: { selected?: string;
           selected={selected === o.id}
           onSelect={() => onPick(o.id)}
           label={o.label}
-          sub={o.sub}
+          sub={leadsTo(o.id)}
           art={LEVEL_ART[o.id]}
           artSize={56}
         />

@@ -59,6 +59,15 @@ export function loadV3(): OnboardingV3State {
     const raw = window.localStorage.getItem(V3_STORAGE_KEY);
     if (!raw) return fresh();
     const parsed = JSON.parse(raw) as OnboardingV3State;
+    // The "New to it, or know some?" step was folded into the experience
+    // question (2026-10-27): a save parked on it resumes at the commit screen;
+    // one that never picked a path starts with lesson 1.
+    if ((parsed?.step as string) === 'path' || (parsed?.furthest as string) === 'path') {
+      const knows = parsed.answers?.experienceLevel === 'some' || parsed.answers?.experienceLevel === 'lots';
+      parsed.answers = { ...parsed.answers, path: parsed.answers?.path ?? 'start', knowsSome: parsed.answers?.knowsSome ?? knows };
+      if ((parsed.step as string) === 'path') parsed.step = 'commit';
+      if ((parsed.furthest as string) === 'path') parsed.furthest = 'commit';
+    }
     if (parsed?.schemaVersion !== 3 || !(parsed.step in STEP_INDEX)) return fresh();
     return parsed;
   } catch {
