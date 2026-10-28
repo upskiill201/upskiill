@@ -34,25 +34,23 @@ export function lineFor(
     case 'learn':
       return beat('What do you want to learn?', 'curious');
     case 'name':
-      return beat(extra.courseTitle ? `${extra.courseTitle}, great choice! What should I call you?` : 'What should I call you?', 'excited');
+      return beat(extra.topic ? `${extra.topic}, great choice! I'll start building your course. What should I call you?` : 'What should I call you?', 'excited');
     case 'source':
       return beat(name ? `Nice to meet you, ${name}! How did you hear about Teyro?` : 'How did you hear about Teyro?', 'curious');
     case 'goal':
-      return beat(`Why are you learning ${topic}?`, 'thinking');
+      return beat(`Why are you learning ${topic}? I'll shape your course around it.`, 'thinking');
     case 'experience':
       return beat(`How much ${topic} do you already know?`, 'thinking');
     case 'daily':
       return beat(name ? `What's your daily learning goal, ${name}?` : "What's your daily learning goal?", 'encouraging');
     case 'outcome':
-      return beat("Here's what you'll get from your course.", 'excited');
+      return beat(extra.topic ? `Your ${extra.topic} course is taking shape. Here's what you'll get.` : "Your course is taking shape. Here's what you'll get.", 'excited');
     case 'projection':
       return beat("Here's what your daily goal adds up to.", 'excited');
     case 'reminder-time':
       return beat('When should I remind you to learn?', 'mischievous');
     case 'commit':
       return beat('Make it official. Hold the button to commit.', 'encouraging');
-    case 'path':
-      return beat("Now let's find the best place for you to start!", 'curious');
     case 'save':
       return beat(name ? `Great start, ${name}! Save your progress so it's here tomorrow.` : "Great start! Save your progress so it's here tomorrow.", 'celebrating');
     case 'install':
@@ -63,19 +61,19 @@ export function lineFor(
 }
 
 /** Tey's instant reaction to a tap, shown in the footer before Continue. */
-export function reactionFor(step: StepId, value: string, a: AnswersV3, extra: { courseTitle?: string } = {}): Beat | null {
+export function reactionFor(step: StepId, value: string, a: AnswersV3): Beat | null {
   const name = firstName(a.name);
   switch (step) {
     case 'goal': {
       const g = goalById(value);
-      return g ? beat(`${g.label}. Love it. Let's make it happen${name ? `, ${name}` : ''}!`, 'excited') : null;
+      return g ? beat(`${g.label}. Love it. I'll build your course around that${name ? `, ${name}` : ''}!`, 'excited') : null;
     }
     case 'experience':
       return value === 'new'
-        ? beat("Perfect. Everyone starts somewhere, and I'll be right there with you.", 'supportive')
+        ? beat("Perfect. I'll start your course from the very beginning, right there with you.", 'supportive')
         : value === 'some'
-          ? beat("Nice! We'll move quickly through what you know.", 'encouraging')
-          : beat("Ooh, a pro. I'll try to keep up.", 'mischievous');
+          ? beat("Nice! I'll fit your course to what you already know.", 'encouraging')
+          : beat("Ooh, a pro. I'll skip you past what you know.", 'mischievous');
     case 'source':
       return value === 'friend' ? beat('Tell your friend I said hi!', 'mischievous') : beat('Thanks! Good to know.', 'excited');
     case 'daily':
@@ -88,10 +86,6 @@ export function reactionFor(step: StepId, value: string, a: AnswersV3, extra: { 
             : beat('Intense! Okay, legend.', 'celebrating');
     case 'reminder-time':
       return beat("Noted. I'll be there.", 'mischievous');
-    case 'path':
-      return value === 'placement'
-        ? beat("Let's see what you already know. No pressure!", 'encouraging')
-        : beat(extra.courseTitle ? `Lesson 1 of ${extra.courseTitle}, here we come!` : 'Lesson 1, here we come!', 'excited');
     default:
       return null;
   }

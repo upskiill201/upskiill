@@ -6,8 +6,9 @@
  * Light and Dark pin it. The choice lives in localStorage — it is per device,
  * and it has to be readable before React boots (see THEME_BOOT_SCRIPT in ./config).
  *
- * Dark only applies inside the student app (THEME_SCOPES): the marketing site,
- * onboarding and creator studio are light-only and stay that way.
+ * Dark only applies inside the student app and onboarding (THEME_SCOPES; the
+ * onboarding joined 2026-10-27): the marketing site and creator studio are
+ * light-only and stay that way.
  *
  * The palette itself is app/theme-dark.css, keyed on <html data-theme="dark">.
  */

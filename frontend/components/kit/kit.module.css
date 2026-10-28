@@ -333,13 +333,6 @@
 .groupHead:first-child {
   margin-top: 4px;
 }
-.groupCount {
-  margin-left: auto;
-  font-family: var(--font-jakarta), sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-muted);
-}
 .cover {
   position: relative;
   width: 64px;
@@ -361,29 +354,6 @@
   text-transform: uppercase;
   color: var(--color-brand-dark);
   background: var(--color-band);
-}
-
-/* Path cards ("New to Python?" / "Already know some?") */
-.pathCard {
-  min-height: 118px;
-  padding: 14px 16px 14px 10px;
-}
-.pathTey {
-  position: relative;
-  width: 92px;
-  height: 92px;
-  flex: none;
-}
-.pathTey img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.pathHat {
-  position: absolute;
-  top: -16px;
-  left: 18px;
-  transform: rotate(-10deg);
 }
 
 /* ── Inputs ────────────────────────────────────────────────────────────── */
@@ -424,6 +394,14 @@
 .footer[data-reacting='true'] {
   background: color-mix(in srgb, var(--success-green) 14%, white);
   border-top-color: transparent;
+}
+/* Dark mode (onboarding follows the clock like the app): a deep green band
+   with light green words, not a bright strip at night. */
+:global(:root[data-theme='dark']) .footer[data-reacting='true'] {
+  background: color-mix(in srgb, var(--success-green) 16%, var(--bg-page));
+}
+:global(:root[data-theme='dark']) .reaction {
+  color: color-mix(in srgb, var(--success-green) 70%, white);
 }
 .footerInner {
   max-width: 640px;

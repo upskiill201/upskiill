@@ -48,7 +48,10 @@ type Step =
   | 'blocked'
   | 'failed';
 
-function previewLine(days: number, lessonTitle?: string) {
+function previewLine(days: number, lessonTitle?: string, buddyName?: string) {
+  if (buddyName) {
+    return { title: `${buddyName} just did today's lesson`, body: 'Your turn. One lesson keeps your buddy streak alive.' };
+  }
   if (lessonTitle) {
     return { title: 'Lesson 1 is just sitting there', body: `"${lessonTitle}" is waiting. I'll pretend I'm not counting.` };
   }
@@ -128,7 +131,7 @@ export default function RemindersScene({ scene, onAdvance }: { scene: Input; onA
     setStep('guide');
   };
 
-  const line = previewLine(scene.streakDays, scene.lessonTitle);
+  const line = previewLine(scene.streakDays, scene.lessonTitle, scene.buddyName);
 
   if (step === 'guide') {
     return (
@@ -164,9 +167,11 @@ export default function RemindersScene({ scene, onAdvance }: { scene: Input; onA
           Let me <span className={sceneStyles.headlineBlue}>remind you</span>
         </h1>
         <p className={sceneStyles.subhead}>
-          {scene.lessonTitle
-            ? "Put Teyro on your Home Screen so I can remind you about lesson 1. It's where I live. Rent-free."
-            : 'Put Teyro on your Home Screen and I can nudge you before your streak runs out.'}
+          {scene.buddyName
+            ? `Put Teyro on your Home Screen so I can tell you when ${scene.buddyName} learns, nudges you, or needs you.`
+            : scene.lessonTitle
+              ? "Put Teyro on your Home Screen so I can remind you about lesson 1. It's where I live. Rent-free."
+              : 'Put Teyro on your Home Screen and I can nudge you before your streak runs out.'}
         </p>
         <div className={styles.phone}>
           <HomeScreenMock compact />
@@ -259,7 +264,16 @@ export default function RemindersScene({ scene, onAdvance }: { scene: Input; onA
       cta={{ text: push.busy ? 'TURNING ON…' : 'TURN ON REMINDERS', onClick: () => void turnOn(), variant: 'blue', disabled: push.busy }}
       secondaryCta={{ text: 'NOT NOW', onClick: notNow }}
     >
-      {scene.lessonTitle ? (
+      {scene.buddyName ? (
+        <>
+          <h1 className={sceneStyles.headline}>
+            Know when <span className={sceneStyles.headlineBlue}>{scene.buddyName}</span> learns
+          </h1>
+          <p className={sceneStyles.subhead}>
+            I&apos;ll tell you when your buddy learns, nudges you, or your buddy streak needs saving.
+          </p>
+        </>
+      ) : scene.lessonTitle ? (
         <>
           <h1 className={sceneStyles.headline}>
             Want me to <span className={sceneStyles.headlineBlue}>nag you?</span>

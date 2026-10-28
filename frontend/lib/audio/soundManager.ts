@@ -260,8 +260,27 @@ class SoundManager {
     if (!ctx) return null;
     const musicGain = this.categoryGainNodes.music || this.masterGainNode;
     if (!musicGain) return null;
-    return { ctx, output: musicGain };
+    if (!this.musicBoost || this.musicBoostCtx !== ctx) {
+      // The synthesised loops are written quiet (peaks of 0.02-0.12) and phone
+      // speakers cut the low end, so lift them here and let a limiter catch peaks.
+      const boost = ctx.createGain();
+      boost.gain.value = 3.2;
+      const limiter = ctx.createDynamicsCompressor();
+      limiter.threshold.value = -10;
+      limiter.knee.value = 6;
+      limiter.ratio.value = 12;
+      limiter.attack.value = 0.003;
+      limiter.release.value = 0.2;
+      boost.connect(limiter);
+      limiter.connect(musicGain);
+      this.musicBoost = boost;
+      this.musicBoostCtx = ctx;
+    }
+    return { ctx, output: this.musicBoost };
   }
+
+  private musicBoost: GainNode | null = null;
+  private musicBoostCtx: AudioContext | null = null;
 
   // ─── Sound Registry Customization ──────────────────────────────────────────
 

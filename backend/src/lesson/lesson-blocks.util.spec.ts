@@ -230,3 +230,42 @@ describe('Python cards and exercises', () => {
     expect(state('  ')?.errors).toContain('A Try it live card has no code.');
   });
 });
+
+describe('Prompt Lab cards', () => {
+  const lab = {
+    id: 'p',
+    kind: 'promptLab',
+    task: 'Get a plan',
+    base: 'Plan my party.',
+    parts: [
+      { label: 'Context', text: 'It is for my parents.' },
+      { label: 'Limits', text: 'Under MX$40,000.' },
+    ],
+    replies: [
+      { uses: [], text: 'Have fun!', note: 'Too vague.' },
+      { uses: [0, 1], text: 'A real plan.', note: 'That is it.' },
+    ],
+    goal: 1,
+  };
+  const errors = (card: unknown) =>
+    phaseStateFromBlocks({ learn: learn([card]) }).learn?.errors ?? [];
+
+  it('accepts a complete Prompt Lab', () => {
+    expect(errors(lab)).toEqual([]);
+  });
+
+  it('needs a bare-prompt reply, real parts and a goal', () => {
+    expect(
+      errors({ ...lab, replies: [lab.replies[1], lab.replies[1]] }),
+    ).toContain('A Prompt Lab needs a reply for the bare prompt (uses: []).');
+    expect(
+      errors({
+        ...lab,
+        replies: [lab.replies[0], { ...lab.replies[1], uses: [5] }],
+      }),
+    ).toContain('A Prompt Lab reply uses a part that does not exist.');
+    expect(errors({ ...lab, goal: 9 })).toContain(
+      'A Prompt Lab has no goal reply marked.',
+    );
+  });
+});

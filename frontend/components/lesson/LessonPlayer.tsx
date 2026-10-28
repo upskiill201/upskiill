@@ -175,6 +175,8 @@ import styles from './Lesson.module.css';
 import ShareMilestoneButton from '@/components/share/ShareMilestoneButton';
 import CertificatePill from '@/components/certificates/CertificatePill';
 import { isLessonMilestone, isStreakMilestone, type ShareCardRequest } from '@/lib/share/types';
+import { LessonContext } from '@/lib/lesson/LessonContext';
+import LearningTogether from '@/components/network/LearningTogether';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- lesson payload is creator JSON */
 
@@ -1294,6 +1296,8 @@ export function LessonPlayer({
             ? 'Watch the video to the end to continue'
             : card.kind === 'tryIt'
               ? 'Run the code to continue'
+              : card.kind === 'promptLab'
+                ? 'Get the reply you need to continue'
               : 'Finish this card to continue'
         : undefined,
       onAction: nextCard,
@@ -1446,8 +1450,15 @@ export function LessonPlayer({
   const bonus = result?.xpBreakdown
     ? { combo: result.xpBreakdown.combo ?? 0, perfect: result.xpBreakdown.perfect ?? 0, section: result.xpBreakdown.section ?? 0 }
     : null;
+  const lessonCtx = {
+    courseId,
+    lessonId: lesson.id as string,
+    lessonTitle: (lesson.title as string) ?? 'this lesson',
+    shareable: !isReview && !adminReviewMode && !simulate,
+  };
 
   return (
+    <LessonContext.Provider value={lessonCtx}>
     <div
       className={`${styles.player} fixed inset-0 z-[90000] flex flex-col bg-white`}
       role="dialog"
@@ -1498,6 +1509,7 @@ export function LessonPlayer({
         />
       )}
 
+      {!outro && <LearningTogether />}
       {!outro && phase === 'apply' && <ComboAura run={combo} />}
       {!outro && <ComboBurst burst={comboBurst} onDone={clearComboBurst} />}
       {!outro && <ComboBreak event={comboBreak} />}
@@ -1731,6 +1743,7 @@ export function LessonPlayer({
         }}
       />
     </div>
+    </LessonContext.Provider>
   );
 }
 

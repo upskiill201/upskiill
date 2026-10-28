@@ -3,11 +3,14 @@
  * 2026-10-23).
  *
  *   splash → welcome → Tey → "I want to learn…" (every course) → name →
- *   how did you hear → why → how much do you know → daily goal → what you'll
- *   get → projection → reminder time → commit → "New to it, or know some?"
+ *   how did you hear → why → how much do you know (this also picks where they
+ *   start; the separate "New to it, or know some?" screen was folded into it,
+ *   2026-10-27) → daily goal → what you'll get → projection → reminder time →
+ *   commit →
  *     new:        first-lesson hero → 3-minute taste of lesson 1 → nice start
  *     know some:  "jump ahead" hero → placement test (ends on where you placed)
- *   → gift chest → save your progress (signup) → your plan → Pro → result →
+ *   → gift chest → save your progress (signup) → pick your character →
+ *   meet your class (founder, 2026-10-28) → your plan → Pro → result →
  *   install + reminders → the app.
  *
  * Every question must change a later screen (the playbook's cutting rule).
@@ -28,7 +31,6 @@ export type StepId =
   | 'projection'
   | 'reminder-time'
   | 'commit'
-  | 'path'
   | 'lesson-intro'
   | 'lesson'
   | 'taste-done'
@@ -36,6 +38,8 @@ export type StepId =
   | 'placement'
   | 'chest'
   | 'save'
+  | 'character'
+  | 'class'
   | 'plan'
   | 'paywall'
   | 'result'
@@ -70,7 +74,6 @@ export const STEPS: StepDef[] = [
   { id: 'projection', chrome: true },
   { id: 'reminder-time', chrome: true, answerKey: 'preferredTime' },
   { id: 'commit', chrome: true, answerKey: 'committed' },
-  { id: 'path', chrome: true, answerKey: 'path' },
   { id: 'lesson-intro', chrome: true, branch: 'start' },
   { id: 'lesson', chrome: false, branch: 'start' },
   { id: 'taste-done', chrome: false, branch: 'start' },
@@ -78,6 +81,8 @@ export const STEPS: StepDef[] = [
   { id: 'placement', chrome: false, branch: 'placement' },
   { id: 'chest', chrome: false },
   { id: 'save', chrome: true },
+  { id: 'character', chrome: false, postSignup: true },
+  { id: 'class', chrome: false, postSignup: true },
   { id: 'plan', chrome: false, postSignup: true },
   { id: 'paywall', chrome: false, postSignup: true },
   { id: 'result', chrome: false, postSignup: true },
@@ -144,8 +149,9 @@ export interface AnswersV3 {
   dailyCommitment?: DailyCommitment;
   preferredTime?: PreferredTime;
   committed?: boolean;
+  /** Set by the experience answer: brand new starts, knowing some is placed. */
   path?: LessonPath;
-  /** Chose "Already know some" on the path screen. */
+  /** Said they know some or a lot (also true when that leads to lesson 1). */
   knowsSome?: boolean;
   placement?: PlacementResult;
   lesson?: {

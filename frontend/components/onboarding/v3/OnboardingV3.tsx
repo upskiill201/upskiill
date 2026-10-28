@@ -60,11 +60,13 @@ import { Art } from '@/components/art/Art';
 import { InstallStep } from './InstallStep';
 import { SplashStep, WelcomeStep } from './IntroSteps';
 import { ChestStep, LessonStep, PlacementStep } from './LessonSteps';
+import { prefetchStart } from '@/lib/onboarding/v3/prefetch';
 import { CommitStep, OutcomeStep, PlanStep, ProjectionStep } from './MomentSteps';
-import { LessonIntroStep, PathStep, PlacementIntroStep, TasteDoneStep } from './PathSteps';
+import { LessonIntroStep, PlacementIntroStep, TasteDoneStep } from './PathSteps';
 import { DailyStep, ExperienceStep, GoalStep, LearnStep, NameStep, SourceStep, TimeStep } from './QuestionSteps';
 import { QuitSheet } from './QuitSheet';
 import { SaveStep, type HeldReward } from './SaveStep';
+import { CharacterStep, ClassStep } from './ProfileSteps';
 import { Btn, Footer, Hero, Screen, TeyHero, TeyLine, TopBar, kitCss as css } from '@/components/kit/Kit';
 
 const TRANSITION_MS = 380;
@@ -177,18 +179,24 @@ export default function OnboardingV3() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, state?.anonymousId]);
 
-  // Music follows the journey; the lesson and the test bring their own.
+  // Music follows the journey; the lesson and the test bring their own. It
+  // keeps playing while they load and hands over once they're on screen
+  // (handOverMusic), so the wait never falls silent.
   useEffect(() => {
     if (!musicStarted.current) return;
-    if (step === 'lesson' || step === 'placement') {
-      stopOnboardingMusic(0.5);
-      return;
-    }
+    if (step === 'lesson' || step === 'placement') return;
     startOnboardingMusic(moodFor(step));
     setOnboardingMood(moodFor(step));
     setOnboardingProgress(progressFor(step, path));
   }, [step, path]);
   useEffect(() => () => stopOnboardingMusic(0.4), []);
+  const handOverMusic = useCallback(() => stopOnboardingMusic(0.5), []);
+
+  // Lesson 1 and the placement test load the moment the course is known, a
+  // dozen screens before either opens, so neither keeps the learner waiting.
+  useEffect(() => {
+    if (course) prefetchStart(course);
+  }, [course]);
 
   // Leaving the tab after earning something they'd lose: the browser's own prompt.
   const hasProgress = !!state && losesProgress(step) && !state.signedUp;
@@ -262,14 +270,14 @@ export default function OnboardingV3() {
       playOnboardingCue('optionSelect');
       playHaptic('selection');
       if (reactValue !== undefined && state) {
-        const b = reactionFor(step, reactValue, { ...answers, [key]: value }, { courseTitle: course?.title });
+        const b = reactionFor(step, reactValue, { ...answers, [key]: value });
         if (b) {
           setReaction(b);
           playTeyReaction(b.poseFamily);
         }
       }
     },
-    [update, state, step, answers, course],
+    [update, state, step, answers],
   );
 
   /** Server copy of the answers (after signup only; before, there is no account). */
@@ -305,7 +313,7 @@ export default function OnboardingV3() {
         trackOnboarding(state.anonymousId, step, 'QUIT', { reason: reason ?? undefined });
         setQuitOpen(false);
         if (step === 'lesson') return go('lesson-intro', -1);
-        if (step === 'placement') return go('path', -1);
+        if (step === 'placement') return go('placement-intro', -1);
         stopOnboardingMusic(0.3);
         router.push('/');
       }}
@@ -331,6 +339,7 @@ export default function OnboardingV3() {
       <>
         <LessonStep
           course={course}
+          onReady={handOverMusic}
           onStart={(lessonId) => {
             trackOnboarding(state.anonymousId, step, 'LESSON_START', { stepIndex: STEP_INDEX[step] });
             update((s) => ({ ...s, answers: { ...s.answers, lesson: { courseId: course.id, lessonId } } }));
@@ -372,6 +381,7 @@ export default function OnboardingV3() {
       <>
         <PlacementStep
           course={course}
+          onReady={handOverMusic}
           onExit={() => {
             trackOnboarding(state.anonymousId, step, 'LESSON_EXIT', { stepIndex: STEP_INDEX[step] });
             setQuitOpen(true);
@@ -435,6 +445,14 @@ export default function OnboardingV3() {
         {quitSheet}
       </>
     );
+  }
+
+  if (step === 'character') {
+    return <CharacterStep direction={direction} name={name} onDone={() => go('class')} />;
+  }
+
+  if (step === 'class') {
+    return <ClassStep direction={direction} courseTitle={course?.title} onDone={() => go('plan')} />;
   }
 
   if (step === 'plan') {
@@ -530,7 +548,7 @@ export default function OnboardingV3() {
   }
 
   // ── Screens with the top bar, Tey, the answers and a footer ──────────────
-  const line = lineFor(step, answers, { courseTitle: course?.title, topic, lessonMinutes: course?.firstLesson.durationMinutes });
+  const line = lineFor(step, answers, { courseTitle: course?.title, topic: course ? topic : undefined, lessonMinutes: course?.firstLesson.durationMinutes });
   const pose = (reaction ?? line)?.pose ?? 'idle';
   const needsCatalog = step === 'learn' || STEP_INDEX[step] > STEP_INDEX.learn;
 
@@ -583,8 +601,16 @@ export default function OnboardingV3() {
         return (
           <ExperienceStep
             topic={topic}
+            hasPlacement={!!course?.placement}
             selected={answers.experienceLevel}
-            onPick={(id) => answer('experienceLevel', id as AnswersV3['experienceLevel'], id)}
+            onPick={(id) => {
+              // The answer also picks where they start: brand new tries
+              // lesson 1, knowing some takes the placement test if there is one.
+              const knowsSome = id !== 'new';
+              const p: LessonPath = knowsSome && course?.placement ? 'placement' : 'start';
+              update((s) => ({ ...s, answers: { ...s.answers, path: p, knowsSome } }));
+              answer('experienceLevel', id as AnswersV3['experienceLevel'], id);
+            }}
           />
         );
       case 'daily':
@@ -613,26 +639,6 @@ export default function OnboardingV3() {
             onCommitted={() => update((s) => ({ ...s, answers: { ...s.answers, committed: true } }))}
           />
         );
-      case 'path':
-        return course ? (
-          <PathStep
-            course={course}
-            topic={topic}
-            experience={answers.experienceLevel}
-            selected={answers.path}
-            knowsSome={answers.knowsSome}
-            onPick={(p: LessonPath, knowsSome: boolean) => {
-              update((s) => ({ ...s, answers: { ...s.answers, path: p, knowsSome } }));
-              playOnboardingCue('optionSelect');
-              playHaptic('selection');
-              const b = reactionFor('path', p, answers, { courseTitle: course.title });
-              if (b) {
-                setReaction(b);
-                playTeyReaction(b.poseFamily);
-              }
-            }}
-          />
-        ) : null;
       case 'lesson-intro':
         return course ? <LessonIntroStep course={course} name={name} /> : null;
       case 'placement-intro':
@@ -645,7 +651,7 @@ export default function OnboardingV3() {
             onLogin={() => router.push('/login?mode=signin&next=%2Fonboarding')}
             onSaved={async (how) => {
               trackOnboarding(state.anonymousId, step, 'SIGNUP', { answerKey: 'method', answerValue: how });
-              const next = { ...state, signedUp: true, step: 'plan' as StepId };
+              const next = { ...state, signedUp: true, step: 'character' as StepId };
               update(() => next);
               try {
                 // Logged in to an existing account ("Log in" on this step):
@@ -679,7 +685,7 @@ export default function OnboardingV3() {
               }
               await syncServer(false, next);
               celebrationHaptic('win');
-              go('plan');
+              go('character');
             }}
           />
         );
@@ -707,9 +713,7 @@ export default function OnboardingV3() {
       ? !!answers.committed
       : step === 'name'
         ? !!answers.name?.trim()
-        : step === 'path'
-          ? !!answers.path
-          : def.answerKey
+        : def.answerKey
             ? answers[def.answerKey] !== undefined && answers[def.answerKey] !== ''
             : true;
   const hero = step === 'intro' || step === 'lesson-intro' || step === 'placement-intro';
@@ -762,7 +766,14 @@ export default function OnboardingV3() {
                 {cta}
               </Btn>
               {step === 'placement-intro' && (
-                <Btn variant="ghost" onClick={() => go('path', -1)}>
+                <Btn
+                  variant="ghost"
+                  onClick={() => {
+                    // Not now: lesson 1 instead, like a brand-new learner.
+                    update((s) => ({ ...s, answers: { ...s.answers, path: 'start' } }));
+                    go('lesson-intro');
+                  }}
+                >
                   Maybe later
                 </Btn>
               )}

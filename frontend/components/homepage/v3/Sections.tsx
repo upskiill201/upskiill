@@ -8,21 +8,9 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import {
-  ArrowRight,
-  Bot,
-  BrainCircuit,
-  Briefcase,
-  Check,
-  CodeXml,
-  GraduationCap,
-  Laptop,
-  Repeat,
-  ShieldCheck,
-  Smartphone,
-  Sparkles,
-  Workflow,
-} from 'lucide-react';
+import { Art, type ArtName } from '@/components/art/Art';
+import { SUBJECTS } from '@/lib/courses/subjects';
+import { Glyph } from '@/components/art/Glyph';
 import Accordion from '@/components/ui/Accordion';
 import LaunchBadges from '@/components/homepage/v2/LaunchBadges';
 import { APP_LAUNCHES, LEARNER_ENTRY, STUDIO_OPENS } from '@/lib/launch';
@@ -58,12 +46,22 @@ export function Hero() {
             </span>
           )}
           <h1 id="hero-title" className={`${s.display} ${s.h1}`}>
-            The fun way to <em>finish</em> learning coding and AI.
+            The fun and <em>effective</em> way to learn skills.
           </h1>
           <p className={s.lead}>
-            Short daily lessons in coding and AI, with streaks, leagues and friends that keep you coming back until you
-            actually finish.
+            Coding, AI, money, leadership, communication and more, in short daily lessons with streaks, leagues and
+            friends that keep you coming back until you actually finish.
           </p>
+          <ul className={s.heroSkills} aria-label="What you can learn">
+            {SKILLS.map((skill) => (
+              <li key={skill.id}>
+                <a href={`#skill-${skill.id}`} className={s.heroSkill}>
+                  <Art name={skill.art} size={24} />
+                  {skill.short}
+                </a>
+              </li>
+            ))}
+          </ul>
           <div className={s.heroActions}>
             <Link href={START_HREF} className={s.btn}>
               {START_LABEL}
@@ -80,13 +78,13 @@ export function Hero() {
           </div>
           <div className={s.heroNote}>
             <span>
-              <Check size={16} strokeWidth={4} aria-hidden="true" /> Free to start
+              <Glyph name="check" size={16} strokeWidth={4} /> Free to start
             </span>
             <span>
-              <Check size={16} strokeWidth={4} aria-hidden="true" /> Bite-sized lessons
+              <Glyph name="check" size={16} strokeWidth={4} /> Bite-sized lessons
             </span>
             <span>
-              <Check size={16} strokeWidth={4} aria-hidden="true" /> No app store needed
+              <Glyph name="check" size={16} strokeWidth={4} /> No app store needed
             </span>
           </div>
         </div>
@@ -98,68 +96,54 @@ export function Hero() {
 
 export { LaunchBadges };
 
-// ─── Tracks ──────────────────────────────────────────────────────────────────
+// ─── Skills ──────────────────────────────────────────────────────────────────
+//
+// What Teyro teaches today, one card per subject (lib/courses/subjects.ts,
+// shared with the /courses catalogue). Coding and AI link to their /learn-*
+// hubs; the rest to their section of the catalogue.
 
-const TRACKS = [
-  {
-    id: 'coding',
-    title: 'Coding',
-    sub: 'From your first line to real apps.',
-    tone: s.toneBlue,
-    icon: <CodeXml size={32} strokeWidth={2.5} />,
-    topics: [
-      { label: 'Web development', icon: <Laptop size={18} strokeWidth={2.75} /> },
-      { label: 'Mobile apps', icon: <Smartphone size={18} strokeWidth={2.75} /> },
-      { label: 'Programming fundamentals', icon: <CodeXml size={18} strokeWidth={2.75} /> },
-      { label: 'Software development', icon: <Repeat size={18} strokeWidth={2.75} /> },
-    ],
-  },
-  {
-    id: 'ai',
-    title: 'AI',
-    sub: 'Put AI to work, then build with it.',
-    tone: s.tonePurple,
-    icon: <BrainCircuit size={32} strokeWidth={2.5} />,
-    topics: [
-      { label: 'Use AI tools', icon: <Sparkles size={18} strokeWidth={2.75} /> },
-      { label: 'Build AI agents', icon: <Bot size={18} strokeWidth={2.75} /> },
-      { label: 'Create automations', icon: <Workflow size={18} strokeWidth={2.75} /> },
-    ],
-  },
-];
+const SKILLS = SUBJECTS.map((subject) => ({
+  ...subject,
+  href: subject.id === 'coding' ? '/learn-coding' : subject.id === 'ai' ? '/learn-ai' : `/courses#${subject.id}`,
+}));
 
 export function Tracks() {
   return (
     <section className={s.band} id="tracks" aria-labelledby="tracks-title">
       <div className={s.wrap}>
         <Reveal className={s.sectionHead}>
-          <span className={s.eyebrow}>Pick your track</span>
+          <span className={s.eyebrow}>What you can learn</span>
           <h2 id="tracks-title" className={`${s.display} ${s.h2}`}>
-            Coding or AI. <em>Start where you want to go.</em>
+            Way more than code. <em>Pick a skill and go.</em>
           </h2>
-          <p className={s.lead}>Tell Tey your goal and level, and your path is ready in under two minutes.</p>
+          <p className={s.lead}>
+            Every course is built the Teyro way: short lessons, real practice from the first minute, and a streak that
+            keeps you going.
+          </p>
         </Reveal>
-        <div className={s.tracks}>
-          {TRACKS.map((t, i) => (
-            <Reveal key={t.id} delay={i * 0.1}>
-              <Link href={START_HREF} className={`${s.track} ${t.tone}`}>
-                <span className={s.trackHead}>
-                  <span className={s.trackIcon}>{t.icon}</span>
+        <div className={s.skills}>
+          {SKILLS.map((skill, i) => (
+            <Reveal key={skill.id} delay={(i % 3) * 0.08}>
+              <Link href={skill.href} id={`skill-${skill.id}`} className={s.skill}>
+                <span className={s.skillHead}>
+                  <span className={s.skillArt}>
+                    <Art name={skill.art} size={48} />
+                  </span>
                   <span>
-                    <h3 className={s.trackTitle}>{t.title}</h3>
-                    <p className={s.trackSub}>{t.sub}</p>
+                    <h3 className={s.skillTitle}>{skill.title}</h3>
+                    <p className={s.skillSub}>{skill.sub}</p>
                   </span>
                 </span>
-                <ul className={s.topics}>
-                  {t.topics.map((topic) => (
-                    <li key={topic.label} className={s.topic}>
-                      {topic.icon}
-                      {topic.label}
+                <ul className={s.skillCourses}>
+                  {skill.examples.map((course) => (
+                    <li key={course}>
+                      <Glyph name="book" size={16} strokeWidth={2.75} />
+                      {course}
                     </li>
                   ))}
                 </ul>
-                <span className={s.trackCta}>
-                  Start the {t.title} track <ArrowRight size={18} strokeWidth={3} aria-hidden="true" />
+                <span className={s.skillCta}>
+                  See courses <Glyph name="arrow" size={18} strokeWidth={3} />
                 </span>
               </Link>
             </Reveal>
@@ -177,13 +161,13 @@ export function Tracks() {
 // Teyro's purpose, said plainly: people stay relevant as work changes. Copy
 // rule (same as everywhere on this page): no job guarantees, no invented
 // statistics, nothing Teyro doesn't do (there is no job placement). What it
-// does do is teach coding and AI through daily practice.
+// does do is teach practical skills through daily practice.
 
 const RELEVANT = [
   {
     art: '/User onbarding Assets/tey/thinking.webp',
     title: 'Learn what work needs now',
-    line: 'Coding and AI are changing how a lot of jobs get done. Learn to use them, build with them and automate your own work.',
+    line: 'AI is changing how a lot of jobs get done. Learn to use it, and build the people, money and communication skills it can’t replace.',
   },
   {
     art: '/User onbarding Assets/tey/tablet.webp',
@@ -207,8 +191,8 @@ export function StayRelevant() {
             Work is changing fast. <em>Keep your skills up with it.</em>
           </h2>
           <p className={s.lead}>
-            AI is changing which skills matter and how jobs get done. Teyro exists so you stay relevant: build the coding
-            and AI skills that keep you useful as your work changes, a few minutes a day, without starting over.
+            AI is changing which skills matter and how jobs get done. Teyro exists so you stay relevant: build the practical
+            skills that keep you useful as your work changes, a few minutes a day, without starting over.
           </p>
         </Reveal>
         <div className={s.pillars}>
@@ -314,7 +298,7 @@ function Split({
             {points.map((p) => (
               <li key={p}>
                 <span className={s.tick} aria-hidden="true">
-                  <Check size={16} strokeWidth={4} />
+                  <Glyph name="check" size={16} strokeWidth={4} />
                 </span>
                 {p}
               </li>
@@ -359,7 +343,7 @@ export function Certificates() {
             className={s.certImg}
           />
           <span className={s.certBadge}>
-            <ShieldCheck size={18} strokeWidth={2.6} aria-hidden="true" />
+            <Glyph name="shieldCheck" size={18} strokeWidth={2.6} />
             Verified by Teyro
           </span>
         </div>
@@ -381,8 +365,8 @@ export function Features() {
             Practise. <em>Don&apos;t just watch.</em>
           </>
         }
-        copy="Every lesson has you writing and fixing real code within minutes, with instant feedback on every answer."
-        points={['Real code questions, checked instantly', 'Hearts keep you careful, not scared', 'Every right answer earns XP']}
+        copy="Every lesson has you using the skill within minutes: fixing real code, drafting the email, making the money call. Every answer gets instant feedback."
+        points={['Real practice, checked instantly', 'Hearts keep you careful, not scared', 'Every right answer earns XP']}
         visual={<LessonVisual />}
       />
       <Split
@@ -470,19 +454,19 @@ export function Features() {
 
 const PERSONAS = [
   {
-    icon: <GraduationCap size={28} strokeWidth={2.5} />,
+    art: 'cap' as ArtName,
     title: 'Students',
-    line: 'Keep up with coding outside class, a few minutes a day, instead of cramming the night before.',
+    line: 'Pick up the skills school skips, like coding, money and speaking up, a few minutes a day.',
     outcome: 'A skill you practise daily, not once a term.',
   },
   {
-    icon: <Briefcase size={28} strokeWidth={2.5} />,
-    title: 'Career switchers',
-    line: 'Learn to code or work with AI around a full-time job, with a clear path that tells you what’s next.',
-    outcome: 'Steady progress toward a new role.',
+    art: 'briefcase' as ArtName,
+    title: 'People at work',
+    line: 'Lead a team, negotiate a raise, put AI to work or switch careers, around a full-time job.',
+    outcome: 'Steady progress toward your next role.',
   },
   {
-    icon: <Repeat size={28} strokeWidth={2.5} />,
+    art: 'target' as ArtName,
     title: 'Course restarters',
     line: 'Bought courses you never finished? Teyro is built to get you over the line this time.',
     outcome: 'Your first finished course.',
@@ -502,7 +486,9 @@ export function Audience() {
         <div className={s.audience}>
           {PERSONAS.map((p, i) => (
             <Reveal key={p.title} delay={i * 0.1} className={s.persona}>
-              <span className={s.personaIcon}>{p.icon}</span>
+              <span className={s.personaIcon}>
+                <Art name={p.art} size={40} />
+              </span>
               <h3 className={`${s.display} ${s.h3}`}>{p.title}</h3>
               <p>{p.line}</p>
               <span className={s.quote}>{p.outcome}</span>
@@ -566,7 +552,7 @@ const FAQ = [
   {
     question: 'What can I learn?',
     answer:
-      'Coding (web development, mobile apps, programming fundamentals and software development) and AI (using AI tools, building agents and automations). Creators add new courses all the time.',
+      'Coding, AI, data, personal finance, leadership, communication, negotiation, business and career skills. Teyro Originals cover each of these, and new courses arrive all the time.',
   },
   {
     question: 'Do I need any experience?',

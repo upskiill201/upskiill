@@ -4,32 +4,44 @@ import { ImageResponse } from 'next/og';
 
 /**
  * Social card for the homepage (and any route without its own opengraph-image)
- * — the Hero section (components/homepage/v2/Hero.tsx) recreated for the
- * share preview: same brand-blue field, same headline, same Tey mascot with
- * its streak/XP pills, rebuilt with satori-safe flex/inline styles instead
- * of Tailwind classes. Reuses the blog's committed Plus Jakarta Sans TTFs
- * (see next.config.ts's outputFileTracingIncludes) instead of shipping a
- * second font for one image.
+ * — the homepage hero recreated for the share preview: the same headline in
+ * the same Baloo 2 display face, the subjects Teyro teaches as chips, and the
+ * hero's phone with its streak, league and XP cards. satori can't render that
+ * component, so it's a snapshot (app/_og-assets/hero-visual.png, made by
+ * scripts/capture-og-hero.mjs; re-run it when the hero visual changes).
+ * Satori-safe flex/inline styles; colours are literal because satori can't
+ * read the CSS tokens.
+ *
+ * The Tey tile is the logo (never paired with a TEYRO wordmark). Fonts are the
+ * committed WOFF/TTF files the certificate renderer also uses (satori takes
+ * neither WOFF2 nor webp, so the art here is PNG).
  */
 export const runtime = 'nodejs';
-export const alt = 'Teyro — the fun way to finish learning coding and AI';
+export const alt =
+  'Teyro: the fun and effective way to learn skills. Coding, AI, money, leadership, communication and more.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-const FONT_DIR = path.join(process.cwd(), 'app', 'blog', '_fonts');
+const ROOT = process.cwd();
+const OG = path.join(ROOT, 'app', '_og-assets');
+const FONT_DIR = path.join(ROOT, 'app', 'blog', '_fonts');
+
+const png = (file: string) => `data:image/png;base64,${fs.readFileSync(file).toString('base64')}`;
+
 const fontBold = fs.readFileSync(path.join(FONT_DIR, 'PlusJakartaSans-Bold.ttf'));
 const fontExtra = fs.readFileSync(path.join(FONT_DIR, 'PlusJakartaSans-ExtraBold.ttf'));
+const fontDisplay = fs.readFileSync(path.join(OG, 'fonts', 'baloo-2-800.woff'));
 
-const PUBLIC_DIR = path.join(process.cwd(), 'public');
-// satori (the renderer behind ImageResponse) can't decode webp. The mascot
-// is only shipped as webp, so a PNG copy (app/_og-assets/tey-mascot.png,
-// generated once via sharp) is committed rather than converting per request.
-const mascotData = fs.readFileSync(path.join(process.cwd(), 'app', '_og-assets', 'tey-mascot.png'));
-const mascotSrc = `data:image/png;base64,${mascotData.toString('base64')}`;
-const burnIconData = fs.readFileSync(path.join(PUBLIC_DIR, 'Icons', 'burn.png'));
-const burnIconSrc = `data:image/png;base64,${burnIconData.toString('base64')}`;
-const gemIconData = fs.readFileSync(path.join(PUBLIC_DIR, 'Icons', 'gem.png'));
-const gemIconSrc = `data:image/png;base64,${gemIconData.toString('base64')}`;
+const tileSrc = png(path.join(ROOT, 'public', 'Tey Logo and icons', 'png-512.png'));
+// 1270 x 1392 at 2x; drawn at half that, so it stays sharp.
+const heroSrc = png(path.join(OG, 'hero-visual.png'));
+
+const BLUE = '#0172FD';
+const BLUE_DEEP = '#0058C4';
+const INK = '#1F2937';
+const GOLD = '#FFD43B';
+
+const SUBJECTS = ['Coding', 'AI', 'Money', 'Leadership', 'Communication', 'Business', 'Career'];
 
 export default function OgImage() {
   return new ImageResponse(
@@ -39,108 +51,106 @@ export default function OgImage() {
           width: '100%',
           height: '100%',
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 76px',
-          background: '#0172FD',
+          position: 'relative',
+          overflow: 'hidden',
+          background: BLUE,
           fontFamily: 'Jakarta',
         }}
       >
-        {/* Left: brand + headline, mirroring Hero's copy */}
-        <div style={{ display: 'flex', flexDirection: 'column', width: 620 }}>
-          <div style={{ display: 'flex', fontSize: 30, fontWeight: 800, color: '#FFFFFF', letterSpacing: 2 }}>
-            TEYRO
+        {/* Soft light behind the phone, and a darker floor so the chips sit on something. */}
+        <div
+          style={{
+            position: 'absolute',
+            right: -160,
+            top: -120,
+            width: 760,
+            height: 760,
+            borderRadius: 999,
+            background: 'radial-gradient(circle, rgba(255,255,255,0.28), rgba(255,255,255,0) 65%)',
+          }}
+        />
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 18, background: BLUE_DEEP }} />
+
+        {/* Left: logo, headline, subjects */}
+        <div style={{ display: 'flex', flexDirection: 'column', padding: '48px 0 0 72px', width: 640 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={tileSrc}
+              width={64}
+              height={64}
+              alt=""
+              style={{ borderRadius: 18, boxShadow: '0 6px 0 rgba(0, 40, 110, 0.35)' }}
+            />
+            <div style={{ display: 'flex', fontSize: 26, fontWeight: 800, color: 'rgba(255,255,255,0.92)' }}>
+              teyro.app
+            </div>
           </div>
 
-          <div style={{ display: 'flex', marginTop: 32, fontSize: 54, fontWeight: 800, color: '#FFFFFF', lineHeight: 1.14 }}>
-            The fun way to finish learning coding and AI
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              marginTop: 26,
+              fontFamily: 'Baloo',
+              fontSize: 74,
+              fontWeight: 800,
+              lineHeight: 1.0,
+              letterSpacing: -1,
+              color: '#FFFFFF',
+            }}
+          >
+            <div style={{ display: 'flex' }}>The fun and</div>
+            <div style={{ display: 'flex' }}>
+              <span style={{ color: GOLD, marginRight: 18 }}>effective</span>
+              <span>way</span>
+            </div>
+            <div style={{ display: 'flex' }}>to learn skills.</div>
           </div>
 
-          <div style={{ display: 'flex', marginTop: 28, fontSize: 24, fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>
-            Short daily lessons, streaks, leagues and friends that keep you coming back.
-          </div>
-
-          <div style={{ display: 'flex', marginTop: 40 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 30, width: 560 }}>
+            {SUBJECTS.map((subject) => (
+              <div
+                key={subject}
+                style={{
+                  display: 'flex',
+                  padding: '10px 20px',
+                  borderRadius: 999,
+                  background: '#FFFFFF',
+                  borderBottom: `5px solid ${BLUE_DEEP}`,
+                  fontSize: 24,
+                  fontWeight: 800,
+                  color: INK,
+                }}
+              >
+                {subject}
+              </div>
+            ))}
             <div
               style={{
                 display: 'flex',
-                alignItems: 'center',
-                padding: '18px 34px',
-                borderRadius: 14,
-                background: '#FFFFFF',
-                color: '#0172FD',
+                padding: '10px 20px',
+                borderRadius: 999,
+                border: '3px solid rgba(255,255,255,0.7)',
                 fontSize: 24,
                 fontWeight: 800,
-                letterSpacing: 1,
+                color: '#FFFFFF',
               }}
             >
-              START LEARNING
+              + more
             </div>
           </div>
         </div>
 
-        {/* Right: Tey mascot with the same streak/XP pills as the real Hero */}
-        <div style={{ display: 'flex', position: 'relative', width: 420, height: 420 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={mascotSrc}
-            width={420}
-            height={420}
-            style={{ objectFit: 'contain' }}
-          />
-
-          <div
-            style={{
-              position: 'absolute',
-              top: 24,
-              right: -20,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              padding: '14px 20px',
-              borderRadius: 20,
-              background: '#FFFFFF',
-              boxShadow: '0 12px 30px rgba(0,0,0,0.2)',
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={burnIconSrc} width={30} height={30} />
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', fontSize: 13, fontWeight: 800, color: '#9AA0AC', letterSpacing: 1 }}>
-                STREAK
-              </div>
-              <div style={{ display: 'flex', fontSize: 20, fontWeight: 800, color: '#1F2937', marginTop: 2 }}>
-                7 days
-              </div>
-            </div>
-          </div>
-
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 40,
-              left: -20,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              padding: '14px 20px',
-              borderRadius: 20,
-              background: '#FFFFFF',
-              boxShadow: '0 12px 30px rgba(0,0,0,0.2)',
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={gemIconSrc} width={30} height={30} />
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', fontSize: 13, fontWeight: 800, color: '#9AA0AC', letterSpacing: 1 }}>
-                EARNED
-              </div>
-              <div style={{ display: 'flex', fontSize: 20, fontWeight: 800, color: '#0172FD', marginTop: 2 }}>
-                +10 XP
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Right: the hero's phone, running off the bottom edge like a screenshot. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={heroSrc}
+          width={572}
+          height={627}
+          alt=""
+          style={{ position: 'absolute', right: 6, top: 28 }}
+        />
       </div>
     ),
     {
@@ -148,7 +158,8 @@ export default function OgImage() {
       fonts: [
         { name: 'Jakarta', data: fontBold, weight: 700, style: 'normal' },
         { name: 'Jakarta', data: fontExtra, weight: 800, style: 'normal' },
+        { name: 'Baloo', data: fontDisplay, weight: 800, style: 'normal' },
       ],
-    }
+    },
   );
 }

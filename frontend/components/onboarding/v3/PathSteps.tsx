@@ -1,78 +1,22 @@
 'use client';
 
 /**
- * Easing into the first lesson, Duolingo's way: choose where to start ("New
- * to Python?" or "Already know some?"), then Tey introduces what happens
- * next, then the lesson or the placement test.
+ * Easing into the first lesson, Duolingo's way: the experience answer picks
+ * where they start, then Tey introduces what happens next, then the lesson or
+ * the placement test.
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import { Art } from '@/components/art/Art';
 import type { CatalogCourse } from '@/lib/onboarding/v3/catalog';
-import type { LessonPath } from '@/lib/onboarding/v3/flow';
-import { Choice, ChoiceGroup, Hero, TeyHero, kitCss as css } from '@/components/kit/Kit';
+import { Hero, TeyHero, kitCss as css } from '@/components/kit/Kit';
 
 const TEY = (pose: string) => `/User onbarding Assets/tey/${pose}.webp`;
 
 /** About how long the taste takes: the first card plus a few questions. */
 export const TASTE_QUESTIONS = 3;
 export const TASTE_MINUTES = 3;
-
-export function PathStep(props: {
-  course: CatalogCourse;
-  topic: string;
-  experience?: string;
-  selected?: LessonPath;
-  /** Picked "Already know some" (also true when that leads to lesson 1). */
-  knowsSome?: boolean;
-  onPick: (path: LessonPath, knowsSome: boolean) => void;
-}) {
-  const knows = props.experience === 'some' || props.experience === 'lots';
-  return (
-    <ChoiceGroup label="Where do you want to start?">
-      <Choice
-        index={0}
-        className={css.pathCard}
-        selected={props.selected === 'start' && !props.knowsSome}
-        onSelect={() => props.onPick('start', false)}
-        badge={!knows ? 'Recommended for you' : undefined}
-        label={`New to ${props.topic}?`}
-        sub={`Start with the basics. Try lesson 1, about ${TASTE_MINUTES} minutes.`}
-        media={
-          <span className={css.pathTey}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={TEY('waving')} alt="" />
-          </span>
-        }
-      />
-      <Choice
-        index={1}
-        className={css.pathCard}
-        selected={!!props.selected && !!props.knowsSome}
-        onSelect={() => props.onPick(props.course.placement ? 'placement' : 'start', true)}
-        badge={knows && props.course.placement ? 'Recommended for you' : undefined}
-        label={`Already know some ${props.topic}?`}
-        sub={
-          props.course.placement
-            ? 'Take a short placement test and skip what you know.'
-            : props.course.isOriginal
-              ? 'Lesson 1 is a quick warm-up, then jump ahead chapter by chapter in the app.'
-              : 'Lesson 1 is a quick warm-up, then go at your own pace.'
-        }
-        media={
-          <span className={css.pathTey}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={TEY('thinking')} alt="" />
-            <span className={css.pathHat}>
-              <Art name="mortarboard" size={52} />
-            </span>
-          </span>
-        }
-      />
-    </ChoiceGroup>
-  );
-}
 
 /** "Your first lesson!": Tey, the lesson card, what to expect. */
 export function LessonIntroStep(props: { course: CatalogCourse; name?: string }) {

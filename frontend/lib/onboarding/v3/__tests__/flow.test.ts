@@ -7,9 +7,10 @@ describe('onboarding v3 flow', () => {
     expect(ids.slice(0, 5)).toEqual(['splash', 'welcome', 'intro', 'learn', 'name']);
   });
 
-  it('asks "new or know some?" before the lesson, then branches', () => {
-    expect(nextOf('path', 'start')).toBe('lesson-intro');
-    expect(nextOf('path', 'placement')).toBe('placement-intro');
+  it('lets the experience answer pick the path: no separate "new or know some?" screen', () => {
+    expect(flowFor('start').some((s) => (s.id as string) === 'path')).toBe(false);
+    expect(nextOf('commit', 'start')).toBe('lesson-intro');
+    expect(nextOf('commit', 'placement')).toBe('placement-intro');
     expect(nextOf('taste-done', 'start')).toBe('chest');
     expect(nextOf('placement', 'placement')).toBe('chest');
     expect(prevOf('chest', 'placement')).toBe('placement');

@@ -76,6 +76,10 @@ function exerciseCount(contentBlocks: unknown): number {
 export class OnboardingFlowService {
   private readonly logger = new Logger(OnboardingFlowService.name);
   private catalogCache: { at: number; courses: CatalogCourse[] } | null = null;
+  private readonly firstLessonCache = new Map<
+    string,
+    { at: number; lesson: NonNullable<Awaited<ReturnType<OnboardingFlowService['loadFirstLesson']>>> }
+  >();
 
   constructor(
     private readonly prisma: PrismaService,
@@ -170,8 +174,19 @@ export class OnboardingFlowService {
   async firstLesson(courseId: string) {
     const course = (await this.catalog()).find((c) => c.id === courseId || c.slug === courseId);
     if (!course) throw new NotFoundException('Course not available for onboarding');
-    const lesson = await this.prisma.lesson.findFirst({
-      where: { id: course.firstLesson.id, status: 'published' },
+    // Every new learner opens one of the same few lessons: keep each one as
+    // long as the catalog, so the taste opens without a database round trip.
+    const hit = this.firstLessonCache.get(course.firstLesson.id);
+    if (hit && Date.now() - hit.at < CATALOG_TTL_MS) return { course, lesson: hit.lesson };
+    const lesson = await this.loadFirstLesson(course.firstLesson.id);
+    if (!lesson) throw new NotFoundException('Lesson not found');
+    this.firstLessonCache.set(lesson.id, { at: Date.now(), lesson });
+    return { course, lesson };
+  }
+
+  private loadFirstLesson(id: string) {
+    return this.prisma.lesson.findFirst({
+      where: { id, status: 'published' },
       select: {
         id: true,
         title: true,
@@ -183,8 +198,6 @@ export class OnboardingFlowService {
         milestone: true,
       },
     });
-    if (!lesson) throw new NotFoundException('Lesson not found');
-    return { course, lesson };
   }
 
   /**
