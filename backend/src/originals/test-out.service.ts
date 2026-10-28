@@ -134,9 +134,22 @@ export function allocate(units: number, total: number): number[] {
   return out;
 }
 
+const PLACEMENT_SOURCE_TTL_MS = 10 * 60 * 1000;
+
 @Injectable()
 export class TestOutService {
   constructor(private readonly prisma: PrismaService) {}
+
+  /**
+   * A placement test reads every lesson's blocks in the course (seconds on a
+   * 200-lesson course), and onboarding asks for the same few courses all day,
+   * so the loaded course is kept for a few minutes. Questions are still
+   * shuffled per request. Jump tests and submits always read fresh.
+   */
+  private readonly placementSource = new Map<
+    string,
+    { at: number; data: Awaited<ReturnType<TestOutService['loadCourse']>> }
+  >();
 
   private async loadCourse(idOrSlug: string) {
     const course = await this.prisma.course.findFirst({
@@ -235,7 +248,12 @@ export class TestOutService {
     idOrSlug: string,
     rand: () => number = Math.random,
   ): Promise<PlacementTest> {
-    const { course, units } = await this.loadCourse(idOrSlug);
+    let cached = this.placementSource.get(idOrSlug);
+    if (!cached || Date.now() - cached.at > PLACEMENT_SOURCE_TTL_MS) {
+      cached = { at: Date.now(), data: await this.loadCourse(idOrSlug) };
+      this.placementSource.set(idOrSlug, cached);
+    }
+    const { course, units } = cached.data;
     if (!hasPlacementTest(course.track?.slug)) {
       throw new BadRequestException('This course has no placement test.');
     }

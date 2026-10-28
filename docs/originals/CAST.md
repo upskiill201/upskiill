@@ -77,6 +77,37 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 - **Arjun's Big Contract (How to Handle Difficult Negotiations):** Arjun, Kavya and Joel quote £48,000 for Harlow & Finch's loyalty app; procurement counters £28,000. Arjun's BATNA is a Kinwell extension (Priya). Signed at £42,000 with launch support. Grace is his sounding board.
 - **Grace Keeps the Peace (How to Manage Conflict at Work):** Kinwell's GP booking app launches 21 November. Femi snaps at Grace over step 3 research; "Fine." starts a cold war; Callum (new PM) calls her report "just opinions"; Priya overloads her; Jayden takes the car. Grace's "ward rules for the office" grow to v5.
 - **Personal Finance track (added 2026-10-22):** seven short money courses. **The Kofi trilogy** (Budgeting for Beginners, How to Save Money on a Low Income, How to Stop Impulse Buying): Kofi is now in his first year at KNUST, Kumasi, on GH₵1,500 a month from his mum; Yaw is his roommate, Efua (now also at KNUST) his steady friend, Miracle sends voice notes from Lagos. He finds his money gone by day 12, saves GH₵2,850 for a laptop paid in cash, and beats the 2 a.m. cart. **Ada's Raise** (Needs vs. Wants): after Negotiation Skills, Ada saves less on ₦480,000 than before the raise, then funds ₦900,000 for Lucía's Mexico City conference. **Miracle's Long Game** (Money Habits That Build Long-Term Wealth): her dad, a Maths teacher in Buea, retires at 60 with little saved; Folake turns out to be a quiet long-term saver; Miracle turns down a ₦1.5m bank offer, stays at Afiya on ₦1,250,000, and builds a 40-year map. **Arjun's Windfall** (How to Understand Investment Risk): the Harlow & Finch money leaves Arjun ₹12 lakh; cousin Vikram (options), his uncle (a disputed plot near Mysuru), a "3% a month" WhatsApp scheme and Kavya's crypto; Appa's knee operation; Joel's aunt loses ₹3 lakh to the scheme. **Grace and the Scam Files** (How Scams and Financial Fraud Work): a "Hi Mum" text, Femi's crypto "mentor", a spoofed bank call, a hacked supplier email at Kinwell, Jayden's money-mule DM, Femi's aunt Bimpe's fake credit alert in Lagos; Grace's scam file becomes Kinwell's handout. Family safe word agreed with Jayden and Nan.
+- **Lucía's Impossible Month (AI Tools for Everyday Productivity, added 2026-10-22):** Lucía has thirty days to throw her parents' 35th anniversary party in Oaxaca (Day 30), move flat (Señor Ibarra is selling; she signs a two-year lease on Flat 5, on a quiet side street, and moves on Day 27), and open a São Paulo distributor call in Portuguese (Day 29), on top of her job at Nopal. Ada, whom Lucía mentored in Negotiation Skills, returns the favour by voice note as her AI coach. Marta is the sceptic, Tomás trusts AI blindly, Sofía checks sources, Carmen sets the São Paulo deadline. Her parents are Rosa and Ernesto Hernández; her brother Mateo sends memes and is reliable only with specific tasks. The venue (Casa Lupe) is double-booked, so the party moves to Doña Lupe's cousin's hacienda; La Cocina de Inés caters. Her prompt cards (8 by Day 30) are the running device.
+
+## The Starlight (added 2026-10-23)
+
+They lead **SQL and Databases for Beginners** ("Save the Starlight", docs/originals/sql-databases-outline.md): Chicago, USA, US dollars. Juno, Walt, Leo and Dana are castIds `juno`, `walt`, `leo`, `dana`.
+
+| Name | Age | Home | Life stage | Personality |
+|---|---|---|---|---|
+| **Juno Park** | 27 | Chicago, USA (grew up in Albany Park) | Projectionist at the Starlight Picture House for four years; has never written SQL | Film-obsessed night owl who labels everything and quotes movies when nervous. Impatient with mess, brilliant once she can see the shape of a problem. |
+| **Walt Abernathy** | 74 | Chicago, USA | Owner of the Starlight, which his grandfather opened in November 1926 | Stubborn, generous, hands out free "comp" tickets to friends. Keeps every booking on an index card in a shoebox; remembers every regular's name and none of their seats. |
+| **Leo Marchetti** | 19 | Chicago, USA | Usher and film student; paints the Starlight's posters | Bets on everything, sceptical of "Juno's spreadsheet thing", then its loudest fan. Makes big mistakes fast and owns them. |
+| **Dana Whitlock** | 40s | Chicago, USA | Development agent for Crane Holdings, which wants the site for condos | Polite, sharp, always has the numbers. Offers Walt $2.4 million. Right that the Starlight can't prove it's a business, until it can. |
+
+**Fixed relationships:**
+- **Juno and Arjun:** met years ago on a classic-film restoration forum; his favourite single-screen cinema in Bengaluru closed in 2019. He mentors her on video calls (10:30 p.m. in Chicago, 9 a.m. in Bengaluru) while she builds the Starlight's database.
+- **Juno, Walt and Leo** work together at the Starlight. Ms Delgado (Lakeview Community Bank, narrated) will lend $40,000 for the roof if the records are clean. Rosa Marin and Jack Murphy (narrated regulars) both hold seat G7 on Fri 2 Oct.
+
+## The Esplanade Brass (added 2026-10-24)
+
+They lead **Vibe Coding: Build Apps with AI** ("Second Line", docs/originals/vibe-coding-outline.md): New Orleans, USA, US dollars. Hazel, Benny and Ruth are castIds `hazel`, `benny`, `ruth`.
+
+| Name | Age | Home | Life stage | Personality |
+|---|---|---|---|---|
+| **Hazel Broussard** | 29 | New Orleans, USA (grew up in Gentilly) | Band director and music teacher at Esplanade High School; plays trumpet; teaches private lessons on weekends. Has never written code. | Big-hearted, fast-talking, says "y'all", wants everything done yesterday. Asks for too much at once, then learns to ask for one thing well. Brave about trying; honest about what she doesn't know. |
+| **Benny Castillo** | 16 | New Orleans, USA | Trumpet, band captain, junior at Esplanade High | Fearless, funny, always on his phone, "just ship it". Finds every bug by accident. Learns that "it works on my phone" isn't a test. |
+| **Ruth Kessler** | 66 | New Orleans, USA (Mid-City) | Booster club treasurer; retired software engineer (32 years, mostly bank systems); her grandson Marcus plays sousaphone | Dry, precise, kind under the frown. "Show me." Distrusts AI at first, then distrusts it only when it's unchecked. The reviewer who signs off launch. |
+
+**Fixed relationships:**
+- **Hazel and Benny:** his band director for three years; he calls her "Miss B".
+- **Hazel and Ruth:** Ruth runs the booster club's money; she reviews every change to the band's app before it goes live.
+- Narrated: Principal Dupree (Esplanade High), Mr Lionel (Crescent Coach Lines, the bus), Marcus (Ruth's grandson), band parents. Target: $18,000 for the National Brass Showcase in Washington, D.C.
 
 ## Cameroon (added 2026-10-14, founder)
 
@@ -139,6 +170,10 @@ These appear in one Original only and don't join the shared cast.
 | Nan | How Scams and Financial Fraud Work | Grace's mum, 72, in Salford. Targeted by "Hi Nan" and courier fraud; her "ring first" note becomes the family's favourite safety tool. Narrated. |
 | Bimpe | How Scams and Financial Fraud Work | Femi's aunt in Lagos; loses ₦85,000 to a fake credit alert and "please reverse it" call, then warns her church. Narrated. |
 | Tyler, Ella, Tobi | How Scams and Financial Fraud Work | Jayden's friends (Tyler muled twice, account frozen; Ella lost £400 to a task scam) and Femi's brother Tobi (19, "finance assistant" mule offer). Narrated. |
+| Rosa and Ernesto Hernández | AI Tools for Everyday Productivity | Lucía's parents in Oaxaca, married 35 years. Papá sings badly and cries at speeches; Mamá keeps every note he ever left on the fridge. Narrated. |
+| Mateo | AI Tools for Everyday Productivity | Lucía's younger brother. Answers everything with a meme; excellent when a task is specific ("mariachi at 7 p.m."). Narrated. |
+| Abuela, Tía Carmela | AI Tools for Everyday Productivity | Lucía's grandmother (89, leaves parties at 9) and great-aunt (84). Narrated. |
+| Doña Lupe | AI Tools for Everyday Productivity | Runs Casa Lupe, a party venue in Oaxaca; her nephew double-books it. Narrated. |
 
 ## Decisions
 
