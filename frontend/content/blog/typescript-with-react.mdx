@@ -1,0 +1,76 @@
+---
+title: "TypeScript With React: Props, State, Events and Hooks"
+description: "Learn how to type React components in TypeScript: props, useState, event handlers, children and custom hooks, with a ready-to-use pattern."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [typescript with react, react typescript, typescript props, usestate typescript, react event types]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "TypeScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript for Beginners course"
+faq:
+  - question: "How do I type props in React with TypeScript?"
+    answer: "Define an interface or type for props and use it on the component's parameter."
+  - question: "How do I type useState?"
+    answer: "Let it infer from the initial value, or pass a type such as useState of string or null."
+  - question: "How do I type event handlers?"
+    answer: "Use React event types such as React.ChangeEvent of HTMLInputElement."
+---
+
+TypeScript makes React components self-documenting.
+
+## Direct answer
+
+Type your props with an interface or type, let `useState` infer from its initial value (or pass a generic when it starts as `null`) and use React's event types for handlers. The editor then autocompletes and warns about mistakes.
+
+## Props
+
+```tsx
+interface ButtonProps {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+}
+
+function Button({ label, onClick, disabled = false }: ButtonProps) {
+  return <button onClick={onClick} disabled={disabled}>{label}</button>;
+}
+```
+
+## State and events
+
+```tsx
+const [count, setCount] = useState(0);
+const [user, setUser] = useState<User | null>(null);
+
+function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  setValue(e.target.value);
+}
+```
+
+## Children
+
+```tsx
+interface CardProps {
+  children: React.ReactNode;
+}
+```
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 20 lessons, and you can start free.
+
+## The bottom line
+
+Type the boundaries (props), infer the rest.
+
+## More guides
+
+- [TypeScript Type Assertions](/blog/typescript-type-assertion)
+- [Optional Chaining and Nullish Coalescing in TypeScript](/blog/typescript-optional-chaining)
+- [TypeScript Functions](/blog/typescript-functions-guide)
+- [Typescript tutorial for beginners](/blog/typescript-tutorial-for-beginners)
+- [TypeScript for Beginners course](/courses/typescript-for-beginners)

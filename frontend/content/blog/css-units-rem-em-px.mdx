@@ -1,0 +1,63 @@
+---
+title: "CSS Units: px, em, rem, %, vw and vh Explained"
+description: "Compare CSS units: px, em, rem, percent, vw, vh and ch. Learn which to use for font sizes, spacing and layout, and why rem is a good default."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [css units rem em px, rem vs em, css px vs rem, viewport units, responsive units]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "HTML & CSS for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/html-and-css-for-beginners
+  label: "See the HTML & CSS for Beginners course"
+faq:
+  - question: "What is the difference between px and rem?"
+    answer: "px is a fixed pixel size. rem is relative to the root font size, so it scales when users change their browser settings."
+  - question: "What is em?"
+    answer: "A unit relative to the font size of the current element."
+  - question: "Which unit should I use for font size?"
+    answer: "rem is a good default for accessibility and consistency."
+---
+
+Choosing units affects accessibility and layout flexibility.
+
+## Direct answer
+
+Use `rem` for font sizes and spacing, `%` or `fr` for flexible widths, `vw` and `vh` for viewport-based sizes and `px` for fine details like borders. `rem` respects the user's browser font setting, which helps accessibility.
+
+## Comparison
+
+| Unit | Relative to | Good for |
+| :--- | :--- | :--- |
+| `px` | fixed | borders, shadows |
+| `em` | current font size | component spacing |
+| `rem` | root font size | fonts, spacing |
+| `%` | parent | widths |
+| `vw` / `vh` | viewport | hero sections |
+| `ch` | width of "0" | text width |
+
+## Example
+
+```css
+html { font-size: 100%; }  /* usually 16px */
+body { font-size: 1rem; }
+h1 { font-size: 2rem; }
+.card { padding: 1.5rem; max-width: 60ch; }
+```
+
+## Where Teyro fits
+
+Teyro's [HTML & CSS for Beginners](/courses/html-and-css-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Default to `rem`. Use `px` sparingly.
+
+## More guides
+
+- [CSS Pseudo-Classes](/blog/css-pseudo-classes)
+- [CSS Transitions](/blog/css-transitions-guide)
+- [CSS Reset vs Normalize](/blog/css-reset-explained)
+- [Rem vs em](/blog/rem-vs-em)
+- [HTML & CSS for Beginners course](/courses/html-and-css-for-beginners)

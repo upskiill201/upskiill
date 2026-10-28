@@ -1,0 +1,382 @@
+=== intrinsic-vs-extrinsic-motivation
+title: Intrinsic vs Extrinsic Motivation: Differences and Examples
+desc: Intrinsic motivation comes from within and extrinsic from rewards. Learn the difference, work examples and how leaders can support both.
+tags: intrinsic vs extrinsic motivation, intrinsic motivation, extrinsic motivation, motivation at work, employee motivation theory
+rel: how-to-motivate-employees, team-motivation-ideas
+q: What is intrinsic motivation? | Doing something because it is interesting, meaningful or satisfying in itself.
+q: What is extrinsic motivation? | Doing something for an external reward or to avoid a penalty, such as pay, bonuses or praise.
+q: Do rewards reduce motivation? | They can in some cases, when they turn an enjoyable task into something done only for the reward. Fair pay still matters.
+---
+People work for more than pay, but pay still matters.
+
+## Direct answer
+
+Intrinsic motivation comes from the work itself: interest, purpose and mastery. Extrinsic motivation comes from outside rewards such as pay, bonuses, recognition or avoiding penalties. Good managers pay fairly, then build intrinsic motivation through autonomy, growth and meaningful work.
+
+## Comparison
+
+| | Intrinsic | Extrinsic |
+| :--- | :--- | :--- |
+| Source | inside the person | outside rewards |
+| Examples | curiosity, purpose, mastery | salary, bonus, praise |
+| Lasts | often longer | fades when reward stops |
+
+## How leaders can support both
+
+1. **Pay and conditions fairly.** Unfair pay damages motivation.
+2. **Give autonomy** over how work is done.
+3. **Build mastery** with learning and feedback.
+4. **Connect work to purpose:** who benefits?
+5. **Use recognition** that is specific and sincere.
+
+## A caution on rewards
+
+Heavy reliance on rewards can turn interesting work into a transaction. Use them to recognise, not to control.
+
+## The bottom line
+
+Fair rewards remove frustration. Meaning creates drive.
+
+=== maslow-hierarchy-at-work
+title: Maslow's Hierarchy of Needs at Work: What Leaders Can Learn
+desc: Maslow's hierarchy describes needs from safety to purpose. See how it applies to the workplace, its limits and practical ways to use it to support your team.
+tags: maslow hierarchy, maslow hierarchy at work, hierarchy of needs, motivation theory, employee needs
+rel: intrinsic-vs-extrinsic-motivation
+q: What is Maslow's hierarchy of needs? | A theory that people have levels of needs, from basic physical needs through safety, belonging and esteem to self-actualisation.
+q: Is it scientifically proven? | It is influential but has been criticised, since needs do not always follow a strict order. Use it as a guide, not a law.
+q: How can a manager use it? | Check basics such as fair pay and safety, then build belonging, recognition and growth.
+---
+A useful checklist, if not a strict ladder.
+
+## Direct answer
+
+Maslow's hierarchy suggests people have layers of needs: physiological, safety, belonging, esteem and self-actualisation. At work this maps to fair pay and conditions, job security, team connection, recognition and growth. Use it as a checklist for what your team may be missing, not as a rigid rule.
+
+## At work
+
+| Level | Workplace example |
+| :--- | :--- |
+| Physiological | fair pay, rest, safe conditions |
+| Safety | job security, clear expectations |
+| Belonging | team connection, inclusion |
+| Esteem | recognition, respect, status |
+| Self-actualisation | growth, purpose, challenge |
+
+## How to use it
+
+1. Check the basics first.
+2. Ask what is missing for each person.
+3. Do not assume everyone is motivated by the same level.
+
+## Limits
+
+Research has not confirmed a strict order. People can seek growth while still worried about security.
+
+## The bottom line
+
+A way to ask "what does my team need?" before asking "how do I motivate them?"
+
+=== herzberg-two-factor-theory
+title: Herzberg's Two-Factor Theory: Hygiene Factors vs Motivators
+desc: Herzberg's theory separates factors that prevent dissatisfaction from those that create motivation. See examples and how to apply it as a manager.
+tags: herzberg two factor, two factor theory, hygiene factors motivators, herzberg motivation theory, job satisfaction
+rel: maslow-hierarchy-at-work, intrinsic-vs-extrinsic-motivation
+q: What is Herzberg's two-factor theory? | A theory that job satisfaction and dissatisfaction come from different factors: hygiene factors and motivators.
+q: What are hygiene factors? | Things like pay, conditions, policies and job security, which cause dissatisfaction when poor but do not motivate much when good.
+q: What are motivators? | Achievement, recognition, responsibility, growth and the work itself.
+---
+Removing what annoys people is not the same as inspiring them.
+
+## Direct answer
+
+Herzberg proposed that hygiene factors, such as pay, conditions and company policies, prevent dissatisfaction, while motivators, such as achievement, recognition, responsibility and growth, create satisfaction. Managers should fix hygiene problems first and then provide motivators.
+
+## Examples
+
+| Hygiene factors | Motivators |
+| :--- | :--- |
+| Pay and benefits | achievement |
+| Working conditions | recognition |
+| Company policies | responsibility |
+| Job security | growth and advancement |
+| Supervision | the work itself |
+
+## How to apply
+
+1. **Audit hygiene:** is pay fair? Are tools adequate? Are policies reasonable?
+2. **Add motivators:** stretch assignments, learning, ownership.
+3. **Do not expect perks to replace meaningful work.**
+
+## Caution
+
+The theory is influential but debated. Use it as one lens.
+
+## The bottom line
+
+Fix the irritants, then build the inspiration.
+
+=== psychological-safety-at-work
+title: Psychological Safety at Work: What It Is and How to Build It
+desc: Psychological safety means people feel safe to speak up and make mistakes. Learn why it matters and practical steps leaders can take to build it.
+tags: psychological safety, psychological safety at work, psychological safety team, speak up culture, high performing teams
+rel: how-to-motivate-employees, feedback-culture
+q: What is psychological safety? | A shared belief that the team is safe for taking interpersonal risks, such as asking questions, admitting mistakes or disagreeing.
+q: Why does it matter? | Teams with it tend to learn faster, raise problems earlier and collaborate better.
+q: How can a leader build it? | Model curiosity and humility, respond well to bad news, invite input and thank people for speaking up.
+---
+People cannot do their best work if they are afraid to say what they think.
+
+## Direct answer
+
+Psychological safety is the belief that you can speak up, ask questions, admit mistakes and disagree without being punished or embarrassed. Leaders build it by modelling openness, responding calmly to problems, inviting views and thanking people for raising concerns.
+
+## What it looks like
+
+- People ask "silly" questions.
+- Mistakes are discussed and learned from.
+- Different opinions are welcomed.
+- Bad news travels fast.
+
+## How to build it
+
+1. **Go first:** admit your own mistakes.
+2. **Ask for input:** "What am I missing?"
+3. **Respond with thanks** when someone raises a problem.
+4. **Separate blame from learning:** focus on what happened and how to prevent it.
+5. **Protect dissenters** from being punished.
+
+## What it is not
+
+It is not being nice all the time or lowering standards. It is high standards combined with safety to speak.
+
+## The bottom line
+
+Safety to speak up is the foundation of learning teams.
+
+=== feedback-culture
+title: How to Build a Feedback Culture on Your Team
+desc: A feedback culture makes giving and receiving feedback normal. Learn the habits, simple frameworks and meeting rhythms that help teams improve continuously.
+tags: feedback culture, how to build a feedback culture, giving feedback at work, team feedback habits, continuous feedback
+rel: how-to-motivate-employees, psychological-safety-at-work
+q: What is a feedback culture? | A team environment where giving and receiving feedback is regular, specific and seen as helpful rather than threatening.
+q: How do I start one? | Model asking for feedback, give specific feedback often and make it two-way.
+q: How often should feedback be given? | Regularly and soon after the event, not only in annual reviews.
+---
+Feedback should be a habit, not an event.
+
+## Direct answer
+
+To build a feedback culture, make feedback frequent, specific and two-way. Ask for feedback yourself, give small pieces often rather than saving it for reviews, focus on behaviour and impact and follow up. Safety and trust must come first.
+
+## Habits
+
+1. **Ask first:** "What is one thing I could do better?"
+2. **Be specific:** describe the behaviour and its impact.
+3. **Be timely:** give feedback soon after.
+4. **Balance:** recognise strengths, not just problems.
+5. **Follow up:** check progress.
+
+## A simple structure
+
+"When you did X, the effect was Y. Next time, could you try Z?"
+
+## Team rhythms
+
+- Short check-ins in one-to-ones.
+- Retrospectives after projects.
+- Peer feedback on key work.
+
+## The bottom line
+
+Feedback grows where trust exists. Start with yours.
+
+=== autonomy-mastery-purpose
+title: Autonomy, Mastery and Purpose: Drive Theory for Team Leaders
+desc: Daniel Pink's autonomy, mastery and purpose framework explains modern motivation. Learn what each means and practical ways to give your team more of each.
+tags: autonomy mastery purpose, daniel pink drive, intrinsic motivation framework, motivate knowledge workers, team autonomy
+rel: intrinsic-vs-extrinsic-motivation
+q: What are autonomy, mastery and purpose? | Three drivers of intrinsic motivation: control over how you work, the chance to improve at something that matters and a sense of working for something bigger than yourself.
+q: Who proposed this? | Daniel Pink popularised it in his book Drive.
+q: How can I increase autonomy? | Define goals and let people choose how to reach them.
+---
+Three things that make work meaningful.
+
+## Direct answer
+
+Autonomy is having control over how you work. Mastery is the satisfaction of getting better at something. Purpose is understanding why the work matters. Leaders can support all three by setting clear goals while letting people choose methods, investing in learning and connecting tasks to outcomes.
+
+## Ideas by driver
+
+| Driver | Ways to support it |
+| :--- | :--- |
+| Autonomy | let people choose methods and schedules where possible |
+| Mastery | feedback, training, stretch projects |
+| Purpose | share customer stories and impact |
+
+## Practical steps
+
+1. **Set outcomes, not instructions.**
+2. **Offer learning time.**
+3. **Share why** each project matters.
+4. **Ask people** what they want to grow into.
+
+## The bottom line
+
+Give people clear goals, room to work and a reason to care.
+
+=== goal-setting-with-okrs
+title: Goal Setting With OKRs: Objectives and Key Results Explained
+desc: OKRs link ambitious objectives to measurable key results. Learn the format, an example, common mistakes and how to run them with a small team.
+tags: goal setting okrs, okrs, what are okrs, okr examples, objectives and key results
+rel: how-to-set-clear-expectations-at-work
+q: What are OKRs? | Objectives and Key Results: a goal-setting method with an inspiring objective and measurable key results that show progress.
+q: How many OKRs should a team have? | A few. Many teams use one to three objectives with up to five key results each.
+q: What is the difference between OKRs and KPIs? | KPIs track ongoing health. OKRs target specific change over a period.
+---
+Aim high, measure what matters.
+
+## Direct answer
+
+OKRs pair an objective, a clear and inspiring goal, with key results, measurable outcomes that show whether you reached it. Set a few per quarter, review progress regularly and focus on outcomes rather than tasks.
+
+## Example
+
+**Objective:** Make onboarding delightful for new customers.
+
+**Key results:**
+1. Raise first-week activation from 40 percent to 60 percent.
+2. Cut average setup time from 20 minutes to 10.
+3. Reach a satisfaction score of 4.5 out of 5 from new users.
+
+## Common mistakes
+
+- Too many OKRs.
+- Key results that are tasks, not outcomes.
+- Setting and forgetting.
+- Using them for performance punishment.
+
+## How to run them
+
+1. Set at the start of the period.
+2. Check progress weekly or fortnightly.
+3. Score honestly at the end.
+4. Learn and reset.
+
+## The bottom line
+
+Fewer, clearer goals with numbers beat long lists.
+
+=== remote-team-motivation
+title: How to Motivate a Remote Team: 10 Practical Ideas
+desc: Motivating remote teams needs clarity, connection and recognition. Ten practical ideas for communication, one-to-ones, recognition and avoiding burnout.
+tags: remote team motivation, motivate remote employees, remote team engagement, managing remote teams, virtual team building
+rel: team-motivation-ideas, how-to-motivate-employees
+q: How do I motivate a remote team? | Be clear about goals, check in regularly, recognise work, build connection and respect boundaries.
+q: What is the biggest remote challenge? | Isolation and unclear communication.
+q: Are virtual team games useful? | Sometimes, but meaningful work and regular human contact matter more.
+---
+Remote work removes the hallway chat. Replace it on purpose.
+
+## Direct answer
+
+To motivate a remote team, set clear goals, hold regular one-to-ones, recognise good work publicly, create space for informal connection, respect working hours and give people autonomy. Over-communicate expectations and avoid measuring activity instead of outcomes.
+
+## 10 ideas
+
+1. **Clear outcomes** for each person.
+2. **Weekly one-to-ones.**
+3. **Written updates** so nobody is left out.
+4. **Public recognition** of specific wins.
+5. **Optional social time.**
+6. **Respect time zones** and rest.
+7. **Invest in tools** that work.
+8. **Share the bigger picture.**
+9. **Meet in person** if budget and circumstances allow.
+10. **Watch for burnout:** long hours and silence.
+
+## What to avoid
+
+- Constant surveillance.
+- Meetings for the sake of presence.
+- Unclear priorities.
+
+## The bottom line
+
+Trust, clarity and connection travel well.
+
+=== servant-leadership-explained
+title: Servant Leadership: What It Is, Principles and Examples
+desc: Servant leadership puts the needs of the team first so they can do their best work. Learn the principles, examples, benefits and limits.
+tags: servant leadership, servant leadership explained, servant leader examples, servant leadership principles, leadership styles
+rel: leadership-styles-for-beginners, how-to-motivate-employees
+q: What is servant leadership? | A leadership philosophy where the leader's main role is to serve their team by removing obstacles and supporting growth.
+q: Does servant leadership mean being weak? | No. It combines high standards with care and accountability.
+q: What are examples? | Asking what blockers people have, coaching, sharing credit and putting the team's needs ahead of personal status.
+---
+The leader works for the team, not the other way round.
+
+## Direct answer
+
+Servant leadership means leading by serving: listening, removing obstacles, developing people and sharing credit. The leader's success is measured by how well the team does. It still involves clear goals and accountability.
+
+## Principles
+
+- Listen first.
+- Show empathy.
+- Build people's skills.
+- Share power and credit.
+- Remove obstacles.
+- Be accountable and clear.
+
+## Example behaviours
+
+1. Ask "What is getting in your way?"
+2. Take time to coach.
+3. Speak up for the team to higher management.
+4. Give credit publicly, take responsibility privately.
+
+## Limits
+
+In a crisis, quick decisions may be needed. Balance serving with clear direction.
+
+## The bottom line
+
+Serve the team so the team can serve the customer.
+
+=== praise-in-public-criticise-in-private
+title: Praise in Public, Criticise in Private: Does the Rule Still Work?
+desc: The classic management rule has nuance. Learn when public praise helps, when it backfires, how to give critical feedback privately and what to do instead.
+tags: praise in public, criticise in private, public recognition at work, giving feedback privately, recognition best practices
+rel: feedback-culture, how-to-motivate-employees
+q: Should praise always be public? | Not always. Some people dislike public attention, so ask what they prefer.
+q: Why give criticism privately? | It protects dignity and makes people more open to listening.
+q: Is there an exception? | Safety or serious issues may need immediate correction, but keep it respectful.
+---
+A good rule of thumb with some exceptions.
+
+## Direct answer
+
+Public praise can motivate and show others what good looks like, but check what each person prefers. Critical feedback is usually better given privately, so people can listen without embarrassment. Be specific in both cases and follow up.
+
+## When public praise works
+
+- It is specific and sincere.
+- The person is comfortable with it.
+- It is fair, not always the same people.
+
+## When it backfires
+
+- Praise feels unfair to others.
+- The person dislikes attention.
+- It is vague or insincere.
+
+## Giving private feedback
+
+1. Pick a calm moment and place.
+2. Describe behaviour and impact.
+3. Ask for their view.
+4. Agree next steps.
+
+## The bottom line
+
+Praise with care, correct with respect.

@@ -1,0 +1,89 @@
+---
+title: "Header Files in C: What They Are and How to Write Them"
+description: "Header files declare functions and types so many source files can share them. Learn #include, include guards, declaring vs defining and a simple project layout."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [header files, c header files, include guards, c project structure, declaration vs definition]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "C for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/c-for-beginners
+  label: "See the C for Beginners course"
+faq:
+  - question: "What is a header file in C?"
+    answer: "A file, usually ending in .h, that contains declarations of functions, types and constants shared between source files."
+  - question: "What are include guards?"
+    answer: "Preprocessor lines that stop a header being included more than once in a file."
+  - question: "What is the difference between declaration and definition?"
+    answer: "A declaration tells the compiler something exists. A definition provides the actual code or storage."
+---
+
+As programs grow, you split them into files. Header files hold the shared promises.
+
+## Direct answer
+
+A header file (`.h`) declares functions, structs and constants so that several `.c` files can use them. The source file (`.c`) contains the definitions. Add include guards to avoid duplicate definitions.
+
+## Example
+
+`math_utils.h`
+
+```c
+#ifndef MATH_UTILS_H
+#define MATH_UTILS_H
+
+int add(int a, int b);
+
+#endif
+```
+
+`math_utils.c`
+
+```c
+#include "math_utils.h"
+
+int add(int a, int b) {
+    return a + b;
+}
+```
+
+`main.c`
+
+```c
+#include <stdio.h>
+#include "math_utils.h"
+
+int main(void) {
+    printf("%d\n", add(2, 3));
+    return 0;
+}
+```
+
+Compile:
+
+```bash
+gcc main.c math_utils.c -o app
+```
+
+## Tips
+
+- Use `<angle brackets>` for system headers and `"quotes"` for your own.
+- Do not define variables in headers.
+
+## Where Teyro fits
+
+Teyro's [C for Beginners](/courses/c-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 78 lessons, and you can start free.
+
+## The bottom line
+
+Headers declare, source files define.
+
+## More guides
+
+- [How to Compile C Programs With GCC](/blog/gcc-compiler-basics)
+- [Segmentation Fault in C](/blog/segmentation-fault-c)
+- [Data Types in C](/blog/c-data-types)
+- [Learn c programming for beginners](/blog/learn-c-programming-for-beginners)
+- [C for Beginners course](/courses/c-for-beginners)

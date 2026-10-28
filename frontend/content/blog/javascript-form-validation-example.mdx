@@ -1,0 +1,115 @@
+---
+title: "JavaScript Form Validation Example (With Error Messages)"
+description: "A simple JavaScript form validation example with HTML, error messages and checks for empty fields and email format, plus tips on why server checks still matter."
+publishedDate: "2026-10-25"
+category: skill-building
+tags: [javascript form validation example, javascript form validation, javascript form validation with error message, javascript form validation in html, javascript form validation code]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Build forms that help people"
+  text: "Interactive Web Pages with JavaScript includes checking forms on a live page. 37 short lessons, free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive JavaScript course"
+faq:
+  - question: "How do I validate a form with JavaScript?"
+    answer: "Listen for the submit event, check each field, show a message next to any problem and call preventDefault to stop sending until it is fixed."
+  - question: "Is client-side validation enough?"
+    answer: "No. It helps users, but anyone can bypass it, so always validate on the server too."
+  - question: "Can HTML validate forms without JavaScript?"
+    answer: "Yes, attributes like required, type=email and minlength give basic checks. JavaScript adds custom messages and rules."
+  - question: "How do I show an error message?"
+    answer: "Put an empty element next to the field and set its textContent when the value is invalid."
+---
+
+Forms are where users make mistakes. Good validation tells them what to fix, kindly and clearly.
+
+## Direct answer
+
+To validate a form with JavaScript, listen for the form's `submit` event, check each field, show an error message next to any invalid field, and call `event.preventDefault()` to stop the form being sent until everything is valid. Always repeat the checks on the server too.
+
+## HTML
+
+```html
+<form id="signup" novalidate>
+  <label>
+    Email
+    <input type="email" id="email" name="email">
+  </label>
+  <p id="email-error" role="alert"></p>
+
+  <label>
+    Password
+    <input type="password" id="password" name="password">
+  </label>
+  <p id="password-error" role="alert"></p>
+
+  <button type="submit">Sign up</button>
+</form>
+```
+
+## JavaScript
+
+```js
+const form = document.querySelector('#signup');
+const email = document.querySelector('#email');
+const password = document.querySelector('#password');
+const emailError = document.querySelector('#email-error');
+const passwordError = document.querySelector('#password-error');
+
+form.addEventListener('submit', (event) => {
+  let valid = true;
+
+  if (email.value.trim() === '') {
+    emailError.textContent = 'Please enter your email.';
+    valid = false;
+  } else if (!email.value.includes('@')) {
+    emailError.textContent = 'That does not look like an email address.';
+    valid = false;
+  } else {
+    emailError.textContent = '';
+  }
+
+  if (password.value.length < 8) {
+    passwordError.textContent = 'Use at least 8 characters.';
+    valid = false;
+  } else {
+    passwordError.textContent = '';
+  }
+
+  if (!valid) {
+    event.preventDefault();
+  }
+});
+```
+
+## Good practice
+
+- Write messages that say how to fix the problem.
+- Put the message next to the field.
+- Use `role="alert"` so screen readers announce errors.
+- Don't blame the user.
+- Validate on the server as well; client checks can be bypassed.
+
+## HTML-only checks
+
+Attributes like `required`, `type="email"` and `minlength="8"` give simple validation without JavaScript.
+
+## Related
+
+[JavaScript DOM tutorial](/blog/javascript-dom-tutorial-for-beginners) and [JavaScript for beginners](/blog/javascript-for-beginners-guide).
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) course teaches you to check forms, react to taps and typing and build lists from data, with a live page in every lesson. It is free to start.
+
+## The bottom line
+
+Help the user fix it, and check again on the server.
+
+## More coding guides
+
+- [JavaScript DOM tutorial](/blog/javascript-dom-tutorial-for-beginners)
+- [JavaScript for beginners](/blog/javascript-for-beginners-guide)
+- [How to make a website for beginners](/blog/how-to-make-a-website-for-beginners)
+- [Interactive JavaScript course](/courses/interactive-web-pages-with-javascript)

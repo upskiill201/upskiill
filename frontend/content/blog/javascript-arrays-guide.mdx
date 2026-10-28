@@ -1,0 +1,73 @@
+---
+title: "JavaScript Arrays: A Beginner's Guide With Examples"
+description: "Learn JavaScript arrays: create them, add and remove items and use map, filter, find and reduce with clear examples for beginners."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [javascript arrays, javascript array methods, javascript map filter reduce, javascript push pop, arrays for beginners]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "JavaScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/javascript-for-beginners
+  label: "See the JavaScript for Beginners course"
+faq:
+  - question: "What is an array in JavaScript?"
+    answer: "An ordered list of values, stored in square brackets and accessed by position starting at zero."
+  - question: "What is the difference between map and filter?"
+    answer: "map transforms every item into a new array. filter keeps only items that pass a test."
+  - question: "How do I add to an array?"
+    answer: "Use push to add to the end and unshift to add to the start."
+---
+
+Arrays hold lists of things, and nearly every program uses them.
+
+## Direct answer
+
+A JavaScript array is an ordered list written in square brackets. Items are accessed by index starting at 0. Use `push` and `pop` to add and remove items, and `map`, `filter` and `reduce` to transform lists.
+
+## The basics
+
+```javascript
+const fruits = ["apple", "banana", "cherry"];
+console.log(fruits[0]);     // apple
+console.log(fruits.length); // 3
+
+fruits.push("date");        // add to end
+fruits.pop();               // remove from end
+```
+
+## The big three
+
+```javascript
+const nums = [1, 2, 3, 4, 5];
+
+const doubled = nums.map(n => n * 2);        // [2, 4, 6, 8, 10]
+const evens = nums.filter(n => n % 2 === 0); // [2, 4]
+const sum = nums.reduce((total, n) => total + n, 0); // 15
+```
+
+## Other handy methods
+
+| Method | What it does |
+| :--- | :--- |
+| `find` | first item that passes a test |
+| `includes` | checks if a value exists |
+| `slice` | copies part of an array |
+| `sort` | orders items |
+
+## Where Teyro fits
+
+Teyro's [JavaScript for Beginners](/courses/javascript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Learn `map`, `filter` and `reduce` early. They replace many loops.
+
+## More guides
+
+- [JavaScript Scope Explained](/blog/javascript-scope-explained)
+- [JavaScript Closures Explained Simply With Examples](/blog/javascript-closures-explained)
+- [JavaScript Promises Explained](/blog/javascript-promises-explained)
+- [Javascript for beginners guide](/blog/javascript-for-beginners-guide)
+- [JavaScript for Beginners course](/courses/javascript-for-beginners)

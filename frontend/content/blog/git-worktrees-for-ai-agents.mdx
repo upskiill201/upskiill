@@ -1,0 +1,68 @@
+---
+title: "Git Worktrees for AI Agents: Run Several Tasks in Parallel Safely"
+description: "Git worktrees give each task its own folder and branch. Learn how to use them to run AI agents in parallel without conflicts, with commands and tips."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [git worktrees, git worktree add, parallel ai agents, git branches workflow, ai agents git]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Working with AI Coding Agents turns this into short, playable lessons. Free to start."
+  href: /courses/working-with-ai-coding-agents
+  label: "See the Working with AI Coding Agents course"
+faq:
+  - question: "What is a git worktree?"
+    answer: "An additional working folder attached to the same repository, checked out on its own branch."
+  - question: "Why use worktrees with AI agents?"
+    answer: "Each agent can work in its own folder and branch, so their changes do not collide."
+  - question: "How do I remove one?"
+    answer: "Use git worktree remove with the folder path after merging or abandoning the branch."
+---
+
+Two agents editing the same folder is a recipe for confusion.
+
+## Direct answer
+
+A Git worktree is an extra folder linked to your repository, checked out on its own branch. Give each AI agent or task its own worktree, so changes stay separate, you can review them independently and you can merge only what you want.
+
+## Commands
+
+```bash
+git worktree add ../feature-login -b feature/login
+cd ../feature-login
+# run the agent here
+
+git worktree list
+git worktree remove ../feature-login
+```
+
+## Workflow
+
+1. Create a worktree per task.
+2. Run the agent in that folder.
+3. Review the diff and run tests.
+4. Merge or discard.
+5. Remove the worktree.
+
+## Tips
+
+- Install dependencies per worktree if needed.
+- Name branches clearly.
+- Keep tasks independent to avoid merge conflicts.
+
+## Where Teyro fits
+
+Teyro's [Working with AI Coding Agents](/courses/working-with-ai-coding-agents) course turns this into short lessons you can play in a few minutes a day. It has 60 lessons, and you can start free.
+
+## The bottom line
+
+Separate folders mean separate experiments.
+
+## More guides
+
+- [Refactoring With AI](/blog/ai-refactoring-guide)
+- [How to Review AI-Generated Code](/blog/how-to-review-ai-generated-code)
+- [What Is a Context Window? Why It Matters for AI Coding](/blog/what-is-a-context-window)
+- [What are ai coding agents](/blog/what-are-ai-coding-agents)
+- [Working with AI Coding Agents course](/courses/working-with-ai-coding-agents)

@@ -1,0 +1,67 @@
+---
+title: "Memory Management in C: Stack, Heap and Avoiding Leaks"
+description: "Understand how C uses the stack and heap, who is responsible for memory, how leaks and overflows happen and the tools that help find them."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [memory management, c memory management, stack vs heap, memory leak, valgrind]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "C for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/c-for-beginners
+  label: "See the C for Beginners course"
+faq:
+  - question: "What is the difference between the stack and the heap?"
+    answer: "The stack holds local variables and is managed automatically. The heap holds memory you allocate and free yourself."
+  - question: "What is a memory leak?"
+    answer: "Memory you allocated but never freed, so it cannot be reused while the program runs."
+  - question: "How can I find memory bugs?"
+    answer: "Use tools such as Valgrind or compiler sanitizers like AddressSanitizer."
+---
+
+C gives you power over memory, and the responsibility that comes with it.
+
+## Direct answer
+
+In C, local variables live on the **stack** and are cleaned up automatically. Memory from `malloc` lives on the **heap** and you must free it yourself. Common problems are leaks, buffer overflows, use after free and double free. Tools like Valgrind and AddressSanitizer find them.
+
+## Stack vs heap
+
+| | Stack | Heap |
+| :--- | :--- | :--- |
+| Managed by | compiler | you |
+| Lifetime | until the function returns | until you free it |
+| Size | small, limited | large, flexible |
+| Speed | very fast | slower |
+
+## Good habits
+
+1. Prefer the stack when size is known and small.
+2. Pair each allocation with a free.
+3. Check allocation results.
+4. Set pointers to `NULL` after freeing.
+5. Run your program under a memory checker.
+
+## Try a sanitizer
+
+```bash
+gcc -g -fsanitize=address main.c -o main
+./main
+```
+
+## Where Teyro fits
+
+Teyro's [C for Beginners](/courses/c-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 78 lessons, and you can start free.
+
+## The bottom line
+
+Know who owns each piece of memory and when it ends.
+
+## More guides
+
+- [Structs in C](/blog/c-structs-guide)
+- [Header Files in C](/blog/c-header-files)
+- [How to Compile C Programs With GCC](/blog/gcc-compiler-basics)
+- [Malloc and free](/blog/malloc-and-free)
+- [C for Beginners course](/courses/c-for-beginners)

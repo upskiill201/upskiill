@@ -15,11 +15,12 @@ export const START_LABEL = LEARNER_ENTRY.gated ? 'Get notified at launch' : 'Get
 
 export const TEYRO = {
   name: 'Teyro',
-  oneLiner: 'Short daily coding and AI lessons with streaks, leagues and friends that keep you coming back.',
-  // homepage FAQ (components/homepage/v3/Sections.tsx)
+  oneLiner: 'Short daily lessons in coding, AI, money, leadership, communication and more, with streaks, leagues and friends that keep you coming back.',
+  // homepage skills grid + FAQ (components/homepage/v3/Sections.tsx); Originals'
+  // categories in backend/originals/tracks
   subjects:
-    'Coding (web development, mobile apps, programming fundamentals, software development) and AI (using AI tools, building agents and automations)',
-  subjectsShort: 'Coding and AI',
+    'Coding, AI, data, personal finance, leadership, communication, negotiation, business and career skills',
+  subjectsShort: 'Coding, AI, money, leadership, communication and more',
   // Each lesson: Learn → Apply → Reflect → Deepen (schema.prisma phase blocks)
   lessonFormat: 'Four short steps per lesson: learn one idea, apply it straight away, reflect, then go deeper if you want',
   // settings DAILY_GOALS: 20/50/100/200 XP ≈ 5/10/15/20 min
@@ -51,7 +52,7 @@ export const TEYRO = {
 
 /** Honest limits — every comparison page shows these. */
 export const TEYRO_LIMITS = [
-  'Coding and AI only — no languages, maths or creative skills',
+  'Work, money and tech skills only — no languages, maths or creative skills',
   'Certificates are Teyro’s own, not accredited by a university or employer',
   'A young catalogue: fewer courses than the big marketplaces',
   'No native app store listing; it installs from the browser instead',

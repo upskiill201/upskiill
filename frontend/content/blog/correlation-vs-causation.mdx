@@ -1,0 +1,62 @@
+---
+title: "Correlation vs Causation: Why Related Does Not Mean Caused"
+description: "Two things moving together does not prove one causes the other. Learn confounders, famous examples, how to test causes and why it matters for data science."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [correlation vs causation, correlation does not equal causation, spurious correlation, confounding variable, data science thinking]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Data Science for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/data-science-for-beginners
+  label: "See the Data Science for Beginners course"
+faq:
+  - question: "What is the difference between correlation and causation?"
+    answer: "Correlation means two variables move together. Causation means one produces a change in the other."
+  - question: "What is a confounding variable?"
+    answer: "A hidden factor that influences both variables, creating a misleading link."
+  - question: "How can you test for causation?"
+    answer: "Randomised experiments are the strongest method. Observational data needs careful design and caution."
+---
+
+Ice cream sales and sunburn rise together. Ice cream does not cause sunburn.
+
+## Direct answer
+
+Correlation shows that two variables move together. Causation means that changing one produces a change in the other. A third factor, a confounder, can cause both, as hot weather drives both ice cream sales and sunburn. Randomised experiments are the best way to show cause.
+
+## Why correlations mislead
+
+- **Confounders:** a hidden driver.
+- **Coincidence:** random patterns in many variables.
+- **Reverse causation:** the effect may cause the "cause".
+
+## How to be careful
+
+1. Ask what else could explain the link.
+2. Check whether the cause came before the effect.
+3. Look for experiments or natural experiments.
+4. Be cautious with language: "is associated with", not "causes".
+
+## In Python
+
+```python
+df[["hours", "score"]].corr()
+```
+
+## Where Teyro fits
+
+Teyro's [Data Science for Beginners](/courses/data-science-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+A correlation is a clue, not a conclusion.
+
+## More guides
+
+- [Data Analyst vs Data Scientist](/blog/data-analyst-vs-data-scientist)
+- [How to Handle Missing Data](/blog/handling-missing-data)
+- [pandas DataFrame](/blog/pandas-dataframe-guide)
+- [What is data science for beginners](/blog/what-is-data-science-for-beginners)
+- [Data Science for Beginners course](/courses/data-science-for-beginners)

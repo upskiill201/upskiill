@@ -1,0 +1,70 @@
+---
+title: "Database Normalization Explained: 1NF, 2NF and 3NF Simply"
+description: "Normalization organises tables to reduce duplication and errors. Learn first, second and third normal form with a simple orders example."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [database normalization, normalization in sql, 1nf 2nf 3nf, normal forms, database design basics]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "SQL and Databases for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/sql-and-databases-for-beginners
+  label: "See the SQL and Databases for Beginners course"
+faq:
+  - question: "What is database normalization?"
+    answer: "Structuring tables to reduce duplicated data and avoid update, insert and delete problems."
+  - question: "What are the normal forms?"
+    answer: "A series of rules. First normal form removes repeating groups, second removes partial dependencies and third removes transitive dependencies."
+  - question: "Should I always normalize?"
+    answer: "Usually for transactional data. Sometimes data is denormalised on purpose for speed or reporting."
+---
+
+If the same fact lives in many places, it will eventually disagree with itself.
+
+## Direct answer
+
+Normalization is the process of organising tables so each fact is stored once. In first normal form each cell holds one value, in second normal form non-key columns depend on the whole key and in third normal form they depend only on the key, not on other columns.
+
+## A messy table
+
+| order_id | customer | customer_email | items |
+| :--- | :--- | :--- | :--- |
+| 1 | Ada | ada@example.com | pen, book |
+
+## Problems
+
+- Several items in one cell.
+- Customer details repeated for each order.
+
+## Normalised design
+
+```text
+customers(id, name, email)
+orders(id, customer_id, created_at)
+order_items(order_id, product_id, quantity)
+products(id, name, price)
+```
+
+## The three forms
+
+1. **1NF:** one value per cell, no repeating groups.
+2. **2NF:** every column depends on the whole primary key.
+3. **3NF:** columns depend only on the key, not on other non-key columns.
+
+## Where Teyro fits
+
+Teyro's [SQL and Databases for Beginners](/courses/sql-and-databases-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Store each fact once, then join when you need it.
+
+## More guides
+
+- [SQL Aggregate Functions](/blog/sql-aggregate-functions)
+- [SQL Subqueries Explained](/blog/sql-subqueries)
+- [SQL vs NoSQL](/blog/sql-vs-nosql)
+- [Primary key explained](/blog/primary-key-explained)
+- [Foreign key explained](/blog/foreign-key-explained)
+- [SQL and Databases for Beginners course](/courses/sql-and-databases-for-beginners)

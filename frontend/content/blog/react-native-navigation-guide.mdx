@@ -1,0 +1,84 @@
+---
+title: "React Native Navigation: Stack, Tabs and Expo Router Explained"
+description: "Learn the main navigation patterns in React Native: stack, tabs and drawer, with React Navigation and Expo Router, and how to pass params between screens."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [react native navigation, react navigation, expo router, stack navigator, tab navigator]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "React Native for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/react-native-for-beginners
+  label: "See the React Native for Beginners course"
+faq:
+  - question: "How do I navigate between screens in React Native?"
+    answer: "Use a navigation library such as React Navigation or Expo Router to define screens and move between them."
+  - question: "What is the difference between stack and tab navigation?"
+    answer: "A stack moves forward and back through screens. Tabs switch between top-level sections."
+  - question: "How do I pass data to another screen?"
+    answer: "Pass params when navigating, then read them on the next screen."
+---
+
+Apps have many screens. Navigation connects them.
+
+## Direct answer
+
+React Native apps usually use React Navigation or Expo Router. A stack navigator moves forward and back, tabs switch between top-level sections and a drawer slides in from the side. Pass data between screens with params.
+
+## Expo Router (file-based)
+
+```text
+app/
+  _layout.tsx
+  index.tsx
+  details/[id].tsx
+```
+
+```tsx
+import { Link, useLocalSearchParams } from "expo-router";
+
+// index.tsx
+export default function Home() {
+  return <Link href="/details/42">Open details</Link>;
+}
+
+// details/[id].tsx
+export default function Details() {
+  const { id } = useLocalSearchParams();
+  return <Text>Item {id}</Text>;
+}
+```
+
+## React Navigation (code-based)
+
+```jsx
+const Stack = createNativeStackNavigator();
+
+<NavigationContainer>
+  <Stack.Navigator>
+    <Stack.Screen name="Home" component={Home} />
+    <Stack.Screen name="Details" component={Details} />
+  </Stack.Navigator>
+</NavigationContainer>
+```
+
+## Choosing
+
+Use Expo Router for new Expo projects. Use React Navigation if you prefer explicit configuration.
+
+## Where Teyro fits
+
+Teyro's [React Native for Beginners](/courses/react-native-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 80 lessons, and you can start free.
+
+## The bottom line
+
+Pick one approach and learn its params and layouts well.
+
+## More guides
+
+- [React Native Styling](/blog/react-native-styling-guide)
+- [useState in React Native](/blog/usestate-in-react-native)
+- [useEffect in React Native](/blog/useeffect-in-react-native)
+- [What is expo react native](/blog/what-is-expo-react-native)
+- [React Native for Beginners course](/courses/react-native-for-beginners)

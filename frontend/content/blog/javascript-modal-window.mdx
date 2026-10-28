@@ -1,0 +1,76 @@
+---
+title: "How to Build a Modal Window With HTML, CSS and JavaScript"
+description: "Build an accessible modal dialog with HTML, CSS and JavaScript: open and close buttons, a backdrop, closing with Escape and focus basics."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [javascript modals, how to make a modal, modal popup javascript, html dialog, accessible modal]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Interactive Web Pages with JavaScript turns this into short, playable lessons. Free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive Web Pages with JavaScript course"
+faq:
+  - question: "How do I make a modal in JavaScript?"
+    answer: "Create a hidden dialog element, show it on a button click and add a close button and Escape key handling."
+  - question: "Can I use the HTML dialog element?"
+    answer: "Yes. The dialog element has built-in methods showModal and close and handles focus and the backdrop."
+  - question: "How do I make a modal accessible?"
+    answer: "Use a real dialog, label it, keep focus inside it, return focus when closed and allow Escape to close."
+---
+
+Modals are common and easy to get wrong. The `dialog` element does most of the work for you.
+
+## Direct answer
+
+Use the HTML `<dialog>` element. Call `dialog.showModal()` to open it and `dialog.close()` to close it. The browser provides the backdrop, traps focus and closes on Escape.
+
+## Example
+
+```html
+<button id="open">Open</button>
+
+<dialog id="modal">
+  <h2>Hello</h2>
+  <p>This is a modal.</p>
+  <button id="close">Close</button>
+</dialog>
+```
+
+```javascript
+const modal = document.querySelector("#modal");
+document.querySelector("#open").addEventListener("click", () => modal.showModal());
+document.querySelector("#close").addEventListener("click", () => modal.close());
+```
+
+## Style the backdrop
+
+```css
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+```
+
+## Accessibility checklist
+
+- Give the dialog a heading.
+- Make sure the first focusable element is sensible.
+- Return focus to the opener after closing.
+- Do not rely on colour alone.
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) course turns this into short lessons you can play in a few minutes a day. It has 37 lessons, and you can start free.
+
+## The bottom line
+
+Prefer the built-in dialog element before building your own.
+
+## More guides
+
+- [How to Add a Dark Mode Toggle With CSS and JavaScript](/blog/dark-mode-toggle-javascript)
+- [JavaScript Animation Basics](/blog/javascript-animation-basics)
+- [Build a To-Do List App in JavaScript](/blog/to-do-list-app-javascript)
+- [Javascript event listeners](/blog/javascript-event-listeners)
+- [Interactive Web Pages with JavaScript course](/courses/interactive-web-pages-with-javascript)

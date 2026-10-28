@@ -1,0 +1,112 @@
+---
+title: "TypeScript Tutorial for Beginners: Types, Examples and Next Steps"
+description: "A beginner TypeScript tutorial: basic types, functions, interfaces, unions, how to compile and run it, how long it takes to learn and what to build."
+publishedDate: "2026-10-25"
+category: skill-building
+tags: [typescript tutorial for beginners, typescript for beginners, typescript examples for beginners, learn typescript, typescript tutorial with examples, how long does it take to learn typescript, learn typescript from scratch]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn TypeScript in short lessons"
+  text: "TypeScript for Beginners: 20 short lessons, free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript course"
+faq:
+  - question: "How do I start learning TypeScript?"
+    answer: "Learn JavaScript basics first, then add type annotations to variables and functions, learn interfaces and unions, and set up the compiler or use an online playground."
+  - question: "How long does it take to learn TypeScript?"
+    answer: "If you know JavaScript, the basics take days to a couple of weeks. Advanced types take longer."
+  - question: "Do I need to install anything?"
+    answer: "You can practise in an online playground, or install Node.js and TypeScript to compile files yourself."
+  - question: "What topics should I learn?"
+    answer: "Basic types, functions, objects and interfaces, unions, generics and how TypeScript works with your framework."
+---
+
+TypeScript adds types to JavaScript so many mistakes are caught before your code runs. The basics are quick to learn if you know JavaScript.
+
+## Direct answer
+
+To learn TypeScript: learn JavaScript first, add type annotations to variables and functions, learn interfaces and union types, then generics and how it works with your tools. Practise in an online playground or compile files with the TypeScript compiler. The basics take days to a couple of weeks if you know JavaScript.
+
+## Basic types
+
+```ts
+let name: string = "Sam";
+let age: number = 30;
+let isMember: boolean = true;
+let scores: number[] = [10, 20, 30];
+```
+
+TypeScript will warn you if you try `age = "thirty"`.
+
+## Functions
+
+```ts
+function greet(name: string, times: number = 1): string {
+  return `Hello, ${name}! `.repeat(times);
+}
+```
+
+## Interfaces
+
+```ts
+interface User {
+  id: number;
+  name: string;
+  email?: string; // optional
+}
+
+const user: User = { id: 1, name: "Sam" };
+```
+
+## Union types
+
+```ts
+function printId(id: number | string) {
+  console.log(id);
+}
+```
+
+## Running TypeScript
+
+Browsers can't run TypeScript directly. It's compiled to JavaScript:
+
+1. Install Node.js.
+2. Install TypeScript using the official instructions.
+3. Write `app.ts`.
+4. Compile with `tsc`.
+5. Run the output.
+
+Or use an online playground to start.
+
+## Topics to learn
+
+1. Basic types
+2. Functions
+3. Objects and interfaces
+4. Unions and literal types
+5. Generics
+6. Working with libraries and frameworks
+
+## How long?
+
+If you already know JavaScript, a couple of weeks of regular practice covers the basics.
+
+## Related
+
+[TypeScript vs JavaScript](/blog/typescript-vs-javascript) and [JavaScript for beginners](/blog/javascript-for-beginners-guide).
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course teaches types step by step in 20 short lessons. It is free to start.
+
+## The bottom line
+
+Know JavaScript, add types gradually.
+
+## More coding guides
+
+- [TypeScript vs JavaScript](/blog/typescript-vs-javascript)
+- [JavaScript for beginners](/blog/javascript-for-beginners-guide)
+- [JavaScript DOM tutorial](/blog/javascript-dom-tutorial-for-beginners)
+- [TypeScript course](/courses/typescript-for-beginners)

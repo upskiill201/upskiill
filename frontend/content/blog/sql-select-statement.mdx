@@ -1,0 +1,75 @@
+---
+title: "SQL SELECT Statement: How to Read Data From a Table"
+description: "Learn the SQL SELECT statement: choosing columns, aliases, DISTINCT, ORDER BY, LIMIT and calculated columns, with simple examples you can run."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [select statement, sql select, sql select examples, sql query basics, how to query a database]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "SQL and Databases for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/sql-and-databases-for-beginners
+  label: "See the SQL and Databases for Beginners course"
+faq:
+  - question: "What does SELECT do in SQL?"
+    answer: "It retrieves rows and columns from one or more tables."
+  - question: "How do I select all columns?"
+    answer: "Use SELECT star FROM table, but choose specific columns when you can."
+  - question: "How do I sort and limit results?"
+    answer: "Use ORDER BY to sort and LIMIT to restrict the number of rows."
+---
+
+SELECT is the first SQL command everyone learns, and the one you will use most.
+
+## Direct answer
+
+`SELECT` reads data from a table. Name the columns you want, say which table with `FROM`, then optionally filter with `WHERE`, sort with `ORDER BY` and limit with `LIMIT`.
+
+## Basic forms
+
+```sql
+SELECT * FROM customers;
+
+SELECT name, city FROM customers;
+
+SELECT DISTINCT city FROM customers;
+
+SELECT name, price * 1.2 AS price_with_tax
+FROM products
+ORDER BY price DESC
+LIMIT 10;
+```
+
+## Order of a query
+
+| Clause | Purpose |
+| :--- | :--- |
+| `SELECT` | which columns |
+| `FROM` | which table |
+| `WHERE` | which rows |
+| `GROUP BY` | how to group |
+| `ORDER BY` | sort order |
+| `LIMIT` | how many rows |
+
+## Tips
+
+- Avoid `SELECT *` in real applications. Name the columns.
+- Use aliases (`AS`) to make results readable.
+- Keywords are not case sensitive, but uppercase is a common style.
+
+## Where Teyro fits
+
+Teyro's [SQL and Databases for Beginners](/courses/sql-and-databases-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Start with SELECT and FROM, then add clauses one at a time.
+
+## More guides
+
+- [SQL WHERE Clause](/blog/sql-where-clause)
+- [INNER JOIN vs LEFT JOIN](/blog/inner-join-vs-left-join)
+- [Primary Key in SQL](/blog/primary-key-explained)
+- [How to learn sql for beginners](/blog/how-to-learn-sql-for-beginners)
+- [SQL and Databases for Beginners course](/courses/sql-and-databases-for-beginners)

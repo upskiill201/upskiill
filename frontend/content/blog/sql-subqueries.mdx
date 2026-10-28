@@ -1,0 +1,76 @@
+---
+title: "SQL Subqueries Explained: Queries Inside Queries"
+description: "A subquery is a query nested inside another. Learn subqueries in WHERE, FROM and SELECT, correlated subqueries and when a join or CTE is clearer."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [subqueries, sql subquery, nested query sql, correlated subquery, sql cte]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "SQL and Databases for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/sql-and-databases-for-beginners
+  label: "See the SQL and Databases for Beginners course"
+faq:
+  - question: "What is a subquery?"
+    answer: "A query inside another query, used to supply values or a temporary table to the outer query."
+  - question: "What is a correlated subquery?"
+    answer: "A subquery that refers to columns from the outer query and runs for each outer row."
+  - question: "Should I use a subquery or a join?"
+    answer: "Use whichever is clearer. Joins are often faster and easier to read, but subqueries can express some questions naturally."
+---
+
+Sometimes the answer to one question is needed to ask another.
+
+## Direct answer
+
+A subquery is a `SELECT` nested inside another statement. It can appear in `WHERE` (to compare with a value or list), in `FROM` (as a temporary table) or in `SELECT` (to compute a column). Common table expressions (`WITH`) can make complex queries easier to read.
+
+## Examples
+
+```sql
+-- customers who spent more than average
+SELECT name FROM customers
+WHERE id IN (
+  SELECT customer_id FROM orders
+  GROUP BY customer_id
+  HAVING SUM(total) > (SELECT AVG(total) FROM orders)
+);
+
+-- subquery in FROM
+SELECT city, COUNT(*) FROM (
+  SELECT * FROM customers WHERE active = 1
+) AS active_customers
+GROUP BY city;
+```
+
+## A CTE alternative
+
+```sql
+WITH active AS (
+  SELECT * FROM customers WHERE active = 1
+)
+SELECT city, COUNT(*) FROM active GROUP BY city;
+```
+
+## Tips
+
+- Test the inner query on its own first.
+- Prefer CTEs for long queries.
+- Watch performance on large tables.
+
+## Where Teyro fits
+
+Teyro's [SQL and Databases for Beginners](/courses/sql-and-databases-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Break a hard question into smaller queries.
+
+## More guides
+
+- [SQL vs NoSQL](/blog/sql-vs-nosql)
+- [SQL Injection Explained](/blog/sql-injection-explained)
+- [Database Indexes Explained](/blog/database-indexes-explained)
+- [Sql aggregate functions](/blog/sql-aggregate-functions)
+- [SQL and Databases for Beginners course](/courses/sql-and-databases-for-beginners)

@@ -1,0 +1,83 @@
+---
+title: "TypeScript Classes: Properties, Access Modifiers and Inheritance"
+description: "Learn TypeScript classes: constructors, public private and protected, readonly, parameter properties, inheritance and implementing interfaces."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [typescript classes, typescript class example, public private protected, typescript inheritance, implements interface]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "TypeScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript for Beginners course"
+faq:
+  - question: "How do I define a class in TypeScript?"
+    answer: "Use the class keyword with typed properties and a constructor."
+  - question: "What are access modifiers?"
+    answer: "public, private and protected control where a member can be accessed."
+  - question: "Can a class implement an interface?"
+    answer: "Yes, with the implements keyword. The class must include all the members."
+---
+
+Classes work like JavaScript classes, with types and access control added.
+
+## Direct answer
+
+TypeScript classes add type annotations and access modifiers to JavaScript classes. Use `public`, `private`, `protected` and `readonly` to control access, and `implements` to make a class follow an interface.
+
+## Example
+
+```typescript
+interface Shape {
+  area(): number;
+}
+
+class Rectangle implements Shape {
+  constructor(
+    private readonly width: number,
+    private readonly height: number
+  ) {}
+
+  area(): number {
+    return this.width * this.height;
+  }
+}
+
+const r = new Rectangle(3, 4);
+console.log(r.area()); // 12
+```
+
+## Inheritance
+
+```typescript
+class Animal {
+  constructor(protected name: string) {}
+}
+class Dog extends Animal {
+  speak() {
+    console.log(`${this.name} barks`);
+  }
+}
+```
+
+## Notes
+
+- `private` is checked by TypeScript at compile time. Use `#field` for runtime privacy.
+- Prefer small classes and composition over deep inheritance.
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 20 lessons, and you can start free.
+
+## The bottom line
+
+Types and access modifiers make classes clearer and safer.
+
+## More guides
+
+- [Common TypeScript Errors Explained and How to Fix Them](/blog/typescript-errors-explained)
+- [TypeScript Interface vs Type](/blog/typescript-interface-vs-type)
+- [TypeScript Generics Explained With Simple Examples](/blog/typescript-generics)
+- [Typescript interface vs type](/blog/typescript-interface-vs-type)
+- [TypeScript for Beginners course](/courses/typescript-for-beginners)

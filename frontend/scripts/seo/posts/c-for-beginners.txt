@@ -1,0 +1,686 @@
+=== pointers-in-c
+title: Pointers in C Explained for Beginners With Simple Examples
+desc: Pointers store memory addresses. Learn what they are, the & and * operators, pointers and arrays, passing by pointer and common beginner mistakes.
+tags: pointers in c, c pointers, what is a pointer in c, pointer examples, c programming pointers
+rel: c-programming-course-free-online, learn-c-programming-for-beginners
+q: What is a pointer in C? | A variable that stores the memory address of another variable.
+q: What do the & and * operators do? | & gets the address of a variable. * dereferences a pointer, meaning it accesses the value at that address.
+q: Why are pointers useful? | They allow functions to change variables, work with arrays and strings efficiently and manage dynamic memory.
+---
+Pointers are the idea that makes C feel different, and once you see it, it is simpler than it looks.
+
+## Direct answer
+
+A pointer is a variable that holds a memory address. Use `&` to get an address and `*` to follow a pointer to the value it points to. Pointers let functions modify variables, work with arrays and strings and manage memory manually.
+
+## The basics
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    int x = 10;
+    int *p = &x;      // p holds the address of x
+
+    printf("%d\n", x);   // 10
+    printf("%p\n", (void *)p); // an address
+    printf("%d\n", *p);  // 10, the value at that address
+
+    *p = 20;             // changes x
+    printf("%d\n", x);   // 20
+    return 0;
+}
+```
+
+## Passing by pointer
+
+```c
+void increment(int *n) {
+    *n = *n + 1;
+}
+
+int main(void) {
+    int a = 5;
+    increment(&a);
+    printf("%d\n", a); // 6
+    return 0;
+}
+```
+
+## Common mistakes
+
+- Using a pointer before it points to anything.
+- Dereferencing `NULL`.
+- Forgetting that `*` in a declaration means "pointer to".
+
+## The bottom line
+
+Think of a pointer as a house address. The address is not the house, but it tells you where to go.
+
+=== c-arrays-guide
+title: Arrays in C: Declare, Initialize and Loop Through Them
+desc: Learn arrays in C: declaring, initializing, indexing, looping, passing to functions and the dangers of going out of bounds.
+tags: c arrays, arrays in c, c array example, array in c programming, c array length
+rel: pointers-in-c
+q: How do I declare an array in C? | Write the type, name and size, such as int numbers[5].
+q: How do I get the length of an array? | Use sizeof(array) divided by sizeof(array[0]), but only where the array has not decayed to a pointer.
+q: What happens if I go out of bounds? | The behaviour is undefined. It might crash or silently corrupt data.
+---
+Arrays are a block of items of the same type, stored side by side.
+
+## Direct answer
+
+A C array is a fixed-size list of items of the same type, indexed from 0. Declare it with `type name[size]`, access items with `name[index]` and loop with a `for` loop. C does not check bounds, so you must keep indexes within range.
+
+## Example
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    int scores[5] = {90, 85, 70, 60, 100};
+    int total = 0;
+
+    for (int i = 0; i < 5; i++) {
+        total += scores[i];
+    }
+    printf("Average: %d\n", total / 5);
+    return 0;
+}
+```
+
+## Length of an array
+
+```c
+int n = sizeof(scores) / sizeof(scores[0]);
+```
+
+This works in the function where the array was declared. When you pass an array to a function, it becomes a pointer, so pass the length too.
+
+## Passing to functions
+
+```c
+void print_all(int arr[], int n) {
+    for (int i = 0; i < n; i++) printf("%d ", arr[i]);
+}
+```
+
+## Pitfalls
+
+- Reading or writing past the end causes undefined behaviour.
+- Arrays do not know their own length.
+
+## The bottom line
+
+Keep track of size and stay in bounds.
+
+=== c-strings-guide
+title: Strings in C: char Arrays, the Null Terminator and string.h
+desc: C strings are arrays of characters ending with a null byte. Learn how to declare, print, copy and compare strings safely with string.h.
+tags: c strings, strings in c, c string functions, string.h, null terminator
+rel: c-arrays-guide
+q: What is a string in C? | An array of characters that ends with a null character, written as backslash zero.
+q: How do I compare two strings in C? | Use strcmp from string.h. Do not use == which compares addresses.
+q: How do I copy a string safely? | Make sure the destination is large enough and prefer functions that take a size limit.
+---
+C has no built-in string type. Strings are just arrays of characters with a special ending.
+
+## Direct answer
+
+A C string is a `char` array that ends with a null terminator (`'\0'`). Use `string.h` functions like `strlen`, `strcpy`, `strcat` and `strcmp`. Always make sure your buffer is large enough, including space for the terminator.
+
+## Examples
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main(void) {
+    char name[20] = "Ada";
+    printf("%s has %zu letters\n", name, strlen(name));
+
+    char copy[20];
+    strcpy(copy, name);
+
+    if (strcmp(name, copy) == 0) {
+        printf("Same\n");
+    }
+    return 0;
+}
+```
+
+## Safe habits
+
+- Size buffers for the longest text plus one.
+- Use `snprintf` for formatting into buffers.
+- Never use `gets`. Use `fgets` instead.
+
+```c
+char line[100];
+fgets(line, sizeof(line), stdin);
+```
+
+## The bottom line
+
+Remember the null terminator and watch your buffer sizes.
+
+=== malloc-and-free
+title: malloc and free in C: Dynamic Memory Explained
+desc: Learn how to allocate and release memory in C with malloc, calloc, realloc and free, plus how to avoid leaks, dangling pointers and double frees.
+tags: malloc and free, c malloc, c dynamic memory allocation, calloc realloc, memory leak c
+rel: c-memory-management
+q: What does malloc do? | It allocates a block of memory of the size you request and returns a pointer to it, or NULL if it fails.
+q: Why must I call free? | To return memory to the system. Not freeing causes a memory leak.
+q: What is a dangling pointer? | A pointer that still holds an address after the memory has been freed.
+---
+When you need memory that outlives a function or whose size is decided at run time, you ask for it with `malloc`.
+
+## Direct answer
+
+`malloc(size)` allocates `size` bytes on the heap and returns a pointer, or `NULL` if it fails. Check the result, use the memory, then release it with `free`. Set the pointer to `NULL` afterwards to avoid using freed memory.
+
+## Example
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    int n = 5;
+    int *numbers = malloc(n * sizeof *numbers);
+    if (numbers == NULL) {
+        return 1;
+    }
+
+    for (int i = 0; i < n; i++) numbers[i] = i * i;
+    for (int i = 0; i < n; i++) printf("%d ", numbers[i]);
+
+    free(numbers);
+    numbers = NULL;
+    return 0;
+}
+```
+
+## Related functions
+
+| Function | Purpose |
+| :--- | :--- |
+| `calloc` | allocate and zero memory |
+| `realloc` | resize a block |
+| `free` | release a block |
+
+## Common bugs
+
+- **Memory leak:** forgetting `free`.
+- **Double free:** freeing the same pointer twice.
+- **Use after free:** using memory after releasing it.
+
+## The bottom line
+
+Every `malloc` needs exactly one `free`.
+
+=== c-memory-management
+title: Memory Management in C: Stack, Heap and Avoiding Leaks
+desc: Understand how C uses the stack and heap, who is responsible for memory, how leaks and overflows happen and the tools that help find them.
+tags: memory management, c memory management, stack vs heap, memory leak, valgrind
+rel: malloc-and-free
+q: What is the difference between the stack and the heap? | The stack holds local variables and is managed automatically. The heap holds memory you allocate and free yourself.
+q: What is a memory leak? | Memory you allocated but never freed, so it cannot be reused while the program runs.
+q: How can I find memory bugs? | Use tools such as Valgrind or compiler sanitizers like AddressSanitizer.
+---
+C gives you power over memory, and the responsibility that comes with it.
+
+## Direct answer
+
+In C, local variables live on the **stack** and are cleaned up automatically. Memory from `malloc` lives on the **heap** and you must free it yourself. Common problems are leaks, buffer overflows, use after free and double free. Tools like Valgrind and AddressSanitizer find them.
+
+## Stack vs heap
+
+| | Stack | Heap |
+| :--- | :--- | :--- |
+| Managed by | compiler | you |
+| Lifetime | until the function returns | until you free it |
+| Size | small, limited | large, flexible |
+| Speed | very fast | slower |
+
+## Good habits
+
+1. Prefer the stack when size is known and small.
+2. Pair each allocation with a free.
+3. Check allocation results.
+4. Set pointers to `NULL` after freeing.
+5. Run your program under a memory checker.
+
+## Try a sanitizer
+
+```bash
+gcc -g -fsanitize=address main.c -o main
+./main
+```
+
+## The bottom line
+
+Know who owns each piece of memory and when it ends.
+
+=== c-structs-guide
+title: Structs in C: Group Related Data Into One Type
+desc: Learn how to define and use structs in C: declaring members, initialising, pointers to structs, typedef and passing structs to functions.
+tags: c structs, struct in c, c struct example, typedef struct, struct pointers
+rel: pointers-in-c
+q: What is a struct in C? | A user-defined type that groups variables of different types under one name.
+q: How do I access struct members? | Use the dot operator for a struct and the arrow operator for a pointer to a struct.
+q: What does typedef do? | It creates a shorter name for a type, so you do not have to write struct each time.
+---
+Structs let you model things: a student, a point, a product.
+
+## Direct answer
+
+A `struct` groups related variables, called members, into a single type. Access members with `.` or, through a pointer, `->`. Use `typedef` to avoid repeating the `struct` keyword.
+
+## Example
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+typedef struct {
+    char name[30];
+    int age;
+} Person;
+
+void birthday(Person *p) {
+    p->age++;
+}
+
+int main(void) {
+    Person ada = {"Ada", 28};
+    birthday(&ada);
+    printf("%s is %d\n", ada.name, ada.age);
+    return 0;
+}
+```
+
+## Arrays of structs
+
+```c
+Person team[3] = {{"A", 20}, {"B", 25}, {"C", 30}};
+for (int i = 0; i < 3; i++) printf("%s\n", team[i].name);
+```
+
+## Tips
+
+- Pass large structs by pointer to avoid copying.
+- Initialise all members.
+
+## The bottom line
+
+Structs are the first step toward organised C programs.
+
+=== c-header-files
+title: Header Files in C: What They Are and How to Write Them
+desc: Header files declare functions and types so many source files can share them. Learn #include, include guards, declaring vs defining and a simple project layout.
+tags: header files, c header files, include guards, c project structure, declaration vs definition
+rel: learn-c-programming-for-beginners
+q: What is a header file in C? | A file, usually ending in .h, that contains declarations of functions, types and constants shared between source files.
+q: What are include guards? | Preprocessor lines that stop a header being included more than once in a file.
+q: What is the difference between declaration and definition? | A declaration tells the compiler something exists. A definition provides the actual code or storage.
+---
+As programs grow, you split them into files. Header files hold the shared promises.
+
+## Direct answer
+
+A header file (`.h`) declares functions, structs and constants so that several `.c` files can use them. The source file (`.c`) contains the definitions. Add include guards to avoid duplicate definitions.
+
+## Example
+
+`math_utils.h`
+
+```c
+#ifndef MATH_UTILS_H
+#define MATH_UTILS_H
+
+int add(int a, int b);
+
+#endif
+```
+
+`math_utils.c`
+
+```c
+#include "math_utils.h"
+
+int add(int a, int b) {
+    return a + b;
+}
+```
+
+`main.c`
+
+```c
+#include <stdio.h>
+#include "math_utils.h"
+
+int main(void) {
+    printf("%d\n", add(2, 3));
+    return 0;
+}
+```
+
+Compile:
+
+```bash
+gcc main.c math_utils.c -o app
+```
+
+## Tips
+
+- Use `<angle brackets>` for system headers and `"quotes"` for your own.
+- Do not define variables in headers.
+
+## The bottom line
+
+Headers declare, source files define.
+
+=== gcc-compiler-basics
+title: How to Compile C Programs With GCC: Commands and Flags
+desc: Learn how to compile a C program with GCC: basic commands, useful warning flags, multiple files, debugging symbols and what the compile stages do.
+tags: compiler gcc, gcc basics, how to compile c program, gcc flags, gcc wall
+rel: learn-c-programming-for-beginners
+q: How do I compile a C program? | Run gcc file.c -o program, then run the program.
+q: What does -Wall do? | It turns on a broad set of helpful warnings.
+q: How do I compile several files? | List them all in one gcc command, or compile each to an object file and link them.
+---
+The compiler turns your text into a program.
+
+## Direct answer
+
+Compile a C file with `gcc main.c -o app` and run it with `./app`. Add `-Wall -Wextra` to see warnings, `-g` to include debugging information and list multiple files to compile them together.
+
+## Common commands
+
+```bash
+gcc main.c -o app
+gcc -Wall -Wextra -g main.c -o app
+gcc main.c utils.c -o app
+./app
+```
+
+## Useful flags
+
+| Flag | Meaning |
+| :--- | :--- |
+| `-Wall -Wextra` | more warnings |
+| `-g` | debugging info |
+| `-O2` | optimise |
+| `-std=c11` | choose the language standard |
+| `-fsanitize=address` | catch memory errors |
+
+## What happens during compile
+
+1. **Preprocessing:** handles `#include` and `#define`.
+2. **Compiling:** turns C into assembly.
+3. **Assembling:** creates object files.
+4. **Linking:** joins objects and libraries.
+
+## Windows
+
+Install MinGW-w64 or use WSL to get GCC.
+
+## The bottom line
+
+Always compile with warnings on and read them.
+
+=== segmentation-fault-c
+title: Segmentation Fault in C: Causes and How to Debug It
+desc: A segmentation fault means your program touched memory it should not. Learn the common causes, how to find the line and how to prevent it.
+tags: segmentation fault, segfault c, segmentation fault causes, debug segfault, core dumped
+rel: pointers-in-c, c-memory-management
+q: What is a segmentation fault? | A crash that happens when a program accesses memory it is not allowed to access.
+q: What causes it? | Dereferencing NULL or uninitialised pointers, going out of array bounds, using freed memory or stack overflow.
+q: How do I find the cause? | Compile with -g, run under gdb or a sanitizer and look at the line where it crashes.
+---
+"Segmentation fault (core dumped)" is the C programmer's rite of passage.
+
+## Direct answer
+
+A segmentation fault means your program tried to read or write memory it does not own. Common causes are dereferencing a `NULL` or uninitialised pointer, writing past an array, using memory after `free` and endless recursion. Use `gdb` or AddressSanitizer to find the exact line.
+
+## Typical bugs
+
+```c
+int *p = NULL;
+*p = 5;                // crash
+
+int arr[3];
+arr[10] = 1;           // out of bounds
+
+char *s = "hello";
+s[0] = 'H';            // string literals are read-only
+```
+
+## How to debug
+
+```bash
+gcc -g -fsanitize=address main.c -o app
+./app
+```
+
+Or with gdb:
+
+```bash
+gcc -g main.c -o app
+gdb ./app
+(gdb) run
+(gdb) bt
+```
+
+## Prevention
+
+- Initialise pointers to `NULL` and check before use.
+- Check array bounds.
+- Free memory once and set pointers to `NULL`.
+
+## The bottom line
+
+Find the line, find the pointer, fix the assumption.
+
+=== c-data-types
+title: Data Types in C: int, float, char, double and Sizes
+desc: Learn C's basic data types: int, char, float, double, their typical sizes, modifiers like unsigned and long and how to check sizes with sizeof.
+tags: c data types, data types in c, int float double char, sizeof in c, unsigned int
+rel: learn-c-programming-for-beginners
+q: What are the basic data types in C? | int, char, float and double, along with modifiers such as short, long, signed and unsigned.
+q: How big is an int in C? | It depends on the system, commonly 4 bytes. Use sizeof to check.
+q: What is the difference between float and double? | double has more precision and range than float.
+---
+C types tell the compiler how much memory a value needs and how to treat it.
+
+## Direct answer
+
+The basic C types are `char` for characters, `int` for whole numbers, `float` for single-precision decimals and `double` for double-precision decimals. Modifiers like `short`, `long` and `unsigned` change the range. Sizes depend on the platform, so use `sizeof` to check.
+
+## Table
+
+| Type | Typical use | Common size |
+| :--- | :--- | :--- |
+| `char` | single character | 1 byte |
+| `int` | whole numbers | 4 bytes |
+| `float` | decimals | 4 bytes |
+| `double` | precise decimals | 8 bytes |
+| `long long` | large integers | 8 bytes |
+
+## Check sizes
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    printf("int: %zu\n", sizeof(int));
+    printf("double: %zu\n", sizeof(double));
+    return 0;
+}
+```
+
+## Cautions
+
+- Integer division truncates: `5 / 2` is `2`.
+- Floating-point numbers are approximate.
+- Mixing signed and unsigned can surprise you.
+
+## The bottom line
+
+Choose the smallest type that fits the data safely.
+
+=== printf-and-scanf-in-c
+title: printf and scanf in C: Format Specifiers and Safe Input
+desc: Learn how to print with printf and read input with scanf in C: format specifiers like %d, %f and %s, common mistakes and safer input with fgets.
+tags: printf scanf, c printf, c scanf, format specifiers, c input output
+rel: c-data-types
+q: What does printf do? | It prints formatted text to the screen using format specifiers.
+q: What are common format specifiers? | %d for int, %f for float and double, %c for char and %s for strings.
+q: Why does scanf need &? | It needs the address of the variable so it can store the value there.
+---
+Input and output are your first window into what a C program is doing.
+
+## Direct answer
+
+`printf` prints formatted text using specifiers such as `%d` for integers, `%f` for decimals, `%c` for characters and `%s` for strings. `scanf` reads input in the same format but needs the address of each variable, so use `&`. For lines of text, `fgets` is safer.
+
+## Example
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    int age;
+    char name[30];
+
+    printf("Name: ");
+    scanf("%29s", name);
+
+    printf("Age: ");
+    scanf("%d", &age);
+
+    printf("%s is %d years old\n", name, age);
+    return 0;
+}
+```
+
+## Specifiers
+
+| Specifier | Type |
+| :--- | :--- |
+| `%d` | int |
+| `%f` | float or double |
+| `%c` | char |
+| `%s` | string |
+| `%zu` | size_t |
+
+## Common mistakes
+
+- Missing `&` in `scanf` for numbers.
+- Wrong specifier for the type.
+- Using `scanf("%s")` without a width limit.
+
+## The bottom line
+
+Match specifiers to types and limit input sizes.
+
+=== bitwise-operators-c
+title: Bitwise Operators in C: AND, OR, XOR, NOT and Shifts
+desc: Learn bitwise operators in C with simple examples: AND, OR, XOR, NOT and left and right shifts, plus practical uses like flags and masks.
+tags: bitwise operators, bitwise operators in c, c bit manipulation, bit shift, bitmask
+rel: c-data-types
+q: What are bitwise operators? | Operators that work on individual bits of integers, such as & for AND, | for OR, ^ for XOR, ~ for NOT and << and >> for shifts.
+q: What is a bitmask? | A value used with bitwise operators to read, set or clear specific bits.
+q: How do I check if a bit is set? | Use AND with a mask, such as value & (1 << n).
+---
+Bits are the lowest level you can work at in C.
+
+## Direct answer
+
+Bitwise operators act on the individual bits of integers. `&` is AND, `|` is OR, `^` is XOR, `~` is NOT and `<<` and `>>` shift bits left and right. They are used for flags, masks, compact data and low-level programming.
+
+## Examples
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    unsigned int a = 5;   // 0101
+    unsigned int b = 3;   // 0011
+
+    printf("%u\n", a & b); // 1  (0001)
+    printf("%u\n", a | b); // 7  (0111)
+    printf("%u\n", a ^ b); // 6  (0110)
+    printf("%u\n", a << 1); // 10 (1010)
+    return 0;
+}
+```
+
+## Common patterns
+
+```c
+flags |= (1u << 3);   // set bit 3
+flags &= ~(1u << 3);  // clear bit 3
+flags ^= (1u << 3);   // toggle bit 3
+if (flags & (1u << 3)) { /* bit 3 is set */ }
+```
+
+## Cautions
+
+- Use unsigned types to avoid surprises with signs.
+- Do not confuse `&` with `&&`.
+
+## The bottom line
+
+Learn the four patterns above and you can handle most bit tasks.
+
+=== undefined-behavior-c
+title: Undefined Behavior in C: What It Is and Common Examples
+desc: Undefined behavior means the C standard places no rules on what happens. Learn common examples, why they are dangerous and how to avoid them.
+tags: undefined behavior, undefined behavior in c, c undefined behaviour examples, signed integer overflow, uninitialized variable
+rel: segmentation-fault-c, c-memory-management
+q: What is undefined behavior? | Code for which the C standard does not define the result, so the program may crash, appear to work or do anything.
+q: What are examples? | Reading uninitialised variables, signed integer overflow, out-of-bounds access and dereferencing NULL.
+q: How can I catch it? | Compile with warnings and use sanitizers such as UBSan and AddressSanitizer.
+---
+In C, some mistakes do not give an error. They give no promises.
+
+## Direct answer
+
+Undefined behavior (UB) occurs when your code does something the C standard does not define, so anything can happen. It may work on your machine and fail on another. Avoid it by initialising variables, staying in bounds, checking pointers and testing with sanitizers.
+
+## Common examples
+
+```c
+int x;
+printf("%d\n", x);     // uninitialised
+
+int a = 2147483647;
+a = a + 1;             // signed overflow
+
+int arr[3];
+arr[3] = 1;            // out of bounds
+
+int *p = NULL;
+*p = 1;                // null dereference
+```
+
+## How to find it
+
+```bash
+gcc -Wall -Wextra -g -fsanitize=address,undefined main.c -o app
+./app
+```
+
+## Habits that help
+
+1. Initialise everything.
+2. Check array indexes.
+3. Check pointers.
+4. Compile with warnings and sanitizers.
+
+## The bottom line
+
+"It works on my machine" is not enough in C. Prevent UB by design.

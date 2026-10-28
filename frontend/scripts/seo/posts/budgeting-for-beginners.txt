@@ -1,0 +1,348 @@
+=== pay-yourself-first-budgeting
+title: Pay Yourself First: What It Means and How to Start
+desc: What "pay yourself first" means in budgeting, how to set up automatic savings on payday and how much to move before you spend on anything else.
+tags: pay yourself first, pay yourself first budget, pay yourself first meaning, automatic savings, budgeting method
+rel: how-to-start-saving-money, 50-30-20-rule-budget
+q: What does pay yourself first mean? | You move money into savings or investments as soon as you are paid, before you pay for anything discretionary, instead of saving whatever is left at the end of the month.
+q: How much should I pay myself first? | Start with an amount you can keep up, even if it is small, and raise it when your income rises. Many people begin with a fixed percentage of each payday.
+q: Does pay yourself first work on a low income? | Yes. A small automatic transfer builds the habit, and the habit matters more than the size at the start.
+---
+Most people save what is left over. Usually nothing is left. "Pay yourself first" flips the order so saving happens before spending.
+
+## Direct answer
+
+Pay yourself first means treating savings like a bill you pay on payday. As soon as your income arrives, you move a set amount to savings or investments, then budget the rest for bills and spending. Setting it up as an automatic transfer removes the need for willpower.
+
+## How to set it up
+
+1. **Choose an amount.** Pick a number you can sustain, such as a small fixed sum or a percentage of each paycheck.
+2. **Open a separate savings account** so the money is out of sight and harder to dip into.
+3. **Automate the transfer** for the day after payday.
+4. **Budget the remainder.** Your spending money is now what is left after saving, so the budget has to fit it.
+5. **Raise it gradually.** Increase the amount when you get a raise or finish paying off a debt.
+
+## Common mistakes
+
+- Setting the amount so high that you cancel the transfer by week three.
+- Keeping savings in your everyday account, where it is easy to spend.
+- Forgetting to cover bills first, then borrowing to make rent.
+
+## Pay yourself first and other methods
+
+It pairs well with the [50/30/20 rule](/blog/50-30-20-rule-budget), where the savings slice is simply moved first. It also works inside a zero-based budget, where saving is one of the lines you give a job.
+
+## The bottom line
+
+Move the money first, adjust your spending to match, and let automation do the remembering.
+
+=== sinking-fund-what-it-is
+title: What Is a Sinking Fund? How to Build One for Big Costs
+desc: A sinking fund is money set aside monthly for a planned expense. Learn how to work out the amount, where to keep it and what to save for.
+tags: sinking fund, what is a sinking fund, sinking fund budget, sinking funds examples, saving for irregular expenses
+rel: how-to-start-saving-money, how-to-budget-for-beginners
+q: What is a sinking fund? | A sinking fund is money you set aside in small regular amounts for a known future expense, so the cost does not hit your monthly budget all at once.
+q: What is the difference between a sinking fund and an emergency fund? | A sinking fund is for expenses you know are coming, such as car insurance or gifts. An emergency fund is for surprises.
+q: How do I calculate a sinking fund? | Divide the total cost by the number of months until you need it. A 600 expense in 12 months means setting aside 50 a month.
+---
+Some costs are predictable but not monthly: annual insurance, holidays, car repairs, school fees. A sinking fund stops them from feeling like emergencies.
+
+## Direct answer
+
+A sinking fund is a pot of money you build in small regular amounts for a known future expense. You divide the cost by the months until it is due and save that amount each month. When the bill arrives, the money is already there.
+
+## How to work out the amount
+
+**Monthly amount = total cost ÷ months until due.** A 600 annual bill due in 12 months needs 50 a month. If you only have 6 months, it needs 100 a month.
+
+## What to save for
+
+- Annual or six-monthly insurance and subscriptions
+- Car maintenance and tyres
+- Gifts and holidays
+- Medical and dental costs
+- Back-to-school or term fees
+- Home repairs and replacing appliances
+
+## Where to keep it
+
+Use a separate savings account or a clearly labelled pot so you do not spend it by accident. Many banks let you create several named pots.
+
+## Sinking fund vs emergency fund
+
+Keep them apart. The emergency fund covers the unexpected. Sinking funds cover the expected-but-irregular. Mixing them makes it hard to tell whether you are really covered.
+
+## The bottom line
+
+Turn big irregular costs into small regular ones and they stop wrecking your month.
+
+=== fixed-vs-variable-expenses
+title: Fixed vs Variable Expenses: Differences and Examples
+desc: Fixed expenses stay the same each month and variable ones change. See examples of each and how knowing the difference makes budgeting easier.
+tags: fixed vs variable expenses, fixed expenses, variable expenses, fixed and variable expenses examples, budgeting basics
+rel: how-to-budget-for-beginners, how-to-budget-for-groceries
+q: What are fixed expenses? | Fixed expenses are costs that stay about the same each period, such as rent, loan repayments and insurance premiums.
+q: What are variable expenses? | Variable expenses change from month to month, such as groceries, fuel, utilities and eating out.
+q: Which expenses should I cut first? | Variable expenses are usually the easiest to reduce quickly, because fixed ones are locked in by contracts.
+---
+When money feels tight, it helps to know which costs you can change this month and which you cannot.
+
+## Direct answer
+
+Fixed expenses stay the same each month, like rent or a loan payment. Variable expenses change with your choices or usage, like groceries, fuel and entertainment. In a budget, you plan fixed costs first because they are certain, then set limits on variable ones.
+
+## Examples
+
+| Fixed | Variable |
+| :--- | :--- |
+| Rent or mortgage | Groceries |
+| Loan or car repayment | Fuel or transport |
+| Insurance premiums | Electricity, water, gas |
+| Phone plan with a set price | Eating out and takeaways |
+| Subscriptions | Clothes and shopping |
+
+Some costs sit in between. A phone contract might be fixed, while data overage charges are variable.
+
+## Why it matters
+
+1. **Fixed costs set your floor.** They are what you must cover before anything else.
+2. **Variable costs are your lever.** If you need to cut quickly, start here.
+3. **Forecasting is easier.** You can predict fixed costs exactly and estimate variable ones from past months.
+
+## How to use this in a budget
+
+List your fixed expenses and total them. Subtract from take-home pay. Divide what remains among variable spending and savings. If fixed costs take most of your income, the long-term fix is to reduce them, for example by changing housing or renegotiating bills.
+
+## The bottom line
+
+Know your fixed costs exactly, put limits on variable ones and save before you spend.
+
+=== net-vs-gross-income
+title: Net vs Gross Income: What's the Difference?
+desc: Gross income is what you earn before deductions and net income is what lands in your account. Learn which one to use when you build a budget.
+tags: net vs gross income, gross income, net income, take home pay, gross vs net pay, budget on net income
+rel: how-to-budget-a-salary, how-to-budget-for-beginners
+q: What is the difference between gross and net income? | Gross income is your total earnings before taxes and deductions. Net income, or take-home pay, is what you receive after they are taken out.
+q: Should I budget with gross or net income? | Use net income. It is the money you can actually spend.
+q: What if my income changes each month? | Use the lowest recent month as your baseline and treat any extra as a bonus.
+---
+Job adverts quote gross pay. Your bank balance shows net pay. Budgeting with the wrong one is a common beginner mistake.
+
+## Direct answer
+
+Gross income is the total you earn before taxes, pension contributions and other deductions. Net income is what remains after those are taken out: your take-home pay. For a budget, always use net income, because that is the money you can actually spend.
+
+## What comes out between gross and net
+
+Depending on where you live, deductions can include income tax, social security or national insurance, pension contributions, health insurance and union fees. Your payslip lists each one.
+
+## A simple example
+
+Imagine a gross salary of 3,000 per month. If 600 goes to tax and other deductions, the net income is 2,400. A budget built on 3,000 would be 600 short every month.
+
+## How to find your net income
+
+- Look at your payslip or the deposits in your bank account.
+- For freelancers, subtract tax set-asides and business costs from what you invoice.
+- If your pay varies, average a few months or use your lowest.
+
+## When gross income matters
+
+Gross is useful when comparing job offers, applying for loans or understanding your tax position. For day-to-day money planning, net is the figure.
+
+## The bottom line
+
+Compare offers in gross, but budget in net.
+
+=== budget-variance
+title: Budget Variance: How to Calculate and Use It
+desc: Budget variance is the gap between planned and actual spending. Learn the formula, how to read it and what to do when you overspend a category.
+tags: budget variance, budget variance formula, budget vs actual, how to calculate budget variance, personal budget review
+rel: how-to-budget-for-beginners, how-to-stop-overspending
+q: What is budget variance? | Budget variance is the difference between what you planned to spend or earn and what actually happened.
+q: How do you calculate budget variance? | Subtract the budgeted amount from the actual amount. A positive result on spending means you overspent.
+q: What causes budget variance? | Unrealistic estimates, irregular bills, price changes and impulse spending are common causes.
+---
+A budget only works if you check it against reality. Variance is how you do that.
+
+## Direct answer
+
+Budget variance is the difference between your planned figure and the actual figure for a category. Calculate it as actual minus budget. For spending, a positive number means you spent more than planned, and a negative number means you spent less. Review it monthly and adjust your plan.
+
+## The formula
+
+**Variance = Actual − Budget**
+
+If you budgeted 400 for groceries and spent 460, the variance is +60, so you overspent by 60. As a percentage: 60 ÷ 400 = 15 percent.
+
+## How to read it
+
+- **Small, random variances** are normal. Do not chase them.
+- **Repeated variances in one category** mean the budget is unrealistic. Change the number.
+- **One-off large variances** usually have a cause, such as a car repair. Add a sinking fund so it does not recur.
+
+## A quick monthly review
+
+1. List each category with budget and actual.
+2. Calculate the variance for each.
+3. Highlight the largest three.
+4. Ask why, then either change behaviour or change the budget.
+
+## The bottom line
+
+Variance is a conversation between your plan and your life. Listen to it and update the plan.
+
+=== debt-snowball-method
+title: Debt Snowball Method: How It Works and When to Use It
+desc: The debt snowball pays off the smallest balance first for quick wins. See the steps, a simple example and how it compares with the avalanche.
+tags: debt snowball, debt snowball method, how does the debt snowball work, pay off debt, snowball vs avalanche
+rel: how-to-budget-to-pay-off-debt
+q: What is the debt snowball method? | You pay the minimum on every debt, then put all extra money toward the smallest balance. When it is gone, you roll its payment into the next smallest.
+q: Is the snowball or avalanche method better? | The avalanche usually costs less interest. The snowball gives faster early wins, which helps some people stick with it.
+q: Does the debt snowball work? | It works if you keep paying. Its advantage is motivation, not mathematics.
+---
+Paying off debt is a long game, and motivation matters. The snowball is designed around that.
+
+## Direct answer
+
+With the debt snowball, you list your debts from smallest balance to largest, pay the minimum on all of them, and put every spare amount toward the smallest. When it is cleared, you add its payment to the next smallest. Payments grow like a snowball rolling downhill.
+
+## Steps
+
+1. List all debts with balance, interest rate and minimum payment.
+2. Order them smallest to largest balance.
+3. Pay the minimum on all but the smallest.
+4. Put all extra money on the smallest.
+5. When it is paid off, add its full payment to the next one.
+6. Repeat until you are debt free.
+
+## A simple example
+
+You have three debts: a store card, a car loan and a larger loan. You clear the store card first. The money you were paying on it moves to the car loan, which now gets a bigger payment, and so on.
+
+## Pros and cons
+
+**Pros:** quick early wins, fewer accounts to manage, strong motivation.
+**Cons:** you may pay more interest overall than with the [avalanche method](/blog/debt-avalanche-method).
+
+## When to choose it
+
+Choose it if you need motivation, have several small debts or have given up on repayment plans before.
+
+## The bottom line
+
+The best method is the one you will actually follow to the end.
+
+=== debt-avalanche-method
+title: Debt Avalanche Method: Pay Less Interest Step by Step
+desc: The debt avalanche pays the highest-interest debt first to save the most money. Learn the steps, an example and how it compares with the snowball.
+tags: debt avalanche, debt avalanche method, debt avalanche vs snowball, pay off debt faster, highest interest first
+rel: how-to-budget-to-pay-off-debt
+q: What is the debt avalanche method? | You pay the minimum on every debt, then put extra money toward the debt with the highest interest rate first.
+q: Is the avalanche better than the snowball? | Mathematically it usually saves more interest, but it can feel slower at first if your highest-rate debt is large.
+q: Can I combine both methods? | Yes. Some people clear a very small debt first for momentum, then switch to highest interest.
+---
+Interest is what makes debt expensive. The avalanche attacks it directly.
+
+## Direct answer
+
+With the debt avalanche, you pay the minimum on every debt and put all extra money toward the one with the highest interest rate. When it is paid, you move on to the next highest rate. This typically minimises the total interest you pay.
+
+## Steps
+
+1. List each debt with balance, interest rate and minimum payment.
+2. Order by interest rate, highest to lowest.
+3. Pay minimums on all of them.
+4. Send every extra amount to the top-rate debt.
+5. When it is cleared, roll its payment to the next one.
+
+## Avalanche vs snowball
+
+| | Avalanche | Snowball |
+| :--- | :--- | :--- |
+| Order | Highest rate first | Smallest balance first |
+| Interest cost | Usually lower | Usually higher |
+| Motivation | Slower wins | Faster wins |
+
+See the [snowball method](/blog/debt-snowball-method) for the other approach.
+
+## Tips
+
+- Never miss minimum payments, which can bring fees.
+- Stop adding new debt while you repay.
+- Keep a small starter emergency fund so a surprise does not push you back to borrowing.
+
+## The bottom line
+
+If you can stay motivated, the avalanche saves the most money. If not, choose the snowball.
+
+=== irregular-income-budget
+title: How to Budget on an Irregular Income
+desc: A step-by-step way to budget when your income changes every month: use your lowest month, pay yourself a wage and build a buffer.
+tags: irregular income budget, budget irregular income, how to budget freelance income, variable income budget, budgeting for gig workers
+rel: how-to-budget-a-salary, how-to-budget-on-a-low-income
+q: How do you budget when income is irregular? | Base your budget on your lowest typical month, cover essentials first, and save extra income in a buffer for slower months.
+q: What is the best budget for freelancers? | A baseline budget plus a buffer account. Pay yourself a steady monthly wage from the account.
+q: How much buffer do I need? | Many people aim for a few months of essential expenses, built gradually.
+---
+When pay arrives unevenly, a normal monthly budget breaks. A few changes make it work.
+
+## Direct answer
+
+To budget on irregular income, find your lowest typical monthly income and budget as if that is all you earn. Cover essentials first. Put anything extra into a buffer, then pay yourself a steady "wage" from the buffer each month so your spending is stable.
+
+## Step by step
+
+1. **Review 6 to 12 months of income** and find the lowest normal month.
+2. **List your essential costs:** housing, food, utilities, transport, minimum debt payments.
+3. **Set a baseline budget** at or below your lowest month.
+4. **Open a buffer account** where all income lands first.
+5. **Pay yourself a fixed wage** from it on the same day each month.
+6. **Add surplus months to the buffer,** and use it in lean months.
+7. **Set aside tax** if you are self-employed, as soon as money arrives.
+
+## Tips
+
+- Keep irregular bills in [sinking funds](/blog/sinking-fund-what-it-is).
+- Track income as carefully as spending.
+- Review your baseline every quarter.
+
+## The bottom line
+
+Stable spending from unstable income needs a buffer between the two.
+
+=== couples-budget
+title: Couples Budget: 4 Ways to Manage Money Together
+desc: Four ways couples can budget together, from fully joint to fully separate, plus how to talk about money, split bills fairly and set shared goals.
+tags: couples budget, how to budget as a couple, budgeting with a partner, joint vs separate accounts, split bills fairly
+rel: how-to-budget-as-a-couple-or-family
+q: How do couples budget together? | Agree shared goals and bills, choose a system such as joint, separate or hybrid accounts, and review it regularly.
+q: Should couples have a joint account? | It depends on trust, income gaps and preference. Many couples use a joint account for shared costs and keep personal accounts too.
+q: How do you split bills fairly? | Equal splits are simple. Proportional splits, based on income, can feel fairer when earnings differ a lot.
+---
+Money is one of the top things couples argue about. A clear system and regular talks prevent most of it.
+
+## Direct answer
+
+Couples can budget together by agreeing on shared goals, choosing how to hold money (joint, separate or hybrid), splitting shared costs fairly and reviewing the plan regularly. There is no single right system. The best one is the one both partners understand and accept.
+
+## Four common setups
+
+1. **Fully joint:** all income goes into shared accounts. Simple and transparent, but needs high trust.
+2. **Fully separate:** each pays agreed bills from their own account. Independent, but can feel uneven.
+3. **Hybrid:** a joint account for shared bills plus personal accounts. The most popular compromise.
+4. **Proportional:** each contributes in proportion to income. Fairer when salaries differ.
+
+## How to start the conversation
+
+- Pick a calm moment, not mid-argument.
+- Share income, debts and goals openly.
+- Agree what counts as shared and what is personal.
+- Give each person personal spending money with no questions asked.
+
+## Keep it working
+
+Hold a short money meeting monthly. Review the budget, check progress toward shared goals and adjust.
+
+## The bottom line
+
+Transparency, fairness and regular check-ins matter more than which account setup you choose.

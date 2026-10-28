@@ -1,0 +1,324 @@
+=== linkedin-headline-examples
+title: LinkedIn Headline Examples: 25 Ideas and a Formula That Works
+desc: Write a LinkedIn headline that attracts recruiters: the formula, 25 examples for different roles and mistakes to avoid.
+tags: linkedin headline, linkedin headline examples, best linkedin headlines, how to write a linkedin headline, linkedin profile tips
+rel: linkedin-profile-tips-for-job-seekers, personal-brand-statement
+q: What makes a good LinkedIn headline? | It states your role or goal, key skills and value in a few words, with keywords recruiters search for.
+q: How long can it be? | There is a character limit, so keep the most important words first.
+q: Should I write "open to work"? | You can use the platform's feature to signal availability, and make your headline clear about what you do.
+---
+Your headline is the first line recruiters read.
+
+## Direct answer
+
+A strong LinkedIn headline combines your role, key skills and the value you offer, using words recruiters search for. Formula: "[Role] | [Key skills] | [Value or result]".
+
+## Examples
+
+- Data Analyst | SQL, Python, Tableau | Turning data into decisions
+- Customer Support Specialist | Empathy, Zendesk | Raising satisfaction scores
+- Junior Web Developer | HTML, CSS, JavaScript | Building fast, accessible sites
+- Marketing Graduate | Content, SEO | Looking for a growth role
+
+## Mistakes
+
+- Only your job title.
+- Buzzwords with no proof.
+- Too long to read.
+
+## The bottom line
+
+Be specific and keyword-rich.
+
+=== portfolio-website-guide
+title: How to Build a Portfolio Website That Gets You Hired
+desc: A portfolio website shows your work. Learn what to include, how many projects to show, how to write case studies and tips for clean design.
+tags: portfolio website, how to make a portfolio, portfolio website examples, portfolio for job seekers, case study portfolio
+rel: how-to-get-noticed-by-employers, how-to-make-a-website-for-beginners
+q: What should be in a portfolio? | A short intro, three to five strong projects with context and results, and clear contact details.
+q: Do I need my own domain? | It looks professional and is inexpensive, but a free host works to start.
+q: How do I show projects without clients? | Use personal projects, volunteer work or case studies you create.
+---
+Show, do not just tell.
+
+## Direct answer
+
+A portfolio website should have a clear intro, three to five of your best projects with the problem, your role, the process and the result, and an easy way to contact you. Keep design simple, fast and mobile friendly.
+
+## Structure
+
+1. **Home:** who you are and what you do.
+2. **Projects:** each with a short case study.
+3. **About:** your story and skills.
+4. **Contact.**
+
+## Case study format
+
+- The problem.
+- What you did.
+- The result.
+- What you learned.
+
+## Tips
+
+- Quality over quantity.
+- Link to code or live demos.
+- Check it on a phone.
+
+## The bottom line
+
+A small, well-presented portfolio beats a large, messy one.
+
+=== get-referrals-for-jobs
+title: How to Get a Job Referral: Ask, Prepare and Follow Up
+desc: Referrals often get your resume seen first. Learn how to find people who can refer you, how to ask politely and what to send to make it easy.
+tags: job referral, how to get a referral, referral request message, employee referral, networking for jobs
+rel: hidden-job-market, how-to-network-for-a-job
+q: What is a job referral? | When an employee recommends you for an open role at their company.
+q: How do I ask for one? | Build a connection first, then send a short message with the role link, your resume and why you fit.
+q: What if they say no? | Thank them anyway. There may be reasons beyond you.
+---
+A warm introduction beats a cold application.
+
+## Direct answer
+
+To get a referral, find people at the company, build a genuine connection, share the role and your resume, explain why you fit and make it easy for them to say yes. Always be polite and follow up.
+
+## Message template
+
+"Hi [name], I am applying for [role] at [company]. My experience in [skill] matches the requirements, and I have attached my resume. Would you be comfortable referring me, or sharing any advice?"
+
+## Tips
+
+1. Do not ask strangers for a favour on first contact. Start with advice.
+2. Make it easy: give links and a summary.
+3. Thank them and update them.
+
+## The bottom line
+
+Relationships open doors that applications cannot.
+
+=== cold-email-recruiters
+title: How to Email a Recruiter: Templates That Get Replies
+desc: Write short, specific emails to recruiters: subject line, three-line body, attachments and follow-up, with templates you can adapt.
+tags: cold email recruiters, how to email a recruiter, recruiter email template, email hiring manager, job outreach email
+rel: get-referrals-for-jobs, email-etiquette-at-work
+q: Should I email a recruiter directly? | Yes, if the message is short, relevant and respectful of their time.
+q: What should the subject line be? | Specific, such as "Data analyst with SQL and Python experience".
+q: When should I follow up? | After about a week, once.
+---
+Be brief, specific and useful.
+
+## Direct answer
+
+Email a recruiter with a clear subject, a short introduction, two specific reasons you fit and a small ask. Attach your resume and follow up once after a week.
+
+## Template
+
+**Subject:** Junior data analyst with SQL and Python
+
+Hi [name],
+I am a data analyst with two years of experience in SQL and dashboards. I noticed your opening for [role]. In my last role I built a reporting tool that saved the team five hours a week. I have attached my resume. Could we talk for 15 minutes this week?
+Thanks,
+[your name]
+
+## Tips
+
+1. Personalise each message.
+2. Keep it under 120 words.
+3. Proofread.
+
+## The bottom line
+
+Respect their time and be specific.
+
+=== content-creation-for-job-seekers
+title: Content Creation for Job Seekers: Show Your Skills Publicly
+desc: Writing posts, sharing projects or teaching others can make you visible to employers. Learn what to share, where and how to keep it professional.
+tags: content creation for jobs, personal branding content, share your work online, linkedin posts for job seekers, build visibility
+rel: building-a-personal-brand-at-work, portfolio-website-guide
+q: Does posting online help me get a job? | It can build credibility and visibility, especially if you share useful knowledge and projects.
+q: What should I post about? | What you learned, projects you built and insights from your field.
+q: How often should I post? | Whatever you can keep up, such as once or twice a week.
+---
+Show what you know, and people notice.
+
+## Direct answer
+
+Share useful content on a platform your target employers use: lessons from projects, short tutorials, case studies and thoughtful comments. Be consistent, professional and helpful, and link to your portfolio.
+
+## Ideas
+
+- A short post on what you learned this week.
+- A walkthrough of a project.
+- A summary of a useful article with your take.
+- A comment that adds value to others' posts.
+
+## Tips
+
+1. Pick one platform.
+2. Share what helps others.
+3. Be genuine.
+4. Keep client or employer information private.
+
+## The bottom line
+
+Be useful in public.
+
+=== resume-summary-examples
+title: Resume Summary Examples: How to Write a Strong Opening Statement
+desc: A resume summary gives a quick snapshot of your skills and goals. See formulas and examples for entry level, career change and experienced candidates.
+tags: resume summary, resume summary examples, resume profile, how to write a resume summary, cv personal statement
+rel: how-to-write-a-cv-with-no-experience, impact-statements
+q: What is a resume summary? | A short statement at the top of your resume that highlights your skills, experience and goals.
+q: How long should it be? | Two to four lines.
+q: Do I need one? | It is optional but helpful for career changers and to focus attention.
+---
+The first lines decide whether they keep reading.
+
+## Direct answer
+
+A resume summary is two to four lines at the top of your resume that state who you are, your top skills and what you offer. Use keywords from the job description and include a result if you can.
+
+## Examples
+
+**Entry level:** "Recent business graduate with internship experience in customer research and strong Excel skills, seeking an analyst role."
+
+**Career change:** "Teacher turned junior web developer with HTML, CSS and JavaScript projects and strong communication skills."
+
+**Experienced:** "Operations manager with eight years' experience cutting costs and improving delivery times for retail teams."
+
+## Tips
+
+1. Tailor it to the role.
+2. Avoid clichés.
+3. Show proof.
+
+## The bottom line
+
+Short, targeted and specific.
+
+=== job-alerts-guide
+title: Job Alerts: How to Set Them Up So Good Roles Find You
+desc: Set up job alerts on job boards and company sites, choose keywords and filters, and use them to apply early and tailor applications.
+tags: job alerts, how to set up job alerts, job search alerts, job board tips, apply early
+rel: job-search-strategy
+q: Do job alerts help? | Yes. Applying early can improve your chances, and alerts save search time.
+q: Which keywords should I use? | Job titles, key skills and locations you want.
+q: How many alerts should I have? | Enough to cover your targets without overwhelming your inbox.
+---
+Let the jobs come to you.
+
+## Direct answer
+
+Create alerts on job boards and employer career pages for your target titles, skills and locations. Check them daily, apply quickly with a tailored application and keep refining your keywords.
+
+## Steps
+
+1. List 5 to 8 target job titles.
+2. Add key skills and locations.
+3. Set daily or weekly emails.
+4. Act on new matches within a day or two.
+5. Adjust keywords monthly.
+
+## The bottom line
+
+Alerts save time, but tailored applications win interviews.
+
+=== recruiter-outreach
+title: How Recruiters Find Candidates (and How to Be Found)
+desc: Recruiters search profiles with keywords and filters. Learn how to optimise your profile, show skills clearly and respond professionally.
+tags: recruiter outreach, how recruiters find candidates, get found by recruiters, linkedin recruiter search, optimise profile for recruiters
+rel: linkedin-headline-examples, how-to-get-noticed-by-employers
+q: How do recruiters find candidates? | They search professional networks and databases using keywords, titles, skills and locations.
+q: How can I show up in searches? | Use clear job titles, relevant keywords, a complete profile and signal that you are open to opportunities.
+q: How should I reply to a recruiter? | Promptly and politely, and ask about the role, pay range and process.
+---
+If they cannot find you, they cannot call you.
+
+## Direct answer
+
+To be found by recruiters, complete your profile with clear titles, keywords and skills, add a professional photo, share results and set your preferences to show you are open to work. Reply professionally and ask for role details.
+
+## Checklist
+
+- [ ] Clear headline
+- [ ] Skills listed
+- [ ] Achievements with numbers
+- [ ] Location and preferences
+- [ ] Updated resume
+
+## Replying
+
+"Thank you for reaching out. I would be glad to learn more. Could you share the role description and salary range?"
+
+## The bottom line
+
+Make it easy to understand what you offer.
+
+=== side-projects-for-jobs
+title: Side Projects That Impress Employers: Ideas and How to Present Them
+desc: A good side project shows initiative and skill. Learn how to choose one, finish it, document it and talk about it in applications.
+tags: side projects, side projects for resume, portfolio projects, projects that impress employers, build projects to get hired
+rel: portfolio-website-guide, ml-projects-for-beginners
+q: Do side projects help get a job? | Yes, especially when you lack experience, because they show skills and initiative.
+q: What makes a good one? | A real problem, a finished result and clear documentation.
+q: How many do I need? | Two or three strong ones are better than many unfinished ones.
+---
+Projects prove skills that resumes only claim.
+
+## Direct answer
+
+Choose a project that solves a real problem or relates to the job you want, finish it, document it with a README or case study and talk about what you learned. Two or three good projects are enough.
+
+## Ideas by field
+
+| Field | Project |
+| :--- | :--- |
+| Web | personal portfolio or small business site |
+| Data | analysis of a public dataset |
+| Marketing | content plan for a local business |
+| Design | redesign of a confusing app |
+
+## Present it
+
+1. Explain the problem.
+2. Show the result.
+3. Describe your role and tools.
+4. Share what you would improve.
+
+## The bottom line
+
+Finish something and show it.
+
+=== thought-leadership-for-beginners
+title: Thought Leadership for Beginners: Share Ideas Without Being an Expert
+desc: Thought leadership means sharing useful ideas. Learn how beginners can contribute by teaching what they learn, commenting thoughtfully and building credibility.
+tags: thought leadership, thought leadership for beginners, share ideas online, build credibility online, professional visibility
+rel: content-creation-for-job-seekers, building-a-personal-brand-at-work
+q: Do I need to be an expert to share ideas? | No. You can share what you are learning and the questions you are exploring.
+q: Where should I share? | Where your professional community spends time.
+q: How do I avoid sounding like I know it all? | Be curious, credit sources and share what you learned, not only conclusions.
+---
+You do not need a title to have something useful to say.
+
+## Direct answer
+
+Thought leadership for beginners means sharing what you learn and think in a helpful, honest way: short posts, project write-ups and thoughtful comments. Credit others, be clear about what you know and keep learning in public.
+
+## Ways to start
+
+1. Share one lesson a week.
+2. Summarise an article with your view.
+3. Answer questions in communities.
+4. Write about a project.
+
+## Tips
+
+- Be consistent.
+- Be kind and accurate.
+- Avoid confidential information.
+
+## The bottom line
+
+Teach what you learn, and you grow faster.

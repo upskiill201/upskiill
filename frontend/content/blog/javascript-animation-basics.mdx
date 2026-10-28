@@ -1,0 +1,81 @@
+---
+title: "JavaScript Animation Basics: Transitions and requestAnimationFrame"
+description: "Learn the ways to animate on the web: CSS transitions, keyframes, the Web Animations API and requestAnimationFrame, and which to use for each job."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [javascript animation, requestanimationframe, css transitions javascript, web animations api, animate with javascript]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Interactive Web Pages with JavaScript turns this into short, playable lessons. Free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive Web Pages with JavaScript course"
+faq:
+  - question: "How do I animate with JavaScript?"
+    answer: "Often by toggling classes that use CSS transitions, or using the Web Animations API or requestAnimationFrame for custom motion."
+  - question: "What is requestAnimationFrame?"
+    answer: "A browser method that runs your function before the next repaint, ideal for smooth animations."
+  - question: "Which is better, CSS or JavaScript animation?"
+    answer: "Use CSS for simple effects and JavaScript when you need dynamic control."
+---
+
+The best animation is usually the simplest one that works.
+
+## Direct answer
+
+For most effects, add or remove a CSS class with JavaScript and let a CSS transition do the animation. For more control, use the Web Animations API (`element.animate`) or `requestAnimationFrame`. Animate `transform` and `opacity` for smooth results.
+
+## CSS plus a class
+
+```css
+.box { transition: transform 0.3s ease; }
+.box.moved { transform: translateX(100px); }
+```
+
+```javascript
+box.classList.toggle("moved");
+```
+
+## Web Animations API
+
+```javascript
+box.animate(
+  [{ opacity: 0 }, { opacity: 1 }],
+  { duration: 400, easing: "ease-out", fill: "forwards" }
+);
+```
+
+## requestAnimationFrame
+
+```javascript
+let x = 0;
+function step() {
+  x += 2;
+  box.style.transform = `translateX(${x}px)`;
+  if (x < 300) requestAnimationFrame(step);
+}
+requestAnimationFrame(step);
+```
+
+## Tips
+
+- Animate `transform` and `opacity` rather than layout properties.
+- Respect `prefers-reduced-motion`.
+- Keep animations short.
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) course turns this into short lessons you can play in a few minutes a day. It has 37 lessons, and you can start free.
+
+## The bottom line
+
+Start with CSS transitions and reach for JavaScript only when you need it.
+
+## More guides
+
+- [Build a To-Do List App in JavaScript](/blog/to-do-list-app-javascript)
+- [Debounce in JavaScript](/blog/debounce-javascript)
+- [How to Call an API in JavaScript](/blog/javascript-api-calls)
+- [Javascript dom tutorial for beginners](/blog/javascript-dom-tutorial-for-beginners)
+- [Interactive Web Pages with JavaScript course](/courses/interactive-web-pages-with-javascript)

@@ -1,0 +1,118 @@
+---
+title: "CSS Tutorial for Beginners: Styling, Flexbox and Grid Explained"
+description: "A beginner CSS tutorial: how CSS works, selectors, the box model, Flexbox and Grid with simple examples you can try, and how to practise for free."
+publishedDate: "2026-10-25"
+category: skill-building
+tags: [css tutorial for beginners, css tutorial, css flexbox, css grid, css tutorial with examples, css tutorial free, css box model]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Practise CSS on a live page"
+  text: "Responsive Web Design with CSS teaches cards, headers, Flexbox and Grid on a live page. 100 short lessons, free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive CSS course"
+faq:
+  - question: "What is CSS?"
+    answer: "Cascading Style Sheets, the language that controls how HTML looks: colours, fonts, spacing and layout."
+  - question: "What is Flexbox?"
+    answer: "A CSS layout tool for arranging items in a row or column and spacing them evenly. It is great for menus and card rows."
+  - question: "What is CSS Grid?"
+    answer: "A layout tool for arranging items in rows and columns at once, useful for galleries and page layouts."
+  - question: "Should I learn Flexbox or Grid first?"
+    answer: "Start with Flexbox for one-direction layouts, then learn Grid for two-dimensional ones. Most sites use both."
+  - question: "Where can I practise CSS for free?"
+    answer: "In a browser with a text editor, or with an interactive course. Teyro's CSS courses are free to start."
+---
+
+CSS makes web pages look good. This tutorial covers the ideas you need first, with short examples.
+
+## Direct answer
+
+CSS is a set of rules that style HTML. Each rule picks an element (a selector) and sets properties like colour, size and spacing. Learn selectors, the box model (margin, border, padding), then Flexbox and Grid for layout. Practise by styling a real page.
+
+## How a CSS rule works
+
+```css
+h1 {
+  color: #1f3a93;
+  font-size: 2rem;
+}
+```
+
+`h1` is the selector. Inside the braces are properties and values.
+
+## Selectors
+
+```css
+p { line-height: 1.5; }          /* every paragraph */
+.card { padding: 16px; }          /* anything with class="card" */
+#intro { font-weight: bold; }     /* the element with id="intro" */
+```
+
+Classes are the ones you'll use most.
+
+## The box model
+
+Every element is a box:
+
+- **Content**
+- **Padding** inside the border
+- **Border**
+- **Margin** outside the border
+
+```css
+.card {
+  padding: 16px;
+  border: 1px solid #ddd;
+  margin: 24px 0;
+}
+```
+
+## Flexbox: a row or column
+
+```css
+.menu {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+```
+
+Flexbox lines items up and spaces them. Perfect for menus and rows of cards.
+
+## Grid: rows and columns
+
+```css
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+```
+
+Grid makes three equal columns. Perfect for galleries.
+
+## Making it work on phones
+
+Layouts need to adapt. See [what is responsive web design](/blog/what-is-responsive-web-design).
+
+## Practice tips
+
+- Style a page you've built with [HTML](/blog/html-tutorial-for-beginners).
+- Change one value at a time and watch.
+- Use the browser's inspect tool to experiment.
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns a simple page into a real site: tidy cards, a proper header, galleries that line up and layouts that rearrange for phones. Start with [HTML & CSS for Beginners](/courses/html-and-css-for-beginners) if you're new. Both are free to start.
+
+## The bottom line
+
+Learn the box model, then Flexbox and Grid. Everything else builds on them.
+
+## More web guides
+
+- [How to learn HTML and CSS](/blog/how-to-learn-html-and-css)
+- [HTML tutorial for beginners](/blog/html-tutorial-for-beginners)
+- [What is responsive web design?](/blog/what-is-responsive-web-design)
+- [Responsive CSS course](/courses/responsive-web-design-with-css)

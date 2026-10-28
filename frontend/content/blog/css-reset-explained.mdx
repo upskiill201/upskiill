@@ -1,0 +1,72 @@
+---
+title: "CSS Reset vs Normalize: What They Are and Do You Need One?"
+description: "Learn what a CSS reset does, how it differs from normalize.css, a small modern reset you can copy and when you can skip it."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [css reset, normalize css, modern css reset, box-sizing border-box, css default styles]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "HTML & CSS for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/html-and-css-for-beginners
+  label: "See the HTML & CSS for Beginners course"
+faq:
+  - question: "What is a CSS reset?"
+    answer: "A set of rules that removes or standardises browser default styles so your page starts from a consistent base."
+  - question: "What is the difference between reset and normalize?"
+    answer: "A reset removes default styling. Normalize keeps useful defaults and fixes inconsistencies between browsers."
+  - question: "Do I need a reset?"
+    answer: "A small modern reset is helpful. Heavy resets are less necessary today."
+---
+
+Browsers add their own margins, fonts and spacing. A reset gives you a predictable start.
+
+## Direct answer
+
+A CSS reset removes or standardises default browser styles. Normalize keeps useful defaults while smoothing differences. A short modern reset with `box-sizing: border-box` and no default margins is enough for most projects.
+
+## A small modern reset
+
+```css
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  line-height: 1.5;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+```
+
+## Reset vs normalize
+
+| | Reset | Normalize |
+| :--- | :--- | :--- |
+| Approach | remove everything | keep useful defaults |
+| Result | blank slate | consistent baseline |
+
+## Where Teyro fits
+
+Teyro's [HTML & CSS for Beginners](/courses/html-and-css-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Add a small reset at the top of your stylesheet and move on.
+
+## More guides
+
+- [HTML Attributes Explained](/blog/html-attributes-guide)
+- [Semantic HTML Explained](/blog/semantic-html-explained)
+- [CSS Selectors Explained](/blog/css-selectors-guide)
+- [Html tutorial for beginners](/blog/html-tutorial-for-beginners)
+- [HTML & CSS for Beginners course](/courses/html-and-css-for-beginners)

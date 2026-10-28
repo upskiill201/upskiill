@@ -1,0 +1,66 @@
+---
+title: "How to Debug a React Native App: Logs, Dev Menu and Common Errors"
+description: "Debug React Native with console logs, the developer menu, React DevTools, Metro errors and fixes for red screens, yellow warnings and cache problems."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [react native debugging, debug react native app, react native red screen, metro bundler errors, react devtools]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "React Native for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/react-native-for-beginners
+  label: "See the React Native for Beginners course"
+faq:
+  - question: "How do I debug React Native?"
+    answer: "Use console.log, the developer menu, React DevTools and the error overlays, and read stack traces carefully."
+  - question: "What is the red screen?"
+    answer: "An error overlay showing an uncaught error and stack trace."
+  - question: "How do I clear the Metro cache?"
+    answer: "Restart the dev server with the clear cache option."
+---
+
+Most bugs are visible if you know where to look.
+
+## Direct answer
+
+Debug React Native by reading the red error screen, adding `console.log`, using React DevTools and the developer menu, and restarting Metro with a cleared cache if things act strangely. Check the terminal output as well as the device.
+
+## Tools
+
+- **Logs:** `console.log(value)` shows in the terminal running your dev server.
+- **Developer menu:** shake the device or press `m` in the terminal.
+- **React DevTools:** inspect component props and state.
+- **Error overlay:** read the top line and the first file in your code.
+
+## Common fixes
+
+```bash
+npx expo start -c      # clear Metro cache
+rm -rf node_modules && npm install
+```
+
+## Frequent problems
+
+| Problem | Likely cause |
+| :--- | :--- |
+| "Text strings must be rendered within Text" | a string outside a Text component |
+| Blank screen | error during render, check logs |
+| Cannot connect | phone and computer on different networks |
+| Stale code | cache, restart Metro |
+
+## Where Teyro fits
+
+Teyro's [React Native for Beginners](/courses/react-native-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 80 lessons, and you can start free.
+
+## The bottom line
+
+Read the error, find your file, change one thing, reload.
+
+## More guides
+
+- [AsyncStorage in React Native](/blog/async-storage-react-native)
+- [Fetching Data in React Native](/blog/react-native-api-calls)
+- [Props vs State in React Native](/blog/props-and-state-react-native)
+- [What is expo react native](/blog/what-is-expo-react-native)
+- [React Native for Beginners course](/courses/react-native-for-beginners)

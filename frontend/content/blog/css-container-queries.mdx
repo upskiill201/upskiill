@@ -1,0 +1,81 @@
+---
+title: "CSS Container Queries: Style Components Based on Their Container"
+description: "Container queries let a component respond to the size of its container, not the viewport. Learn the syntax, when they beat media queries and a card example."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [container queries, css container queries, container query example, responsive components, container query syntax]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Responsive Web Design with CSS turns this into short, playable lessons. Free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive Web Design with CSS course"
+faq:
+  - question: "What are container queries?"
+    answer: "CSS rules that apply styles to an element based on the size of a parent container rather than the viewport."
+  - question: "How are they different from media queries?"
+    answer: "Media queries look at the viewport. Container queries look at the component's container."
+  - question: "Are they supported in browsers?"
+    answer: "They are supported in current major browsers. Check compatibility for your audience."
+---
+
+A card in a narrow sidebar and the same card in a wide main column should both look right.
+
+## Direct answer
+
+Container queries apply styles based on the size of a container element. Mark a parent with `container-type: inline-size`, then use `@container (min-width: ...)` to change its children. They make components reusable wherever they are placed.
+
+## Example
+
+```css
+.card-wrap {
+  container-type: inline-size;
+}
+
+.card {
+  display: grid;
+  gap: 12px;
+}
+
+@container (min-width: 480px) {
+  .card {
+    grid-template-columns: 160px 1fr;
+  }
+}
+```
+
+```html
+<div class="card-wrap">
+  <article class="card">
+    <img src="a.jpg" alt="">
+    <div>Text</div>
+  </article>
+</div>
+```
+
+## When to use
+
+- Reusable components placed in different contexts.
+- Design systems.
+
+## When media queries are better
+
+- Page-level layout decisions.
+- User preferences like dark mode.
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Media queries for the page, container queries for components.
+
+## More guides
+
+- [CSS clamp()](/blog/clamp-css-function)
+- [srcset and sizes Explained](/blog/srcset-and-sizes)
+- [CSS min(), max() and clamp()](/blog/css-min-max-functions)
+- [Css media queries explained](/blog/css-media-queries-explained)
+- [Responsive Web Design with CSS course](/courses/responsive-web-design-with-css)

@@ -1,0 +1,63 @@
+---
+title: "TypeScript Strict Mode: What It Turns On and Why to Use It"
+description: "strict mode enables a family of checks in TypeScript. Learn what it includes, such as noImplicitAny and strictNullChecks, and how to adopt it."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [strict mode, typescript strict mode, noimplicitany, strictnullchecks, typescript compiler options]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "TypeScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript for Beginners course"
+faq:
+  - question: "What does strict mode do in TypeScript?"
+    answer: "It enables a group of stricter type-checking options, catching more errors at compile time."
+  - question: "What is noImplicitAny?"
+    answer: "It makes TypeScript report an error when it cannot infer a type and would otherwise fall back to any."
+  - question: "Can I turn on strict mode in an existing project?"
+    answer: "Yes, gradually. Enable the individual flags one at a time and fix errors as you go."
+---
+
+Strict mode is the difference between "TypeScript as a suggestion" and "TypeScript as a safety net".
+
+## Direct answer
+
+Setting `"strict": true` in `tsconfig.json` turns on several checks, including `noImplicitAny`, `strictNullChecks` and `strictFunctionTypes`. It catches more bugs at compile time, especially `null` and `undefined` mistakes. New projects should start with it on.
+
+## What it catches
+
+```typescript
+// noImplicitAny
+function double(x) {   // error: parameter has an implicit any type
+  return x * 2;
+}
+
+// strictNullChecks
+let name: string = null; // error
+const user = users.find(u => u.id === 1);
+console.log(user.name);  // error: user may be undefined
+```
+
+## Adopting it in an existing project
+
+1. Turn on one flag at a time.
+2. Fix the errors it reveals.
+3. Use `// @ts-expect-error` sparingly for temporary exceptions.
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 20 lessons, and you can start free.
+
+## The bottom line
+
+Turn it on early. The errors it shows are real bugs waiting to happen.
+
+## More guides
+
+- [any vs unknown in TypeScript](/blog/any-vs-unknown-typescript)
+- [TypeScript With React](/blog/typescript-with-react)
+- [TypeScript Type Assertions](/blog/typescript-type-assertion)
+- [Tsconfig explained](/blog/tsconfig-explained)
+- [TypeScript for Beginners course](/courses/typescript-for-beginners)

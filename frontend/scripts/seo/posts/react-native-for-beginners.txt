@@ -1,0 +1,792 @@
+=== what-is-expo-react-native
+title: What Is Expo? The Easiest Way to Start With React Native
+desc: Expo is a framework and set of tools for building React Native apps. Learn what it does, how to start a project, Expo Go and when to go beyond it.
+tags: expo, what is expo, expo react native, expo go, expo vs react native cli
+rel: react-native-tutorial-for-beginners, is-react-native-easy-to-learn
+q: What is Expo? | A framework and platform built around React Native that simplifies setup, development, building and updating apps.
+q: Do I need Expo to use React Native? | No, but it is the recommended way for most new projects because it removes a lot of setup.
+q: What is Expo Go? | An app you install on your phone to preview your project quickly while developing.
+---
+Setting up native tooling used to be the hardest part of React Native. Expo takes that away.
+
+## Direct answer
+
+Expo is a framework and set of services for building React Native apps. It handles project setup, a development server, common device features and building for the app stores. You can start with one command and preview your app on a real phone with Expo Go.
+
+## Start a project
+
+```bash
+npx create-expo-app my-app
+cd my-app
+npx expo start
+```
+
+Scan the QR code with Expo Go on your phone, or press a key to open a simulator.
+
+## What Expo gives you
+
+- File-based routing with Expo Router.
+- Libraries for camera, location, notifications and more.
+- Tools to build and submit apps.
+- Over-the-air updates for JavaScript changes.
+
+## When to go beyond Expo Go
+
+If you need custom native code, create a development build. Expo supports this without abandoning the workflow.
+
+## The bottom line
+
+Start with Expo. You can always customise later.
+
+=== react-native-core-components
+title: React Native Core Components: View, Text, Image, ScrollView and More
+desc: Learn the core React Native components: View, Text, Image, ScrollView, TextInput and Pressable, with a small example screen.
+tags: react native components, react native view text, react native core components, scrollview, pressable
+rel: react-native-tutorial-for-beginners
+q: What are React Native components? | Building blocks that render native user interface elements, such as View, Text and Image.
+q: What is the equivalent of div? | View is similar to div, and Text is used for all text.
+q: Can I use HTML tags? | No. React Native uses its own components instead of HTML elements.
+---
+If you know HTML, think of `View` as `div` and `Text` as `p`, with some rules of its own.
+
+## Direct answer
+
+React Native has built-in components such as `View` (container), `Text` (all text must be inside it), `Image`, `ScrollView` (scrolling content), `TextInput` and `Pressable` (touch handling). You combine them to build screens.
+
+## Example screen
+
+```jsx
+import { View, Text, Image, TextInput, Pressable, StyleSheet } from "react-native";
+
+export default function Profile() {
+  return (
+    <View style={styles.container}>
+      <Image source={{ uri: "https://example.com/avatar.png" }} style={styles.avatar} />
+      <Text style={styles.name}>Ada Lovelace</Text>
+      <TextInput placeholder="Say something" style={styles.input} />
+      <Pressable style={styles.button} onPress={() => console.log("pressed")}>
+        <Text style={styles.buttonText}>Save</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, alignItems: "center" },
+  avatar: { width: 96, height: 96, borderRadius: 48 },
+  name: { fontSize: 20, marginVertical: 8 },
+  input: { borderWidth: 1, borderColor: "#ccc", padding: 8, width: "100%" },
+  button: { backgroundColor: "#3d5afe", padding: 12, marginTop: 12 },
+  buttonText: { color: "#fff" },
+});
+```
+
+## Rules to remember
+
+- Text must be inside `Text`.
+- Use `Pressable` instead of buttons for custom styling.
+- Use `ScrollView` for small lists and `FlatList` for long ones.
+
+## The bottom line
+
+Learn these six components and you can build most screens.
+
+=== react-native-flatlist
+title: React Native FlatList: Render Long Lists the Right Way
+desc: Use FlatList to render long lists efficiently in React Native. Learn data, renderItem, keyExtractor, separators, pull to refresh and performance tips.
+tags: flatlist, react native flatlist, flatlist example, react native list, flatlist vs scrollview
+rel: react-native-core-components
+q: What is FlatList? | A React Native component that renders long lists efficiently by drawing only the items on screen.
+q: What is the difference between FlatList and ScrollView? | ScrollView renders all children at once. FlatList renders items lazily, so it is better for long lists.
+q: Why do I get a key warning? | Items need a stable unique key. Provide a keyExtractor.
+---
+Lists are in nearly every app, and FlatList keeps them smooth.
+
+## Direct answer
+
+`FlatList` renders long lists efficiently by only drawing items near the screen. Give it a `data` array, a `renderItem` function and a `keyExtractor`. Use it instead of mapping over a `ScrollView` for anything beyond a few items.
+
+## Example
+
+```jsx
+import { FlatList, Text, View } from "react-native";
+
+const DATA = [
+  { id: "1", title: "Learn React Native" },
+  { id: "2", title: "Build a screen" },
+  { id: "3", title: "Ship the app" },
+];
+
+export default function List() {
+  return (
+    <FlatList
+      data={DATA}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <View style={{ padding: 16 }}>
+          <Text>{item.title}</Text>
+        </View>
+      )}
+      ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "#eee" }} />}
+    />
+  );
+}
+```
+
+## Useful props
+
+| Prop | Purpose |
+| :--- | :--- |
+| `onRefresh`, `refreshing` | pull to refresh |
+| `onEndReached` | load more |
+| `ListEmptyComponent` | empty state |
+| `ListHeaderComponent` | header |
+
+## Performance tips
+
+- Keep `renderItem` light and consider `React.memo`.
+- Use stable keys.
+- Avoid inline heavy functions where possible.
+
+## The bottom line
+
+Use FlatList for long lists and provide good keys.
+
+=== react-native-navigation-guide
+title: React Native Navigation: Stack, Tabs and Expo Router Explained
+desc: Learn the main navigation patterns in React Native: stack, tabs and drawer, with React Navigation and Expo Router, and how to pass params between screens.
+tags: react native navigation, react navigation, expo router, stack navigator, tab navigator
+rel: what-is-expo-react-native
+q: How do I navigate between screens in React Native? | Use a navigation library such as React Navigation or Expo Router to define screens and move between them.
+q: What is the difference between stack and tab navigation? | A stack moves forward and back through screens. Tabs switch between top-level sections.
+q: How do I pass data to another screen? | Pass params when navigating, then read them on the next screen.
+---
+Apps have many screens. Navigation connects them.
+
+## Direct answer
+
+React Native apps usually use React Navigation or Expo Router. A stack navigator moves forward and back, tabs switch between top-level sections and a drawer slides in from the side. Pass data between screens with params.
+
+## Expo Router (file-based)
+
+```text
+app/
+  _layout.tsx
+  index.tsx
+  details/[id].tsx
+```
+
+```tsx
+import { Link, useLocalSearchParams } from "expo-router";
+
+// index.tsx
+export default function Home() {
+  return <Link href="/details/42">Open details</Link>;
+}
+
+// details/[id].tsx
+export default function Details() {
+  const { id } = useLocalSearchParams();
+  return <Text>Item {id}</Text>;
+}
+```
+
+## React Navigation (code-based)
+
+```jsx
+const Stack = createNativeStackNavigator();
+
+<NavigationContainer>
+  <Stack.Navigator>
+    <Stack.Screen name="Home" component={Home} />
+    <Stack.Screen name="Details" component={Details} />
+  </Stack.Navigator>
+</NavigationContainer>
+```
+
+## Choosing
+
+Use Expo Router for new Expo projects. Use React Navigation if you prefer explicit configuration.
+
+## The bottom line
+
+Pick one approach and learn its params and layouts well.
+
+=== react-native-styling-guide
+title: React Native Styling: StyleSheet, Flexbox and Platform Differences
+desc: Learn styling in React Native: StyleSheet.create, Flexbox layout defaults, dimensions, shadows, platform differences and organising styles.
+tags: react native styling, stylesheet create, react native flexbox, react native styles, platform specific styles
+rel: react-native-core-components
+q: How do I style React Native components? | Use the style prop with JavaScript objects, usually created with StyleSheet.create.
+q: Does React Native use CSS? | No. It uses a CSS-like system with camelCase property names in JavaScript.
+q: How is Flexbox different in React Native? | Layout uses Flexbox by default, and flexDirection defaults to column.
+---
+Styling feels like CSS, with a few differences.
+
+## Direct answer
+
+React Native styles are JavaScript objects passed to the `style` prop, usually created with `StyleSheet.create`. Layout uses Flexbox, and the default direction is column. Property names use camelCase, such as `backgroundColor`.
+
+## Example
+
+```jsx
+import { View, Text, StyleSheet } from "react-native";
+
+export default function Card() {
+  return (
+    <View style={styles.card}>
+      <Text style={styles.title}>Hello</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: "#fff",
+  },
+  title: { fontSize: 18, fontWeight: "600" },
+});
+```
+
+## Differences from CSS
+
+| CSS | React Native |
+| :--- | :--- |
+| `background-color` | `backgroundColor` |
+| default row | default column |
+| no units | numbers are density-independent pixels |
+| cascade | no inheritance except some text styles |
+
+## Platform differences
+
+```jsx
+import { Platform } from "react-native";
+const shadow = Platform.select({
+  ios: { shadowOpacity: 0.2, shadowRadius: 6 },
+  android: { elevation: 4 },
+});
+```
+
+## The bottom line
+
+Think Flexbox, write objects, test on both platforms.
+
+=== usestate-in-react-native
+title: useState in React Native: Add State to Your Components
+desc: Learn how useState works in React Native with a counter and a text input, why you must not mutate state, and updating objects and arrays.
+tags: usestate, react native usestate, react state, state management basics, hooks for beginners
+rel: props-and-state-react-native
+q: What does useState do? | It adds a state variable to a component and gives you a function to update it, re-rendering when it changes.
+q: Why does my UI not update? | You may be mutating state directly instead of using the setter, or using the old value in a closure.
+q: How do I update an object or array in state? | Create a new copy, for example with the spread operator, instead of changing the existing one.
+---
+State is how a screen remembers things.
+
+## Direct answer
+
+`useState` returns a value and a setter. Calling the setter updates the value and re-renders the component. Never change state directly. Create new objects and arrays instead.
+
+## Example
+
+```jsx
+import { useState } from "react";
+import { View, Text, Button, TextInput } from "react-native";
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+  const [name, setName] = useState("");
+
+  return (
+    <View style={{ padding: 16 }}>
+      <TextInput value={name} onChangeText={setName} placeholder="Your name" />
+      <Text>Hello {name}, count is {count}</Text>
+      <Button title="Add" onPress={() => setCount(count + 1)} />
+    </View>
+  );
+}
+```
+
+## Updating objects and arrays
+
+```jsx
+const [todos, setTodos] = useState([]);
+
+setTodos([...todos, { id: Date.now(), text: "New" }]);       // add
+setTodos(todos.filter((t) => t.id !== id));                  // remove
+setUser({ ...user, name: "Ada" });                           // update field
+```
+
+## Use the functional form when it depends on the previous value
+
+```jsx
+setCount((c) => c + 1);
+```
+
+## The bottom line
+
+State changes cause re-renders. Treat it as read-only.
+
+=== useeffect-in-react-native
+title: useEffect in React Native: Side Effects, Dependencies and Cleanup
+desc: Learn useEffect for fetching data, timers and subscriptions in React Native. Understand the dependency array, cleanup and common infinite loop bugs.
+tags: useeffect, react native useeffect, useeffect dependency array, useeffect cleanup, react hooks
+rel: usestate-in-react-native
+q: What is useEffect used for? | Running code that interacts with the outside world, such as fetching data, timers and subscriptions, after rendering.
+q: What does the dependency array do? | It tells React when to re-run the effect. An empty array runs once after the first render.
+q: Why does my effect run forever? | The effect updates state that is also in its dependencies, or an object or function dependency changes each render.
+---
+Components render. Effects do things after rendering.
+
+## Direct answer
+
+`useEffect(fn, deps)` runs `fn` after rendering. The dependency array controls when it re-runs: `[]` once, `[value]` when `value` changes and no array on every render. Return a function to clean up timers or subscriptions.
+
+## Fetching data
+
+```jsx
+import { useEffect, useState } from "react";
+
+function Users() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      const res = await fetch("https://jsonplaceholder.typicode.com/users");
+      const data = await res.json();
+      if (!cancelled) setUsers(data);
+    }
+    load();
+    return () => { cancelled = true; };
+  }, []);
+
+  return null;
+}
+```
+
+## Timers with cleanup
+
+```jsx
+useEffect(() => {
+  const id = setInterval(() => console.log("tick"), 1000);
+  return () => clearInterval(id);
+}, []);
+```
+
+## Common mistakes
+
+- Missing dependencies.
+- Updating state inside an effect that depends on it.
+- Forgetting cleanup.
+
+## The bottom line
+
+Effects are for syncing with the outside world. Keep dependencies honest.
+
+=== react-native-vs-flutter
+title: React Native vs Flutter: Which Should You Learn?
+desc: Compare React Native and Flutter on language, performance, ecosystem, learning curve and jobs, with advice on which fits your background.
+tags: react native vs flutter, flutter vs react native, which cross platform framework, mobile app frameworks, learn flutter or react native
+rel: is-react-native-easy-to-learn, react-native-vs-native
+q: Is React Native or Flutter better? | Neither is universally better. React Native uses JavaScript or TypeScript and React. Flutter uses Dart and its own rendering.
+q: Which is easier for web developers? | React Native, if you already know JavaScript or React.
+q: Which has more jobs? | It varies by region and company. Check local job listings.
+---
+Two strong options, different strengths.
+
+## Direct answer
+
+React Native uses JavaScript or TypeScript and React and renders native components. Flutter uses Dart and draws its own interface. If you already know JavaScript, React Native is usually the faster start. If you want a tightly controlled custom UI, Flutter is a strong choice.
+
+## Comparison
+
+| | React Native | Flutter |
+| :--- | :--- | :--- |
+| Language | JavaScript or TypeScript | Dart |
+| UI | native components | custom rendering engine |
+| Web skills reuse | high | lower |
+| Ecosystem | large npm ecosystem | growing package ecosystem |
+| Backed by | Meta and community | Google |
+
+## How to choose
+
+1. **Know JavaScript or React?** Pick React Native.
+2. **Starting from scratch?** Either works. Try a tutorial of each.
+3. **Check job listings** in your area.
+4. **Think about your team.**
+
+## The bottom line
+
+Choose the one that matches your skills and your goals, then commit.
+
+=== react-native-vs-native
+title: React Native vs Native Development: Pros, Cons and When to Choose
+desc: Compare React Native with native Swift and Kotlin development on speed, performance, access to features, team skills and cost.
+tags: react native vs native, native vs cross platform, swift vs react native, kotlin vs react native, cross platform mobile development
+rel: react-native-vs-flutter
+q: What is native development? | Building apps separately for iOS in Swift and Android in Kotlin or Java using each platform's official tools.
+q: Is React Native slower than native? | For most apps the difference is not noticeable, but very demanding graphics or platform-specific features can favour native.
+q: When should I choose native? | When you need maximum performance, deep platform integration or the newest platform features immediately.
+---
+One codebase or two?
+
+## Direct answer
+
+React Native lets you write one JavaScript or TypeScript codebase for iOS and Android. Native development uses separate codebases in Swift and Kotlin. React Native is usually faster to build and cheaper for most apps. Native is better for demanding performance or deep platform features.
+
+## Comparison
+
+| | React Native | Native |
+| :--- | :--- | :--- |
+| Codebases | one | two |
+| Languages | JavaScript or TypeScript | Swift, Kotlin |
+| Speed to market | faster | slower |
+| Platform features | most, with some native code | all, immediately |
+| Performance | good for most apps | best for heavy graphics |
+
+## Good fits for React Native
+
+- Business apps, marketplaces and content apps.
+- Teams with web skills.
+- Prototypes and MVPs.
+
+## Good fits for native
+
+- Games and heavy graphics.
+- Apps that rely on the newest platform APIs.
+
+## The bottom line
+
+Start with React Native unless you have a specific reason not to.
+
+=== publish-react-native-app-to-app-store
+title: How to Publish a React Native App to the App Store and Google Play
+desc: Overview of releasing a React Native app: developer accounts, app icons and listings, builds with EAS, TestFlight and internal testing, review and updates.
+tags: app store submission, publish react native app, submit app to app store, google play console, eas build
+rel: what-is-expo-react-native
+q: What do I need to publish an app? | Developer accounts for Apple and Google, app icons and screenshots, a privacy policy and a signed build.
+q: How long does review take? | It varies. Plan for several days and be ready to respond to feedback.
+q: Can I test before releasing? | Yes. Use TestFlight on iOS and internal or closed testing on Google Play.
+---
+Writing the app is half the job. Releasing it is the other half.
+
+## Direct answer
+
+To publish a React Native app, create Apple and Google developer accounts, prepare icons, screenshots and a privacy policy, make signed production builds, test them through TestFlight or Google Play testing tracks, then submit for review. Plan time for feedback.
+
+## Checklist
+
+1. **Accounts:** Apple Developer Program and Google Play Console. Both have fees and verification steps. Check current requirements.
+2. **App identity:** name, bundle ID or package name, version number.
+3. **Assets:** icon, splash screen and screenshots.
+4. **Policies:** privacy policy, data safety and age rating answers.
+5. **Builds:** create production builds (for Expo projects, EAS Build helps).
+6. **Testing:** TestFlight and Play testing tracks with real users.
+7. **Submit** and respond to review notes.
+8. **Release** and monitor crashes.
+
+## After launch
+
+Use over-the-air updates for small JavaScript fixes where allowed by store rules, and submit new builds for native changes.
+
+## The bottom line
+
+Start the accounts and policy work early. Those steps cause most delays.
+
+=== debugging-react-native
+title: How to Debug a React Native App: Logs, Dev Menu and Common Errors
+desc: Debug React Native with console logs, the developer menu, React DevTools, Metro errors and fixes for red screens, yellow warnings and cache problems.
+tags: react native debugging, debug react native app, react native red screen, metro bundler errors, react devtools
+rel: what-is-expo-react-native
+q: How do I debug React Native? | Use console.log, the developer menu, React DevTools and the error overlays, and read stack traces carefully.
+q: What is the red screen? | An error overlay showing an uncaught error and stack trace.
+q: How do I clear the Metro cache? | Restart the dev server with the clear cache option.
+---
+Most bugs are visible if you know where to look.
+
+## Direct answer
+
+Debug React Native by reading the red error screen, adding `console.log`, using React DevTools and the developer menu, and restarting Metro with a cleared cache if things act strangely. Check the terminal output as well as the device.
+
+## Tools
+
+- **Logs:** `console.log(value)` shows in the terminal running your dev server.
+- **Developer menu:** shake the device or press `m` in the terminal.
+- **React DevTools:** inspect component props and state.
+- **Error overlay:** read the top line and the first file in your code.
+
+## Common fixes
+
+```bash
+npx expo start -c      # clear Metro cache
+rm -rf node_modules && npm install
+```
+
+## Frequent problems
+
+| Problem | Likely cause |
+| :--- | :--- |
+| "Text strings must be rendered within Text" | a string outside a Text component |
+| Blank screen | error during render, check logs |
+| Cannot connect | phone and computer on different networks |
+| Stale code | cache, restart Metro |
+
+## The bottom line
+
+Read the error, find your file, change one thing, reload.
+
+=== async-storage-react-native
+title: AsyncStorage in React Native: Save Data on the Device
+desc: Learn how to store data locally in React Native with AsyncStorage: setItem, getItem, JSON values, loading on app start and when to use something else.
+tags: async storage, asyncstorage react native, react native local storage, save data on device, secure storage
+rel: usestate-in-react-native
+q: What is AsyncStorage? | A simple key-value storage system for saving small amounts of data on a device.
+q: Is it secure? | No. Do not store passwords or tokens in it. Use secure storage for sensitive data.
+q: How do I store an object? | Convert it to a JSON string when saving and parse it when reading.
+---
+Apps need to remember settings between launches.
+
+## Direct answer
+
+`AsyncStorage` saves small key-value data on the device, asynchronously. Use `setItem`, `getItem` and `removeItem`, and convert objects with `JSON.stringify` and `JSON.parse`. For secrets, use a secure storage library instead.
+
+## Install and use
+
+```bash
+npx expo install @react-native-async-storage/async-storage
+```
+
+```jsx
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+await AsyncStorage.setItem("theme", "dark");
+const theme = await AsyncStorage.getItem("theme");
+
+await AsyncStorage.setItem("profile", JSON.stringify({ name: "Ada" }));
+const profile = JSON.parse(await AsyncStorage.getItem("profile") || "null");
+```
+
+## Load on start
+
+```jsx
+useEffect(() => {
+  (async () => {
+    const saved = await AsyncStorage.getItem("theme");
+    if (saved) setTheme(saved);
+  })();
+}, []);
+```
+
+## When to use something else
+
+| Need | Use |
+| :--- | :--- |
+| Secrets and tokens | secure storage |
+| Larger or relational data | a local database |
+| Data shared across devices | a backend |
+
+## The bottom line
+
+Great for preferences and simple state.
+
+=== react-native-api-calls
+title: Fetching Data in React Native: fetch, Loading States and Errors
+desc: Learn how to call an API from React Native with fetch, show loading and error states, handle empty results and avoid common network problems on devices.
+tags: react native api calls, react native fetch, fetch data react native, loading state, error handling
+rel: useeffect-in-react-native
+q: How do I call an API in React Native? | Use the built-in fetch function, usually inside useEffect, and store the result in state.
+q: Why does my API work in the browser but not on my phone? | You may be using localhost, which refers to the phone itself. Use your computer's local network address or a deployed URL.
+q: How do I show loading and error states? | Keep separate state for loading and error, and render different UI for each.
+---
+Real apps get data from servers. Real apps also handle slow and failing networks.
+
+## Direct answer
+
+Use `fetch` in a `useEffect`, store the result in state and keep separate states for loading and errors. On a device, never use `localhost` for your own server. Use your computer's network address or a deployed URL.
+
+## Example
+
+```jsx
+import { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
+
+export default function Posts() {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("https://jsonplaceholder.typicode.com/posts");
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        setPosts(await res.json());
+      } catch (e) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  if (loading) return <ActivityIndicator />;
+  if (error) return <Text>Something went wrong: {error}</Text>;
+  if (posts.length === 0) return <Text>No posts yet</Text>;
+
+  return (
+    <FlatList
+      data={posts}
+      keyExtractor={(p) => String(p.id)}
+      renderItem={({ item }) => <Text style={{ padding: 12 }}>{item.title}</Text>}
+    />
+  );
+}
+```
+
+## The bottom line
+
+Loading, error, empty and success: handle all four states.
+
+=== props-and-state-react-native
+title: Props vs State in React Native: What's the Difference?
+desc: Props pass data into a component and state holds data it manages. Learn the difference with examples, one-way data flow and lifting state up.
+tags: props and state, react native props, props vs state, lifting state up, react data flow
+rel: usestate-in-react-native
+q: What is the difference between props and state? | Props are inputs passed from a parent. State is data a component owns and can change.
+q: Can a child change its props? | No. Props are read-only. The parent must change them.
+q: What is lifting state up? | Moving state to a common parent so multiple children can share it.
+---
+Two ideas run all of React: data in, data owned.
+
+## Direct answer
+
+Props are values passed into a component by its parent and are read-only. State is data that a component owns and can update, causing a re-render. When siblings need the same data, move the state up to their parent and pass it down as props.
+
+## Example
+
+```jsx
+function Greeting({ name }) {          // prop
+  return <Text>Hello {name}</Text>;
+}
+
+export default function App() {
+  const [name, setName] = useState("Ada"); // state
+
+  return (
+    <View>
+      <Greeting name={name} />
+      <TextInput value={name} onChangeText={setName} />
+    </View>
+  );
+}
+```
+
+## Comparison
+
+| | Props | State |
+| :--- | :--- | :--- |
+| Owned by | parent | the component |
+| Can change | no | yes, with the setter |
+| Purpose | configure | remember |
+
+## Lifting state up
+
+Keep state in the closest common parent and pass the value and the setter to children.
+
+## The bottom line
+
+Props flow down, events flow up.
+
+=== react-native-animations
+title: React Native Animations: Animated API and Reanimated Basics
+desc: An introduction to animation in React Native: the built-in Animated API, Reanimated for smoother gesture-driven motion and tips for performance.
+tags: react native animations, animated api react native, reanimated, react native fade in, animation performance
+rel: react-native-styling-guide
+q: How do I animate in React Native? | Use the built-in Animated API for simple animations, or Reanimated for complex, gesture-driven ones.
+q: Should I use the native driver? | Yes, where supported. It runs animations on the native side for smoother results.
+q: Which properties animate smoothly? | Opacity and transform, such as translate and scale.
+---
+Motion makes an app feel polished, as long as it stays smooth.
+
+## Direct answer
+
+For simple animations, use React Native's built-in `Animated` API with `useNativeDriver: true`. For complex or gesture-based motion, use the Reanimated library. Animate `opacity` and `transform` for best performance, and respect reduced-motion settings.
+
+## Fade-in example
+
+```jsx
+import { useEffect, useRef } from "react";
+import { Animated, Text } from "react-native";
+
+export default function FadeIn() {
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 400,
+      useNativeDriver: true,
+    }).start();
+  }, [opacity]);
+
+  return <Animated.Text style={{ opacity }}>Welcome</Animated.Text>;
+}
+```
+
+## Tips
+
+- Keep animations short and purposeful.
+- Animate transform and opacity.
+- Test on a real device.
+- Check the accessibility setting for reduced motion.
+
+## The bottom line
+
+Start with Animated, move to Reanimated when you need more.
+
+=== react-native-simulator-setup
+title: React Native Simulator Setup: iOS Simulator and Android Emulator
+desc: Run your React Native app on a simulator or emulator: Xcode and the iOS Simulator, Android Studio and an AVD, plus when a real device is better.
+tags: react native simulator, ios simulator, android emulator, run react native on emulator, expo simulator
+rel: what-is-expo-react-native, debugging-react-native
+q: Do I need a Mac for iOS development? | To run the iOS Simulator you need a Mac with Xcode. On other systems you can test with Expo Go on a real iPhone or use cloud builds.
+q: How do I start an Android emulator? | Install Android Studio, create a virtual device in Device Manager and start it.
+q: Is a real device better? | A real device shows true performance and touch behaviour, so test on one before releasing.
+---
+You do not need a phone on your desk to start, but you do need one before launch.
+
+## Direct answer
+
+For iOS, use the iOS Simulator that comes with Xcode on a Mac. For Android, install Android Studio and create a virtual device in Device Manager. Start your project with `npx expo start`, then press `i` for iOS or `a` for Android. Test on a real device as well.
+
+## iOS Simulator
+
+1. Install Xcode from the Mac App Store.
+2. Open Xcode once and accept the licence.
+3. Run `npx expo start` and press `i`.
+
+## Android Emulator
+
+1. Install Android Studio.
+2. Open **Device Manager** and create a virtual device.
+3. Start the emulator.
+4. Run `npx expo start` and press `a`.
+
+## Real devices
+
+Install Expo Go, scan the QR code and make sure the phone and computer are on the same network.
+
+## Troubleshooting
+
+- Emulator slow: enable hardware acceleration and give it enough memory.
+- App not found: restart the dev server.
+- Network errors: check Wi-Fi and firewalls.
+
+## The bottom line
+
+Simulators for speed, real devices for truth.

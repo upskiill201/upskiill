@@ -1,0 +1,85 @@
+---
+title: "React Native FlatList: Render Long Lists the Right Way"
+description: "Use FlatList to render long lists efficiently in React Native. Learn data, renderItem, keyExtractor, separators, pull to refresh and performance tips."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [flatlist, react native flatlist, flatlist example, react native list, flatlist vs scrollview]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "React Native for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/react-native-for-beginners
+  label: "See the React Native for Beginners course"
+faq:
+  - question: "What is FlatList?"
+    answer: "A React Native component that renders long lists efficiently by drawing only the items on screen."
+  - question: "What is the difference between FlatList and ScrollView?"
+    answer: "ScrollView renders all children at once. FlatList renders items lazily, so it is better for long lists."
+  - question: "Why do I get a key warning?"
+    answer: "Items need a stable unique key. Provide a keyExtractor."
+---
+
+Lists are in nearly every app, and FlatList keeps them smooth.
+
+## Direct answer
+
+`FlatList` renders long lists efficiently by only drawing items near the screen. Give it a `data` array, a `renderItem` function and a `keyExtractor`. Use it instead of mapping over a `ScrollView` for anything beyond a few items.
+
+## Example
+
+```jsx
+import { FlatList, Text, View } from "react-native";
+
+const DATA = [
+  { id: "1", title: "Learn React Native" },
+  { id: "2", title: "Build a screen" },
+  { id: "3", title: "Ship the app" },
+];
+
+export default function List() {
+  return (
+    <FlatList
+      data={DATA}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <View style={{ padding: 16 }}>
+          <Text>{item.title}</Text>
+        </View>
+      )}
+      ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "#eee" }} />}
+    />
+  );
+}
+```
+
+## Useful props
+
+| Prop | Purpose |
+| :--- | :--- |
+| `onRefresh`, `refreshing` | pull to refresh |
+| `onEndReached` | load more |
+| `ListEmptyComponent` | empty state |
+| `ListHeaderComponent` | header |
+
+## Performance tips
+
+- Keep `renderItem` light and consider `React.memo`.
+- Use stable keys.
+- Avoid inline heavy functions where possible.
+
+## Where Teyro fits
+
+Teyro's [React Native for Beginners](/courses/react-native-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 80 lessons, and you can start free.
+
+## The bottom line
+
+Use FlatList for long lists and provide good keys.
+
+## More guides
+
+- [React Native Navigation](/blog/react-native-navigation-guide)
+- [React Native Styling](/blog/react-native-styling-guide)
+- [useState in React Native](/blog/usestate-in-react-native)
+- [React native core components](/blog/react-native-core-components)
+- [React Native for Beginners course](/courses/react-native-for-beginners)
