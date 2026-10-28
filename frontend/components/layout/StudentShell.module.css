@@ -459,22 +459,24 @@
     padding: 16px 14px calc(100px + env(safe-area-inset-bottom));
   }
 
-  /* The bottom bar: docked flat to the bottom edge — a hairline on top, a
-     lightly translucent surface, no tactile lip. The home indicator gets its
-     own padding underneath. */
+  /* The bottom bar: a rounded dock floating just above the home indicator —
+     a hairline edge, a lightly translucent surface and one soft shadow. Flat:
+     no tactile lip underneath. */
   .mobileBottomNav {
     display: flex;
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    left: 12px;
+    right: 12px;
     z-index: 1001;
-    height: calc(64px + env(safe-area-inset-bottom));
-    padding: 0 8px env(safe-area-inset-bottom);
-    background: color-mix(in srgb, var(--nav-bg) 92%, transparent);
+    height: 64px;
+    padding: 0 8px;
+    background: color-mix(in srgb, var(--nav-bg) 94%, transparent);
     -webkit-backdrop-filter: saturate(180%) blur(16px);
     backdrop-filter: saturate(180%) blur(16px);
-    border-top: 1px solid var(--nav-line);
+    border: 1px solid var(--nav-line);
+    border-radius: 999px;
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--ink-fixed) 10%, transparent);
     justify-content: space-around;
     align-items: center;
   }
@@ -580,3 +582,26 @@
 .modalTitle { font-size: 20px; font-weight: 800; color: var(--color-ink); margin-bottom: 16px; }
 .modalDescription { color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 32px; max-width: 360px; }
 .modalActions { display: flex; justify-content: center; }
+
+/* The Profile tab shows your own face (photo or Teyro character) instead of
+   the generic tile: a circle with a hairline, ringed in brand blue when you
+   are on your profile. */
+.profileFace {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1.5px var(--nav-line);
+  transition: box-shadow 0.15s ease;
+}
+
+.profileFaceLg {
+  width: 34px;
+  height: 34px;
+}
+
+.profileFaceOn {
+  box-shadow: 0 0 0 2.5px var(--color-brand);
+}

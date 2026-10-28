@@ -13,6 +13,8 @@ import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { getCachedUser, setCachedUser, clearClientSession } from '@/lib/user-cache';
 import { useMe } from '@/hooks/useMe';
+import { AvatarFill } from '@/components/ui/Avatar';
+import { useHydrated } from '@/components/studio/useHydrated';
 import { NavBadge } from '@/components/awareness/NavBadge';
 import { useNavBadges } from '@/hooks/useNavBadges';
 import { startTour } from '@/lib/tour/store';
@@ -132,6 +134,11 @@ export default function StudentShell({
   // before parent effects the two raw fetches went out in the same tick as two
   // identical authenticated round trips on every dashboard entry.
   const { me, avatarUrl: resolvedAvatarUrl, error: meError, isValidating: meValidating } = useMe();
+  // The Profile tab wears your own face: your photo, or your Teyro character.
+  // Read after hydration (the user comes from a client cache) so the server's
+  // render and the first client render agree; until then it is the drawn tile.
+  const hydrated = useHydrated();
+  const face = hydrated && me ? { src: resolvedAvatarUrl, seed: me.id ?? me.email ?? null, name: me.fullName ?? null } : null;
 
   // Role flags: live from /me, falling back to the local cache so the More
   // menu is right before the network answers. (Only read on a tap, so the
@@ -364,7 +371,13 @@ export default function StudentShell({
                   title={isSidebarCollapsed ? tab.label : undefined}
                 >
                   <span className={styles.icon}>
-                    <NavTile art={tab.art} tone={tab.tone} active={active} />
+                    {tab.id === 'profile' && face ? (
+                      <span className={`${styles.profileFace} ${active ? styles.profileFaceOn : ''}`} aria-hidden>
+                        <AvatarFill src={face.src} seed={face.seed} name={face.name} />
+                      </span>
+                    ) : (
+                      <NavTile art={tab.art} tone={tab.tone} active={active} />
+                    )}
                     {badgeFor(tab.id)}
                   </span>
                   <span className={styles.label}>{tab.label}</span>
@@ -456,7 +469,13 @@ export default function StudentShell({
                   className={`${styles.bottomNavItem} ${active ? styles.activeBottomItem : ''}`}
                 >
                   <span className={styles.bottomNavIconWrap}>
-                    <NavTile art={tab.art} tone={tab.tone} active={active} size="lg" />
+                    {id === 'profile' && face ? (
+                      <span className={`${styles.profileFace} ${styles.profileFaceLg} ${active ? styles.profileFaceOn : ''}`} aria-hidden>
+                        <AvatarFill src={face.src} seed={face.seed} name={face.name} />
+                      </span>
+                    ) : (
+                      <NavTile art={tab.art} tone={tab.tone} active={active} size="lg" />
+                    )}
                     {badgeFor(id)}
                   </span>
                 </Link>
