@@ -29,6 +29,7 @@ import { buildContentBlocks, keys, lessonXp, stableId } from '../src/originals/o
 import { lintTrack, mainFormat, type LintIssue } from '../src/originals/originals-lint';
 import { hasCode, verifyTrackCode } from '../src/originals/originals-code-verify';
 import { TOOLKIT_CHECKS, toolkitSelfTestTrack } from '../src/originals/teyro-ai-selftest';
+import { AGENT_CHECKS, agentSelfTestTrack } from '../src/originals/teyro-agent-selftest';
 import { ORIGINALS_PRICING, levelLabel } from '../src/originals/originals.policy';
 import { TEYRO_ACCOUNT } from '../originals/teyro-account';
 
@@ -298,9 +299,9 @@ async function main() {
 
   let ok = true;
   for (const track of selected) {
-    // Every Try it live card and Write and run solution, run in real Python (or SQLite for SQL tracks).
+    // Every Try it live card and Write and run solution, run in real Python (or SQLite for SQL tracks, xcc for C, a practice page for JavaScript, type-checked TypeScript, jsdom for HTML pages and React Native screens).
     if (hasCode(track)) console.log(`
-(running the ${track.runner === 'sql' ? 'SQL' : 'Python'} in ${track.slug}...)`);
+(running the ${track.runner === 'sql' ? 'SQL' : track.runner === 'c' ? 'C' : track.runner === 'javascript' ? 'JavaScript' : track.runner === 'typescript' ? 'TypeScript' : track.runner === 'html' ? 'HTML pages' : track.runner === 'react-native' ? 'React Native screens' : 'Python'} in ${track.slug}...)`);
     ok = report(track, await verifyTrackCode(track)) && ok;
   }
   // The AI Stack's practice toolkit (teyro_ai.py) and shop data: lessons depend on its exact behaviour.
@@ -310,6 +311,14 @@ async function main() {
     for (const i of toolkit) console.log(`  ✗ teyro_ai toolkit: ${i.message}`);
     console.log(`  teyro_ai toolkit: ${TOOLKIT_CHECKS.length} behaviours, ${toolkit.length} failing`);
     ok = toolkit.length === 0 && ok;
+  }
+  // Working with AI Coding Agents' practice agent (teyro_agent.py) and its Delivery Board project.
+  if (!ONLY || ONLY === 'working-with-ai-coding-agents') {
+    console.log('\n(checking the teyro_agent practice agent...)');
+    const agent = (await verifyTrackCode(agentSelfTestTrack())).filter((i) => i.level === 'error');
+    for (const i of agent) console.log(`  ✗ teyro_agent: ${i.message}`);
+    console.log(`  teyro_agent: ${AGENT_CHECKS.length} behaviours, ${agent.length} failing`);
+    ok = agent.length === 0 && ok;
   }
   if (EXPORT) selected.forEach(exportPreview);
 

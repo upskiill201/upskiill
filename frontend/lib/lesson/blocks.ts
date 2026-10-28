@@ -20,6 +20,9 @@
  * keep the two in step.
  */
 
+import { domTestIssue, type DomTest } from '@/lib/code/domChecks';
+import { screenTestIssue, type ScreenTest } from '@/lib/code/screenChecks';
+
 // ─── Shared ────────────────────────────────────────────────────────────────
 
 export const CODE_LANGUAGES = [
@@ -29,6 +32,7 @@ export const CODE_LANGUAGES = [
   'html',
   'css',
   'sql',
+  'c',
   'bash',
   'json',
   'java',
@@ -39,8 +43,12 @@ export const CODE_LANGUAGES = [
 ] as const;
 export type CodeLanguage = (typeof CODE_LANGUAGES)[number];
 
-/** Languages the in-browser code runner can run (lib/code): Python (Pyodide) and SQL (SQLite via sql.js). */
-export type RunLanguage = 'python' | 'sql';
+/**
+ * Languages the in-browser code runner can run (lib/code): Python (Pyodide), SQL (SQLite via sql.js),
+ * C (xcc, public/c), JavaScript (a sandboxed page), TypeScript, 'html' = a live page (HTML + CSS) and
+ * 'react-native' = a React Native screen (TSX) in a phone preview.
+ */
+export type RunLanguage = 'python' | 'sql' | 'c' | 'javascript' | 'typescript' | 'html' | 'react-native';
 
 export const CODE_LANGUAGE_LABEL: Record<CodeLanguage, string> = {
   javascript: 'JavaScript',
@@ -49,6 +57,7 @@ export const CODE_LANGUAGE_LABEL: Record<CodeLanguage, string> = {
   html: 'HTML',
   css: 'CSS',
   sql: 'SQL',
+  c: 'C',
   bash: 'Terminal',
   json: 'JSON',
   java: 'Java',
@@ -135,7 +144,7 @@ export type LearnCard =
 // to be finished before Continue.
 
 /** The shared Originals cast (docs/originals/CAST.md). */
-export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'yaw', 'juno', 'walt', 'leo', 'dana'] as const;
+export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel', 'ama', 'theo', 'linh', 'mai', 'ewane', 'brenda', 'ngozi', 'paul', 'yaw', 'juno', 'walt', 'leo', 'dana', 'nora', 'mags', 'rafa', 'wes', 'ines', 'hal', 'tomoko', 'mateus', 'lars', 'hazel', 'benny', 'ruth'] as const;
 export type CastId = (typeof CAST_IDS)[number];
 export const CAST_NAMES: Record<CastId, string> = {
   ada: 'Ada',
@@ -178,6 +187,26 @@ export const CAST_NAMES: Record<CastId, string> = {
   walt: 'Walt',
   leo: 'Leo',
   dana: 'Dana',
+  ines: 'Ines',
+  hal: 'Hal',
+  tomoko: 'Tomoko',
+  mateus: 'Mateus',
+  lars: 'Lars',
+  hazel: 'Hazel',
+  benny: 'Benny',
+  ruth: 'Ruth',
+  nora: 'Nora',
+  mags: 'Mags',
+  rafa: 'Rafa',
+  wes: 'Wes',
+  ewane: 'Mrs Ewane',
+  brenda: 'Brenda',
+  ngozi: 'Ngozi',
+  paul: 'Paul',
+  ama: 'Ama',
+  theo: 'Theo',
+  linh: 'Linh',
+  mai: 'Mai',
 };
 
 /** Who says a story line: the narrator (Tey's voice-over), Tey, or a cast member. */
@@ -238,13 +267,14 @@ export type RichLearnCard =
       goal: number;
     })
   /**
-   * Try it live: runnable, editable Python in the learner's browser
-   * (lib/code). Done once it has run without an error. `stdin` feeds input();
-   * `challenge` is a nudge to change the code and run it again.
+   * Try it live: runnable, editable code in the learner's browser
+   * (lib/code). Done once it has run without an error (and, for TypeScript,
+   * without type errors). `stdin` feeds input(); `challenge` is a nudge to
+   * change the code and run it again.
    */
   | (CardBase & {
       kind: 'tryIt';
-      /** Python unless it says SQL. */
+      /** Python unless it says otherwise (SQL, C, JavaScript, TypeScript, HTML or React Native). */
       language?: RunLanguage;
       title?: string;
       code: string;
@@ -255,6 +285,10 @@ export type RichLearnCard =
       expectError?: boolean;
       /** SQL: the practice database the code runs against (public/sql/db); empty when absent. */
       database?: string;
+      /** JavaScript: the practice page (HTML) the code runs on, shown live; console only when absent. */
+      page?: string;
+      /** JavaScript: what localStorage holds before the first run. */
+      storage?: Record<string, string>;
     });
 
 export type RichLearnCardKind = RichLearnCard['kind'];
@@ -412,10 +446,18 @@ export interface CodeCheck {
   expr?: string;
   /** The code uses this, e.g. `for ` or `f"` (for "use a loop" style tasks). */
   codeIncludes?: string;
+  /** TypeScript: the code type-checks with no errors. */
+  noTypeErrors?: boolean;
+  /** TypeScript: the checker reports a type error whose message contains this (a lesson about that error). */
+  typeErrorIncludes?: string;
+  /** HTML: a check on the rendered page (lib/code/domChecks.ts). For HTML, outputIncludes/outputEquals read the page's text. */
+  dom?: DomTest;
+  /** React Native: a check on the rendered phone screen, after optional taps and typing (lib/code/screenChecks.ts). */
+  screen?: ScreenTest;
 }
 
 /**
- * Write and run (Python): the learner writes code, runs it in the browser
+ * Write and run (Python or TypeScript): the learner writes code, runs it in the browser
  * as often as they like (free, no hearts), and CHECK unlocks once every
  * hidden check passes. A hint is always there; the solution appears after
  * two failed runs, and using it costs the combo, never hearts.
@@ -425,6 +467,10 @@ export interface WriteCodeExercise extends ExerciseBase {
   language: RunLanguage;
   /** SQL: the practice database the code runs against (public/sql/db); empty when absent. */
   database?: string;
+  /** JavaScript: the practice page (HTML) the code runs on, shown live; console only when absent. */
+  page?: string;
+  /** JavaScript: what localStorage holds before the code runs. */
+  storage?: Record<string, string>;
   /** What the editor starts with (may be empty). */
   starter: string;
   solution: string;
@@ -740,9 +786,12 @@ export function richLearnCardIssue(c: RichLearnCard): string | null {
 /** Problems with one hidden check on a Write and run exercise (mirrors the backend). */
 export function codeCheckIssue(c: CodeCheck): string | null {
   if (blank(c.message)) return 'Every check needs a message for the learner.';
-  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes].filter((t) => t !== undefined);
+  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes, c.noTypeErrors, c.typeErrorIncludes, c.dom, c.screen].filter((t) => t !== undefined);
   if (tests.length !== 1) return 'Every check tests exactly one thing.';
-  return blank(tests[0]) ? 'A check has nothing to test.' : null;
+  if (c.noTypeErrors !== undefined) return c.noTypeErrors === true ? null : 'A type-error check must be true.';
+  if (c.dom !== undefined) return domTestIssue(c.dom);
+  if (c.screen !== undefined) return screenTestIssue(c.screen);
+  return blank(tests[0] as string) ? 'A check has nothing to test.' : null;
 }
 
 export function validateExercise(ex: Exercise): string | null {

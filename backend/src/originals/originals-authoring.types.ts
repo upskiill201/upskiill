@@ -8,6 +8,9 @@
  * docs/ORIGINALS_PLAYBOOK.md; `npm run originals` checks them.
  */
 
+import type { DomTest } from './originals-dom-checks';
+import type { ScreenTest } from './originals-screen-checks';
+
 export type CodeLanguage =
   | 'javascript'
   | 'typescript'
@@ -15,6 +18,7 @@ export type CodeLanguage =
   | 'html'
   | 'css'
   | 'sql'
+  | 'c'
   | 'bash'
   | 'json'
   | 'java'
@@ -23,12 +27,16 @@ export type CodeLanguage =
   | 'dart'
   | 'plaintext';
 
-/** Languages the in-browser code runner can run (frontend/lib/code). 'sql' = SQLite (sql.js). */
-export type RunLanguage = 'python' | 'sql';
+/**
+ * Languages the in-browser code runner can run (frontend/lib/code). 'sql' = SQLite (sql.js); 'c' = C (xcc, public/c).
+ * 'javascript' = a sandboxed practice page (frontend/public/javascript/runner.js). 'html' = a live page (HTML + CSS).
+ * 'react-native' = a React Native screen (TSX) in a phone preview.
+ */
+export type RunLanguage = 'python' | 'sql' | 'c' | 'javascript' | 'typescript' | 'html' | 'react-native';
 
 /** The shared cast (docs/originals/CAST.md). */
 /** Course-only characters (efua, asante; brian, zanele, achieng, kamau, felix, pauline, emeka, wanjiku; jayden, priya, femi; diego; marta, sofia, tomas, carmen) are listed in CAST.md too. */
-export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel' | 'yaw' | 'juno' | 'walt' | 'leo' | 'dana' | 'hazel' | 'benny' | 'ruth';
+export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri' | 'kavya' | 'joel' | 'bisi' | 'chidi' | 'halima' | 'folake' | 'emmanuel' | 'ama' | 'theo' | 'linh' | 'mai' | 'ewane' | 'brenda' | 'ngozi' | 'paul' | 'yaw' | 'juno' | 'walt' | 'leo' | 'dana' | 'nora' | 'mags' | 'rafa' | 'wes' | 'ines' | 'hal' | 'tomoko' | 'mateus' | 'lars' | 'hazel' | 'benny' | 'ruth';
 export type Speaker = 'narrator' | 'tey' | CastId;
 
 // ─── Learn cards ───────────────────────────────────────────────────────────
@@ -77,8 +85,10 @@ export type AuthoredCard =
   /**
    * Try it live: runnable, editable code in the track's `runner` language. Done once it runs without an error.
    * SQL: `database` names the practice database it starts from (frontend/public/sql/db); empty when absent.
+   * JavaScript: `page` is the practice page's HTML (body markup, may include <style>), shown live; without
+   * it the code runs in the console only. `storage` is what localStorage starts with. `stdin` answers prompt().
    */
-  | { kind: 'tryIt'; title?: string; code: string; caption?: string; challenge?: string; stdin?: string[]; /** The code is meant to fail (an errors lesson): done on any run. */ expectError?: boolean; database?: string };
+  | { kind: 'tryIt'; title?: string; code: string; caption?: string; challenge?: string; stdin?: string[]; /** The code is meant to fail (an errors lesson): done on any run. */ expectError?: boolean; database?: string; page?: string; storage?: Record<string, string> };
 
 export type AuthoredCardKind = AuthoredCard['kind'];
 
@@ -103,6 +113,14 @@ export interface AuthoredCodeCheck {
   outputEquals?: string;
   expr?: string;
   codeIncludes?: string;
+  /** TypeScript: the code type-checks with no errors. */
+  noTypeErrors?: boolean;
+  /** TypeScript: a type error whose message contains this is reported (a lesson about that error). */
+  typeErrorIncludes?: string;
+  /** HTML: a check on the rendered page (originals-dom-checks.ts). For HTML, outputIncludes/outputEquals read the page's text. */
+  dom?: DomTest;
+  /** React Native: a check on the rendered phone screen, after optional taps and typing (originals-screen-checks.ts). */
+  screen?: ScreenTest;
 }
 
 export type AuthoredExercise =
@@ -146,6 +164,11 @@ export type AuthoredExercise =
    * runs it); `starter` is what the editor opens with. SQL: `expr` is a query
    * run after the learner's code that must return a true first value, and
    * `database` names the practice database the code starts from.
+   * JavaScript: `expr` is a JavaScript expression run in the page after the
+   * code settles (it may return a promise); it must come out truthy. Helpers
+   * on window.__t: click, type, check, key, submit, text, count, has, logs,
+   * store, reloads, settle (frontend/public/javascript/runner.js). `page` and
+   * `storage` work as on Try it live.
    */
   | (ExerciseBase & {
       kind: 'writeCode';
@@ -155,6 +178,8 @@ export type AuthoredExercise =
       checks: AuthoredCodeCheck[];
       stdin?: string[];
       database?: string;
+      page?: string;
+      storage?: Record<string, string>;
     });
 
 export type AuthoredExerciseKind = AuthoredExercise['kind'];
@@ -231,10 +256,18 @@ export interface OriginalTrackDef {
   devOnly?: boolean;
   /**
    * 'short' = a deliberately short course (founder, 2026-10-15): 10 lessons per unit
-   * (Checkpoint at 5, Unit Challenge at 10) and 5 units per level. Default: full-length.
+   * (Checkpoint at 5, Unit Challenge at 10) and 5 units per level. 'focused' = full-length
+   * 20-lesson units, but 5 units per level (founder, 2026-10-20: "they should have 5
+   * chapters"). Default: full-length.
    */
-  format?: 'full' | 'short';
-  /** The language every Try it live card and Write and run exercise runs in. Default: Python. 'sql' = SQLite. */
+  format?: 'full' | 'short' | 'focused';
+  /**
+   * The language every Try it live card and Write and run exercise in this
+   * track runs in. Default: Python. 'sql' = SQLite, 'c' = C, 'javascript' = a
+   * practice page; 'typescript' = type-checked TypeScript; 'html' = a live page
+   * (HTML + CSS), checked with page checks (`dom`); 'react-native' = a React
+   * Native screen (TSX) in a phone preview, checked with screen checks (`screen`).
+   */
   runner?: RunLanguage;
   levels: OriginalLevel[];
 }

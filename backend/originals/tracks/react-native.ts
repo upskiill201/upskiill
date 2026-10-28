@@ -1,9 +1,13 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
+import u01 from './react-native/beginner/u01';
+import u02 from './react-native/beginner/u02';
+import u03 from './react-native/beginner/u03';
+import u04 from './react-native/beginner/u04';
 
 /**
  * Mobile App Development with React Native — the "Order Up" trilogy.
- * Outline: docs/originals/react-native-app-development-outline.md (DRAFT v2
- * 2026-10-22, awaiting approval).
+ * Outline: docs/originals/react-native-app-development-outline.md (approved
+ * 2026-10-22).
  *
  * Film 1 (this course, the only one built now): Theo Nguyen (22, Austin,
  * fresh out of a coding bootcamp) builds an order-ahead app for Pho Real,
@@ -14,15 +18,16 @@ import type { OriginalTrackDef } from '../../src/originals/originals-authoring.t
  *
  * Films 2 (Full-Stack Mobile Apps) and 3 (Launch Your Mobile App) are
  * announced as in production; their levels are added here when their first
- * chapter is written. `runner` is set once the React Native runner
- * (react-native-web in a phone frame, on top of the TypeScript runner) is
- * built, before Chapter 1 is written.
+ * chapter is written. Every Try it live card and Build it exercise runs in the
+ * React Native runner (frontend lib/code/rnRunner.ts): a phone preview in the
+ * lesson, graded with screen checks.
  */
 const track: OriginalTrackDef = {
   slug: 'react-native-app-development',
   title: 'Mobile App Development with React Native',
   category: 'Coding',
   format: 'focused',
+  runner: 'react-native',
   description:
     'Build real Android and iPhone apps with React Native, Expo and TypeScript, one film at a time: your first app now, with full-stack and launch courses in production.',
   levels: [
@@ -30,6 +35,7 @@ const track: OriginalTrackDef = {
       level: 1,
       slug: 'react-native-for-beginners',
       title: 'React Native for Beginners',
+      thumbnailUrl: '/originals/react-native-for-beginners.jpg',
       subtitle: 'Order Up: build your first real phone app, screen by screen',
       shortDescription:
         'Build a real phone app with React Native: one codebase for Android and iPhone. Ten-minute lessons, real code in every one, and screens you can tap right in the lesson, then on your own phone.',
@@ -48,8 +54,8 @@ const track: OriginalTrackDef = {
         'Run your app on your own phone with Expo Go',
       ],
       skills: ['React Native', 'Expo', 'TypeScript', 'Mobile app development', 'UI development'],
-      upcomingUnits: 5,
-      units: [],
+      upcomingUnits: 1,
+      units: [u01, u02, u03, u04],
     },
   ],
 };

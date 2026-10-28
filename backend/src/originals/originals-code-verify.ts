@@ -6,6 +6,11 @@ import type {
 } from './originals-authoring.types';
 import type { LintIssue } from './originals-lint';
 import { verifySqlTrack } from './originals-sql-verify';
+import { verifyCTrack } from './originals-c-verify';
+import { verifyJsTrack } from './originals-js-verify';
+import { verifyTypeScriptTrack } from './originals-ts-verify';
+import { verifyHtmlTrack } from './originals-html-verify';
+import { verifyRnTrack } from './originals-rn-verify';
 
 /**
  * Runs every piece of Python in a Track before it can be loaded, with the
@@ -154,6 +159,9 @@ async function getPython(): Promise<PyodideLike> {
     // The AI Stack's practice toolkit, installed the same way the browser worker does.
     const toolkit = readPythonFile('teyro_ai.py');
     if (toolkit) py.globals.get('__teyro_install')('teyro_ai', toolkit);
+    // Working with AI Coding Agents' practice agent, installed the same way.
+    const agent = readPythonFile('teyro_agent.py');
+    if (agent) py.globals.get('__teyro_install')('teyro_agent', agent);
     return py;
   })();
   return pyPromise;
@@ -172,6 +180,17 @@ async function ensurePackages(packages: string[]): Promise<void> {
       (missing.includes('pandas') ? '\nimport pandas\npandas.set_option("mode.copy_on_write", True)\n' : ''),
   );
   missing.forEach((p) => loadedPackages.add(p));
+}
+
+/**
+ * Drop the shared Python so the next Track starts in a fresh one. Pyodide's
+ * memory is fixed: thousands of runs across every Python Track in one process
+ * filled it ("C error: out of memory" in pandas) before the last Tracks ran.
+ */
+function resetPython(): void {
+  pyPromise = null;
+  runnerPromise = null;
+  loadedPackages.clear();
 }
 
 async function getRunner(): Promise<Runner> {
@@ -246,7 +265,7 @@ export function hasCode(track: OriginalTrackDef): boolean {
 
 /**
  * Run every Try it live card and Write and run solution in the Track.
- * Loads Python only when there's code to run (a few seconds, once).
+ * Loads Python only when there's code to run (a few seconds, fresh for each Track).
  */
 export async function verifyTrackCode(
   track: OriginalTrackDef,
@@ -254,6 +273,16 @@ export async function verifyTrackCode(
   if (!hasCode(track)) return [];
   // SQL tracks run in SQLite (sql.js), the same build the browser uses.
   if (track.runner === 'sql') return verifySqlTrack(track);
+  // C tracks compile and run in xcc, the same build the browser uses.
+  if (track.runner === 'c') return verifyCTrack(track);
+  // JavaScript tracks run in the browser runner's own runtime, inside jsdom.
+  if (track.runner === 'javascript') return verifyJsTrack(track);
+  // TypeScript tracks are type-checked and run by the TypeScript compiler, not Python.
+  if (track.runner === 'typescript') return verifyTypeScriptTrack(track);
+  // HTML & CSS tracks render each page in jsdom and run the page checks.
+  if (track.runner === 'html') return verifyHtmlTrack(track);
+  // React Native tracks render each screen in jsdom with the browser's own runtime.
+  if (track.runner === 'react-native') return verifyRnTrack(track);
   const allCode: string[] = [];
   for (const level of track.levels)
     for (const unit of level.units)
@@ -261,6 +290,7 @@ export async function verifyTrackCode(
         lesson.learn.forEach((c) => c.kind === 'tryIt' && allCode.push(c.code));
         lesson.apply.items.forEach((e) => e.kind === 'writeCode' && allCode.push(e.solution, e.starter ?? ''));
       }
+  resetPython();
   await ensurePackages([...new Set(allCode.flatMap(packagesFor))]);
   const run = await getRunner();
   const issues: LintIssue[] = [];

@@ -18,7 +18,8 @@ function png(file: string): string {
 export interface CertificateAssets {
   fonts: { name: string; data: Buffer; weight: 700 | 800; style: 'normal' }[];
   tile: string;
-  tey: string;
+  xp: string;
+  streak: string;
 }
 
 let cached: CertificateAssets | null = null;
@@ -37,7 +38,8 @@ export function certificateAssets(): CertificateAssets {
       { name: 'Signature', data: fs.readFileSync(path.join(OG, 'fonts', 'caveat-700-ext.woff')), weight: 700, style: 'normal' },
     ],
     tile: png(path.join(ROOT, 'public', 'Tey Logo and icons', 'png-512.png')),
-    tey: png(path.join(OG, 'share', 'tey-cheering.png')),
+    xp: png(path.join(ROOT, 'public', 'Icons', 'gem.png')),
+    streak: png(path.join(ROOT, 'public', 'Icons', 'burn.png')),
   };
   return cached;
 }

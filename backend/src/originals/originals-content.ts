@@ -132,6 +132,8 @@ export function buildExercise(ex: AuthoredExercise, lessonKey: string, i: number
         checks: ex.checks,
         ...(ex.stdin ? { stdin: ex.stdin } : {}),
         ...(ex.database ? { database: ex.database } : {}),
+        ...(ex.page !== undefined ? { page: ex.page } : {}),
+        ...(ex.storage ? { storage: ex.storage } : {}),
       };
     case 'sortGroups': {
       const groups = ex.groups.map((label, j) => ({ id: localId(lessonKey, `e${i}g${j}`), label }));

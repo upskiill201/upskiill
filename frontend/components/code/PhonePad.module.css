@@ -1,0 +1,137 @@
+/* The phone under the React Native editor (components/code/PhonePad.tsx). Tokens only. */
+
+.preview {
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--bg-card);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 8px 8px 16px;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-section);
+}
+
+.barTitle {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.reload {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+.reload:hover {
+  color: var(--color-brand);
+  border-color: var(--color-brand);
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding-top: 12px;
+  overflow: hidden;
+  background: var(--bg-section);
+}
+
+/* The device: a dark bezel with rounded corners, scaled to fit. */
+.phone {
+  flex-shrink: 0;
+  transform-origin: top center;
+  border-radius: 44px;
+  background: var(--text-primary);
+  box-shadow: 0 8px 0 color-mix(in srgb, var(--text-primary) 35%, transparent);
+}
+
+.screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 34px;
+  overflow: hidden;
+  background: white;
+}
+
+.frame {
+  display: block;
+  border: 0;
+  background: white;
+}
+
+/* React Native's red screen, in plain words. */
+.redBox {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 48px 24px 24px;
+  overflow: auto;
+  background: var(--lesson-wrong, var(--error-red));
+  color: white;
+}
+
+.redTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.redMessage {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.redHint {
+  margin: 8px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: color-mix(in srgb, white 70%, transparent);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reload {
+    transition: none;
+  }
+}

@@ -1,8 +1,9 @@
 'use client';
 
 /**
- * Write and run (an Apply exercise). The learner writes Python (or SQL, in
- * SQL tracks: the same flow on SqlPad) and runs it as often as they like:
+ * Write and run (an Apply exercise). The learner writes Python (or SQL, C or
+ * JavaScript in those tracks: the same flow on SqlPad / CPad / JsPad) and runs it
+ * as often as they like:
  * runs are free and never cost hearts. The checklist goes green as
  * requirements pass, and the player's CHECK unlocks once all of them do
  * (blocks.ts isResponseComplete). The hint is always one tap away; after two
@@ -17,8 +18,10 @@ import { Glyph } from '@/components/art/Glyph';
 import LessonNetworkActions from '@/components/network/LessonNetworkActions';
 import type { ExerciseResponse, WriteCodeExercise } from '@/lib/lesson/blocks';
 import { playSound } from '@/lib/audio/lessonSounds';
+import { CPad } from './CPad';
 import { PythonPad } from './PythonPad';
 import { SqlPad } from './SqlPad';
+import { JsPad } from './JsPad';
 import styles from './PythonPad.module.css';
 
 type WriteCodeResponse = Extract<ExerciseResponse, { kind: 'writeCode' }>;
@@ -89,11 +92,14 @@ export function WriteCodeView({
             <Glyph name="eye" size={16} strokeWidth={2.5} /> Show solution
           </button>
         )}
-        <LessonNetworkActions
-          stuck={current.failedRuns > 0}
-          passedCode={passed && !current.usedSolution ? current.passedCode : null}
-          language={exercise.language === 'sql' ? 'sql' : 'python'}
-        />
+        {/* Ask your circle when stuck; share a passing answer (the network takes Python and SQL). */}
+        {(exercise.language === 'python' || exercise.language === 'sql') && (
+          <LessonNetworkActions
+            stuck={current.failedRuns > 0}
+            passedCode={passed && !current.usedSolution ? current.passedCode : null}
+            language={exercise.language}
+          />
+        )}
       </>
     ),
   };
@@ -102,8 +108,23 @@ export function WriteCodeView({
     <div className="flex flex-col gap-4">
       {exercise.language === 'sql' ? (
         <SqlPad {...padProps} database={exercise.database} />
+      ) : exercise.language === 'c' ? (
+        <CPad {...padProps} stdin={exercise.stdin} />
+      ) : exercise.language === 'javascript' ? (
+        <JsPad {...padProps} page={exercise.page} storage={exercise.storage} stdin={exercise.stdin} />
       ) : (
-        <PythonPad {...padProps} stdin={exercise.stdin} />
+        <PythonPad
+          {...padProps}
+          stdin={exercise.stdin}
+          language={exercise.language}
+          runLabel={
+            exercise.language === 'html'
+              ? passed ? 'Check again' : 'Check my page'
+              : exercise.language === 'react-native'
+                ? passed ? 'Check again' : 'Check my app'
+                : padProps.runLabel
+          }
+        />
       )}
       {showHint && exercise.hint && !locked && (
         <motion.div

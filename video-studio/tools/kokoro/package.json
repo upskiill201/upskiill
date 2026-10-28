@@ -1,0 +1,9 @@
+{
+  "name": "teyro-kokoro",
+  "private": true,
+  "type": "module",
+  "description": "Local Kokoro TTS + Whisper word alignment for the motion-explainer pipeline (no API keys).",
+  "dependencies": {
+    "kokoro-js": "1.2.1"
+  }
+}

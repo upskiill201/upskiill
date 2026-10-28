@@ -1,0 +1,27 @@
+{
+  "slug": "m0-example",
+  "compId": "M0-example",
+  "title": "Tokens, explained",
+  "look": "night",
+  "voice": "TX3LPaxmHKxFdv7VOQHJ",
+  "model": "eleven_multilingual_v2",
+  "speed": 1.08,
+  "music": "optional: a prompt for the bed; omit to use the default for the look",
+  "hook": { "archetype": "hidden cost in a daily action", "igCaptionLine1": "Every time you talk to an AI, a meter is running 🚕", "igCaptionLine2": "And it's not counting your words." },
+  "sources": [
+    { "claim": "example: Claude Sonnet price per 1M tokens", "url": "https://primary-source.example", "checked": "YYYY-MM-DD" }
+  ],
+  "teyro": {
+    "bridgeChips": ["Coding", "AI", "A few minutes a day"],
+    "outroHeadline": "The fun way to finish learning coding and AI.",
+    "outroAsk": "Search Teyro"
+  },
+  "lines": [
+    { "id": "title", "chapter": "00", "text": "Tokens, explained." },
+    { "id": "open", "chapter": "00", "text": "Every time you talk to an AI, | a meter is running." },
+    { "id": "c1a", "chapter": "01 What's a token", "text": "So what's a token? | A small chunk of text." },
+    { "id": "bridge", "chapter": "bridge", "text": "Quick thing: lessons like this, a few minutes a day, | that's what Teyro is for." },
+    { "id": "punch", "chapter": "end", "text": "You're not paying for answers. | You're paying for *tokens*." },
+    { "id": "cta", "chapter": "end", "text": "Want to understand AI like this? | Search Teyro." }
+  ]
+}

@@ -1,6 +1,6 @@
 # React Native for Beginners — Course Outline (Film 1 of the "Order Up" trilogy)
 
-> Teyro Original, Coding. **Status: DRAFT v2 (2026-10-22), awaiting founder approval.** Course setup: `backend/originals/tracks/react-native.ts`.
+> Teyro Original, Coding. **Status: APPROVED (2026-10-22)**: Theo and Pho Real, basic JavaScript/TypeScript first with a recap. The React Native runner is built; Chapter 1 (20 lessons) is written in backend/originals/tracks/react-native/beginner/u01. Course setup: `backend/originals/tracks/react-native.ts`.
 > Founder brief (2026-10-22): a long, very practical React Native course (mobile apps), with a storyline like a film. v2 changes: **global setting, prices in US dollars**, and **only Film 1 is built now**; Films 2 and 3 are announced as "in production".
 > Rules: docs/ORIGINALS_PLAYBOOK.md (§7 coding Originals, §8a storylines). Cast: docs/originals/CAST.md.
 

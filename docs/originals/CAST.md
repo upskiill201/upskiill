@@ -44,7 +44,7 @@ One shared cast appears across **every** Original, so learners get attached to t
 | Home | Nairobi, Kenya |
 | Job | final-year computer science student, applying for his first internships |
 | Personality | curious, calm, a little too relaxed about deadlines; brilliant at understanding things, less good at explaining them to others. |
-| Best for | Acing Job Interviews, Python for Beginners (Miracle mentors in Study Smarter with AI) |
+| Best for | Get Hired, Get Ahead, Python for Beginners (Miracle mentors in Study Smarter with AI) |
 
 ## The rest of the cast
 
@@ -53,8 +53,8 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 | Working name | Home | Life stage | Best for |
 |---|---|---|---|
 | Lucía | Mexico City, Mexico | Mid-career marketer, newly promoted to lead a small team | Speak Like a CEO, AI at Work, Clear Writing at Work |
-| Arjun | Bengaluru, India | Freelance developer juggling international clients | Clear Writing at Work, Acing Job Interviews, Python, The AI Stack (team lead) |
-| Grace | Manchester, UK | Career-changer, 44: 18 years a ward nurse, now a junior UX researcher at Kinwell, a Manchester health-tech company (The Art of Small Talk, lead). Warm, funny, blunt, brilliant under pressure; freezes in rooms full of strangers and slips into "Nurse Mode" ("And how are we feeling today?") when nervous. Son Jayden, 17. | The Art of Small Talk (lead), Acing Job Interviews |
+| Arjun | Bengaluru, India | Freelance developer juggling international clients | Clear Writing at Work, Get Hired, Get Ahead, Python, The AI Stack (team lead) |
+| Grace | Manchester, UK | Career-changer, 44: 18 years a ward nurse, now a junior UX researcher at Kinwell, a Manchester health-tech company (The Art of Small Talk, lead). Warm, funny, blunt, brilliant under pressure; freezes in rooms full of strangers and slips into "Nurse Mode" ("And how are we feeling today?") when nervous. Son Jayden, 17. | The Art of Small Talk (lead), Get Hired, Get Ahead |
 | Kofi | Accra, Ghana | Final-year secondary-school student, 17, who wants to study Biomedical Engineering. Funny, competitive, a last-minute worker with big plans; makes beats on his phone and plays football. | Study Smarter with AI (lead) |
 
 ## Fixed relationships so far
@@ -62,9 +62,10 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 - **Ada and Lucía:** Lucía is the marketing lead at a client company Ada's startup works with (AI at Work).
 - **Ada and Arjun:** Arjun does freelance contract development for Ada's startup and mentors her as she learns Python (Python for Beginners). He is precise, opinionated about variable names, and writes code nobody else can read; Ada teaches him why readable code matters.
 - **Ada and Remi:** friends since they met at a hackathon in Kigali. In Corporate Jargon, Ada (a year or two into her job in Lagos) is Remi's WhatsApp lifeline during his Synergix internship, answering in voice notes.
-- **Remi's internship:** after graduating, Remi does a 12-week internship in the Strategy & Operations team at Synergix, Nairobi (Corporate Jargon). Acing Job Interviews should end with him landing it.
+- **Remi's internship:** after graduating, Remi does a 12-week internship in the Strategy & Operations team at Synergix, Nairobi (Corporate Jargon). (The old plan for an interviews course ending with him landing it was dropped on 2026-10-20; interviews now live in Get Hired, Get Ahead, led by Clinton.)
 - **Grace and Ada:** they meet in the coffee queue at a Manchester tech conference where Ada is speaking (The Art of Small Talk, final chapter) and stay in touch as contacts. (Supersedes the earlier idea of Grace as Ada's colleague in AI at Work.)
 - **Grace and Arjun:** Arjun does freelance development for Kinwell; Grace works with him on video calls (The Art of Small Talk).
+- **Grace learns to code (TypeScript for Beginners):** a few months after The Art of Small Talk, Grace builds a Session Booker in TypeScript for Kinwell's research sessions. Femi (Kinwell developer) is her coding mentor; Arjun reviews her code on video calls; Priya is her first "customer"; Jayden (17) codes a bit and is smug about it. The Intermediate level continues with Grace turning the booker into a React web app.
 - **Tey FM (How to Make People Listen to You):** a radio phone-in anthology set AFTER Study Smarter with AI. Clinton (18) and David (18) are now first-year university students in Buea (Computer Science and Medicine). Miracle (23) has graduated and is choosing between a bank job and a Lagos startup. Lucía has been promoted and leads a small team. Each calls Tey FM; callers do not meet each other except on air in the final Live Special.
 - **Ada's office ajo:** Ada runs the rotating savings group at work. Members (Tunde and others) appear as names in her code, not as characters.
 - **Remi's job (Leadership track):** Synergix offers Remi a job at the end of his internship; as a junior analyst he leads the refund fix across five teams (How to Lead Without Being the Boss), and is then asked to lead the delivery-times project.
@@ -78,21 +79,6 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 - **Grace Keeps the Peace (How to Manage Conflict at Work):** Kinwell's GP booking app launches 21 November. Femi snaps at Grace over step 3 research; "Fine." starts a cold war; Callum (new PM) calls her report "just opinions"; Priya overloads her; Jayden takes the car. Grace's "ward rules for the office" grow to v5.
 - **Personal Finance track (added 2026-10-22):** seven short money courses. **The Kofi trilogy** (Budgeting for Beginners, How to Save Money on a Low Income, How to Stop Impulse Buying): Kofi is now in his first year at KNUST, Kumasi, on GH₵1,500 a month from his mum; Yaw is his roommate, Efua (now also at KNUST) his steady friend, Miracle sends voice notes from Lagos. He finds his money gone by day 12, saves GH₵2,850 for a laptop paid in cash, and beats the 2 a.m. cart. **Ada's Raise** (Needs vs. Wants): after Negotiation Skills, Ada saves less on ₦480,000 than before the raise, then funds ₦900,000 for Lucía's Mexico City conference. **Miracle's Long Game** (Money Habits That Build Long-Term Wealth): her dad, a Maths teacher in Buea, retires at 60 with little saved; Folake turns out to be a quiet long-term saver; Miracle turns down a ₦1.5m bank offer, stays at Afiya on ₦1,250,000, and builds a 40-year map. **Arjun's Windfall** (How to Understand Investment Risk): the Harlow & Finch money leaves Arjun ₹12 lakh; cousin Vikram (options), his uncle (a disputed plot near Mysuru), a "3% a month" WhatsApp scheme and Kavya's crypto; Appa's knee operation; Joel's aunt loses ₹3 lakh to the scheme. **Grace and the Scam Files** (How Scams and Financial Fraud Work): a "Hi Mum" text, Femi's crypto "mentor", a spoofed bank call, a hacked supplier email at Kinwell, Jayden's money-mule DM, Femi's aunt Bimpe's fake credit alert in Lagos; Grace's scam file becomes Kinwell's handout. Family safe word agreed with Jayden and Nan.
 - **Lucía's Impossible Month (AI Tools for Everyday Productivity, added 2026-10-22):** Lucía has thirty days to throw her parents' 35th anniversary party in Oaxaca (Day 30), move flat (Señor Ibarra is selling; she signs a two-year lease on Flat 5, on a quiet side street, and moves on Day 27), and open a São Paulo distributor call in Portuguese (Day 29), on top of her job at Nopal. Ada, whom Lucía mentored in Negotiation Skills, returns the favour by voice note as her AI coach. Marta is the sceptic, Tomás trusts AI blindly, Sofía checks sources, Carmen sets the São Paulo deadline. Her parents are Rosa and Ernesto Hernández; her brother Mateo sends memes and is reliable only with specific tasks. The venue (Casa Lupe) is double-booked, so the party moves to Doña Lupe's cousin's hacienda; La Cocina de Inés caters. Her prompt cards (8 by Day 30) are the running device.
-
-## The Starlight (added 2026-10-23)
-
-They lead **SQL and Databases for Beginners** ("Save the Starlight", docs/originals/sql-databases-outline.md): Chicago, USA, US dollars. Juno, Walt, Leo and Dana are castIds `juno`, `walt`, `leo`, `dana`.
-
-| Name | Age | Home | Life stage | Personality |
-|---|---|---|---|---|
-| **Juno Park** | 27 | Chicago, USA (grew up in Albany Park) | Projectionist at the Starlight Picture House for four years; has never written SQL | Film-obsessed night owl who labels everything and quotes movies when nervous. Impatient with mess, brilliant once she can see the shape of a problem. |
-| **Walt Abernathy** | 74 | Chicago, USA | Owner of the Starlight, which his grandfather opened in November 1926 | Stubborn, generous, hands out free "comp" tickets to friends. Keeps every booking on an index card in a shoebox; remembers every regular's name and none of their seats. |
-| **Leo Marchetti** | 19 | Chicago, USA | Usher and film student; paints the Starlight's posters | Bets on everything, sceptical of "Juno's spreadsheet thing", then its loudest fan. Makes big mistakes fast and owns them. |
-| **Dana Whitlock** | 40s | Chicago, USA | Development agent for Crane Holdings, which wants the site for condos | Polite, sharp, always has the numbers. Offers Walt $2.4 million. Right that the Starlight can't prove it's a business, until it can. |
-
-**Fixed relationships:**
-- **Juno and Arjun:** met years ago on a classic-film restoration forum; his favourite single-screen cinema in Bengaluru closed in 2019. He mentors her on video calls (10:30 p.m. in Chicago, 9 a.m. in Bengaluru) while she builds the Starlight's database.
-- **Juno, Walt and Leo** work together at the Starlight. Ms Delgado (Lakeview Community Bank, narrated) will lend $40,000 for the roof if the records are clean. Rosa Marin and Jack Murphy (narrated regulars) both hold seat G7 on Fri 2 Oct.
 
 ## The Esplanade Brass (added 2026-10-24)
 
@@ -109,20 +95,70 @@ They lead **Vibe Coding: Build Apps with AI** ("Second Line", docs/originals/vib
 - **Hazel and Ruth:** Ruth runs the booster club's money; she reviews every change to the band's app before it goes live.
 - Narrated: Principal Dupree (Esplanade High), Mr Lionel (Crescent Coach Lines, the bus), Marcus (Ruth's grandson), band parents. Target: $18,000 for the National Brass Showcase in Washington, D.C.
 
+## The Starlight (added 2026-10-23)
+
+They lead **SQL and Databases for Beginners** ("Save the Starlight", docs/originals/sql-databases-outline.md): Chicago, USA, US dollars. Juno, Walt, Leo and Dana are castIds `juno`, `walt`, `leo`, `dana`.
+
+| Name | Age | Home | Life stage | Personality |
+|---|---|---|---|---|
+| **Juno Park** | 27 | Chicago, USA (grew up in Albany Park) | Projectionist at the Starlight Picture House for four years; has never written SQL | Film-obsessed night owl who labels everything and quotes movies when nervous. Impatient with mess, brilliant once she can see the shape of a problem. |
+| **Walt Abernathy** | 74 | Chicago, USA | Owner of the Starlight, which his grandfather opened in November 1926 | Stubborn, generous, hands out free "comp" tickets to friends. Keeps every booking on an index card in a shoebox; remembers every regular's name and none of their seats. |
+| **Leo Marchetti** | 19 | Chicago, USA | Usher and film student; paints the Starlight's posters | Bets on everything, sceptical of "Juno's spreadsheet thing", then its loudest fan. Makes big mistakes fast and owns them. |
+| **Dana Whitlock** | 40s | Chicago, USA | Development agent for Crane Holdings, which wants the site for condos | Polite, sharp, always has the numbers. Offers Walt $2.4 million. Right that the Starlight can't prove it's a business, until it can. |
+
+**Fixed relationships:**
+- **Juno and Arjun:** met years ago on a classic-film restoration forum; his favourite single-screen cinema in Bengaluru closed in 2019. He mentors her on video calls (10:30 p.m. in Chicago, 9 a.m. in Bengaluru) while she builds the Starlight's database.
+- **Juno, Walt and Leo** work together at the Starlight. Ms Delgado (Lakeview Community Bank, narrated) will lend $40,000 for the roof if the records are clean. Rosa Marin and Jack Murphy (narrated regulars) both hold seat G7 on Fri 2 Oct.
+
+## Red Mesa (added 2026-10-24)
+
+They lead **C for Beginners** ("Ten Sols on Red Mesa", docs/originals/c-outline.md): a fictional Mars-analog research station near Hanksville, Utah, USA, US dollars, metric readings. Ines, Hal, Tomoko, Mateus and Lars are castIds `ines`, `hal`, `tomoko`, `mateus`, `lars`.
+
+| Name | Age | Home | Life stage | Personality |
+|---|---|---|---|---|
+| **Ines Moreau** | 31 | Montréal, Canada | Crew engineer at Red Mesa; an electrician by trade who wired the Hab two summers ago. Has never written code. | Labels every wire, keeps a pencil behind her ear, reads the whole manual first. Panics quietly, then makes a checklist. Careful, stubborn, funny when tired. |
+| **Hal Brennan** | 62 | Green River, Utah, USA | Station director and mission commander; retired U.S. Air Force aircraft mechanic | Checklists and duct tape. Dry, kind, immovable on mission rules: "We don't break sim." Calls everyone by their surname on the radio. |
+| **Tomoko Sato** | 45 | Grew up in Osaka, Japan; lives in Salt Lake City | Plant biologist at a university; runs the GreenHab (48 tomato plants, lettuce) | Patient and exact; measures everything in grams and millilitres; writes her numbers in a waterproof notebook. Quietly the best tester on the crew. |
+| **Mateus Rocha** | 26 | Belo Horizonte, Brazil | Geology PhD student; rover driver | Fast, funny, makes bets, "just run it". Breaks things by accident and owns it straight away. Learns to test before he trusts. |
+| **Lars Eriksen** | 71 | Tromsø, Norway | Retired embedded-systems engineer; wrote HABCON, the station controller, in C as a volunteer in 1998 | Answers once a sol by email at 19:00 station time. Short sentences, strong opinions ("Every byte is somebody's"), kind underneath. Never writes the code for you. |
+
+**Fixed relationships:**
+- **Ines, Hal, Tomoko and Mateus** are Crew 31 at Red Mesa for a ten-sol simulated mission. Hal hired Ines to wire the Hab; this is her first mission as crew.
+- **Lars and the station:** Lars wrote HABCON for Hal's predecessor and still answers its questions. He and Ines have never met; she knows him only from his comments in the code.
+- Narrated: Dr. Celeste Wren, the Altair Foundation's inspector (arrives Sol 10). The grant is $250,000 a year; the replacement controller board costs $1,200.
+
+## Silver Pine (added 2026-10-24)
+
+They lead **JavaScript: From Beginner to Interactive Apps** (three linked courses, "First Chair", "The Live Board", "Championship Weekend"; docs/originals/javascript-outline.md): Silver Pine Ski Hill, Alder Gap, Colorado, USA (a fictional town), winter 2026–27, US dollars. Nora, Mags, Rafa and Wes are castIds `nora`, `mags`, `rafa`, `wes`.
+
+| Name | Age | Home | Life stage | Personality |
+|---|---|---|---|---|
+| **Nora Lindqvist** | 23 | Alder Gap, Colorado, USA (grew up there) | Lift operator and ticket-window cashier at Silver Pine for three winters. Built the hill's static website from a free HTML course; has never written JavaScript. Wants to be a developer and worries it's "too late to start". | Practical, dry, makes a list for everything, terrible at waiting. Talks to the chairlift ("Come on, Old Blue"). Learns fastest by breaking things on purpose. |
+| **Mags Ellery** | 71 | Alder Gap, Colorado, USA | Owner of Silver Pine, which her parents opened in 1961 | Runs the hill from a clipboard and a landline. Stubborn about change, soft about people; invented Locals Tuesday ($20 tickets) and gives free hot chocolate to anyone who falls off the T-Bar. Says yes first and asks how later. |
+| **Rafa Ortiz** | 34 | Alder Gap, Colorado, USA (from Pueblo) | Head of ski patrol. Six years as a software tester in Denver before he quit for the mountains and swore never to write code again. | Calm, exact, darkly funny; tests everything twice. Mentors Nora in the patrol hut, reluctantly at first. His question for every feature: "What does it do when someone types nothing?" |
+| **Wes Ellery** | 15 | Alder Gap, Colorado, USA | Mags's grandson; high-school sophomore and snowboarder | Taps every button twice, reads nothing, breaks everything on his cracked phone, which makes him the best user tester on the mountain. Rides bib 13 (U16) at the Colorado Junior Freeride Championship. |
+
+**Fixed relationships:**
+- **Nora, Mags, Rafa and Wes** work (and ride) at Silver Pine. Nora built the static site; Rafa mentors her in JavaScript; Wes tests everything she builds; Mags sets the problems ("Make the website answer the phone").
+- **The hill:** Old Blue (the 1961 double chair), the Ridge T-Bar, the Bunny Carpet, 14 trails (Schoolhouse, Lazy Elk, Bunny Hollow, Old Mill, Bluebird, Mags's Run, Big Sky, Aspen Alley, Lone Pine, Silver Streak, Rattlesnake, Ridgeline, Hermit Glade, The Chute). Tickets: $59 adult, $39 child (6–12), free under 6, $29 senior (70+), $20 for everyone on Locals Tuesday.
+- **The championship:** the Colorado Junior Freeride Series moves its championship to Silver Pine on Saturday 13 March 2027 after its venue runs out of snow. The riders (Ava Brooks, Mateo Rossi, Isla Moreno and others) are names in the practice API, not characters.
+
 ## Cameroon (added 2026-10-14, founder)
 
 These three join the shared cast. They first appear in Study Smarter with AI and can return in any Original.
 
 | Name | Age | Home | Life stage | Personality | Best for |
 |---|---|---|---|---|---|
-| **Miracle** | 22 | Buea, Cameroon | Final-year Software Engineering student at the University of Buea. She volunteers as an online mentor for final-year school students. | Warm, organised, very direct ("show me your notes first"). She made every study mistake once and keeps a list of them. Her own final-year project and job hunt run in the background. | Study Smarter with AI (mentor), Acing Job Interviews, Python for Beginners, Machine Learning for Beginners (mentor) |
-| **Clinton** | 17 | Bamenda, Cameroon | Final year of secondary school; wants to study Computer Science | Loud, funny, runs every group chat, and is brilliant at organising people. He is tempted by shortcuts, but he keeps his drafts, and that saves him. | Study Smarter with AI, Speak Like a CEO |
+| **Miracle** | 22 | Buea, Cameroon | Final-year Software Engineering student at the University of Buea. She volunteers as an online mentor for final-year school students. | Warm, organised, very direct ("show me your notes first"). She made every study mistake once and keeps a list of them. Her own final-year project and job hunt run in the background. | Study Smarter with AI (mentor), Get Hired, Get Ahead, Python for Beginners, Machine Learning for Beginners (mentor) |
+| **Clinton** | 17 | Bamenda, Cameroon | Final year of secondary school; wants to study Computer Science | Loud, funny, runs every group chat, and is brilliant at organising people. He is tempted by shortcuts, but he keeps his drafts, and that saves him. | Study Smarter with AI, Speak Like a CEO, Get Hired, Get Ahead (lead) |
 | **David** | 17 | Buea, Cameroon | Final year of secondary school; wants to study Medicine | Quiet and the best at Maths in the group. He explains numbers beautifully but freezes when he has to write an essay. | Study Smarter with AI, Clear Writing at Work |
 
 **Fixed relationships:**
 - Miracle mentors Kofi, Clinton and David as one online study group (weekly video call plus a group chat).
 - Clinton and David go to the same school in Buea; Clinton moved there from Bamenda.
 - Kofi meets Clinton and David through Miracle's group.
+- **Kofi Goes Live (HTML & CSS for Beginners):** the summer after Study Smarter with AI, twelve weeks before Kofi starts university. Kofi makes beats on his phone as **Mensah Beats**; a small Accra event, Sound Up Saturdays, offers him a set and asks for his website, so he builds one. Miracle (just started at Afiya in Lagos) mentors him on video calls; Clinton ("Head of Quality, unpaid") and David are his first fans; Efua reviews his pages; Ama, his sister, tests them. Map markers count down from "12 weeks to uni" to "Launch night". The Intermediate level continues at university with JavaScript.
+- **Order Up (React Native for Beginners, added 2026-10-22):** Theo builds an order-ahead app for Pho Real, his mum Linh's food truck in Austin, before the Eastside Food Truck Festival (fictional). Arjun, who met Theo on an online developers' forum, reviews his code on video calls from Bengaluru. Mai tests; Ray cooks. Prices in US dollars. Film 1 of a planned trilogy: Order Up: Rush Hour (full-stack) and Order Up: Opening Day (launch) are announced as in production.
 
 ## Course-only characters
 
@@ -130,7 +166,7 @@ These appear in one Original only and don't join the shared cast.
 
 | Name | Course | Who |
 |---|---|---|
-| Efua | Study Smarter with AI | Kofi's classmate in Accra. Top of the class, with famous handwritten notes; she doesn't trust AI. |
+| Efua | Study Smarter with AI (and HTML & CSS for Beginners) | Kofi's classmate in Accra. Top of the class, with famous handwritten notes; she doesn't trust AI. In HTML & CSS for Beginners she reviews Kofi's website with impeccable taste and no patience for ugly pages; her near-compliments are a running joke. |
 | Mrs Asante | Study Smarter with AI | Kofi's Chemistry teacher. Strict and fair, and gives surprise quizzes. |
 | Brian Otieno | Corporate Jargon | Remi's manager at Synergix (Nairobi), Head of Strategy & Operations. Speaks almost entirely in jargon; kind, generous, brilliant at reading people. Was a confused Synergix intern himself 15 years ago and kept a notebook translating it all. |
 | Zanele Dlamini | Corporate Jargon (and Data Science for Beginners) | The other Synergix intern, from Johannesburg. Uses jargon confidently and often wrongly; a genius with spreadsheets. Remi's rival, then his best friend at work. Grew up in Soweto; English is her third language (isiZulu, then Afrikaans), and she quietly rehearses important messages. Later a junior analyst at Synergix: in Data Science for Beginners she learns Python and pandas to find out why 1 in 3 deliveries is late. |
@@ -174,6 +210,15 @@ These appear in one Original only and don't join the shared cast.
 | Mateo | AI Tools for Everyday Productivity | Lucía's younger brother. Answers everything with a meme; excellent when a task is specific ("mariachi at 7 p.m."). Narrated. |
 | Abuela, Tía Carmela | AI Tools for Everyday Productivity | Lucía's grandmother (89, leaves parties at 9) and great-aunt (84). Narrated. |
 | Doña Lupe | AI Tools for Everyday Productivity | Runs Casa Lupe, a party venue in Oaxaca; her nephew double-books it. Narrated. |
+| Mrs Ewane | Get Hired, Get Ahead | Head of Careers, University of Buea. Precise, kind, quizzes every student before helping; returns Comic Sans CVs unread. |
+| Brenda Fon | Get Hired, Get Ahead | Njangi Pay's graduate recruiter (Douala). Busy and fair; met Clinton at the careers fair and reappears at his interview and offer. |
+| Ngozi Bate | Get Hired, Get Ahead (Level 2) | Clinton's engineering manager at Njangi Pay. Direct, generous with earned praise, allergic to surprises. |
+| Paul Tabi | Get Hired, Get Ahead (Level 2) | Senior developer at Njangi Pay. Knows everything, explains nothing, until Clinton earns it. |
+| Ama | HTML & CSS for Beginners | Kofi's sister, 10, Osu (Accra). His "user tester": blunt, curious, finds bugs in thirty seconds ("if Ama can't find the play button, nobody can"). Wants her own section on his site ("Ama's corner"). |
+| Theo Nguyen | React Native for Beginners (Order Up trilogy, lead) | 22, Austin, Texas. Just finished a coding bootcamp; knows JavaScript and a little TypeScript, has never shipped anything. Funny, fast, overconfident; codes at the food truck's window between orders. Builds Pho Real's order-ahead app. CastId `theo`. |
+| Linh Nguyen | React Native for Beginners | 51, Theo's mum. Has run Pho Real, the family's pho food truck in Austin, for 12 years. Sharp, practical, allergic to anything that slows the line ("Paper never crashes"). Her approval is the real finish line. CastId `linh`. |
+| Mai Nguyen | React Native for Beginners | 16, Theo's sister. Always filming, brutally honest tester ("this font is giving 2009"), the voice of every impatient customer. CastId `mai`. |
+| Ray | React Native for Beginners | Pho Real's cook. Speaks only in order numbers. Narrated. |
 
 ## Decisions
 

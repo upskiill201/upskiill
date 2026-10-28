@@ -1,8 +1,20 @@
-import { NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CertificateService } from './certificate.service';
 
-function makeDb() {
+function makeDb(
+  user: Record<string, unknown> = {
+    fullName: 'codeking99',
+    certificateName: 'Ada Okafor',
+    certificateNameConfirmedAt: new Date('2026-10-01T00:00:00Z'),
+    certificateNameCorrectedAt: null,
+  },
+) {
   const certs: any[] = [];
+  const changes: any[] = [];
   const enrollments = new Map<
     string,
     { completedLessons: string[]; testedOutLessons: string[] }
@@ -27,8 +39,22 @@ function makeDb() {
       findMany: jest.fn(async ({ where }) =>
         certs.filter((c) => c.userId === where.userId),
       ),
+      findFirst: jest.fn(
+        async ({ where }) =>
+          certs.filter((c) => c.userId === where.userId).at(-1) ?? null,
+      ),
+      count: jest.fn(
+        async ({ where }) =>
+          certs.filter((c) => c.userId === where.userId).length,
+      ),
+      update: jest.fn(async ({ where, data }) => {
+        const row = certs.find((c) => c.id === where.id);
+        Object.assign(row, data);
+        return row;
+      }),
       create: jest.fn(async ({ data }) => {
         const row = {
+          id: `cert-${certs.length + 1}`,
           issuedAt: new Date('2026-10-18T00:00:00Z'),
           revokedAt: null,
           ...data,
@@ -58,7 +84,17 @@ function makeDb() {
       findFirst: jest.fn(async () => null),
       aggregate: jest.fn(async () => ({ _sum: { timeSpentSeconds: 5400 } })),
     },
-    user: { findUnique: jest.fn(async () => ({ fullName: 'Ada Okafor' })) },
+    user: {
+      findUnique: jest.fn(async () => ({ ...user })),
+      update: jest.fn(async ({ data }) => Object.assign(user, data)),
+    },
+    certificateNameChange: {
+      create: jest.fn(async ({ data }) => {
+        changes.push(data);
+        return data;
+      }),
+    },
+    $transaction: jest.fn(async (ops: Promise<unknown>[]) => Promise.all(ops)),
     course: {
       findUnique: jest.fn(async () => ({
         title: 'Python for Beginners',
@@ -81,7 +117,7 @@ function makeDb() {
       aggregate: jest.fn(async () => ({ _sum: { xpEarned: 640 } })),
     },
   };
-  return { prisma, certs, enrollments };
+  return { prisma, certs, changes, enrollments, user };
 }
 
 describe('CertificateService', () => {
@@ -165,5 +201,147 @@ describe('CertificateService', () => {
     await expect(service.verify('nope')).rejects.toBeInstanceOf(
       NotFoundException,
     );
+  });
+});
+
+describe('CertificateService — certificate names', () => {
+  const finished = {
+    completedLessons: ['l1', 'l2', 'l3'],
+    testedOutLessons: [],
+  };
+  const fresh = () => ({
+    fullName: 'codeking99',
+    certificateName: null,
+    certificateNameConfirmedAt: null,
+    certificateNameCorrectedAt: null,
+  });
+
+  it('issues nothing until the learner confirms a real name', async () => {
+    const { prisma, enrollments, certs } = makeDb(fresh());
+    enrollments.set('c1', finished);
+    const service = new CertificateService(prisma);
+
+    expect(await service.forCourse('u1', 'c1')).toEqual({
+      status: 'NAME_REQUIRED',
+    });
+    expect(await service.mine('u1')).toEqual([]);
+    expect(certs).toHaveLength(0);
+    expect(await service.nameState('u1')).toMatchObject({
+      name: null,
+      suggested: 'codeking99',
+      canEdit: true,
+      held: 0,
+      earnedUnclaimed: 1,
+    });
+  });
+
+  it('confirming a name issues waiting certificates with it, and logs it', async () => {
+    const { prisma, enrollments, certs, changes } = makeDb(fresh());
+    enrollments.set('c1', finished);
+    const service = new CertificateService(prisma);
+
+    const state = await service.setName('u1', '  ADA   OKAFOR ');
+    expect(state).toMatchObject({
+      name: 'Ada Okafor',
+      held: 1,
+      earnedUnclaimed: 0,
+      canEdit: true,
+    });
+    expect(state.editableUntil).not.toBeNull();
+    expect(certs[0].data).toMatchObject({
+      learnerName: 'Ada Okafor',
+      nameConfirmed: true,
+    });
+    expect(changes).toEqual([
+      { userId: 'u1', oldName: null, newName: 'Ada Okafor', source: 'LEARNER' },
+    ]);
+  });
+
+  it('rejects names that cannot go on a certificate', async () => {
+    const service = new CertificateService(makeDb(fresh()).prisma);
+    for (const bad of [
+      '',
+      'Ada',
+      'codeking99 x',
+      'Ada 🙂 Okafor',
+      'Teyro learner',
+    ])
+      await expect(service.setName('u1', bad)).rejects.toBeInstanceOf(
+        BadRequestException,
+      );
+  });
+
+  it('allows one correction, reprints held certificates, then locks', async () => {
+    const { prisma, enrollments, certs } = makeDb({
+      fullName: 'codeking99',
+      certificateName: 'Ada Okafr',
+      certificateNameConfirmedAt: new Date(Date.now() - 60_000),
+      certificateNameCorrectedAt: null,
+    });
+    enrollments.set('c1', finished);
+    const service = new CertificateService(prisma);
+    const issued = await service.forCourse('u1', 'c1');
+    if (issued.status !== 'ISSUED') throw new Error('expected ISSUED');
+
+    const corrected = await service.setName('u1', 'Ada Okafor');
+    expect(corrected).toMatchObject({
+      name: 'Ada Okafor',
+      canEdit: false,
+      editableUntil: null,
+    });
+    expect(certs[0].code).toBe(issued.certificate.code);
+    expect(certs[0].data.learnerName).toBe('Ada Okafor');
+
+    await expect(
+      service.setName('u1', 'Ada Okafor-Bello'),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+    // Support can still change it.
+    await expect(
+      service.setNameBySupport('u1', 'Ada Okafor-Bello'),
+    ).resolves.toMatchObject({ name: 'Ada Okafor-Bello' });
+    expect(certs[0].data.learnerName).toBe('Ada Okafor-Bello');
+  });
+
+  it('closes the correction window after 7 days', async () => {
+    const { prisma } = makeDb({
+      fullName: 'Ada',
+      certificateName: 'Ada Okafor',
+      certificateNameConfirmedAt: new Date(Date.now() - 8 * 86_400_000),
+      certificateNameCorrectedAt: null,
+    });
+    const service = new CertificateService(prisma);
+    expect(await service.nameState('u1')).toMatchObject({ canEdit: false });
+    await expect(service.setName('u1', 'Ada Bello')).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
+  });
+
+  it('asks learners with old certificates to confirm the printed name', async () => {
+    const { prisma, enrollments, certs, user } = makeDb(fresh());
+    enrollments.set('c1', finished);
+    const service = new CertificateService(prisma);
+    // A certificate issued before this step existed, printed with the profile name.
+    Object.assign(user, { certificateName: null });
+    certs.push({
+      id: 'old',
+      userId: 'u1',
+      courseId: 'c1',
+      code: 'OLDCODE2',
+      data: { learnerName: 'Ada O.' },
+      issuedAt: new Date(),
+      completedAt: new Date(),
+      revokedAt: null,
+    });
+    expect(await service.nameState('u1')).toMatchObject({
+      name: null,
+      suggested: 'Ada O.',
+      held: 1,
+      earnedUnclaimed: 0,
+    });
+    await service.setName('u1', 'Ada Okafor');
+    expect(certs[0].data).toEqual({
+      learnerName: 'Ada Okafor',
+      nameConfirmed: true,
+    });
   });
 });

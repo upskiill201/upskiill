@@ -25,6 +25,8 @@ import {
   type LearnCard,
   type McqVariant,
 } from './blocks';
+import type { DomTest } from '@/lib/code/domChecks';
+import type { ScreenTest } from '@/lib/code/screenChecks';
 
 const str = (v: unknown, max: number = LIMITS.textChars): string =>
   typeof v === 'string' ? v.slice(0, max) : '';
@@ -152,8 +154,12 @@ function parseRichCard(c: any, cid: string): RichLearnCard | null {
       return {
         id: cid,
         kind: 'tryIt',
-        ...(c.language === 'sql' ? { language: 'sql' as const } : {}),
+        ...(c.language === 'sql' || c.language === 'c' || c.language === 'javascript' || c.language === 'typescript' || c.language === 'html' || c.language === 'react-native'
+          ? { language: c.language as 'sql' | 'c' | 'javascript' | 'typescript' | 'html' | 'react-native' }
+          : {}),
         ...(typeof c.database === 'string' ? { database: str(c.database, 40) } : {}),
+        ...(typeof c.page === 'string' ? { page: str(c.page, LIMITS.codeChars) } : {}),
+        ...(isStore(c.storage) ? { storage: parseStore(c.storage) } : {}),
         title: optStr(c.title, 200),
         code: str(c.code, LIMITS.codeChars),
         caption: optStr(c.caption, 300),
@@ -324,8 +330,10 @@ export function parseExercise(e: any, i: number): Exercise | null {
       return {
         ...base,
         kind: 'writeCode',
-        language: e.language === 'sql' ? 'sql' : 'python',
+        language: ['sql', 'c', 'javascript', 'typescript', 'html', 'react-native'].includes(e.language) ? e.language : 'python',
         ...(typeof e.database === 'string' ? { database: str(e.database, 40) } : {}),
+        ...(typeof e.page === 'string' ? { page: str(e.page, LIMITS.codeChars) } : {}),
+        ...(isStore(e.storage) ? { storage: parseStore(e.storage) } : {}),
         starter: str(e.starter, LIMITS.codeChars),
         solution: str(e.solution, LIMITS.codeChars),
         hint: optStr(e.hint, 600),
@@ -337,7 +345,16 @@ export function parseExercise(e: any, i: number): Exercise | null {
   }
 }
 
-/** One hidden check: only the tests that are strings survive. */
+const isStore = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
+
+/** JavaScript's starting localStorage: up to 10 text values. */
+function parseStore(v: Record<string, unknown>): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [k, val] of Object.entries(v).slice(0, 10)) if (typeof val === 'string') out[k.slice(0, 60)] = val.slice(0, LIMITS.codeChars);
+  return out;
+}
+
+/** One hidden check: only the tests that are strings (or a true no-type-errors flag) survive. */
 function parseCheck(c: any): CodeCheck {
   const test = (v: unknown) => (typeof v === 'string' ? v.slice(0, 500) : undefined);
   return {
@@ -346,7 +363,58 @@ function parseCheck(c: any): CodeCheck {
     ...(test(c?.outputEquals) !== undefined ? { outputEquals: test(c.outputEquals) } : {}),
     ...(test(c?.expr) !== undefined ? { expr: test(c.expr) } : {}),
     ...(test(c?.codeIncludes) !== undefined ? { codeIncludes: test(c.codeIncludes) } : {}),
+    ...(c?.noTypeErrors === true ? { noTypeErrors: true } : {}),
+    ...(test(c?.typeErrorIncludes) !== undefined ? { typeErrorIncludes: test(c.typeErrorIncludes) } : {}),
+    ...(parseDom(c?.dom) ? { dom: parseDom(c.dom) } : {}),
+    ...(parseScreen(c?.screen) ? { screen: parseScreen(c.screen) } : {}),
   };
+}
+
+/** A page check (HTML): a selector plus optional count/text/attr/style; anything else is dropped. */
+/** A screen check (React Native): only well-formed fields survive. */
+function parseScreen(s: any): ScreenTest | undefined {
+  if (!s || typeof s !== 'object') return undefined;
+  const text = (v: unknown, max = 200) => (typeof v === 'string' && v.trim() ? v.slice(0, max) : undefined);
+  const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : undefined);
+  const out: ScreenTest = {};
+  if (Array.isArray(s.tap)) out.tap = s.tap.slice(0, 10).map((t: unknown) => text(t)).filter((t: string | undefined): t is string => !!t);
+  if (Array.isArray(s.fill))
+    out.fill = s.fill
+      .slice(0, 10)
+      .filter((f: any) => text(f?.field) && typeof f?.text === 'string')
+      .map((f: any) => ({ field: text(f.field)!, text: String(f.text).slice(0, 200) }));
+  if (text(s.text)) out.text = text(s.text);
+  if (text(s.noText)) out.noText = text(s.noText);
+  if (text(s.button)) out.button = text(s.button);
+  if (num(s.images) !== undefined) out.images = num(s.images);
+  if (s.style && text(s.style.of) && text(s.style.prop, 60)) {
+    out.style = {
+      of: text(s.style.of)!,
+      prop: text(s.style.prop, 60)!,
+      ...(text(s.style.value, 100) !== undefined ? { value: text(s.style.value, 100) } : {}),
+      ...(num(s.style.min) !== undefined ? { min: num(s.style.min) } : {}),
+      ...(num(s.style.max) !== undefined ? { max: num(s.style.max) } : {}),
+      ...(s.style.self === true ? { self: true } : {}),
+    };
+  }
+  if (s.repeated && text(s.repeated.text) && num(s.repeated.min) !== undefined) out.repeated = { text: text(s.repeated.text)!, min: num(s.repeated.min)! };
+  const asserts = ['text', 'noText', 'button', 'images', 'style', 'repeated'] as const;
+  return asserts.some((k) => out[k] !== undefined) ? out : undefined;
+}
+
+function parseDom(d: any): DomTest | undefined {
+  if (!d || typeof d.selector !== 'string' || !d.selector.trim()) return undefined;
+  const s = (v: unknown) => (typeof v === 'string' ? v.slice(0, 300) : undefined);
+  const n = (v: unknown) => (typeof v === 'number' && Number.isInteger(v) && v >= 0 && v < 1000 ? v : undefined);
+  const out: DomTest = { selector: d.selector.slice(0, 200) };
+  if (n(d.count) !== undefined) out.count = n(d.count);
+  if (n(d.min) !== undefined) out.min = n(d.min);
+  if (s(d.text) !== undefined) out.text = s(d.text);
+  if (s(d.attr) !== undefined) out.attr = s(d.attr);
+  if (s(d.attrValue) !== undefined) out.attrValue = s(d.attrValue);
+  if (s(d.style) !== undefined) out.style = s(d.style);
+  if (s(d.styleValue) !== undefined) out.styleValue = s(d.styleValue);
+  return out;
 }
 
 /** The exercises a learner can actually take: parsed AND complete. */

@@ -199,7 +199,7 @@ describe('Python cards and exercises', () => {
     expect(exerciseProblem({ ...writeCode, solution: ' ' })).toMatch(
       /no solution/,
     );
-    expect(exerciseProblem({ ...writeCode, language: 'javascript' })).toMatch(
+    expect(exerciseProblem({ ...writeCode, language: 'cobol' })).toMatch(
       /must be Python/,
     );
     expect(exerciseProblem({ ...writeCode, checks: [] })).toMatch(
