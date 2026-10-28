@@ -539,3 +539,40 @@ a.friendRow:hover {
     padding: 0 12px;
   }
 }
+
+/* Friends | Communities — the network feed and the community feed. */
+.tabSwitch {
+  display: flex;
+  gap: 8px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--fd-well);
+}
+
+.tabBtn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--fd-soft);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.tabBtn:hover {
+  color: var(--fd-ink);
+}
+
+.tabBtnActive {
+  background: var(--fd-card);
+  color: var(--fd-blue);
+  box-shadow: 0 2px 0 var(--fd-line);
+}

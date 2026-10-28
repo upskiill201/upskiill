@@ -70,7 +70,7 @@ const NAV_TABS: NavTab[] = [
 const BOTTOM_TABS = ['home', 'community', 'leaderboards', 'quests', 'shop', 'profile'];
 
 /** Where the community tab counts as "active" besides its own href. */
-const COMMUNITY_PATHS = ['/dashboard/feed', '/dashboard/communities', '/dashboard/community'];
+const COMMUNITY_PATHS = ['/dashboard/feed', '/dashboard/communities', '/dashboard/community', '/dashboard/network'];
 
 /**
  * Pages that get the stats bar from the shell. Home draws its own HUD (it has
@@ -80,6 +80,7 @@ const SHELL_STATS_PATHS = [
   '/dashboard/my-learning',
   '/dashboard/explore',
   '/dashboard/feed',
+  '/dashboard/network',
   '/dashboard/communities',
   '/dashboard/community',
   '/dashboard/leaderboards',

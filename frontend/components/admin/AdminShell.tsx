@@ -20,6 +20,7 @@ import { TeyMark } from '@/components/brand/TeyMark';
 import { adminFetcher } from './AdminUI';
 import styles from './AdminShell.module.css';
 
+import { AvatarFill } from '@/components/ui/Avatar';
 interface Badges {
   review: number;
   payouts: number;
@@ -52,6 +53,8 @@ const NAV: NavGroup[] = [
       { href: '/admin/onboarding', label: 'Onboarding', icon: 'funnel', tone: 'var(--color-brand)' },
       { href: '/admin/users', label: 'Users', icon: 'users', tone: 'var(--brand-purple)' },
       { href: '/admin/reach', label: 'Reach', icon: 'bellRing', tone: 'var(--error-red)' },
+      { href: '/admin/network', label: 'Network', icon: 'activity', tone: 'var(--success-green)' },
+      { href: '/admin/photos', label: 'Photos', icon: 'camera', tone: 'var(--color-brand)' },
       { href: '/admin/subscribers', label: 'Subscribers', icon: 'card', tone: 'var(--warning)' },
     ],
   },
@@ -131,13 +134,6 @@ export function AdminShell({ children, userName }: { children: React.ReactNode; 
     }
   };
 
-  const initials = (userName ?? 'A')
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase())
-    .join('');
-
   return (
     <div className={styles.shell}>
       <aside className={`${styles.sidebar} ${open ? styles.sidebarOpen : ''}`} aria-label="Teyro HQ menu">
@@ -212,7 +208,7 @@ export function AdminShell({ children, userName }: { children: React.ReactNode; 
             </Link>
             <span className={styles.account}>
               <span className={styles.avatar} aria-hidden="true">
-                {initials}
+                <AvatarFill name={userName ?? 'Admin'} />
               </span>
               <span className={styles.accountName}>{userName ?? 'Admin'}</span>
             </span>

@@ -18,7 +18,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import useSWR from 'swr';
 import { Glyph } from '@/components/art/Glyph';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import FriendsFeed from '@/components/network/FriendsFeed';
+import { useHydrated } from '@/components/studio/useHydrated';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -65,19 +67,47 @@ interface Person {
 const feedKey = (type: string) => `/api/feed?${type !== 'all' ? `type=${type}&` : ''}page=1`;
 
 export default function FeedPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <FeedPageInner />
+    </React.Suspense>
+  );
+}
+
+const TABS = [
+  { value: 'friends', label: 'Friends', icon: <Glyph name="users" size={16} strokeWidth={2.75} /> },
+  { value: 'communities', label: 'Communities', icon: <Glyph name="bubble" size={16} strokeWidth={2.75} /> },
+] as const;
+
+function FeedPageInner() {
   const router = useRouter();
+  const params = useSearchParams();
+  // Friends is the network feed (docs/TEYRO_NETWORK_PLAN.md); Communities is
+  // the course-community feed this page always had.
+  const tab = params.get('tab') === 'communities' ? 'communities' : 'friends';
+  const pickTab = (value: string, i: number) => {
+    if (value === tab) return;
+    playSound('navTap', i);
+    playHaptic('selection', false);
+    router.replace(value === 'friends' ? '/dashboard/feed' : `/dashboard/feed?tab=${value}`, { scroll: false });
+  };
   const [typeFilter, setTypeFilter] = React.useState('all');
   // Pages after the first, for the current filter.
   const [more, setMore] = React.useState<{ type: string; items: FeedItem[]; page: number }>({ type: 'all', items: [], page: 1 });
   const [loadingMore, setLoadingMore] = React.useState(false);
 
-  const first = useSWR<{ items: FeedItem[] }>(feedKey(typeFilter), fetcher, { revalidateOnFocus: false, keepPreviousData: true });
+  // Only fetched on the Communities tab, so Friends loads with one request.
+  const first = useSWR<{ items: FeedItem[] }>(tab === 'communities' ? feedKey(typeFilter) : null, fetcher, { revalidateOnFocus: false, keepPreviousData: true });
   const mine = useSWR<{ communities: MyCommunity[] }>('/api/community/my', fetcher, { revalidateOnFocus: false });
   const discover = useSWR<DiscoverPayload>('/api/feed/discover', fetcher, { revalidateOnFocus: false });
 
+  // Everything below reads the persisted SWR cache: only after hydration, so
+  // the server render and the first client render agree.
+  const hydrated = useHydrated();
   const extra = more.type === typeFilter ? more.items : [];
-  const items = [...(first.data?.items ?? []), ...extra];
-  const communities = mine.data?.communities ?? [];
+  const items = [...((hydrated ? first.data?.items : undefined) ?? []), ...extra];
+  const communities = hydrated ? mine.data?.communities ?? [] : [];
+  const discovered = hydrated ? discover.data : undefined;
   const composerCourse = communities.find((c) => c.course)?.course ?? null;
   const me = React.useMemo(() => getCachedUser(), []);
 
@@ -129,9 +159,30 @@ export default function FeedPage() {
         <header className={styles.header}>
           <div>
             <h1 className={styles.pageTitle}>Community</h1>
-            <p className={styles.pageSub}>What your learning communities are talking about</p>
+            <p className={styles.pageSub}>
+              {tab === 'friends' ? 'What your people are learning this week' : 'What your learning communities are talking about'}
+            </p>
           </div>
         </header>
+
+        <div className={styles.tabSwitch} role="tablist" aria-label="Feed">
+          {TABS.map((t, i) => (
+            <button
+              key={t.value}
+              role="tab"
+              aria-selected={tab === t.value}
+              className={`${styles.tabBtn} ${tab === t.value ? styles.tabBtnActive : ''}`}
+              onClick={() => pickTab(t.value, i)}
+            >
+              {t.icon} {t.label}
+            </button>
+          ))}
+        </div>
+
+        {tab === 'friends' ? (
+          <FriendsFeed />
+        ) : (
+        <>
 
         {composerCourse && (
           <button
@@ -163,7 +214,7 @@ export default function FeedPage() {
           ))}
         </div>
 
-        {first.error && !first.data ? (
+        {first.error && !first.data && hydrated ? (
           <div className={shared.errorBanner}>
             <Glyph name="alert" size={28} />
             <span>{first.error instanceof Error ? first.error.message : 'Could not load your feed.'}</span>
@@ -171,7 +222,7 @@ export default function FeedPage() {
               Try again
             </Button>
           </div>
-        ) : !first.data ? (
+        ) : !first.data || !hydrated ? (
           <>
             <PostCardSkeleton />
             <PostCardSkeleton />
@@ -197,6 +248,8 @@ export default function FeedPage() {
               {loadingMore ? 'Loading…' : 'Load more posts'}
             </button>
           </div>
+        )}
+        </>
         )}
       </div>
 
@@ -235,12 +288,12 @@ export default function FeedPage() {
 
         <FriendsCard />
 
-        {discover.data && discover.data.questions.length > 0 && (
+        {discovered && discovered.questions.length > 0 && (
           <div className={styles.railCard}>
             <h3 className={styles.railTitle}>
               <Glyph name="help" size={14} strokeWidth={2.75} /> Help your community
             </h3>
-            {discover.data.questions.map((q) => (
+            {discovered.questions.map((q) => (
               <Link
                 key={q.postId}
                 href={q.courseId ? `/dashboard/community/${q.courseId}/p/${q.postId}` : '/dashboard/feed'}
@@ -260,12 +313,12 @@ export default function FeedPage() {
           </div>
         )}
 
-        {discover.data && discover.data.continueLearning.length > 0 && (
+        {discovered && discovered.continueLearning.length > 0 && (
           <div className={styles.railCard}>
             <h3 className={styles.railTitle}>
               <Glyph name="trendUp" size={14} strokeWidth={2.75} /> Continue learning
             </h3>
-            {discover.data.continueLearning.map((card) => (
+            {discovered.continueLearning.map((card) => (
               <Link
                 key={card.courseId}
                 href={courseHomeHref(card.courseId)}
@@ -305,6 +358,8 @@ function FriendsCard() {
   const following = useSWR<Person[]>('/api/social/following', fetcher, { revalidateOnFocus: false });
   const classmates = useSWR<Person[]>('/api/social/classmates', fetcher, { revalidateOnFocus: false });
   const [followed, setFollowed] = React.useState<Record<string, boolean>>({});
+  // Cached on the client only: render after hydration so the server and client agree.
+  const hydrated = useHydrated();
 
   const friends = Array.isArray(following.data) ? [...following.data].sort((a, b) => (b.streak ?? 0) - (a.streak ?? 0)) : [];
   const suggestions = (Array.isArray(classmates.data) ? classmates.data : []).filter((p) => !p.isFollowing).slice(0, 3);
@@ -321,7 +376,7 @@ function FriendsCard() {
     }
   };
 
-  if (!following.data && !classmates.data) return null;
+  if (!hydrated || (!following.data && !classmates.data)) return null;
   if (friends.length === 0 && suggestions.length === 0) return null;
 
   return (

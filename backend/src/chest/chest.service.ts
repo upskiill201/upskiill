@@ -27,6 +27,8 @@ export function isStreakChestDay(streakDays: number): boolean {
 }
 
 export const STREAK_CHEST_PREFIX = 'streak-';
+/** Squad chests (network squads): `squad-<weekStart>`. */
+export const SQUAD_CHEST_PREFIX = 'squad-';
 
 @Injectable()
 export class ChestService {
@@ -121,18 +123,39 @@ export class ChestService {
     });
   }
 
-  /** Streak chests earned and not yet opened, newest first. */
+  /**
+   * A squad chest: the whole squad hit its weekly lesson goal (network
+   * squads). Idempotent per week — one per member per week, ever.
+   */
+  async grantSquadChest(userId: string, weekStart: string) {
+    const chestDay = `${SQUAD_CHEST_PREFIX}${weekStart}`;
+    return this.prisma.dailyChest.upsert({
+      where: { userId_chestDay: { userId, chestDay } },
+      update: {},
+      create: { userId, chestDay, status: 'READY_TO_OPEN', unlockedAt: new Date() },
+    });
+  }
+
+  /** Streak and squad chests earned and not yet opened, newest first. */
   async getPendingBonusChests(userId: string) {
     const rows = await this.prisma.dailyChest.findMany({
-      where: { userId, status: 'READY_TO_OPEN', chestDay: { startsWith: STREAK_CHEST_PREFIX } },
+      where: {
+        userId,
+        status: 'READY_TO_OPEN',
+        OR: [{ chestDay: { startsWith: STREAK_CHEST_PREFIX } }, { chestDay: { startsWith: SQUAD_CHEST_PREFIX } }],
+      },
       orderBy: { createdAt: 'desc' },
     });
-    return rows.map((r) => ({
-      id: r.id,
-      kind: 'STREAK' as const,
-      streakDays: Number(r.chestDay.slice(STREAK_CHEST_PREFIX.length).split('-')[0]) || null,
-      createdAt: r.createdAt,
-    }));
+    return rows.map((r) =>
+      r.chestDay.startsWith(SQUAD_CHEST_PREFIX)
+        ? { id: r.id, kind: 'SQUAD' as const, streakDays: null, createdAt: r.createdAt }
+        : {
+            id: r.id,
+            kind: 'STREAK' as const,
+            streakDays: Number(r.chestDay.slice(STREAK_CHEST_PREFIX.length).split('-')[0]) || null,
+            createdAt: r.createdAt,
+          },
+    );
   }
 
   async openChest(userId: string, chestId: string, timezoneOffsetMinutes: number = 0) {

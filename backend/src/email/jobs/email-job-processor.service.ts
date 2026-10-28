@@ -14,6 +14,7 @@ import {
 } from '../templates/learning/league-results.template';
 import { renderStreakAtRiskEmail } from '../templates/learning/streak-at-risk.template';
 import { renderWeeklySummaryEmail } from '../templates/learning/weekly-summary.template';
+import { circleWeek } from '../../network/circle-week';
 import { renderNewStudentEmail } from '../templates/creator/new-student.template';
 import {
   renderPayoutEmail,
@@ -740,6 +741,12 @@ export class EmailJobProcessorService {
 
     const weekKey = payload?.weekStart || new Date().toISOString().slice(0, 10);
     const idempotencyKey = `learning.weekly-summary:${user.id}:${weekKey}`;
+    // The Teyro Network section — best effort; the summary sends without it.
+    const circle = await circleWeek(
+      this.prisma,
+      user.id,
+      new Date(Date.now() - 7 * 86_400_000).toISOString().slice(0, 10),
+    ).catch(() => null);
     const leagueResult =
       user.leagueMembers[0] && user.leagueMembers[0].outcome
         ? {
@@ -763,6 +770,7 @@ export class EmailJobProcessorService {
           lessonsCompleted: payload?.lessonsCompleted ?? 0,
           currentStreak: user.studentProfile!.streakDays,
           leagueResult,
+          circle: circle ?? undefined,
           continueUrl: `${emailConfig.appUrl}/dashboard`,
           unsubscribeUrl: this.unsubscribe.buildUnsubscribeUrl(
             user.id,

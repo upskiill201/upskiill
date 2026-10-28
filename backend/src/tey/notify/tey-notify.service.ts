@@ -7,7 +7,9 @@ import { TeyPolicyService } from '../delivery/tey-policy.service';
 import { localTimeToday } from '../decision/rules';
 import { resolveLocalNow } from '../state/local-time.util';
 import {
+  BACKOFF,
   DAILY_EVENT_PUSH_CAP,
+  backedOff,
   kindsFor,
   NOTIFY_KINDS,
   type NotifyKind,
@@ -201,6 +203,17 @@ export class TeyNotifyService {
         where: { ...sent, ruleId: { in: kindsFor(spec.audience) }, sentAt: { gte: midnight } },
       });
       if (today >= DAILY_EVENT_PUSH_CAP[spec.audience]) return { allow: false, reason: 'DAILY_CAP' };
+    }
+
+    // Ignored the last few of this kind? Bell only for a week (BACKOFF).
+    if (!transactional && BACKOFF.audiences.includes(spec.audience)) {
+      const recent = await this.prisma.teyDelivery.findMany({
+        where: { ...sent, ruleId: input.kind },
+        orderBy: { sentAt: 'desc' },
+        take: BACKOFF.ignored,
+        select: { sentAt: true, openedAt: true },
+      });
+      if (backedOff(recent)) return { allow: false, reason: 'BACKOFF_IGNORED' };
     }
 
     const devices = await this.prisma.pushSubscription.count({

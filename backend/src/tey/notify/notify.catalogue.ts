@@ -11,7 +11,7 @@ import type { PrefFlags } from '../delivery/tey-policy.service';
  * saver, and vice versa.
  */
 
-export type NotifyAudience = 'learner' | 'creator' | 'community' | 'billing';
+export type NotifyAudience = 'learner' | 'creator' | 'community' | 'billing' | 'network';
 
 export interface NotifySpec {
   audience: NotifyAudience;
@@ -106,6 +106,102 @@ export const NOTIFY_KINDS = {
     ttlSeconds: 6 * HOUR, tag: 'community-post', teyState: 'HAPPY',
   },
 
+  // ── The Teyro Network (docs/TEYRO_NETWORK_PLAN.md §5) ──────────────────
+  // A person needs you: someone asked to be your buddy, or nudged you.
+  BUDDY_REQUEST: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 24 * HOUR, tag: 'network-buddy', teyState: 'HAPPY',
+  },
+  BUDDY_ACCEPTED: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 24 * HOUR, tag: 'network-buddy', teyState: 'CELEBRATING',
+  },
+  BUDDY_NUDGE: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 8 * HOUR, tag: 'network-nudge', teyState: 'ENCOURAGING',
+  },
+  // A buddy did today's lesson and you haven't. Throttled so five buddies
+  // learning in one morning is one push, not five.
+  BUDDY_LEARNED: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 240,
+    ttlSeconds: 8 * HOUR, tag: 'network-buddy-learned', teyState: 'PASSIVE_AGGRESSIVE',
+  },
+  NUDGE_WORKED: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 12 * HOUR, tag: 'network-nudge-worked', teyState: 'PROUD',
+  },
+  // "Ada started Python because of you" — the strongest reason to come back.
+  INSPIRED: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 24 * HOUR, tag: 'network-inspired', teyState: 'PROUD',
+  },
+  // 20:00 local: a shared streak of 2+ days ends at midnight unless you learn.
+  BUDDY_STREAK_ENDING: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 4 * HOUR, tag: 'network-buddy-streak', teyState: 'REMINDER',
+  },
+  // "Ada is stuck on Lesson 12. You passed it." At most one push every 6h;
+  // the router also caps how often one person is asked at all.
+  HELP_REQUEST: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 360,
+    ttlSeconds: 12 * HOUR, tag: 'network-help', teyState: 'ENCOURAGING',
+  },
+  // "Your answer helped Ada finish Lesson 12."
+  HELP_WORKED: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 24 * HOUR, tag: 'network-help-worked', teyState: 'PROUD',
+  },
+  // Squads: an invite, a new member (bell only), "2 lessons from the chest"
+  // (once a week), and the chest itself.
+  SQUAD_INVITE: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 24 * HOUR, tag: 'network-squad', teyState: 'HAPPY',
+  },
+  SQUAD_JOINED: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 12 * HOUR, tag: 'network-squad', teyState: 'HAPPY',
+  },
+  SQUAD_ALMOST: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 8 * HOUR, tag: 'network-squad-goal', teyState: 'ENCOURAGING',
+  },
+  SQUAD_GOAL_MET: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 24 * HOUR, tag: 'network-squad-goal', teyState: 'CELEBRATING',
+  },
+  // Duels: your turn, and the result.
+  DUEL_RECEIVED: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 24 * HOUR, tag: 'network-duel', teyState: 'PASSIVE_AGGRESSIVE',
+  },
+  DUEL_RESULT: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 24 * HOUR, tag: 'network-duel', teyState: 'CELEBRATING',
+  },
+  // "Ada is learning right now. Join her?" — a live moment, so a short TTL,
+  // and at most one a day whoever it's about.
+  BUDDY_LIVE: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 24 * 60,
+    ttlSeconds: 20 * 60, tag: 'network-live', teyState: 'HAPPY',
+  },
+  // Social reward: batched on the bell (one row a day), pushed at most every 3h.
+  NETWORK_CHEER: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 180,
+    ttlSeconds: 12 * HOUR, tag: 'network-cheer', teyState: 'HAPPY',
+  },
+
+  // Profile photos (founder, 2026-10-28): one reminder on day 2 if they
+  // still have no photo — once ever, via the dedupe key — and the inbox note
+  // when Teyro HQ removes a reported photo.
+  PROFILE_PHOTO_NUDGE: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 12 * HOUR, tag: 'profile-photo', teyState: 'ENCOURAGING',
+  },
+  PROFILE_PHOTO_REMOVED: {
+    audience: 'learner', pref: 'dailyReminders', throttleMinutes: 0,
+    ttlSeconds: 24 * HOUR, tag: 'profile-photo', teyState: 'REMINDER',
+  },
+
   // ── Creator ────────────────────────────────────────────────────────────
   STUDIO_SALE: {
     audience: 'creator', pref: 'creatorActivity', throttleMinutes: 0,
@@ -149,7 +245,33 @@ export const DAILY_EVENT_PUSH_CAP: Record<NotifyAudience, number> = {
   community: 12,
   // Transactional, so the cap is never consulted; here for the type only.
   billing: 10,
+  // Buddies, nudges and cheers: its own budget so a busy network can't
+  // swallow the streak saver, and a quiet one can't be drowned by leagues.
+  network: 4,
 };
+
+/**
+ * Back-off (docs/TEYRO_NETWORK_PLAN.md phase 5): when someone has ignored
+ * the last few pushes of a kind, stop pushing that kind — the bell row is
+ * still written — and try again once a week. Opening any one of the last few
+ * clears it. Network notifications only for now; the reminder ladder and the
+ * league keep their own rules.
+ */
+export const BACKOFF = {
+  audiences: ['network'] as NotifyAudience[],
+  /** This many unopened pushes of one kind in a row… */
+  ignored: 5,
+  /** …holds pushes of that kind for this long after the newest of them. */
+  days: 7,
+};
+
+/** `recent`: the newest pushes of one kind to one person, newest first. */
+export function backedOff(recent: { sentAt: Date; openedAt: Date | null }[], now = new Date()): boolean {
+  if (recent.length < BACKOFF.ignored) return false;
+  const window = recent.slice(0, BACKOFF.ignored);
+  if (window.some((d) => d.openedAt !== null)) return false;
+  return now.getTime() - window[0].sentAt.getTime() < BACKOFF.days * 86_400_000;
+}
 
 export function kindsFor(audience: NotifyAudience): NotifyKind[] {
   return (Object.keys(NOTIFY_KINDS) as NotifyKind[]).filter(

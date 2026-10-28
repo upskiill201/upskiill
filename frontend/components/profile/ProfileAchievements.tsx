@@ -23,6 +23,7 @@ const UNITS: Record<string, string> = {
   sharpshooter: 'first-try answers',
   explorer: 'courses',
   marathon: 'days',
+  helper: 'learners helped',
 };
 
 interface Props {

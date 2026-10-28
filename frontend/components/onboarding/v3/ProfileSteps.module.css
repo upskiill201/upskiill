@@ -1,0 +1,306 @@
+/* Onboarding: pick your character, meet your class. Flat, tokens only. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 16px 0 24px;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+
+.lead {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.error {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--error-red);
+  text-align: center;
+}
+
+/* ── Character ── */
+
+.pickedCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 112px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--bg-card);
+}
+
+.pickedText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pickedText strong {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.pickedVibe {
+  align-self: flex-start;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-brand) 12%, var(--bg-card));
+  color: var(--color-brand);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.pickedLine {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.pickedEmpty {
+  width: 100%;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 4px;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  background: var(--bg-section);
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, transform 100ms ease;
+}
+
+.tile:hover {
+  background: color-mix(in srgb, var(--color-brand) 6%, var(--bg-section));
+}
+
+.tile:active {
+  transform: scale(0.97);
+}
+
+.tileOn,
+.tileOn:hover {
+  border-color: var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand) 10%, var(--bg-card));
+}
+
+.tileName {
+  font-size: 12.5px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--color-ink);
+  text-align: center;
+}
+
+.tileVibe {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.photoLink {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-brand);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.photoLink:hover {
+  background: color-mix(in srgb, var(--color-brand) 8%, transparent);
+}
+
+/* ── Class ── */
+
+.classList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--bg-card);
+  overflow: hidden;
+}
+
+.classRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 12px 16px;
+}
+
+.classRow + .classRow {
+  border-top: 1px solid var(--border);
+}
+
+.classText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.classText strong {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.classText span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.addBtn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-brand);
+  color: var(--text-on-blue, var(--bg-page));
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.addBtnSent {
+  background: color-mix(in srgb, var(--success-green) 14%, var(--bg-card));
+  color: var(--success-green);
+}
+
+.more {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.emptyClass {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 16px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--bg-card);
+}
+
+.faces {
+  display: flex;
+}
+
+.face {
+  position: relative;
+  margin-left: -12px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px var(--bg-card);
+}
+
+.face:first-child {
+  margin-left: 0;
+}
+
+.emptyText {
+  margin: 0;
+  max-width: 360px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.skeleton {
+  pointer-events: none;
+}
+
+.skelCircle {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: var(--bg-section);
+}
+
+.skelLine {
+  flex: 1;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--bg-section);
+}
+
+@media (max-width: 420px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .title {
+    font-size: 23px;
+  }
+}

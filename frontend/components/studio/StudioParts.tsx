@@ -15,6 +15,7 @@ import { compact, type Face } from '@/lib/creator/studio';
 import { playSound } from '@/lib/audio/lessonSounds';
 import s from './studio.module.css';
 
+import { AvatarFill } from '@/components/ui/Avatar';
 export { s as studio };
 
 /* ── page head ────────────────────────────────────────────────────────── */
@@ -108,23 +109,10 @@ export function StatTile({
 
 /* ── people ───────────────────────────────────────────────────────────── */
 
-const initials = (name: string) =>
-  name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase())
-    .join('');
-
 export function PersonAvatar({ face, size = 44 }: { face: Pick<Face, 'fullName' | 'avatarUrl'>; size?: number }) {
   return (
     <span className={s.avatar} style={{ '--size': `${size}px` } as CSSProperties} aria-hidden="true">
-      {face.avatarUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element -- user uploads on arbitrary hosts
-        <img src={face.avatarUrl} alt="" loading="lazy" />
-      ) : (
-        initials(face.fullName)
-      )}
+      <AvatarFill src={face.avatarUrl} name={face.fullName} />
     </span>
   );
 }
@@ -135,12 +123,7 @@ export function Faces({ faces, total }: { faces: Face[]; total?: number }) {
     <span className={s.faces} aria-label={`${total ?? faces.length} learners`}>
       {faces.map((f) => (
         <span key={f.id} className={s.face} title={f.fullName}>
-          {f.avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element -- user uploads on arbitrary hosts
-            <img src={f.avatarUrl} alt="" loading="lazy" />
-          ) : (
-            initials(f.fullName)
-          )}
+          <AvatarFill src={f.avatarUrl} seed={f.id} name={f.fullName} />
         </span>
       ))}
       {more > 0 && <span className={`${s.face} ${s.faceMore}`}>+{more > 99 ? 99 : more}</span>}

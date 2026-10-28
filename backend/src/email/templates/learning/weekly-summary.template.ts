@@ -7,7 +7,25 @@ export interface WeeklySummaryData extends BaseEmailData {
   currentStreak: number;
   /** Omit any section whose underlying data doesn't exist — spec §16 "only include metrics that actually exist". */
   leagueResult?: { tier: string; outcome: 'PROMOTED' | 'STAYED' | 'DEMOTED' };
+  /** Their study buddies' week (network/circle-week.ts); omitted with no buddies. */
+  circle?: {
+    buddies: number;
+    buddyLessons: number;
+    top: { name: string; lessons: number } | null;
+    inspired: number;
+  };
   continueUrl: string;
+}
+
+function circleSection(c: NonNullable<WeeklySummaryData['circle']>): string {
+  const lines: string[] = [
+    `Your ${c.buddies === 1 ? 'study buddy' : `${c.buddies} study buddies`} finished ${c.buddyLessons} ${c.buddyLessons === 1 ? 'lesson' : 'lessons'} this week.`,
+  ];
+  if (c.top) lines.push(`${c.top.name} led with ${c.top.lessons}.`);
+  if (c.inspired > 0) {
+    lines.push(`And ${c.inspired} ${c.inspired === 1 ? 'person' : 'people'} started a course because of you.`);
+  }
+  return paragraph(lines.join(' '));
 }
 
 function statRow(label: string, value: string): string {
@@ -41,6 +59,7 @@ export function renderWeeklySummaryEmail(
   const bodyHtml = `
     ${paragraph(`Hey ${name}. Here's what you learned this week.`)}
     <table style="width:100%;border-collapse:collapse;margin:20px 0;">${rows.join('')}</table>
+    ${data.circle ? circleSection(data.circle) : ''}
     ${ctaButton('Keep going', data.continueUrl)}
   `;
 

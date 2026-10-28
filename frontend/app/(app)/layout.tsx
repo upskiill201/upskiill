@@ -32,6 +32,8 @@ import StreakNewsWatcher from "../../components/streak/StreakNewsWatcher";
 import { ShopEngineProvider } from "../../context/ShopEngineContext";
 import ShopEngine from "../../components/shop-engine/ShopEngine";
 import ReferralClaimer from "../../components/referral/ReferralClaimer";
+// "Add a photo first?" before buddy requests, squads, duels and posts
+import PhotoAskHost from "../../components/avatar/PhotoAskHost";
 
 /**
  * Rounded display font for the Celebration Engine scenes (Duolingo-style bubbly
@@ -104,6 +106,7 @@ export default function AppGroupLayout({
                     <ShopEngine />
                     <DailyRewardWatcher />
                     <ReferralClaimer />
+                    <PhotoAskHost />
                     <LeagueResultWatcher />
                     <LeaderboardRankWatcher />
                     <ReminderAskWatcher />

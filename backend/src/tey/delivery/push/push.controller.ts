@@ -75,6 +75,7 @@ class UpdatePrefsDto {
   @IsOptional() @IsBoolean() courseOffers?: boolean;
   @IsOptional() @IsBoolean() creatorActivity?: boolean;
   @IsOptional() @IsBoolean() communityActivity?: boolean;
+  @IsOptional() @IsBoolean() networkActivity?: boolean;
 
   /** Minutes from local midnight. */
   @IsOptional() @IsInt() @Min(0) @Max(1439) quietHoursStart?: number;

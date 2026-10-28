@@ -20,17 +20,24 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/swr';
+import { useHydrated } from '@/components/studio/useHydrated';
 import { dailyQuestsKey, isClaimed, isDone, timeLeftToday, type DailyQuestsPayload } from '@/lib/quests/dailyQuests';
 import { DailyQuestList } from './DailyQuestList';
 
 export function DailyQuestsCard({ variant = 'rail' }: { variant?: 'rail' | 'page' }) {
-  const { data, error, isLoading, mutate } = useSWR<DailyQuestsPayload>(dailyQuestsKey(), fetcher, {
+  const { data: cached, error, isLoading: fetching, mutate } = useSWR<DailyQuestsPayload>(dailyQuestsKey(), fetcher, {
     revalidateOnFocus: true,
   });
+  // The persisted SWR cache (and the browser's clock and time zone) exist
+  // only on the client: read them after hydration, so the server's render
+  // and the first client render agree.
+  const hydrated = useHydrated();
+  const data = hydrated ? cached : undefined;
+  const isLoading = !hydrated || fetching;
   const quests = Array.isArray(data?.missions) ? data!.missions : [];
 
-  // "7 hours" left today — refreshed each minute.
-  const [left, setLeft] = useState(() => timeLeftToday(new Date(), data?.resetAt));
+  // "7 hours" left today — refreshed each minute (blank until hydrated).
+  const [left, setLeft] = useState('');
   useEffect(() => {
     const tick = () => setLeft(timeLeftToday(new Date(), data?.resetAt));
     tick();

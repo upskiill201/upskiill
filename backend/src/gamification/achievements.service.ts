@@ -20,7 +20,8 @@ export type BadgeId =
   | 'champion'
   | 'sharpshooter'
   | 'explorer'
-  | 'marathon';
+  | 'marathon'
+  | 'helper';
 
 /** Onboarding step where the Novice badge moment lives (step 13 of 15). */
 const NOVICE_BADGE_STEP = 13;
@@ -236,6 +237,20 @@ export const BADGE_REGISTRY: BadgeDef[] = [
       },
     ],
   },
+  {
+    // The Teyro Network (phase 3): you answered someone's lesson question and
+    // they went on to finish that lesson. Credited by outcome, never by likes.
+    id: 'helper',
+    title: 'Helper',
+    category: 'Community',
+    badgeBg: '#1CB0F6',
+    tiers: [
+      { level: 1, target: 1, name: 'Helping Hand', description: 'Help someone finish a lesson they were stuck on' },
+      { level: 2, target: 5, name: 'Guide', description: 'Help 5 learners finish lessons they were stuck on' },
+      { level: 3, target: 15, name: 'Mentor', description: 'Help 15 learners finish lessons they were stuck on' },
+      { level: 4, target: 40, name: 'Teacher', description: 'Help 40 learners finish lessons they were stuck on' },
+    ],
+  },
 ];
 
 const BADGE_MAP = new Map<string, BadgeDef>(
@@ -273,6 +288,7 @@ export class AchievementsService {
    * - sharpshooter: step questions answered correctly on the first attempt
    * - explorer:     courses enrolled in
    * - marathon:     distinct calendar days with recorded study activity
+   * - helper:       distinct learners helped through a lesson (help_routes.helpedAt)
    */
   private async loadMetrics(userId: string) {
     const [profile, onboardingSession] = await Promise.all([
@@ -284,7 +300,7 @@ export class AchievementsService {
       this.prisma.onboardingSession.findUnique({ where: { userId } }),
     ]);
 
-    const [enrollments, firstTryCorrect, daysStudied] = await Promise.all([
+    const [enrollments, firstTryCorrect, daysStudied, helpedRows] = await Promise.all([
       this.prisma.enrollment.findMany({
         where: { userId },
         select: { completedLessons: true },
@@ -293,6 +309,12 @@ export class AchievementsService {
         where: { userId, isCorrect: true, attemptNumber: 1 },
       }),
       this.prisma.userDailyActivity.count({ where: { userId } }),
+      // Distinct learners this person helped through a lesson (network help_routes).
+      this.prisma.helpRoute.findMany({
+        where: { helperId: userId, helpedAt: { not: null } },
+        select: { askerId: true },
+        distinct: ['askerId'],
+      }),
     ]);
 
     const completedLessonSet = new Set<string>();
@@ -319,6 +341,7 @@ export class AchievementsService {
       sharpshooter: firstTryCorrect,
       explorer: enrollments.length,
       marathon: daysStudied,
+      helper: helpedRows.length,
       longestStreak: profile.longestStreak || 0,
     };
   }

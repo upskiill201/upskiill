@@ -1,0 +1,29 @@
+/* Teyro HQ → Network: the bits the shared admin kit doesn't have. Tokens only. */
+
+.muted {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.subTitle {
+  margin: 24px 0 8px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.actions .muted {
+  margin: 0;
+}

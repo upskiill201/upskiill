@@ -11,6 +11,7 @@ describe('AchievementsService', () => {
     enrollment: { findMany: jest.fn() },
     userStepAttempt: { count: jest.fn() },
     userDailyActivity: { count: jest.fn() },
+    helpRoute: { findMany: jest.fn().mockResolvedValue([]) },
     onboardingSession: { findUnique: jest.fn() },
     userAchievement: {
       findMany: jest.fn(),

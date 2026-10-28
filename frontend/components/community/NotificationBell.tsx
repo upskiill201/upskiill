@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import useSWR from 'swr';
 import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
@@ -31,6 +32,31 @@ import styles from './NotificationBell.module.css';
 const POLL_INTERVAL_MS = 30_000;
 const listKey = (unreadOnly: boolean) => `/api/notifications?scope=learner&page=1${unreadOnly ? '&unreadOnly=true' : ''}`;
 const GROUP_ORDER: NotificationGroup[] = ['Today', 'This week', 'Earlier'];
+const PANEL_WIDTH = 380;
+const PANEL_GAP = 10;
+const EDGE = 12;
+/** At or below this width the panel is a bottom sheet, placed by CSS alone. */
+const SHEET_MAX_WIDTH = 560;
+
+/**
+ * Where the panel goes on screen, from the bell's own box: below it when
+ * there is room, otherwise above (the sidebar bell sits at the very bottom
+ * of the window), clamped inside the viewport either way and never taller
+ * than the space it opens into.
+ */
+function placePanel(trigger: DOMRect, align: 'left' | 'right'): React.CSSProperties {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const width = Math.min(PANEL_WIDTH, vw - EDGE * 2);
+  const wanted = align === 'right' ? trigger.right - width : trigger.left;
+  const left = Math.max(EDGE, Math.min(wanted, vw - width - EDGE));
+  const below = vh - trigger.bottom - PANEL_GAP - EDGE;
+  const above = trigger.top - PANEL_GAP - EDGE;
+  const openBelow = below >= 420 || below >= above;
+  return openBelow
+    ? { left, width, top: trigger.bottom + PANEL_GAP, maxHeight: below }
+    : { left, width, bottom: vh - trigger.top + PANEL_GAP, maxHeight: above };
+}
 
 interface NotificationBellProps {
   /** Which edge of the trigger the panel aligns to — "left" keeps it inside the left sidebar. */
@@ -40,7 +66,10 @@ interface NotificationBellProps {
 export default function NotificationBell({ panelAlign = 'right' }: NotificationBellProps) {
   const router = useRouter();
   const wrapRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
+  // Fixed, viewport-measured placement (null = the phone bottom sheet).
+  const [placement, setPlacement] = useState<React.CSSProperties | null>(null);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
   const reducedMotion = useReducedMotion();
   const bell = useAnimationControls();
@@ -108,7 +137,9 @@ export default function NotificationBell({ panelAlign = 'right' }: NotificationB
   useEffect(() => {
     if (!isOpen) return;
     const onMouseDown = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setIsOpen(false);
+      const target = e.target as Node;
+      if (wrapRef.current?.contains(target) || panelRef.current?.contains(target)) return;
+      setIsOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setIsOpen(false);
@@ -120,6 +151,24 @@ export default function NotificationBell({ panelAlign = 'right' }: NotificationB
       document.removeEventListener('keydown', onKey);
     };
   }, [isOpen]);
+
+  // The panel renders into <body> (so no sidebar overflow or transform can
+  // clip it) and is placed against the bell, re-measured as the window moves.
+  useLayoutEffect(() => {
+    if (!isOpen) return;
+    const place = () => {
+      const trigger = wrapRef.current?.getBoundingClientRect();
+      if (!trigger) return;
+      setPlacement(window.innerWidth <= SHEET_MAX_WIDTH ? null : placePanel(trigger, panelAlign));
+    };
+    place();
+    window.addEventListener('resize', place);
+    window.addEventListener('scroll', place, true);
+    return () => {
+      window.removeEventListener('resize', place);
+      window.removeEventListener('scroll', place, true);
+    };
+  }, [isOpen, panelAlign]);
 
   const openPanel = () => {
     playSound('menuOpen');
@@ -194,9 +243,11 @@ export default function NotificationBell({ panelAlign = 'right' }: NotificationB
         )}
       </button>
 
-      {isOpen && (
+      {isOpen && createPortal(
         <div
-          className={`${styles.panel} ${panelAlign === 'left' ? styles.panelLeft : ''}`}
+          ref={panelRef}
+          className={styles.panel}
+          style={placement ?? undefined}
           role="dialog"
           aria-label="Notifications"
         >
@@ -279,7 +330,8 @@ export default function NotificationBell({ panelAlign = 'right' }: NotificationB
           >
             See all notifications
           </Link>
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );

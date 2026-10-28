@@ -17,6 +17,8 @@ import { UserOnboardingModule } from './user-onboarding/user-onboarding.module';
 import { WhatsappModule } from './whatsapp/whatsapp.module';
 import { GamificationModule } from './gamification/gamification.module';
 import { SocialModule } from './social/social.module';
+import { NetworkModule } from './network/network.module';
+import { AvatarModule } from './avatar/avatar.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ShopModule } from './shop/shop.module';
 import { HomeModule } from './home/home.module';
@@ -68,6 +70,8 @@ import { OnboardingFlowModule } from './onboarding-flow/onboarding-flow.module';
     WhatsappModule,
     GamificationModule,
     SocialModule,
+    NetworkModule,
+    AvatarModule,
     ShopModule,
     HomeModule,
     MissionsModule,

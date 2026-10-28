@@ -1,0 +1,479 @@
+/* The avatar sheet, photo cropper and character builder. Flat (hairlines,
+   soft tints), tokens only (docs/08-color-system.md). */
+
+/* ── Shared ── */
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding-top: 16px;
+}
+
+.primaryBtn,
+.ghostBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: filter 150ms ease, transform 100ms ease;
+}
+
+.primaryBtn {
+  border: none;
+  background: var(--color-brand);
+  color: var(--text-on-blue, var(--bg-page));
+}
+
+.primaryBtn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.primaryBtn:active:not(:disabled),
+.ghostBtn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.primaryBtn:disabled,
+.ghostBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.ghostBtn {
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--color-ink);
+}
+
+.error {
+  margin: 8px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--error-red);
+  text-align: center;
+}
+
+.hint {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.coinChip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--warning) 18%, var(--bg-card));
+  color: color-mix(in srgb, var(--warning) 60%, var(--color-ink));
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.coinChipBig {
+  padding: 8px 16px;
+  font-size: 16px;
+}
+
+/* ── Choose ── */
+
+.choose,
+.done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.chooseLead {
+  margin: 0;
+  max-width: 360px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.chooseOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.optionCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 72px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-card);
+  color: var(--color-ink);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.optionCard:hover {
+  border-color: color-mix(in srgb, var(--color-brand) 45%, var(--border));
+  background: color-mix(in srgb, var(--color-brand) 4%, var(--bg-card));
+}
+
+.optionArt {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--bg-section);
+}
+
+.optionArtPhoto {
+  background: color-mix(in srgb, var(--color-brand) 12%, var(--bg-card));
+  color: var(--color-brand);
+}
+
+.optionText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.optionText strong {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.optionText span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.optionChev {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.doneTitle {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+/* ── Cropper ── */
+
+.cropWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.cropStage {
+  position: relative;
+  width: min(320px, 100%);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--bg-section);
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+}
+
+.cropStage:active {
+  cursor: grabbing;
+}
+
+.cropImg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: none;
+  pointer-events: none;
+  transform-origin: 0 0;
+}
+
+/* Everything outside the circle dims, so you see exactly what others will. */
+.cropMask {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 999px color-mix(in srgb, var(--ink-fixed) 55%, transparent);
+  outline: 2px solid var(--bg-page);
+  pointer-events: none;
+}
+
+.cropLoading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.zoomRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(320px, 100%);
+  color: var(--text-secondary);
+}
+
+.zoomRow input {
+  flex: 1;
+  accent-color: var(--color-brand);
+}
+
+/* ── Builder ── */
+
+.builder {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.previewText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.previewText strong {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.previewText span {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.shuffleBtn {
+  flex: none;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-card);
+  color: var(--color-ink);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.shuffleBtn:hover {
+  border-color: color-mix(in srgb, var(--color-brand) 45%, var(--border));
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--bg-section);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  flex: 1 0 auto;
+  min-height: 34px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.tabOn {
+  background: var(--bg-card);
+  color: var(--color-ink);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--color-ink) 10%, transparent);
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: min(46vh, 420px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 2px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.partGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 8px;
+}
+
+.partTile,
+.personaTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  background: var(--bg-section);
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.partTile:hover,
+.personaTile:hover {
+  background: color-mix(in srgb, var(--color-brand) 6%, var(--bg-section));
+}
+
+.tileOn,
+.tileOn:hover {
+  border-color: var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand) 10%, var(--bg-card));
+}
+
+.personaGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 8px;
+}
+
+.personaTile {
+  padding: 12px 6px;
+}
+
+.personaName {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--color-ink);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.personaVibe {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.swatch {
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--bg-card);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px var(--border);
+  cursor: pointer;
+}
+
+.swatchOn {
+  box-shadow: 0 0 0 3px var(--color-brand);
+}
+
+@media (max-width: 480px) {
+  .preview {
+    flex-wrap: wrap;
+  }
+
+  .partGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .personaGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Report link (someone else's profile) ── */
+
+.reportLink {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reportLink:hover {
+  color: var(--error-red);
+}

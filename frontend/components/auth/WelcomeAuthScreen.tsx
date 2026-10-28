@@ -48,6 +48,7 @@ import {
   authStyles as styles,
 } from './AuthUi';
 
+import { AvatarFill } from '@/components/ui/Avatar';
 export interface WelcomeAuthScreenProps {
   /** Where GET STARTED sends a brand-new learner. */
   getStartedHref?: string;
@@ -350,11 +351,7 @@ export default function WelcomeAuthScreen({
                   aria-label={`Continue as ${savedName ?? maskEmail(saved.email)}`}
                 >
                   <span className={styles.savedAvatar} aria-hidden="true">
-                    {saved.avatarUrl ? (
-                      <Image src={saved.avatarUrl} alt="" fill sizes="48px" className="object-cover" />
-                    ) : (
-                      (savedName ?? saved.email).slice(0, 1).toUpperCase()
-                    )}
+                    <AvatarFill src={saved.avatarUrl} seed={saved.email} name={savedName ?? saved.email} />
                   </span>
                   <span className={styles.savedText}>
                     <span className={styles.savedName}>{savedName ?? 'Your account'}</span>

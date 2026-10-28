@@ -62,6 +62,12 @@ model User {
   following UserFollow[] @relation("UserFollower")
   followers UserFollow[] @relation("UserFollowing")
 
+  // The Teyro Network — Study Buddies (docs/TEYRO_NETWORK_PLAN.md)
+  buddyRequestsSent     StudyBuddy[] @relation("BuddyRequester")
+  buddyRequestsReceived StudyBuddy[] @relation("BuddyAddressee")
+  avatarReportsAgainst  AvatarReport[] @relation("AvatarReportTarget")
+  avatarReportsFiled    AvatarReport[] @relation("AvatarReporter")
+
   // Account Security, Status & Lifecycle fields (Part 3A.2.1.2.1)
   accountStatus       AccountStatus @default(ACTIVE)
   emailVerifiedAt     DateTime?
@@ -230,18 +236,18 @@ model Profile {
 }
 
 model Course {
-  id               String  @id @default(uuid())
+  id               String   @id @default(uuid())
   title            String
-  slug             String  @unique
+  slug             String   @unique
   // Past slugs (title changes, the 2026-10 clean-URL backfill). Public
   // lookups by an old slug 301 to `slug` — see course-slug.util.ts.
   slugHistory      String[] @default([])
-  description      String  @db.Text
+  description      String   @db.Text
   shortDescription String?
   thumbnailUrl     String?
   price            Float
   originalPrice    Float?
-  published        Boolean @default(false)
+  published        Boolean  @default(false)
 
   // Admin-only homepage/explore curation flag — distinct from `published`
   // (which is the creator's own catalog visibility toggle). Set only from
@@ -321,6 +327,7 @@ model Course {
   views                CourseView[]
   couponEligibility    CouponCourse[]
 
+  @@unique([trackId, trackLevel])
   // Catalog reads (GET /courses) filter on `published` and sort by
   // `createdAt` — previously a full table scan + sort on every catalog
   // load. `instructorId` backs every "my courses" / ownership-check query.
@@ -329,7 +336,6 @@ model Course {
   @@index([instructorId])
   @@index([featured])
   @@index([isOriginal])
-  @@unique([trackId, trackLevel])
   // Backs the admin review queue (GET /admin/courses?reviewStatus=...),
   // sorted oldest-submission-first by default.
   @@index([reviewStatus, submittedForReviewAt])
@@ -561,19 +567,19 @@ model Review {
 }
 
 model Enrollment {
-  id               String   @id @default(uuid())
+  id               String    @id @default(uuid())
   userId           String
   courseId         String
-  progress         Int      @default(0)
-  completedLessons Json?    @default("[]")
+  progress         Int       @default(0)
+  completedLessons Json?     @default("[]")
   /// Lessons skipped by passing a Jump ahead or placement test (Originals). Never
   /// counted as completed: no XP, chests, streaks or completion stats.
-  testedOutLessons Json?    @default("[]")
+  testedOutLessons Json?     @default("[]")
   placedAt         DateTime?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  course           Course   @relation(fields: [courseId], references: [id])
-  user             User     @relation(fields: [userId], references: [id])
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  course           Course    @relation(fields: [courseId], references: [id])
+  user             User      @relation(fields: [userId], references: [id])
 
   @@unique([userId, courseId])
   // courseId alone is not covered by the leading-userId unique above.
@@ -1048,6 +1054,209 @@ model UserFollow {
   @@index([followerId])
   @@index([followingId])
   @@map("user_follows")
+}
+
+/// A Study Buddy: the closest layer of the Teyro Network (max 5 accepted).
+/// One row per pair, whoever asked first; `pairKey` = the two ids sorted and
+/// joined, so A→B and B→A can never both exist.
+model StudyBuddy {
+  id          String    @id @default(uuid())
+  pairKey     String    @unique
+  requesterId String
+  addresseeId String
+  requester   User      @relation("BuddyRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addressee   User      @relation("BuddyAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+  /// PENDING | ACCEPTED
+  status      String    @default("PENDING")
+  /// The course the invite or suggestion came from, when there was one.
+  courseId    String?
+  createdAt   DateTime  @default(now())
+  acceptedAt  DateTime?
+
+  @@index([requesterId, status])
+  @@index([addresseeId, status])
+  @@map("study_buddies")
+}
+
+/// What happened to network cards (docs/TEYRO_NETWORK_PLAN.md §4): the log
+/// the ranking learns from and "started because of you" is attributed from.
+/// No FKs on purpose — an append-only log that never blocks a delete.
+model NetworkEvent {
+  id         String   @id @default(uuid())
+  /// The viewer who saw / tapped.
+  userId     String
+  /// IMPRESSION | CTA | CHEER | PROFILE_OPEN | LESSON_FROM_CARD | ENROLLED_FROM_CARD
+  kind       String
+  activityId String?
+  /// The card's author — so attribution never re-reads the card.
+  authorId   String?
+  courseId   String?
+  /// 0-based slot in the feed, for position bias later.
+  position   Int?
+  createdAt  DateTime @default(now())
+
+  @@index([userId, kind, createdAt])
+  @@index([authorId, kind, createdAt])
+  @@index([activityId])
+  @@map("network_events")
+}
+
+/// A question about a lesson, routed to someone who has passed it
+/// (docs/TEYRO_NETWORK_PLAN.md phase 3). One row per question × helper,
+/// whether we asked them or they answered on their own. `helpedAt` is set
+/// when the asker goes on to finish that lesson after this person answered:
+/// help is credited by outcome, not by likes. Counts drive the Helper badge.
+model HelpRoute {
+  id         String    @id @default(uuid())
+  postId     String
+  askerId    String
+  helperId   String
+  lessonId   String
+  courseId   String
+  /// We sent them the question (null = they answered without being asked).
+  routedAt   DateTime?
+  answeredAt DateTime?
+  helpedAt   DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@unique([postId, helperId])
+  @@index([helperId, helpedAt])
+  @@index([askerId, lessonId])
+  @@map("help_routes")
+}
+
+/// A squad: 3–6 people with one shared weekly lesson goal and a shared chest
+/// (docs/TEYRO_NETWORK_PLAN.md phase 4). One squad per person.
+model Squad {
+  id          String   @id @default(uuid())
+  name        String
+  /// What a join link carries. Unguessable, unique.
+  inviteCode  String   @unique
+  /// The course it formed around, when it did.
+  courseId    String?
+  /// Lessons the whole squad aims for each UTC week (Monday–Sunday).
+  weeklyGoal  Int      @default(15)
+  createdById String
+  createdAt   DateTime @default(now())
+
+  members SquadMember[]
+  weeks   SquadWeek[]
+
+  @@map("squads")
+}
+
+model SquadMember {
+  id       String   @id @default(uuid())
+  squadId  String
+  squad    Squad    @relation(fields: [squadId], references: [id], onDelete: Cascade)
+  /// One squad at a time — unique.
+  userId   String   @unique
+  /// OWNER | MEMBER
+  role     String   @default("MEMBER")
+  joinedAt DateTime @default(now())
+
+  @@index([squadId])
+  @@map("squad_members")
+}
+
+/// Once-a-week facts about a squad, so "goal met" and "one lesson short"
+/// fire once per week and the chest is granted exactly once.
+model SquadWeek {
+  id           String    @id @default(uuid())
+  squadId      String
+  squad        Squad     @relation(fields: [squadId], references: [id], onDelete: Cascade)
+  /// YYYY-MM-DD, the Monday (UTC).
+  weekStart    String
+  goal         Int
+  goalMetAt    DateTime?
+  almostSentAt DateTime?
+
+  @@unique([squadId, weekStart])
+  @@map("squad_weeks")
+}
+
+/// A duel on a lesson's quiz between two buddies who both passed it. The
+/// questions are fixed at creation; answers are scored on the server (the
+/// client never sees the right answer before it has answered).
+model Duel {
+  id                String    @id @default(uuid())
+  challengerId      String
+  opponentId        String
+  lessonId          String
+  courseId          String
+  /// The question ids in play, in order.
+  questionIds       Json
+  challengerAnswers Json?
+  opponentAnswers   Json?
+  challengerScore   Int?
+  opponentScore     Int?
+  /// CHALLENGER_TURN | OPPONENT_TURN | DONE | EXPIRED | DECLINED
+  status            String    @default("CHALLENGER_TURN")
+  createdAt         DateTime  @default(now())
+  expiresAt         DateTime
+  finishedAt        DateTime?
+
+  @@index([challengerId, status])
+  @@index([opponentId, status])
+  @@map("duels")
+}
+
+/// A trained feed-ranking model (docs/TEYRO_NETWORK_PLAN.md phase 5): one
+/// logistic regression per outcome, fitted on network_events. At most one is
+/// active; with none active the feed uses the hand-set formula.
+model NetworkRankingModel {
+  id        String   @id @default(uuid())
+  trainedAt DateTime @default(now())
+  /// Impressions it learned from, and how many led to each outcome.
+  samples   Int
+  positives Json
+  /// { outcome: { feature: weight } } — read by feed-rank.ts.
+  weights   Json
+  /// Held-out log-loss per outcome vs the always-guess-the-average baseline.
+  metrics   Json
+  active    Boolean  @default(false)
+  /// Why it was or wasn't switched on.
+  note      String?
+
+  @@index([active])
+  @@map("network_ranking_models")
+}
+
+/// A learner reported someone's profile photo. Teyro HQ resolves it by
+/// removing the photo or dismissing the report. One per reporter per photo.
+model AvatarReport {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation("AvatarReportTarget", fields: [userId], references: [id], onDelete: Cascade)
+  reporterId String
+  reporter   User      @relation("AvatarReporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  /// The photo as it was when reported (a new photo starts fresh).
+  avatarUrl  String
+  reason     String?
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime?
+  /// REMOVED | DISMISSED
+  resolution String?
+
+  @@unique([reporterId, userId, avatarUrl])
+  @@index([resolvedAt])
+  @@index([userId])
+  @@map("avatar_reports")
+}
+
+/// Who is learning right now (a heartbeat from the lesson player) — for
+/// "Ada is learning now, join her?" and "Ben is learning too".
+model LearningPresence {
+  userId      String   @id
+  courseId    String
+  lessonId    String
+  lessonTitle String?
+  /// When this sitting began (a gap of 10+ minutes starts a new one).
+  startedAt   DateTime @default(now())
+  seenAt      DateTime @default(now())
+
+  @@index([seenAt])
+  @@map("learning_presence")
 }
 
 model UserAchievement {
@@ -1643,11 +1852,12 @@ model Like {
   id         String   @id @default(uuid())
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  entityType String // 'POST' | 'COMMENT'
+  entityType String // 'POST' | 'COMMENT' | 'ACTIVITY' (a network Cheer)
   entityId   String
   createdAt  DateTime @default(now())
 
   @@unique([userId, entityType, entityId])
+  @@index([entityType, entityId])
   @@index([userId])
   @@map("likes")
 }
@@ -1664,6 +1874,8 @@ model ActivityFeed {
 
   friendActivities FriendActivity[]
 
+  @@unique([userId, activityType, entityId])
+  @@index([userId, createdAt(sort: Desc)])
   @@index([userId])
   @@index([createdAt(sort: Desc)])
   @@map("activity_feed")
@@ -2200,9 +2412,9 @@ model TeyDelivery {
   context  Json
 
   /// 'TEMPLATE' | 'AI' — proves the template-first policy is holding.
-  generatedBy String @default("TEMPLATE")
+  generatedBy String  @default("TEMPLATE")
   /// 'SENT' | 'FAILED' | 'SUPPRESSED'
-  status      String @default("SENT")
+  status      String  @default("SENT")
   /// Why it didn't reach a phone (NO_SUBSCRIPTION, QUIET_HOURS, DAILY_CAP…).
   skipReason  String?
 
@@ -2261,19 +2473,21 @@ model TeyNotificationPrefs {
   whatsappEnabled Boolean @default(false)
 
   // Per-category opt-outs, so a learner can keep streak saves and drop the rest.
-  streakReminders Boolean @default(true)
-  dailyReminders  Boolean @default(true)
-  milestones      Boolean @default(true)
-  reengagement    Boolean @default(true)
+  streakReminders   Boolean @default(true)
+  dailyReminders    Boolean @default(true)
+  milestones        Boolean @default(true)
+  reengagement      Boolean @default(true)
   /// League moves: someone passed you, the week is ending, your result.
-  leagueUpdates   Boolean @default(true)
+  leagueUpdates     Boolean @default(true)
   /// Offers on a course the learner started (the lesson-3 unlock journey).
-  courseOffers    Boolean @default(true)
+  courseOffers      Boolean @default(true)
   /// Creator side: sales, new learners, questions, finishes, payouts.
-  creatorActivity Boolean @default(true)
+  creatorActivity   Boolean @default(true)
   /// Community: replies, comments, mentions, announcements and new posts in
   /// the focus course's community.
   communityActivity Boolean @default(true)
+  /// The Teyro Network: buddy requests, nudges, cheers, "your buddy learned".
+  networkActivity   Boolean @default(true)
 
   /// Minutes from LOCAL midnight. Defaults 21:30 -> 08:00, and the window
   /// wraps midnight by design.

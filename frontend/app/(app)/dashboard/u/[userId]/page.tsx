@@ -13,7 +13,11 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import { Glyph } from '@/components/art/Glyph';
+import Avatar from '@/components/ui/Avatar';
+import ReportPhotoButton from '@/components/avatar/ReportPhotoButton';
+import { isPhoto } from '@/lib/avatar/avatar';
 import ProfileStats from '@/components/profile/ProfileStats';
+import { BuddyButton, LearningTimeline } from '@/components/network/ProfileNetwork';
 import { fetcher } from '@/lib/swr';
 import { levelProgress } from '@/lib/level';
 import { setFollowing } from '@/lib/social';
@@ -150,12 +154,7 @@ export default function LearnerProfilePage() {
           <div className={styles.identity}>
             <div className={styles.avatarRow}>
               <div className={`${styles.avatarWrap} ${own.avatarRing}`}>
-                {data.avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- user-uploaded, any host
-                  <img src={data.avatarUrl} alt={data.fullName} className={styles.avatarImg} />
-                ) : (
-                  <span className={styles.avatarInitial}>{data.fullName.charAt(0).toUpperCase()}</span>
-                )}
+                <Avatar src={data.avatarUrl} seed={userId} name={data.fullName} px={104} className={styles.avatarImg} />
                 <span className={own.levelBadge} aria-label={`Level ${level}`}>
                   {level}
                 </span>
@@ -180,6 +179,7 @@ export default function LearnerProfilePage() {
               )}
             </div>
             {data.bio && <p className={styles.bio}>{data.bio}</p>}
+            {isPhoto(data.avatarUrl) && <ReportPhotoButton userId={userId} name={data.fullName} />}
 
             <div className={styles.countsRow}>
               <span className={styles.countBtn}>
@@ -207,6 +207,7 @@ export default function LearnerProfilePage() {
                 </>
               )}
             </button>
+            <BuddyButton userId={data.id} firstName={first} />
           </div>
         </section>
 
@@ -220,6 +221,8 @@ export default function LearnerProfilePage() {
           loading={false}
           theirs
         />
+
+        <LearningTimeline userId={data.id} firstName={first} />
 
         <section aria-label="Courses you share">
           <div className={styles.sectionHead}>

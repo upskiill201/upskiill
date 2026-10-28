@@ -15,6 +15,7 @@ import { useGamification } from '@/context/GamificationContext';
 import { useRewardChest } from '@/hooks/useRewardChest';
 import { playHaptic } from '@/lib/haptics';
 import { fetcher } from '@/lib/swr';
+import { useHydrated } from '@/components/studio/useHydrated';
 import { pendingChestsKey, type PendingChest } from '@/lib/quests/streakChests';
 import { QuestChest } from './QuestChest';
 
@@ -34,17 +35,21 @@ export function StreakChestsCard() {
     void refresh();
   };
 
-  const streakChests = pending?.chests ?? [];
+  // The persisted SWR cache exists only on the client: read it after
+  // hydration, so the server's render and the first client render agree.
+  const hydrated = useHydrated();
+  const streakChests = (hydrated ? pending?.chests : undefined) ?? [];
   if (streakChests.length === 0) return null;
+  const heading = streakChests.some((c) => c.kind === 'SQUAD') ? 'Your chests' : 'Streak chests';
 
   return (
     <section
-      aria-label="Streak chests"
+      aria-label={heading}
       className="rounded-[20px] border-2 border-[var(--border)] bg-white p-4"
       style={{ boxShadow: '0 4px 0 var(--border)' }}
     >
       <h2 className="text-[17px] font-extrabold text-ink" style={{ fontFamily: 'var(--font-jakarta)' }}>
-        Streak chests
+        {heading}
       </h2>
 
       <ul className="mt-3 flex flex-col gap-2">
@@ -61,8 +66,8 @@ export function StreakChestsCard() {
               <QuestChest state="ready" size={40} />
               <span className="flex-1 min-w-0">
                 <span className="flex items-center gap-1 text-[14.5px] font-extrabold text-ink">
-                  <Glyph name="flame" size={16} strokeWidth={2} style={{ color: 'var(--warning)' }} />
-                  {c.streakDays ? `${c.streakDays}-day streak chest` : 'Streak chest'}
+                  <Glyph name={c.kind === 'SQUAD' ? 'users' : 'flame'} size={16} strokeWidth={2} style={{ color: 'var(--warning)' }} />
+                  {c.kind === 'SQUAD' ? 'Squad chest' : c.streakDays ? `${c.streakDays}-day streak chest` : 'Streak chest'}
                 </span>
                 <span className="text-[12.5px] font-bold text-[var(--text-secondary)]">Tap to open</span>
               </span>

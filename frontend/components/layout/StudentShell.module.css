@@ -459,25 +459,22 @@
     padding: 16px 14px calc(100px + env(safe-area-inset-bottom));
   }
 
-  /* Duolingo's bottom bar: five tabs, the current one in an outlined tile. */
-  /* A floating, rounded dock pinned near the bottom edge: inset from the
-     sides, lifted off the home indicator, with a game-button lip. */
+  /* The bottom bar: docked flat to the bottom edge — a hairline on top, a
+     lightly translucent surface, no tactile lip. The home indicator gets its
+     own padding underneath. */
   .mobileBottomNav {
     display: flex;
     position: fixed;
-    bottom: calc(10px + env(safe-area-inset-bottom));
-    left: 12px;
-    right: 12px;
+    bottom: 0;
+    left: 0;
+    right: 0;
     z-index: 1001;
-    height: 64px;
-    padding: 0 10px;
-    background: var(--nav-bg);
-    border: 2px solid var(--nav-line);
-    border-radius: 999px;
-    /* The lip underneath plus a soft shadow — static, so it costs nothing per frame. */
-    box-shadow:
-      0 4px 0 var(--nav-line),
-      0 10px 24px color-mix(in srgb, var(--ink-fixed) 12%, transparent);
+    height: calc(64px + env(safe-area-inset-bottom));
+    padding: 0 8px env(safe-area-inset-bottom);
+    background: color-mix(in srgb, var(--nav-bg) 92%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    backdrop-filter: saturate(180%) blur(16px);
+    border-top: 1px solid var(--nav-line);
     justify-content: space-around;
     align-items: center;
   }
@@ -499,22 +496,26 @@
     justify-content: center;
     width: 100%;
     max-width: 56px;
-    height: 46px;
-    border-radius: 999px;
-    border: 2px solid transparent;
-    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+    height: 44px;
+    border-radius: 14px;
+    transition: background-color 0.15s ease, transform 0.12s ease;
   }
 
+  /* The art sits bare in the bar — no per-tab tiles or outlines; the only
+     shape is the current tab's tint. */
+  .bottomNavIconWrap > :first-child {
+    background: transparent;
+    border-color: transparent;
+  }
+
+  /* The current tab: a soft tint behind it, nothing raised. */
   .activeBottomItem .bottomNavIconWrap {
     background-color: var(--nav-active-bg);
-    border-color: var(--nav-active-line);
-    /* A little 3D lip, like the lesson buttons. */
-    box-shadow: 0 3px 0 var(--nav-active-line);
   }
 
-  /* Pressed: the tile squishes down like a game button. */
+  /* Pressed: a gentle squeeze. */
   .bottomNavItem:active .bottomNavIconWrap {
-    transform: translateY(2px) scale(0.92);
+    transform: scale(0.94);
   }
 
   /* The tab you just landed on pops once (the class arrives with the route). */

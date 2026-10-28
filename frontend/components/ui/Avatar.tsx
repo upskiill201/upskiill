@@ -1,68 +1,111 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
-import { Glyph } from '@/components/art/Glyph';
+import { avatarFromUrl, seedAvatar } from '@/lib/avatar/avatar';
+import { avatarSvg } from '@/lib/avatar/draw';
 import styles from './Avatar.module.css';
 
 type AvatarProps = {
-  src?: string;
+  /** A photo URL, a Teyro character path (/avatars/v1/…), or nothing. */
+  src?: string | null;
   alt?: string;
   name?: string;
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  /**
+   * Picks the character shown when there is no photo — pass the user's id so
+   * the same person always gets the same face (falls back to their name).
+   */
+  seed?: string | null;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+  /** An exact pixel size, overriding `size`. */
+  px?: number;
   ring?: boolean;
   online?: boolean;
   className?: string;
 };
 
+/**
+ * Everyone's face, everywhere: their photo, else the character they chose,
+ * else a character picked from their id. Never initials (founder, 2026-10-28).
+ */
 export default function Avatar({
   src,
   alt,
   name,
+  seed,
   size = 'md',
+  px,
   ring = false,
   online = false,
   className = '',
 }: AvatarProps) {
   const [imgError, setImgError] = useState(false);
+  const built = useMemo(() => avatarFromUrl(src), [src]);
+  const hasPhoto = Boolean(src) && !built && !imgError;
+  const label = alt || name || 'User avatar';
 
-  // Get initials from name "Amara Diallo" -> "AD"
-  const getInitials = (fullName: string) => {
-    const parts = fullName.trim().split(/\s+/);
-    if (parts.length === 0 || !parts[0]) return '';
-    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  };
+  // The drawing: their chosen character, or one seeded from who they are.
+  const svg = useMemo(() => {
+    if (hasPhoto) return '';
+    return avatarSvg(built ?? seedAvatar(seed || name || alt || 'teyro'));
+  }, [hasPhoto, built, seed, name, alt]);
 
-  const hasImage = Boolean(src) && !imgError;
-  const initials = !hasImage && name ? getInitials(name) : '';
-
-  const containerClasses = [
-    styles.avatar,
-    styles[size],
-    ring ? styles.ring : '',
-    className,
-  ]
+  const containerClasses = [styles.avatar, px ? '' : styles[size], ring ? styles.ring : '', className]
     .filter(Boolean)
     .join(' ');
+  const sizeStyle = px ? { width: px, height: px } : undefined;
 
   return (
     <div className={styles.wrapper}>
-      <div className={containerClasses} aria-label={alt || name || 'User avatar'}>
-        {hasImage ? (
+      <div className={containerClasses} style={sizeStyle} role="img" aria-label={label}>
+        {hasPhoto ? (
           <Image
             src={src!}
-            alt={alt || name || 'Avatar'}
+            alt={label}
             fill
             className={styles.image}
-            sizes="(max-width: 768px) 100vw, 80px"
+            sizes={px ? `${px}px` : '(max-width: 768px) 100vw, 120px'}
             onError={() => setImgError(true)}
           />
-        ) : initials ? (
-          <span className={styles.initials}>{initials}</span>
         ) : (
-          <Glyph name="user" className={styles.fallbackIcon} />
+          // Built from fixed drawing tables (lib/avatar/draw.ts): no user text.
+          <span className={styles.drawn} aria-hidden dangerouslySetInnerHTML={{ __html: svg }} />
         )}
       </div>
       {online && <span className={`${styles.statusDot} ${styles[size]}`} />}
     </div>
+  );
+}
+
+/**
+ * The same face, filling whatever circle it's dropped into — for the places
+ * that already style their own avatar span (people rows, face stacks, the
+ * saved-account button). A photo, the chosen character, or a seeded one.
+ */
+export function AvatarFill({ src, seed, name }: { src?: string | null; seed?: string | null; name?: string | null }) {
+  const [imgError, setImgError] = useState(false);
+  const built = useMemo(() => avatarFromUrl(src), [src]);
+  const hasPhoto = Boolean(src) && !built && !imgError;
+  const svg = useMemo(
+    () => (hasPhoto ? '' : avatarSvg(built ?? seedAvatar(seed || name || 'teyro'))),
+    [hasPhoto, built, seed, name],
+  );
+  if (hasPhoto) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- user uploads on arbitrary hosts
+      <img
+        src={src!}
+        alt=""
+        loading="lazy"
+        onError={() => setImgError(true)}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit', display: 'block' }}
+      />
+    );
+  }
+  return (
+    <span
+      aria-hidden
+      style={{ display: 'block', width: '100%', height: '100%', borderRadius: 'inherit', overflow: 'hidden' }}
+      // Built from fixed drawing tables (lib/avatar/draw.ts): no user text.
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
   );
 }

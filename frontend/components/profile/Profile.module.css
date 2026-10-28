@@ -161,6 +161,20 @@
   font-weight: 900;
 }
 
+/* No real photo yet: the camera button breathes, once a second, to invite one. */
+.cameraBtnPulse {
+  animation: cameraPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes cameraPulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-brand) 45%, transparent); }
+  50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--color-brand) 0%, transparent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cameraBtnPulse { animation: none; }
+}
+
 .cameraBtn {
   position: absolute;
   right: -4px;

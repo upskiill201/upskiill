@@ -2,17 +2,22 @@
 
 /**
  * The profile header — Duolingo's: a banner (your equipped backdrop, if any),
- * the big avatar in your equipped frame with a camera button to change it,
+ * the big avatar in your equipped frame with a camera button to change it
+ * (the avatar sheet: a photo, or a Teyro character),
  * name, @handle, joined date, location, bio, and following/followers counts.
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import Avatar from '@/components/ui/Avatar';
+import AvatarSheet from '@/components/avatar/AvatarSheet';
 import { Glyph } from '@/components/art/Glyph';
 import CosmeticFrame from '@/components/cosmetics/CosmeticFrame';
 import CosmeticBackdrop from '@/components/cosmetics/CosmeticBackdrop';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
+import { isPhoto } from '@/lib/avatar/avatar';
 import type { MyProfile } from './types';
 import styles from './Profile.module.css';
 
@@ -20,8 +25,6 @@ interface Props {
   me: MyProfile;
   onEdit: () => void;
   onPeople: (tab: 'following' | 'followers') => void;
-  /** Saves a new avatar URL (PATCH /api/profile) and refreshes. */
-  onAvatarSaved: (url: string) => Promise<void>;
 }
 
 function joined(iso?: string) {
@@ -29,34 +32,14 @@ function joined(iso?: string) {
   return new Date(iso).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
 }
 
-export default function ProfileHeader({ me, onEdit, onPeople, onAvatarSaved }: Props) {
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export default function ProfileHeader({ me, onEdit, onPeople }: Props) {
+  // The day-2 reminder and "photo removed" note link here with ?avatar=1.
+  const params = useSearchParams();
+  const [sheet, setSheet] = useState(() => params.get('avatar') === '1');
 
   const name = me.fullName || 'Learner';
   const handle = me.profile?.username || me.email?.split('@')[0] || '';
   const avatar = me.avatarUrl || me.profile?.avatarUrl || null;
-
-  const upload = async (file: File) => {
-    setUploading(true);
-    setError(null);
-    try {
-      const form = new FormData();
-      form.append('file', file);
-      const res = await fetch('/api/upload/avatar', { method: 'POST', body: form, credentials: 'include' });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.url) throw new Error(data.error || 'Upload failed. Try a JPG or PNG under 5MB.');
-      await onAvatarSaved(data.url);
-      playSound('toggleOn');
-      playHaptic('success', false);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Upload failed.');
-      playSound('nodeLocked');
-    } finally {
-      setUploading(false);
-    }
-  };
 
   return (
     <section className={styles.header} aria-label="Your profile">
@@ -79,36 +62,19 @@ export default function ProfileHeader({ me, onEdit, onPeople, onAvatarSaved }: P
         <div className={styles.avatarRow}>
           <div className={styles.avatarWrap}>
             <CosmeticFrame thickness={5}>
-              {avatar ? (
-                // eslint-disable-next-line @next/next/no-img-element -- user-uploaded, any host
-                <img src={avatar} alt={name} className={styles.avatarImg} />
-              ) : (
-                <span className={styles.avatarInitial}>{name.charAt(0).toUpperCase()}</span>
-              )}
+              <Avatar src={avatar} seed={me.id} name={name} px={104} className={styles.avatarImg} />
             </CosmeticFrame>
             <button
               type="button"
-              className={styles.cameraBtn}
-              aria-label="Change photo"
-              disabled={uploading}
+              className={`${styles.cameraBtn} ${isPhoto(avatar) ? '' : styles.cameraBtnPulse}`}
+              aria-label={isPhoto(avatar) ? 'Change photo' : 'Add a photo'}
               onClick={() => {
                 playSound('menuOpen');
-                fileRef.current?.click();
+                setSheet(true);
               }}
             >
-              {uploading ? <Glyph name="spinner" size={16} className="animate-spin" /> : <Glyph name="camera" size={16} strokeWidth={2.5} />}
+              <Glyph name="camera" size={16} strokeWidth={2.5} />
             </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              hidden
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                e.target.value = '';
-                if (f) void upload(f);
-              }}
-            />
           </div>
 
           <button
@@ -139,7 +105,6 @@ export default function ProfileHeader({ me, onEdit, onPeople, onAvatarSaved }: P
           )}
         </div>
         {me.profile?.bio && <p className={styles.bio}>{me.profile.bio}</p>}
-        {error && <p className={styles.inlineError} role="alert">{error}</p>}
 
         <div className={styles.countsRow}>
           <button
@@ -164,6 +129,7 @@ export default function ProfileHeader({ me, onEdit, onPeople, onAvatarSaved }: P
           </button>
         </div>
       </div>
+      <AvatarSheet open={sheet} onClose={() => setSheet(false)} />
     </section>
   );
 }

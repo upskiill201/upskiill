@@ -15,9 +15,11 @@
  */
 
 import React, { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 import { Glyph } from '@/components/art/Glyph';
 import { fetcher } from '@/lib/swr';
+import { useHydrated } from '@/components/studio/useHydrated';
 import { useGamification } from '@/context/GamificationContext';
 import { levelProgress } from '@/lib/level';
 import type { MyLeaderboard } from '@/lib/leaderboard/leaderboardEvents';
@@ -25,6 +27,7 @@ import ProfileHeader from '@/components/profile/ProfileHeader';
 import ProfileStats from '@/components/profile/ProfileStats';
 import ProfileAchievements from '@/components/profile/ProfileAchievements';
 import InviteFriendsCard from '@/components/profile/InviteFriendsCard';
+import ProfileSetupCard from '@/components/profile/ProfileSetupCard';
 import EditProfileModal from '@/components/profile/EditProfileModal';
 import { FriendsCard, PeopleModal, type PeopleTab } from '@/components/profile/People';
 import type { AchievementsResponse, MyProfile } from '@/components/profile/types';
@@ -32,22 +35,17 @@ import styles from '@/components/profile/Profile.module.css';
 
 export default function ProfilePage() {
   const { streakDays, xp, longestStreak, profileLoaded } = useGamification();
-  const me = useSWR<MyProfile>('/api/profile', fetcher);
+  const meRes = useSWR<MyProfile>('/api/profile', fetcher);
+  // The persisted SWR cache exists only on the client: read it after
+  // hydration, so the server render (a skeleton) and the first client render agree.
+  const hydrated = useHydrated();
+  const me = { data: hydrated ? meRes.data : undefined, error: hydrated ? meRes.error : undefined, isLoading: !hydrated || (!meRes.data && meRes.isLoading), mutate: meRes.mutate };
   const achievements = useSWR<AchievementsResponse>('/api/gamification/achievements', fetcher);
   const league = useSWR<MyLeaderboard>('/api/leagues/me', fetcher, { dedupingInterval: 30_000 });
-  const [editing, setEditing] = useState(false);
+  // "Say a line about you" on the home rail links here with ?edit=1.
+  const params = useSearchParams();
+  const [editing, setEditing] = useState(() => params.get('edit') === '1');
   const [people, setPeople] = useState<PeopleTab | null>(null);
-
-  const saveAvatar = async (url: string) => {
-    const res = await fetch('/api/profile', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ avatarUrl: url }),
-    });
-    if (!res.ok) throw new Error("Your photo uploaded but didn't save. Try again.");
-    await me.mutate((await res.json()) as MyProfile, { revalidate: false });
-  };
 
   const metrics = achievements.data?.metrics;
 
@@ -68,7 +66,6 @@ export default function ProfilePage() {
             me={me.data}
             onEdit={() => setEditing(true)}
             onPeople={(t) => setPeople(t)}
-            onAvatarSaved={saveAvatar}
           />
         )}
 
@@ -92,6 +89,7 @@ export default function ProfilePage() {
       </div>
 
       <aside className={styles.rail} aria-label="Friends">
+        <ProfileSetupCard onEditBio={() => setEditing(true)} />
         <InviteFriendsCard />
         <FriendsCard onOpen={(t) => setPeople(t)} />
       </aside>

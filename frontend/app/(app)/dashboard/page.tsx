@@ -28,6 +28,9 @@ import { StatsBar } from '@/components/ui/StatsBar';
 import LevelProgressionBanner from '@/components/dashboard/v2/LevelProgressionBanner';
 import DailyQuestsCard from '@/components/quests/DailyQuestsCard';
 import StreakChestsCard from '@/components/quests/StreakChestsCard';
+import LeagueWidget from '@/components/home/LeagueWidget';
+import NetworkWidget from '@/components/home/NetworkWidget';
+import ProfileSetupCard from '@/components/profile/ProfileSetupCard';
 import NotificationBell from '@/components/community/NotificationBell';
 import { CoursePicker } from '@/components/home/CoursePicker';
 import { LearningPath } from '@/components/home/LearningPath';
@@ -36,6 +39,7 @@ import { PathSkeleton } from '@/components/home/PathSkeleton';
 import { NewLearnerHome } from '@/components/home/NewLearnerHome';
 import { ComingSoonPath } from '@/components/home/ComingSoonPath';
 import { useMe } from '@/hooks/useMe';
+import { useHydrated } from '@/components/studio/useHydrated';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { isLearningTrack } from '@/lib/path/trackCourse';
 import { HOME_COURSE_KEY, setHomeCourse } from '@/lib/homeCourse';
@@ -77,7 +81,15 @@ export default function DashboardPage() {
   const router = useRouter();
   const { openMobileMenu } = useMobileMenu();
 
-  const { enrollments, error: enrollmentsError } = useEnrollments();
+  // The SWR cache is persisted (localStorage), so enrollments exist on the
+  // client's first render but not the server's. Read them only after
+  // hydration, or the two renders disagree (the course picker in the phone
+  // header, the path vs its skeleton) and React throws the tree away.
+  const hydrated = useHydrated();
+  const { enrollments: cachedEnrollments, error: cachedError } = useEnrollments();
+  const enrollments = hydrated ? cachedEnrollments : undefined;
+  // A cached error is client-only too (it would skip the skeleton the server drew).
+  const enrollmentsError = hydrated ? cachedError : undefined;
   const { me } = useMe();
 
   // The learner's track (Coding / AI): their profile first, else the
@@ -89,7 +101,8 @@ export default function DashboardPage() {
     return isLearningTrack(c) ? c : null;
   });
   const profileTrack = (me?.studentProfile as { learningTrack?: unknown } | null | undefined)?.learningTrack;
-  const track: LearningCategory | null = isLearningTrack(profileTrack) ? profileTrack : localTrack;
+  // localTrack comes from localStorage, so it's only used after hydration.
+  const track: LearningCategory | null = isLearningTrack(profileTrack) ? profileTrack : hydrated ? localTrack : null;
 
   // Development-only preview of the new-learner home, for accounts that
   // already have courses: ?preview=new-coding | new-ai | new-none |
@@ -104,30 +117,33 @@ export default function DashboardPage() {
   // picker sticks, as long as you're still enrolled in it.
   //
   // Read once at mount. Safe from hydration mismatch: the choice only matters
-  // once enrollments have loaded, and they never exist on the first render
-  // (server or client) — home's first frame is always the path skeleton.
+  // once enrollments are read, which waits for hydration (above) — home's
+  // first frame is always the path skeleton.
   // ?course=<id> (courseHomeHref — every "go to this course" link) wins and
-  // is remembered, the way picking it in the course picker would be.
+  // is remembered, the way picking it in the course picker would be. It's
+  // derived, not copied into state, so a new ?course= applies on the render
+  // it arrives.
   const courseParam = searchParams.get('course');
-  const [chosenId, setChosenId] = useState<string | null>(() => {
-    if (courseParam) return courseParam;
+  // A choice remembers which ?course= it was made under: a new link wins over
+  // it, and a pick made after arriving by link wins over that link.
+  const [picked, setPicked] = useState<{ id: string | null; underParam: string | null }>(() => {
+    if (courseParam) return { id: courseParam, underParam: courseParam };
     try {
-      return typeof window === 'undefined' ? null : localStorage.getItem(COURSE_KEY);
+      return { id: typeof window === 'undefined' ? null : localStorage.getItem(COURSE_KEY), underParam: null };
     } catch {
-      return null; // Storage blocked — the default course is fine.
+      return { id: null, underParam: null }; // Storage blocked — the default course is fine.
     }
   });
+  const chosenId = picked.underParam === courseParam ? picked.id : (courseParam ?? picked.id);
   useEffect(() => {
-    if (!courseParam) return;
-    setChosenId(courseParam);
-    setHomeCourse(courseParam); // remembers it here and tells the server
+    if (courseParam) setHomeCourse(courseParam); // remembers it here and tells the server
   }, [courseParam]);
   const active: Enrollment | null =
     enrollments?.find((e) => e.course.id === chosenId) ?? pickCurrentEnrollment(enrollments);
   const activeId = active?.course.id ?? null;
 
   const choose = (courseId: string) => {
-    setChosenId(courseId);
+    setPicked({ id: courseId, underParam: courseParam });
     setHomeCourse(courseId);
   };
 
@@ -268,6 +284,9 @@ export default function DashboardPage() {
             <StatsBar compact show={['streak', 'coin', 'gem', 'lives']} className="flex-1 justify-end" />
           </div>
           <LevelProgressionBanner />
+          <ProfileSetupCard />
+          <LeagueWidget />
+          <NetworkWidget />
           <DailyQuestsCard />
           <StreakChestsCard />
         </aside>

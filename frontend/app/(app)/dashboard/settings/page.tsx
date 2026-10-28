@@ -56,6 +56,7 @@ interface NotificationPrefs {
   leagueUpdates: boolean;
   courseOffers: boolean;
   communityActivity?: boolean;
+  networkActivity?: boolean;
   preferredHour: number | null;
 }
 
@@ -554,6 +555,9 @@ function NotificationsSection() {
               </Row>
               <Row icon="bubble" title="Community" sub="Replies, mentions and new posts in the course you're focused on">
                 <Switch checked={prefs.communityActivity ?? true} disabled={off} label="Community" onChange={(v) => void update({ communityActivity: v })} />
+              </Row>
+              <Row icon="users" title="Study buddies" sub="Buddy requests, nudges, cheers, and when a buddy learns">
+                <Switch checked={prefs.networkActivity ?? true} disabled={off} label="Study buddies" onChange={(v) => void update({ networkActivity: v })} />
               </Row>
               <Row icon="book" title="Course updates" sub="Picking up a course you started">
                 <Switch checked={prefs.courseOffers ?? true} disabled={off} label="Course updates" onChange={(v) => void update({ courseOffers: v })} />

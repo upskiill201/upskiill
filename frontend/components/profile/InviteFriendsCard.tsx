@@ -18,6 +18,7 @@ import { playHaptic } from '@/lib/haptics';
 import type { ReferralSummary } from './types';
 import styles from './Profile.module.css';
 
+import { AvatarFill } from '@/components/ui/Avatar';
 export default function InviteFriendsCard() {
   const { data, error, isLoading, mutate } = useSWR<ReferralSummary>('/api/referrals/me', fetcher);
   const [copied, setCopied] = useState(false);
@@ -118,12 +119,9 @@ export default function InviteFriendsCard() {
             <ul className={styles.friendList}>
               {data.friends.slice(0, 5).map((f) => (
                 <li key={f.id} className={styles.personRow}>
-                  {f.avatarUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- user avatar, any host
-                    <img src={f.avatarUrl} alt="" className={styles.personAvatar} />
-                  ) : (
-                    <span className={styles.personAvatar}>{f.name.charAt(0).toUpperCase()}</span>
-                  )}
+                  <span className={styles.personAvatar}>
+                    <AvatarFill src={f.avatarUrl} seed={f.id} name={f.name} />
+                  </span>
                   <span className={styles.personText}>
                     <span className={styles.personName}>{f.name}</span>
                     <span className={styles.personSub}>
