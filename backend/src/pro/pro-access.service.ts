@@ -15,6 +15,12 @@ const NEGATIVE_TTL_MS = 5_000;
 
 export interface ProAccess {
   isPro: boolean;
+  /**
+   * Where Pro comes from: a paid/trial subscription, or the ambassador
+   * programme (friends who keep learning). Ambassador Pro has no plan,
+   * provider or billing; a live subscription always wins over it.
+   */
+  source: 'SUBSCRIPTION' | 'AMBASSADOR' | null;
   status: ProStatus | null;
   plan: ProPlan | null;
   provider: ProProvider | null;
@@ -31,6 +37,7 @@ export interface ProAccess {
 
 const NO_ACCESS: ProAccess = {
   isPro: false,
+  source: null,
   status: null,
   plan: null,
   provider: null,
@@ -89,6 +96,7 @@ export function evaluateProAccess(
   const isPro = !!accessUntil && accessUntil > now;
   return {
     isPro,
+    source: isPro ? 'SUBSCRIPTION' : null,
     status: sub.status,
     plan: sub.plan,
     provider: sub.provider,
@@ -101,6 +109,16 @@ export function evaluateProAccess(
     graceUntil: sub.graceUntil,
     accessUntil,
   };
+}
+
+/**
+ * Pure: what an ambassador row grants. AmbassadorService.evaluate keeps
+ * proActive true through the grace window and flips it off when it passes,
+ * so this only reads the flag.
+ */
+export function ambassadorAccess(row: { proActive: boolean; graceUntil: Date | null } | null): ProAccess {
+  if (!row?.proActive) return NO_ACCESS;
+  return { ...NO_ACCESS, isPro: true, source: 'AMBASSADOR', accessUntil: row.graceUntil };
 }
 
 /**
@@ -121,7 +139,14 @@ export class ProAccessService {
       where: { userId, status: { in: LIVE_PRO_STATUSES } },
       orderBy: { createdAt: 'desc' },
     });
-    const value = evaluateProAccess(sub);
+    let value = evaluateProAccess(sub);
+    if (!value.isPro) {
+      const amb = await this.prisma.ambassador.findUnique({
+        where: { userId },
+        select: { proActive: true, graceUntil: true },
+      });
+      if (amb) value = ambassadorAccess(amb);
+    }
     this.cache.set(userId, {
       value,
       expiresAt: Date.now() + (value.isPro ? POSITIVE_TTL_MS : NEGATIVE_TTL_MS),
@@ -140,7 +165,14 @@ export class ProAccessService {
       where: { userId: { in: userIds }, status: { in: LIVE_PRO_STATUSES } },
     });
     const now = new Date();
-    return new Set(subs.filter((s) => evaluateProAccess(s, now).isPro).map((s) => s.userId));
+    const ambassadors = await this.prisma.ambassador.findMany({
+      where: { userId: { in: userIds }, proActive: true },
+      select: { userId: true },
+    });
+    return new Set([
+      ...subs.filter((s) => evaluateProAccess(s, now).isPro).map((s) => s.userId),
+      ...ambassadors.map((a) => a.userId),
+    ]);
   }
 
   /** Called whenever a subscription row changes. */

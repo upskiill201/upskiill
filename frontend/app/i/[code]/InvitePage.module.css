@@ -1,0 +1,74 @@
+/* teyro.app/i/:code — the two doors in. Tactile buttons, one line each, tokens only. */
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 400px;
+  margin: 32px auto 0;
+}
+
+@media (min-width: 768px) {
+  .actions {
+    margin-left: 0;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 56px;
+  padding: 0 24px;
+  border-radius: 16px;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+}
+
+.btn:active {
+  transform: translateY(4px);
+}
+
+.primary {
+  background: var(--color-brand);
+  color: var(--text-on-blue);
+  box-shadow: 0 6px 0 var(--color-brand-deep);
+}
+
+.primary:hover {
+  filter: brightness(1.05);
+}
+
+.primary:active {
+  box-shadow: 0 2px 0 var(--color-brand-deep);
+}
+
+.secondary {
+  background: var(--bg-card);
+  color: var(--color-brand);
+  border: 2px solid var(--border);
+  box-shadow: 0 6px 0 var(--border);
+}
+
+.secondary:hover {
+  background: var(--bg-section);
+}
+
+.secondary:active {
+  box-shadow: 0 2px 0 var(--border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+}

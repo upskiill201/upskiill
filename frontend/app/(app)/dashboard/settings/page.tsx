@@ -625,6 +625,21 @@ function ProPlanRow() {
     );
   }
 
+  // Earned with friends (ambassador programme): nothing to bill or manage.
+  if (pro.source === 'AMBASSADOR') {
+    return (
+      <div className={styles.subRow}>
+        <span className={styles.rowText}>
+          <span className={styles.rowTitle}>Teyro Pro · With friends</span>
+          <span className={styles.rowSub}>On while your invited friends keep learning</span>
+        </span>
+        <Link href="/dashboard/ambassador" className={styles.secondaryBtn} onClick={() => playSound('navTap', 2)}>
+          See friends
+        </Link>
+      </div>
+    );
+  }
+
   const line =
     pro.status === 'PAST_DUE'
       ? `Payment failed · access until ${fmt(pro.graceUntil)}`

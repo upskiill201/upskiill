@@ -9,6 +9,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import useSWR from 'swr';
 import { Glyph } from '@/components/art/Glyph';
 import { FaWhatsapp } from 'react-icons/fa';
@@ -23,7 +24,7 @@ export default function InviteFriendsCard() {
   const { data, error, isLoading, mutate } = useSWR<ReferralSummary>('/api/referrals/me', fetcher);
   const [copied, setCopied] = useState(false);
 
-  const link = data && typeof window !== 'undefined' ? `${window.location.origin}/signup?ref=${data.code}` : '';
+  const link = data && typeof window !== 'undefined' ? `${window.location.origin}/i/${data.code}` : '';
   const message = data
     ? `I'm learning on Teyro and it's actually fun. Join with my link and we'll both get ${data.reward.coins} coins when you finish your first lesson: ${link}`
     : '';
@@ -99,6 +100,14 @@ export default function InviteFriendsCard() {
               <Glyph name="share" size={16} strokeWidth={2.75} /> Share
             </button>
           </div>
+
+          <Link
+            href="/dashboard/ambassador"
+            className="mt-3 inline-flex items-center gap-2 text-[14px] font-extrabold text-[var(--color-brand)]"
+            onClick={() => playSound('navTap', 2)}
+          >
+            Get Teyro Pro free with friends <Glyph name="chevron" size={14} strokeWidth={2.8} />
+          </Link>
 
           <div className={styles.inviteStats}>
             <div className={styles.inviteStat}>

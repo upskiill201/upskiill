@@ -30,6 +30,8 @@ import DailyQuestsCard from '@/components/quests/DailyQuestsCard';
 import StreakChestsCard from '@/components/quests/StreakChestsCard';
 import LeagueWidget from '@/components/home/LeagueWidget';
 import NetworkWidget from '@/components/home/NetworkWidget';
+import AmbassadorWidget from '@/components/ambassador/AmbassadorWidget';
+import LearnWithInviter from '@/components/ambassador/LearnWithInviter';
 import ProfileSetupCard from '@/components/profile/ProfileSetupCard';
 import NotificationBell from '@/components/community/NotificationBell';
 import { CoursePicker } from '@/components/home/CoursePicker';
@@ -255,6 +257,11 @@ export default function DashboardPage() {
         {/* Not a <main>: the shell already provides the page's main landmark,
             and a nested second one confuses screen-reader navigation. */}
         <section id="home-path" data-tour="home-path" aria-label="Your learning path" className="w-full max-w-[560px] min-w-0">
+          {/* Below the rail breakpoint: the invite/ambassador cards ride on top of the path. */}
+          <div className="lg:hidden mb-4 flex flex-col gap-3 empty:hidden">
+            <LearnWithInviter />
+            <AmbassadorWidget />
+          </div>
           {/* Tablet: no phone HUD and no right rail — stats go on top. */}
           <div className="hidden md:flex lg:hidden items-center justify-between gap-4 mb-4">
             {picker}
@@ -285,6 +292,8 @@ export default function DashboardPage() {
           </div>
           <LevelProgressionBanner />
           <ProfileSetupCard />
+          <LearnWithInviter />
+          <AmbassadorWidget />
           <LeagueWidget />
           <NetworkWidget />
           <DailyQuestsCard />

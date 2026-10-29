@@ -67,6 +67,8 @@ import { DailyStep, ExperienceStep, GoalStep, LearnStep, NameStep, SourceStep, T
 import { QuitSheet } from './QuitSheet';
 import { SaveStep, type HeldReward } from './SaveStep';
 import { CharacterStep, ClassStep } from './ProfileSteps';
+import { AmbassadorStep } from './AmbassadorStep';
+import { ambassadorApi } from '@/lib/ambassador';
 import { Btn, Footer, Hero, Screen, TeyHero, TeyLine, TopBar, kitCss as css } from '@/components/kit/Kit';
 
 const TRANSITION_MS = 380;
@@ -484,8 +486,21 @@ export default function OnboardingV3() {
           setPro(true);
           go('install');
         }}
+        onAmbassador={() => {
+          trackOnboarding(state.anonymousId, step, 'PAYWALL', { answerKey: 'outcome', answerValue: 'ambassador' });
+          setPro(false);
+          // Join first so the next screen has their link; a failure there still shows the step.
+          void ambassadorApi
+            .join('ONBOARDING')
+            .catch(() => undefined)
+            .finally(() => go('ambassador'));
+        }}
       />
     );
+  }
+
+  if (step === 'ambassador') {
+    return <AmbassadorStep direction={direction} name={name} onDone={() => go('install')} />;
   }
 
   if (step === 'result') {

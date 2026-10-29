@@ -908,3 +908,49 @@
     animation: none;
   }
 }
+
+/* The ambassador offer (last door): three plain numbered steps, no cards. */
+.ambassadorSteps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  align-self: center;
+}
+
+.ambassadorSteps li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--pw-body);
+  font-weight: 600;
+}
+
+.ambassadorSteps span {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand) 12%, transparent);
+}
+
+/* White tactile button: the free way in (ambassador), never louder than paying. */
+.ctaWhite {
+  background: var(--bg-card);
+  color: var(--pw-blue);
+  border: 2px solid var(--pw-line);
+  box-shadow: 0 6px 0 var(--pw-line);
+}
+
+.ctaWhite:active:not(:disabled) {
+  box-shadow: 0 2px 0 var(--pw-line);
+}

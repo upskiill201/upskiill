@@ -30,6 +30,7 @@ import { ChestModule } from './chest/chest.module';
 import { SpinModule } from './spin/spin.module';
 import { StreakModule } from './streak/streak.module';
 import { ReferralModule } from './referral/referral.module';
+import { AmbassadorModule } from './ambassador/ambassador.module';
 import { ShareCardModule } from './share-card/share-card.module';
 import { CertificateModule } from './certificate/certificate.module';
 import { AnalyticsModule } from './analytics/analytics.module';
@@ -82,6 +83,7 @@ import { OnboardingFlowModule } from './onboarding-flow/onboarding-flow.module';
     SpinModule,
     StreakModule,
     ReferralModule,
+    AmbassadorModule,
     ShareCardModule,
     CertificateModule,
     AnalyticsModule,

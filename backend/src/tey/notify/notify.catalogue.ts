@@ -190,6 +190,22 @@ export const NOTIFY_KINDS = {
     ttlSeconds: 12 * HOUR, tag: 'network-cheer', teyState: 'HAPPY',
   },
 
+  // Ambassador programme (founder, 2026-10-29): Pro earned by friends who
+  // keep learning. The inviter hears when a friend slips or comes back; the
+  // friend hears a templated nudge or cheer from their inviter (once a day).
+  AMBASSADOR_FRIEND: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 120,
+    ttlSeconds: 24 * HOUR, tag: 'ambassador-friend', teyState: 'ENCOURAGING',
+  },
+  AMBASSADOR_PRO: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 48 * HOUR, tag: 'ambassador-pro', teyState: 'REMINDER',
+  },
+  AMBASSADOR_NUDGE: {
+    audience: 'network', pref: 'networkActivity', throttleMinutes: 0,
+    ttlSeconds: 8 * HOUR, tag: 'ambassador-nudge', teyState: 'ENCOURAGING',
+  },
+
   // Profile photos (founder, 2026-10-28): one reminder on day 2 if they
   // still have no photo — once ever, via the dedupe key — and the inbox note
   // when Teyro HQ removes a reported photo.

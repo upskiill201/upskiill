@@ -17,6 +17,7 @@ import React from 'react';
 import LevelProgressionBanner from '@/components/dashboard/v2/LevelProgressionBanner';
 import DailyQuestsCard from '@/components/quests/DailyQuestsCard';
 import StreakChestsCard from '@/components/quests/StreakChestsCard';
+import AmbassadorWidget from '@/components/ambassador/AmbassadorWidget';
 import styles from './LearnerRail.module.css';
 
 export function LearnerRail({ children, label = 'Your level and quests' }: { children?: React.ReactNode; label?: string }) {
@@ -24,6 +25,7 @@ export function LearnerRail({ children, label = 'Your level and quests' }: { chi
     <aside className={styles.rail} aria-label={label}>
       {children}
       <LevelProgressionBanner />
+      <AmbassadorWidget />
       <DailyQuestsCard />
       <StreakChestsCard />
     </aside>
