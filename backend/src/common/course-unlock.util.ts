@@ -3,7 +3,7 @@ import { isFreeCourse, isFreeLessonAt } from '../originals/originals.policy';
 import { findActiveEntitlement } from '../originals/originals-access';
 import { passedLessons } from './passed-lessons.util';
 import { isProEnabled } from '../pro/pro.config';
-import { evaluateProAccess, LIVE_PRO_STATUSES } from '../pro/pro-access.service';
+import { ambassadorAccess, evaluateProAccess, LIVE_PRO_STATUSES } from '../pro/pro-access.service';
 
 /**
  * Who is standing at a course's paywall right now — the one definition shared
@@ -66,7 +66,7 @@ export async function courseUnlockState(
   if (course.instructorId === userId) return { eligible: false, reason: 'OWN_COURSE' };
 
   const proOn = isProEnabled();
-  const [entitlement, checkout, enrollment, sections, learners, proSub, profile] = await Promise.all([
+  const [entitlement, checkout, enrollment, sections, learners, proSub, profile, ambassador] = await Promise.all([
     findActiveEntitlement(prisma, userId, course),
     // A checkout in flight belongs to the abandoned-checkout sequence.
     prisma.checkoutIntent.findFirst({
@@ -99,13 +99,16 @@ export async function courseUnlockState(
     proOn
       ? prisma.studentProfile.findUnique({ where: { userId }, select: { freeCourseId: true } })
       : Promise.resolve(null),
+    proOn
+      ? prisma.ambassador.findUnique({ where: { userId }, select: { proActive: true, graceUntil: true } })
+      : Promise.resolve(null),
   ]);
 
   if (entitlement) {
     return { eligible: false, reason: 'UNLOCKED' };
   }
   // Teyro Pro opens every course: nobody on Pro stands at a paywall.
-  if (evaluateProAccess(proSub).isPro) return { eligible: false, reason: 'PRO' };
+  if (evaluateProAccess(proSub).isPro || ambassadorAccess(ambassador).isPro) return { eligible: false, reason: 'PRO' };
   if (checkout?.status === 'PAID') return { eligible: false, reason: 'UNLOCKED' };
   if (checkout?.status === 'STARTED') return { eligible: false, reason: 'CHECKOUT_IN_PROGRESS' };
   if (!enrollment) return { eligible: false, reason: 'NOT_ENROLLED' };

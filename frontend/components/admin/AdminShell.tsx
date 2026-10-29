@@ -54,6 +54,7 @@ const NAV: NavGroup[] = [
       { href: '/admin/users', label: 'Users', icon: 'users', tone: 'var(--brand-purple)' },
       { href: '/admin/reach', label: 'Reach', icon: 'bellRing', tone: 'var(--error-red)' },
       { href: '/admin/network', label: 'Network', icon: 'activity', tone: 'var(--success-green)' },
+      { href: '/admin/ambassadors', label: 'Ambassadors', icon: 'userPlus', tone: 'var(--warning)' },
       { href: '/admin/photos', label: 'Photos', icon: 'camera', tone: 'var(--color-brand)' },
       { href: '/admin/subscribers', label: 'Subscribers', icon: 'card', tone: 'var(--warning)' },
     ],

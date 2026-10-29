@@ -42,6 +42,7 @@ export type StepId =
   | 'class'
   | 'plan'
   | 'paywall'
+  | 'ambassador'
   | 'result'
   | 'install'
   | 'enter';
@@ -85,6 +86,8 @@ export const STEPS: StepDef[] = [
   { id: 'class', chrome: false, postSignup: true },
   { id: 'plan', chrome: false, postSignup: true },
   { id: 'paywall', chrome: false, postSignup: true },
+  // Only reached from the paywall's last door (earn Pro with friends).
+  { id: 'ambassador', chrome: false, postSignup: true },
   { id: 'result', chrome: false, postSignup: true },
   { id: 'install', chrome: true, postSignup: true },
   { id: 'enter', chrome: false, postSignup: true },

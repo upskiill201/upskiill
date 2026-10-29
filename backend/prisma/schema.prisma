@@ -39,6 +39,8 @@ model User {
   referralCode        ReferralCode?
   referralsMade       Referral[]                @relation("ReferralReferrer")
   referredBy          Referral?                 @relation("ReferralReferred")
+  // Earn Pro by inviting friends who keep learning (see Ambassador)
+  ambassador          Ambassador?
   // Shareable milestone cards (see ShareCard)
   shareCards          ShareCard[]
   // Course completion certificates (see Certificate)
@@ -3092,6 +3094,17 @@ model PlatformSettings {
   // Homepage introduction video (a YouTube link). Null hides the section.
   introVideoUrl String?
 
+  // Ambassador programme (earn Pro by inviting friends who keep learning).
+  // Off hides the offer and stops new ambassadors; existing ones keep Pro
+  // while their friends keep learning. Every number is editable in Teyro HQ.
+  ambassadorEnabled        Boolean @default(true)
+  ambassadorFriendsForPro  Int     @default(5)
+  ambassadorQualifyLessons Int     @default(3)
+  /// A friend must also reach this streak before they count (founder: 3 days).
+  ambassadorQualifyStreak  Int     @default(3)
+  ambassadorActiveDays     Int     @default(7)
+  ambassadorGraceDays      Int     @default(3)
+
   updatedAt        DateTime @updatedAt
   updatedByAdminId String?
 
@@ -3350,6 +3363,14 @@ model Referral {
   status     String    @default("PENDING") // PENDING | REWARDED
   createdAt  DateTime  @default(now())
   rewardedAt DateTime?
+  /// Ambassador programme: lessons the friend has finished, and when they
+  /// reached the bar that makes them count toward their inviter's Pro.
+  lessonsDone Int       @default(0)
+  qualifiedAt DateTime?
+  /// Last state the ambassador was told about (ACTIVE | AT_RISK | INACTIVE),
+  /// so each change notifies once.
+  friendState String?
+  stateAt     DateTime?
 
   @@index([referrerId, createdAt])
   @@map("referrals")
@@ -3765,4 +3786,48 @@ model OnboardingEvent {
   @@index([userId])
   @@index([step, type])
   @@map("onboarding_events")
+}
+
+/// A learner who chose to earn Pro by inviting friends. Pro stays on while at
+/// least ambassadorFriendsForPro invited friends are still learning; when that
+/// drops, a grace window gives them time to bring a friend back before Pro
+/// pauses. It comes back on its own once enough friends learn again. State is
+/// kept by AmbassadorService.evaluate; ProAccessService only reads it.
+model Ambassador {
+  userId           String    @id
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// ONBOARDING | APP
+  source           String    @default("APP")
+  joinedAt         DateTime  @default(now())
+  proActive        Boolean   @default(false)
+  proSince         DateTime?
+  /// Set while below the bar with Pro still on; Pro pauses when it passes.
+  graceUntil       DateTime?
+  activeFriends    Int       @default(0)
+  qualifiedFriends Int       @default(0)
+  /// Most friends ever qualified — lifetime badges come from this.
+  peakQualified    Int       @default(0)
+  lastEvaluatedAt  DateTime?
+
+  @@index([proActive])
+  @@map("ambassadors")
+}
+
+/// Everything that happens in the ambassador programme, for the Teyro HQ feed.
+/// No foreign keys, so history survives an account deletion.
+model AmbassadorEvent {
+  id           String   @id @default(uuid())
+  ambassadorId String
+  friendId     String?
+  /// JOINED | FRIEND_JOINED | FRIEND_QUALIFIED | FRIEND_AT_RISK | FRIEND_INACTIVE |
+  /// FRIEND_BACK | PRO_ON | PRO_GRACE | PRO_OFF | NUDGE | CHEER | NUDGE_WORKED |
+  /// LEARN_WITH | SETTINGS
+  type         String
+  meta         Json?
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([ambassadorId, createdAt])
+  @@index([type, createdAt])
+  @@map("ambassador_events")
 }

@@ -594,9 +594,10 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
         )}
       </AnimatePresence>
 
-      {/* Back to my lesson — a labelled pill, so it reads as "go on" rather
-          than a bare arrow. Sits above the floating bottom dock (~78px) and
-          clears the iOS home indicator. */}
+      {/* Back to my lesson — just Teyro's own round arrow (founder,
+          2026-10-29): no label, no 3D edge, pointing at the lesson. Sits
+          above the floating bottom dock (~78px) and clears the iOS home
+          indicator. */}
       <AnimatePresence>
         {jump && model.current && (
           <motion.button
@@ -605,18 +606,22 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
             initial={{ opacity: 0, scale: 0.6, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.6, y: 12 }}
-            whileTap={reducedMotion ? undefined : { y: 3, boxShadow: '0 1px 0 var(--color-brand-dark)' }}
+            whileHover={reducedMotion ? undefined : { scale: 1.06 }}
+            whileTap={reducedMotion ? undefined : { scale: 0.92 }}
             transition={{ type: 'spring', stiffness: 500, damping: 26 }}
             aria-label="Jump to your next lesson"
-            className="fixed z-30 right-4 md:right-[calc(50%-300px)] lg:right-auto lg:left-[calc(50%+40px)] h-12 pl-4 pr-5 rounded-2xl bg-brand text-white flex items-center gap-2 cursor-pointer text-[14px] font-extrabold uppercase tracking-wide"
-            style={{
-              bottom: 'calc(96px + env(safe-area-inset-bottom))',
-              boxShadow: '0 4px 0 var(--color-brand-dark)',
-              fontFamily: 'var(--font-jakarta)',
-            }}
+            title="Next lesson"
+            className="fixed z-30 right-4 md:right-[calc(50%-300px)] lg:right-auto lg:left-[calc(50%+40px)] w-14 h-14 p-0 border-0 bg-transparent cursor-pointer"
+            style={{ bottom: 'calc(96px + env(safe-area-inset-bottom))' }}
           >
-            <Glyph name={jump === 'up' ? 'arrowUp' : 'arrowDown'} size={20} />
-            Next lesson
+            <Image
+              src="/art/ui/next-lesson.svg"
+              alt=""
+              width={56}
+              height={56}
+              className="transition-transform duration-200"
+              style={{ transform: jump === 'down' ? 'rotate(180deg)' : undefined }}
+            />
           </motion.button>
         )}
       </AnimatePresence>

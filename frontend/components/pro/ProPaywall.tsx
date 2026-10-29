@@ -10,6 +10,9 @@
  *      offer only for "too expensive", once ever).
  *   4. Checkout: backing out of the payment sheet offers the same plan again
  *      or a smaller one; a declined card gets its own screen.
+ *   5. Last door (founder, 2026-10-29): however they leave (closed, survey
+ *      skipped, offer declined), the free way in is offered once: invite
+ *      friends who keep learning and earn Pro (the ambassador programme).
  *
  * Everything shown is real: prices and savings come from /pro/plans, the
  * offer countdown from the server's expiry, the trial dates from today.
@@ -19,6 +22,8 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Art, type ArtName } from '@/components/art/Art';
 import { Glyph } from '@/components/art/Glyph';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { ambassadorApi, type AmbassadorProgramme } from '@/lib/ambassador';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { captureEvent } from '@/lib/analytics';
 import { fireConfetti } from '@/lib/confetti';
@@ -61,6 +66,11 @@ interface Props {
   onPro: (status: ProStatus) => void;
   /** Seconds before the close button appears (Adapty: a short delay lifts conversion). */
   closeDelaySeconds?: number;
+  /**
+   * They chose to earn Pro by inviting friends (offered as they leave).
+   * Without it, the paywall joins them and opens /dashboard/ambassador.
+   */
+  onAmbassador?: () => void;
 }
 
 type View =
@@ -74,6 +84,7 @@ type View =
   | 'failed'
   | 'trialUsed'
   | 'momo'
+  | 'ambassador'
   | 'success';
 
 const TEY = '/User onbarding Assets/tey';
@@ -93,8 +104,66 @@ const REASONS: { reason: ExitReason; label: string; art: ArtName }[] = [
   { reason: 'OTHER', label: 'Something else', art: 'bubbles' },
 ];
 
-export default function ProPaywall({ moment, context = {}, onDismiss, onPro, closeDelaySeconds = 3 }: Props) {
+export default function ProPaywall({
+  moment,
+  context = {},
+  onDismiss: dismiss,
+  onPro,
+  closeDelaySeconds = 3,
+  onAmbassador,
+}: Props) {
   const reduce = useReducedMotion();
+  const router = useRouter();
+  const [ambassador, setAmbassador] = useState<AmbassadorProgramme | null>(null);
+  const [joining, setJoining] = useState(false);
+  const exitOffered = useRef(false);
+  const leavingWhy = useRef<PaywallDismissal>('closed');
+
+  // Is the free way in open to this learner? (On, and not already an ambassador.)
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([ambassadorApi.programme(), ambassadorApi.me()])
+      .then(([programme, me]) => {
+        if (!cancelled && programme.enabled && !me.isAmbassador && !me.pro.active) setAmbassador(programme);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Every way out passes the ambassador offer once, then really leaves.
+  const onDismiss = useCallback(
+    (why: PaywallDismissal) => {
+      if (ambassador && !exitOffered.current) {
+        exitOffered.current = true;
+        leavingWhy.current = why;
+        setView('ambassador');
+        captureEvent('paywall_ambassador_shown', { moment });
+        return;
+      }
+      dismiss(why);
+    },
+    [ambassador, dismiss, moment],
+  );
+
+  async function chooseAmbassador() {
+    if (joining) return;
+    captureEvent('paywall_ambassador_chosen', { moment });
+    playHaptic('light');
+    if (onAmbassador) {
+      onAmbassador();
+      return;
+    }
+    setJoining(true);
+    try {
+      await ambassadorApi.join('APP');
+      dismiss('closed');
+      router.push('/dashboard/ambassador');
+    } catch {
+      setJoining(false);
+    }
+  }
   const sessionId = useMemo(() => newId(), []);
   const [plans, setPlans] = useState<ProPlans | null>(null);
   const [loadError, setLoadError] = useState(false);
@@ -296,7 +365,7 @@ export default function ProPaywall({ moment, context = {}, onDismiss, onPro, clo
   // ── Render ────────────────────────────────────────────────────────────────
   if (loadError) {
     return (
-      <Shell onClose={() => onDismiss('closed')} showClose>
+      <Shell onClose={() => dismiss('closed')} showClose>
         <div className={styles.panel}>
           <h2 className={styles.panelTitle}>Plans didn&apos;t load</h2>
           <p className={styles.panelBody}>Check your connection and try again.</p>
@@ -310,7 +379,7 @@ export default function ProPaywall({ moment, context = {}, onDismiss, onPro, clo
 
   if (!plans || !yearly || !monthly) {
     return (
-      <Shell onClose={() => onDismiss('closed')} showClose={false}>
+      <Shell onClose={() => dismiss('closed')} showClose={false}>
         <div className={styles.skeleton} aria-busy="true" aria-label="Loading plans">
           <div className={styles.skelHero} />
           <div className={styles.skelLine} />
@@ -324,11 +393,11 @@ export default function ProPaywall({ moment, context = {}, onDismiss, onPro, clo
 
   if (!plans.enabled) {
     return (
-      <Shell onClose={() => onDismiss('closed')} showClose>
+      <Shell onClose={() => dismiss('closed')} showClose>
         <div className={styles.panel}>
           <h2 className={styles.panelTitle}>Teyro Pro is almost here</h2>
           <p className={styles.panelBody}>Pro isn&apos;t open yet. Keep learning for free and we&apos;ll let you know.</p>
-          <button type="button" className={styles.cta} onClick={() => onDismiss('closed')}>
+          <button type="button" className={styles.cta} onClick={() => dismiss('closed')}>
             Keep learning
           </button>
         </div>
@@ -702,6 +771,42 @@ export default function ProPaywall({ moment, context = {}, onDismiss, onPro, clo
               onBack={() => setView('plans')}
               onPro={(status) => onSucceeded(status, false)}
             />
+          )}
+
+          {view === 'ambassador' && ambassador && (
+            <div className={styles.panel}>
+              <span className={styles.noteIcon}>
+                <Art name="friends" size={88} />
+              </span>
+              <h2 className={styles.panelTitle}>Or get Pro free, with friends</h2>
+              <p className={styles.panelBody}>
+                Invite {ambassador.friendsForPro} friends to learn on Teyro. While they keep learning, you keep Pro. No card needed.
+              </p>
+              <ol className={styles.ambassadorSteps}>
+                <li>
+                  <span>1</span> Share your invite link
+                </li>
+                <li>
+                  <span>2</span> Each friend keeps a {ambassador.qualifyStreak}-day streak
+                </li>
+                <li>
+                  <span>3</span> Pro stays on while {ambassador.friendsForPro} of them keep learning
+                </li>
+              </ol>
+              <button type="button" className={`${styles.cta} ${styles.ctaWhite}`} disabled={joining} onClick={() => void chooseAmbassador()}>
+                {joining ? 'One moment…' : 'Invite friends for Pro'}
+              </button>
+              <button
+                type="button"
+                className={styles.ghostLink}
+                onClick={() => {
+                  captureEvent('paywall_ambassador_declined', { moment });
+                  dismiss(leavingWhy.current);
+                }}
+              >
+                No thanks, keep learning free
+              </button>
+            </div>
           )}
 
           {view === 'success' && (

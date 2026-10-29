@@ -64,6 +64,8 @@ export type ProBanner =
 export interface ProStatus {
   enabled: boolean;
   isPro: boolean;
+  /** AMBASSADOR = earned with friends who keep learning: no plan, no billing. */
+  source?: 'SUBSCRIPTION' | 'AMBASSADOR' | null;
   status: string | null;
   plan: ProPlan | null;
   provider: 'STRIPE' | 'MESOMB' | null;

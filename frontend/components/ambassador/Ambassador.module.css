@@ -1,0 +1,538 @@
+/*
+ * Ambassador programme (earn Pro with friends). Flat surfaces — 1px hairline
+ * cards, no chunky edges — and the white tactile treatment reserved for
+ * buttons and actions only (founder, 2026-10-29). Tokens only.
+ */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-card);
+  font-family: var(--font-jakarta), sans-serif;
+  color: var(--text-primary);
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.sub {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.seeAll {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--color-brand);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.seeAll:hover {
+  text-decoration: underline;
+}
+
+/* ── Progress: one slot per friend Pro needs ── */
+
+.slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.slot {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--border-strong, var(--border));
+  color: var(--text-muted);
+  background: var(--bg-section);
+}
+
+.slotOn {
+  border: 2px solid var(--success-green);
+  background: var(--bg-card);
+  padding: 2px;
+}
+
+.slotRisk {
+  border: 2px solid var(--warning);
+  background: var(--bg-card);
+  padding: 2px;
+}
+
+.slotFace {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  overflow: hidden;
+  display: block;
+}
+
+.slotWarn {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--warning);
+  color: var(--bg-page);
+}
+
+/* Five across even on a 320px phone; they only grow when there's room. */
+.slotsLarge .slot {
+  width: 48px;
+  height: 48px;
+}
+
+@media (min-width: 480px) {
+  .slotsLarge .slot {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* ── Status line ── */
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--bg-section);
+  color: var(--text-primary);
+}
+
+.statusOn {
+  background: color-mix(in srgb, var(--success-green) 12%, var(--bg-card));
+  color: var(--color-ink);
+}
+
+.statusOn svg {
+  color: var(--success-green);
+}
+
+.statusGrace {
+  background: color-mix(in srgb, var(--warning) 16%, var(--bg-card));
+  color: var(--color-ink);
+}
+
+.statusGrace svg {
+  color: var(--warning);
+}
+
+/* ── White tactile buttons (actions only) ── */
+
+.tactile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  background: var(--bg-card);
+  color: var(--color-brand);
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--border);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease;
+}
+
+.tactile:hover:not(:disabled) {
+  background: var(--bg-section);
+}
+
+.tactile:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--border);
+}
+
+.tactile:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.tactileWide {
+  width: 100%;
+}
+
+.tactileSmall {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  box-shadow: 0 3px 0 var(--border);
+}
+
+.tactileSmall:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--border);
+}
+
+.whatsapp {
+  color: var(--success-green);
+}
+
+/* ── Invite link ── */
+
+.linkBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-section);
+}
+
+.linkText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.shareRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* ── Friends ── */
+
+.friends {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.friend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+
+.friend:first-child {
+  border-top: none;
+}
+
+.friendFace {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.friendText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.friendName {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.friendSub {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 800;
+  white-space: nowrap;
+  background: var(--bg-section);
+  color: var(--text-secondary);
+}
+
+.pillActive {
+  background: color-mix(in srgb, var(--success-green) 14%, var(--bg-card));
+  color: var(--success-green);
+}
+
+.pillRisk {
+  background: color-mix(in srgb, var(--warning) 18%, var(--bg-card));
+  color: var(--color-ink);
+}
+
+.pillInactive {
+  background: color-mix(in srgb, var(--error-red) 12%, var(--bg-card));
+  color: var(--error-red);
+}
+
+.sent {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ── Badges ── */
+
+.badges {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.badgeLocked {
+  opacity: 0.6;
+}
+
+.badgeName {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.badgeSub {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ── How it works ── */
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.stepNum {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand) 12%, transparent);
+}
+
+/* ── Page ── */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 96px;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--color-ink);
+}
+
+.lead {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--bg-section);
+}
+
+.statNum {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.statLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 8px;
+  text-align: center;
+}
+
+/* ── States ── */
+
+.skel {
+  display: block;
+  height: 14px;
+  border-radius: 8px;
+  background: var(--bg-section);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.skelSlot {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--bg-section);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.linkBtn {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--color-brand);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.toast {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--error-red);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skel,
+  .skelSlot {
+    animation: none;
+  }
+
+  .tactile {
+    transition: none;
+  }
+}

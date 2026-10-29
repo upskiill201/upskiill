@@ -88,8 +88,7 @@ export function FirstLessonCard({
   return (
     <section
       aria-label="Start here"
-      className="relative mb-5 overflow-hidden rounded-[20px] border-2 border-[var(--border)] bg-[var(--bg-card)]"
-      style={{ boxShadow: '0 4px 0 var(--border)' }}
+      className="relative mb-5 overflow-hidden rounded-[20px] border border-[var(--border)] bg-[var(--bg-card)]"
     >
       <div className="p-4 md:p-5">
         <div className="flex items-end gap-3">
@@ -147,7 +146,7 @@ export function FirstLessonCard({
             playHaptic('light', false);
             router.push(placementHref(path.course.id));
           }}
-          className="flex w-full items-center gap-3 border-t-2 border-[var(--border)] bg-[var(--bg-section)] px-4 py-3 text-left transition-colors hover:bg-[var(--lesson-select-bg)] md:px-5"
+          className="flex w-full items-center gap-3 border-t border-[var(--border)] bg-[var(--bg-section)] px-4 py-3 text-left transition-colors hover:bg-[var(--lesson-select-bg)] md:px-5"
         >
           <Art name="compass" size={40} />
           <span className="min-w-0 flex-1">

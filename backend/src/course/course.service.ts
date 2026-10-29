@@ -1424,7 +1424,7 @@ export class CourseService {
                   isOriginal: !!course.isOriginal,
                   seconds,
                   proSubscriptionId: pro.subscriptionId,
-                  proStatus: pro.status ?? 'UNKNOWN',
+                  proStatus: pro.status ?? (pro.source === 'AMBASSADOR' ? 'AMBASSADOR' : 'UNKNOWN'),
                 },
               ],
               skipDuplicates: true,
