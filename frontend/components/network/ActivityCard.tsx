@@ -208,13 +208,12 @@ export default function ActivityCard({
               aria-pressed={cheer.on}
               aria-label={cheer.on ? 'Remove your cheer' : `Cheer ${card.author.name.split(' ')[0]} on`}
             >
-              <Glyph name="party" size={18} strokeWidth={2.6} />
-              {cheer.on ? 'Cheered' : 'Cheer'}
+              <Image src={cheer.on ? '/art/ui/cheer.svg' : '/art/ui/cheer-off.svg'} alt="" width={28} height={28} />
               {cheer.n > 0 && <span className={styles.cheerCount}>{cheer.n}</span>}
             </button>
           ) : (
             <span className={styles.cheerReadout}>
-              <Glyph name="party" size={16} strokeWidth={2.6} /> {cheer.n} {cheer.n === 1 ? 'cheer' : 'cheers'}
+              <Image src="/art/ui/cheer.svg" alt="" width={24} height={24} /> {cheer.n} {cheer.n === 1 ? 'cheer' : 'cheers'}
             </span>
           )}
           {cta && !card.isMine && (

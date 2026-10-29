@@ -76,8 +76,7 @@
   flex-direction: column;
   gap: 16px;
   padding: 24px;
-  border: 2px solid var(--nw-line);
-  border-bottom-width: 4px;
+  border: 1px solid var(--nw-line);
   border-radius: 16px;
   background: var(--nw-card);
 }
@@ -314,8 +313,7 @@
   padding: 24px;
   border-radius: 16px;
   background: var(--nw-blue-tint);
-  border: 2px solid color-mix(in srgb, var(--color-brand) 30%, var(--bg-page));
-  border-bottom-width: 4px;
+  border: 1px solid color-mix(in srgb, var(--color-brand) 30%, var(--bg-page));
 }
 
 .inviteText {
@@ -363,8 +361,7 @@
   gap: 16px;
   padding: 16px;
   border-radius: 16px;
-  border: 2px solid var(--nw-line);
-  border-bottom-width: 4px;
+  border: 1px solid var(--nw-line);
   background: var(--nw-card);
   color: var(--nw-body);
   text-decoration: none;
@@ -422,8 +419,7 @@
   gap: 16px;
   padding: 16px;
   border-radius: 16px;
-  border: 2px solid var(--nw-line);
-  border-bottom-width: 4px;
+  border: 1px solid var(--nw-line);
   background: var(--nw-card);
   animation: cardIn 250ms ease-out both;
 }
@@ -501,7 +497,6 @@
   width: 52px;
   height: 52px;
   border-radius: 14px;
-  border-bottom: 4px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
 }
 
 .badgeStreak {
@@ -572,30 +567,34 @@
 }
 
 .cheerBtn {
+  /* A bare icon (founder, 2026-10-29): no box, no 3D edge. Tactile is for real actions. */
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   min-height: 40px;
-  padding: 0 16px;
-  border-radius: 10px;
-  border: 2px solid var(--nw-line);
-  border-bottom-width: 4px;
-  background: var(--nw-card);
+  padding: 0 8px;
+  border: none;
+  border-radius: 999px;
+  background: none;
   color: var(--nw-soft);
-  font-family: inherit;
+  font: inherit;
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;
-  transition: transform 100ms ease, background 150ms ease, color 150ms ease, border-color 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 120ms ease, color 150ms ease;
+}
+
+.cheerBtn:hover {
+  transform: scale(1.08);
 }
 
 .cheerBtn:active {
-  transform: scale(0.98) translateY(1px);
+  transform: scale(0.9);
 }
 
 .cheerOn {
-  background: color-mix(in srgb, var(--warning) 16%, var(--bg-page));
-  border-color: color-mix(in srgb, var(--warning) 60%, var(--bg-page));
   color: var(--nw-orange);
 }
 
@@ -610,14 +609,10 @@
 }
 
 .cheerCount {
-  min-width: 20px;
-  padding: 0 4px;
-  border-radius: 999px;
-  background: var(--nw-well);
-  color: var(--nw-body);
-  font-size: 12px;
-  line-height: 20px;
-  text-align: center;
+  min-width: 16px;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: left;
 }
 
 .cheerReadout {
@@ -662,8 +657,7 @@
   padding: 24px;
   border-radius: 16px;
   background: var(--nw-green-tint);
-  border: 2px solid color-mix(in srgb, var(--success-green) 35%, var(--bg-page));
-  border-bottom-width: 4px;
+  border: 1px solid color-mix(in srgb, var(--success-green) 35%, var(--bg-page));
 }
 
 .caughtUpIcon {
@@ -698,8 +692,7 @@
   gap: 16px;
   padding: 32px 24px;
   border-radius: 16px;
-  border: 2px solid var(--nw-line);
-  border-bottom-width: 4px;
+  border: 1px solid var(--nw-line);
   background: var(--nw-card);
   text-align: center;
 }
@@ -778,7 +771,6 @@
 }
 
 .timeline .card {
-  border-bottom-width: 2px;
   padding: 16px;
 }
 
@@ -1432,8 +1424,7 @@
   gap: 32px;
   padding: 24px;
   border-radius: 16px;
-  border: 2px solid var(--nw-line);
-  border-bottom-width: 4px;
+  border: 1px solid var(--nw-line);
   background: var(--nw-card);
 }
 
