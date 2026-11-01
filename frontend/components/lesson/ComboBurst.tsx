@@ -15,11 +15,14 @@ import Image from 'next/image';
 import { useEffect, useMemo } from 'react';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { celebrationHaptic } from '@/lib/haptics';
+import { comboRung } from '@/lib/lesson/hype';
 
 export interface ComboBurstEvent {
   run: number;
   /** Changes on every burst, so two milestones in a row both play. */
   key: number;
+  /** Longer than any run in the learner's recent lessons. */
+  best?: boolean;
 }
 
 function Sparks({ count, radius, delay }: { count: number; radius: number; delay: number }) {
@@ -55,10 +58,10 @@ export function ComboBurst({ burst, onDone }: { burst: ComboBurstEvent | null; o
     if (!burst) return;
     // Just behind the "correct" ding, so the two read as one cheer.
     const s = setTimeout(() => {
-      playSound('comboBurst', burst.run);
+      playSound(burst.best ? 'newBestRun' : 'comboBurst', burst.run);
       celebrationHaptic(burst.run >= 7 ? 'big' : 'win');
     }, 160);
-    const t = setTimeout(onDone, reducedMotion ? 900 : 1250);
+    const t = setTimeout(onDone, reducedMotion ? 1100 : 1600);
     return () => {
       clearTimeout(s);
       clearTimeout(t);
@@ -66,6 +69,7 @@ export function ComboBurst({ burst, onDone }: { burst: ComboBurstEvent | null; o
   }, [burst, onDone, reducedMotion]);
 
   const tier = burst ? (burst.run >= 7 ? 3 : burst.run >= 5 ? 2 : 1) : 1;
+  const rung = burst ? comboRung(burst.run) : null;
 
   return (
     <div className="pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+64px)] md:top-[96px] z-[3] flex justify-center">
@@ -107,8 +111,22 @@ export function ComboBurst({ burst, onDone }: { burst: ComboBurstEvent | null; o
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.12, type: 'spring', stiffness: 700, damping: 18 }}
             >
-              {burst.run} in a row!
+              {burst.best ? 'New best run!' : `${burst.run} in a row!`}
             </motion.p>
+            {rung && (
+              <motion.p
+                className="mt-2 inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[14px] font-extrabold uppercase tracking-[0.06em]"
+                style={{ color: 'var(--lesson-gold-dark)', boxShadow: '0 3px 0 var(--border)', fontFamily: 'var(--font-jakarta)' }}
+                initial={reducedMotion ? false : { y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.28, type: 'spring', stiffness: 600, damping: 18 }}
+              >
+                {burst.best ? `${burst.run} in a row` : rung.name}
+                <span className="rounded-full px-2 py-0.5 text-white text-[12.5px]" style={{ backgroundColor: 'var(--lesson-correct)' }}>
+                  +{rung.bonusXp} XP bonus
+                </span>
+              </motion.p>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

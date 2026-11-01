@@ -5,6 +5,7 @@ import {
   fillBlankBank,
   gradeExercise,
   isResponseComplete,
+  promptLabReply,
   seededShuffle,
   validateApply,
   validateExercise,
@@ -79,6 +80,21 @@ describe('grading', () => {
   it('accepts identical lines in either order', () => {
     const dup: Exercise = { id: 'd', kind: 'orderLines', prompt: 'Order', lines: ['open', '}', '}'] };
     expect(gradeExercise(dup, { kind: 'orderLines', order: [0, 2, 1] })).toBe(true);
+  });
+
+  it('accepts either of two right cards that read the same', () => {
+    const dup: Exercise = {
+      id: 'm',
+      kind: 'matchPairs',
+      prompt: 'Who does it?',
+      pairs: [
+        { id: 'a', left: 'Draft', right: 'You' },
+        { id: 'b', left: 'Check', right: 'The AI' },
+        { id: 'c', left: 'Fix', right: 'you ' },
+      ],
+    };
+    expect(gradeExercise(dup, { kind: 'matchPairs', matches: { a: 'c', b: 'b', c: 'a' } })).toBe(true);
+    expect(gradeExercise(dup, { kind: 'matchPairs', matches: { a: 'b', b: 'a', c: 'c' } })).toBe(false);
   });
 
   it('treats a response of the wrong kind as wrong, never a crash', () => {
@@ -205,5 +221,20 @@ describe('clipped media cards (one part of a long imported video)', () => {
   it('carries the clip into the learner deck', () => {
     const deck = learnCards(readLessonContent({ contentBlocks: { learn: [{ type: 'learnCards', value: [part] }] } }).learn);
     expect(deck.find((c) => c.kind === 'video')).toMatchObject({ startSec: 1200, endSec: 1800 });
+  });
+});
+
+describe('promptLabReply', () => {
+  const replies = [{ uses: [] }, { uses: [0] }, { uses: [0, 1] }, { uses: [2] }];
+
+  it('picks the most specific reply whose parts were all picked', () => {
+    expect(promptLabReply(replies, new Set())).toBe(0);
+    expect(promptLabReply(replies, new Set([0]))).toBe(1);
+    expect(promptLabReply(replies, new Set([0, 1]))).toBe(2);
+    expect(promptLabReply(replies, new Set([1]))).toBe(0);
+  });
+
+  it('breaks ties by the first written reply', () => {
+    expect(promptLabReply(replies, new Set([0, 2]))).toBe(1);
   });
 });

@@ -6,9 +6,10 @@
  * visual is drawn from the rebuilt app and shows someone succeeding with it:
  * a 128-day streak, #1 in the league, a correct answer, today's quests done.
  *
- * Positioning: Teyro helps students and career switchers finish the coding
- * and AI skills they start, by turning courses into short daily habit-forming
- * lessons with streaks, leagues and friends that keep them coming back.
+ * Positioning: Teyro helps people finish the real-world skills they start
+ * (coding, AI, money, leadership, communication and more) by turning courses
+ * into short daily lessons with streaks, leagues and friends that keep them
+ * coming back.
  *
  * Section ids are the header's scroll targets (components/layout/
  * WaitlistHeader.tsx NAV_LINKS). Renaming one means renaming both.
@@ -18,15 +19,14 @@ import type { Metadata } from 'next';
 import { Baloo_2 } from 'next/font/google';
 import {
   Audience,
+  Certificates,
   Creators,
   Faq,
   Features,
   FinalCta,
   Hero,
   LaunchBadges,
-  StayRelevant,
   Tracks,
-  WhyItWorks,
 } from '@/components/homepage/v3/Sections';
 import { LaunchSection } from '@/components/launch/LaunchSections';
 import IntroVideo from '@/components/homepage/v3/IntroVideo';
@@ -48,11 +48,16 @@ const baloo2 = Baloo_2({
 // The courses section reads the live catalogue; refresh it every five minutes.
 export const revalidate = 300;
 
+const TITLE = 'Teyro — The fun and effective way to learn skills';
+const DESCRIPTION =
+  'Learn coding, AI, money, leadership, communication and more in short daily lessons, with streaks, leagues and friends that keep you going. Free to start.';
+
 export const metadata: Metadata = {
-  title: 'Teyro — the fun way to finish learning coding and AI',
-  description:
-    'Teyro helps students and career switchers finish the coding and AI skills they start, with short daily lessons, streaks, leagues and friends that keep you coming back.',
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: 'https://teyro.app/' },
+  openGraph: { type: 'website', url: 'https://teyro.app/', siteName: 'Teyro', title: TITLE, description: DESCRIPTION },
+  twitter: { card: 'summary_large_image', site: '@teyroapp', title: TITLE, description: DESCRIPTION },
 };
 
 export default function Home() {
@@ -68,9 +73,11 @@ export default function Home() {
       <LaunchSection />
       <Tracks />
       <HomeCourses />
-      <StayRelevant />
-      <WhyItWorks />
+      {/* StayRelevant ("Learn for the job market") and WhyItWorks ("Why Teyro works")
+          are hidden for now (founder, 2026-10-18). The components stay in
+          Sections.tsx; add them back here to bring them back. */}
       <Features />
+      <Certificates />
       <Audience />
       <Creators />
       <Faq />

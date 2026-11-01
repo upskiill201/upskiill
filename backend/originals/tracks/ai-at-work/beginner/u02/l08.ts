@@ -134,11 +134,11 @@ const lesson: OriginalLesson = {
         message: "Could you join our 2-hour marketing workshop tomorrow? It'd be great to have you!",
         prompt: "Ada is fully booked tomorrow. Which reply is best?",
         options: [
-          { text: "Thanks for the invite! I can't make tomorrow, it's launch prep. Could I send our design notes for the workshop instead?" },
           { text: "Maybe! I'll try!", why: 'Heard as yes. She cannot go.' },
           { text: 'No.', why: 'Clear, but cold, with no alternative.' },
+          { text: "Thanks for the invite! I can't make tomorrow, it's launch prep. Could I send our design notes for the workshop instead?" },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -181,11 +181,11 @@ const lesson: OriginalLesson = {
         message: 'Thanks for the honest no last week. Most agencies just say yes and then miss the deadline.',
         prompt: 'Which reply builds on that trust?',
         options: [
-          { text: "Thank you! I'd rather tell you early than let you down late." },
           { text: "Sorry again for saying no!", why: 'No need to apologise again; it worked.' },
+          { text: "Thank you! I'd rather tell you early than let you down late." },
           { text: "We'll say yes to everything from now on.", why: 'That is exactly what she just said she dislikes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

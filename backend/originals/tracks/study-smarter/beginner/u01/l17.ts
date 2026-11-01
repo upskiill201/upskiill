@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'Can you send me your five prompts? I keep forgetting how to word things.',
         prompt: 'What should Kofi send?',
         options: [
-          { text: 'The five prompts with blanks in square brackets, so David can fill in his own topics' },
           { text: 'His own answers to the prompts', why: 'David needs the prompts, not Kofi\'s answers.' },
+          { text: 'The five prompts with blanks in square brackets, so David can fill in his own topics' },
           { text: 'Just "ask the AI stuff"', why: 'Not much help.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

@@ -7,7 +7,8 @@ export const pendingChestsKey = '/api/chest/pending';
 
 export interface PendingChest {
   id: string;
-  kind: 'STREAK';
+  /** STREAK: a streak milestone. SQUAD: the squad hit its weekly goal (network squads). */
+  kind: 'STREAK' | 'SQUAD';
   streakDays: number | null;
 }
 

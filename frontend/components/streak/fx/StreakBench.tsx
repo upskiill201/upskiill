@@ -7,7 +7,7 @@
  */
 
 import { useCallback, useState } from 'react';
-import { X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { ComboBurst, type ComboBurstEvent } from '@/components/lesson/ComboBurst';
 import { StreakDay, type StreakDayKind } from '@/components/lesson/outro/StreakDay';
 import lessonStyles from '@/components/lesson/Lesson.module.css';
@@ -95,7 +95,7 @@ export default function StreakBench() {
         >
           <div className="flex justify-between p-4">
             <button type="button" onClick={() => setOpen(null)} aria-label="Close" className="cursor-pointer">
-              <X className="w-7 h-7" />
+              <Glyph name="close" className="w-7 h-7" />
             </button>
             <button type="button" onClick={() => setRun((r) => r + 1)} className="font-extrabold cursor-pointer">
               Replay

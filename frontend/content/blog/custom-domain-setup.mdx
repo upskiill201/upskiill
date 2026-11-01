@@ -1,0 +1,65 @@
+---
+title: "How to Connect a Custom Domain to Your Website"
+description: "Connect a domain to your host: add the domain, set A and CNAME records, wait for DNS, enable HTTPS and fix the most common problems."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [custom domain setup, connect domain to website, point domain to hosting, dns records for domain, www redirect]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Build and Launch a Website turns this into short, playable lessons. Free to start."
+  href: /courses/build-and-launch-a-website
+  label: "See the Build and Launch a Website course"
+faq:
+  - question: "How do I connect a domain to my website?"
+    answer: "Add the domain in your host's settings, then create the DNS records it tells you at your registrar."
+  - question: "What is the difference between the apex domain and www?"
+    answer: "The apex is the root such as example.com. www is a subdomain. Most sites redirect one to the other."
+  - question: "Why is my domain not working yet?"
+    answer: "DNS may not have propagated, or the records may be wrong. Check them and wait."
+---
+
+Your site works on a temporary address. Now give it your own.
+
+## Direct answer
+
+To use your own domain, add it in your hosting dashboard, then create the DNS records it asks for at your domain registrar, usually an A record for the root domain and a CNAME for `www`. Wait for DNS to update, then enable HTTPS.
+
+## Steps
+
+1. **Add the domain** in your host's dashboard.
+2. **Copy the DNS values** it shows.
+3. **Log in to your registrar** and open DNS settings.
+4. **Add the records** exactly as shown.
+5. **Wait,** from a few minutes to a day.
+6. **Enable HTTPS** and set one version as the main one.
+
+## Typical records
+
+| Type | Name | Value |
+| :--- | :--- | :--- |
+| A | `@` | host's IP address |
+| CNAME | `www` | host's domain |
+
+## Troubleshooting
+
+- Remove old conflicting records.
+- Check for typos.
+- Use a DNS checker to see what the world sees.
+
+## Where Teyro fits
+
+Teyro's [Build and Launch a Website](/courses/build-and-launch-a-website) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Copy the records carefully and give DNS time to settle.
+
+## More guides
+
+- [Website Launch Checklist](/blog/website-launch-checklist)
+- [What Is a Domain Name? How to Choose and Buy One](/blog/what-is-a-domain-name)
+- [Web Hosting Explained](/blog/web-hosting-explained)
+- [What is dns](/blog/what-is-dns)
+- [Build and Launch a Website course](/courses/build-and-launch-a-website)

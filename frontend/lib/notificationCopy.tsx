@@ -1,5 +1,5 @@
 import React from 'react';
-import { AtSign, Bell, BellRing, Flame, Heart, LifeBuoy, LockOpen, MessageCircle, Megaphone, PartyPopper, Snowflake, Trophy, UserPlus } from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import type { AppNotification } from './communityApi';
 
 /**
@@ -40,6 +40,26 @@ const TYPE_PHRASES: Record<string, string> = {
   TEY_LEAGUE_RESULT: 'Your league results are in',
   TEY_COURSE_UNLOCK: 'Your course is waiting for you',
   TEY_REACH: 'Install Teyro and turn on reminders',
+  TEY_PRO_BILLING: 'An update about your Teyro Pro',
+  TEY_PRO_OFFER: 'Teyro Pro is waiting for you',
+  TEY_BUDDY_REQUEST: 'Someone wants to be your study buddy',
+  TEY_BUDDY_ACCEPTED: 'You have a new study buddy',
+  TEY_BUDDY_NUDGE: 'Your buddy nudged you',
+  TEY_BUDDY_LEARNED: 'Your buddy learned today',
+  TEY_NUDGE_WORKED: 'Your nudge worked',
+  TEY_NETWORK_CHEER: 'Someone cheered you on',
+  TEY_INSPIRED: 'Someone started a course because of you',
+  TEY_BUDDY_STREAK_ENDING: 'Your buddy streak ends tonight',
+  TEY_HELP_REQUEST: 'Someone is stuck on a lesson you passed',
+  TEY_HELP_WORKED: 'Your answer helped someone finish a lesson',
+  TEY_SQUAD_INVITE: 'You were invited to a squad',
+  TEY_SQUAD_JOINED: 'Someone joined your squad',
+  TEY_SQUAD_ALMOST: 'Your squad is close to its chest',
+  TEY_SQUAD_GOAL_MET: 'Your squad hit its weekly goal',
+  TEY_DUEL_RECEIVED: 'A buddy challenged you to a duel',
+  TEY_DUEL_RESULT: 'Your duel is over',
+  TEY_PROFILE_PHOTO: 'Add a photo so your classmates know you',
+  TEY_PROFILE_PHOTO_REMOVED: 'Your profile photo was removed',
 };
 
 /**
@@ -57,6 +77,32 @@ const TEY_EVENT_TYPES = new Set([
   'TEY_COURSE_UNLOCK',
   'TEY_FIRST_LESSON',
   'TEY_REACH',
+  'TEY_PRO_BILLING',
+  'TEY_PRO_OFFER',
+  'TEY_COMMUNITY_REPLY',
+  'TEY_COMMUNITY_COMMENT',
+  'TEY_COMMUNITY_MENTION',
+  'TEY_COMMUNITY_ANNOUNCEMENT',
+  'TEY_COMMUNITY_POST',
+  // The Teyro Network (backend src/network).
+  'TEY_BUDDY_REQUEST',
+  'TEY_BUDDY_ACCEPTED',
+  'TEY_BUDDY_NUDGE',
+  'TEY_BUDDY_LEARNED',
+  'TEY_NUDGE_WORKED',
+  'TEY_NETWORK_CHEER',
+  'TEY_INSPIRED',
+  'TEY_BUDDY_STREAK_ENDING',
+  'TEY_HELP_REQUEST',
+  'TEY_HELP_WORKED',
+  'TEY_SQUAD_INVITE',
+  'TEY_SQUAD_JOINED',
+  'TEY_SQUAD_ALMOST',
+  'TEY_SQUAD_GOAL_MET',
+  'TEY_DUEL_RECEIVED',
+  'TEY_PROFILE_PHOTO',
+  'TEY_PROFILE_PHOTO_REMOVED',
+  'TEY_DUEL_RESULT',
 ]);
 const isTeyEvent = (type: string) => TEY_EVENT_TYPES.has(type);
 
@@ -87,20 +133,39 @@ export function secondaryLine(n: AppNotification): string | null {
   return n.title ?? null;
 }
 
+function typeGlyph(type: string): GlyphName {
+  if (type.startsWith('TEY_LEAGUE_')) return 'trophy';
+  if (type === 'TEY_STREAK_FREEZE_USED') return 'snowflake';
+  if (type === 'TEY_COURSE_UNLOCK') return 'unlock';
+  if (type === 'TEY_PRO_BILLING') return 'card';
+  if (type === 'TEY_PRO_OFFER') return 'crown';
+  if (type === 'TEY_COMMUNITY_MENTION') return 'at';
+  if (type === 'TEY_COMMUNITY_ANNOUNCEMENT') return 'megaphone';
+  if (type.startsWith('TEY_COMMUNITY_')) return 'bubble';
+  if (type === 'TEY_BUDDY_NUDGE') return 'bellRing';
+  if (type === 'TEY_NETWORK_CHEER' || type === 'TEY_NUDGE_WORKED') return 'party';
+  if (type === 'TEY_INSPIRED') return 'sparkle';
+  if (type === 'TEY_HELP_REQUEST') return 'help';
+  if (type === 'TEY_HELP_WORKED') return 'lifebuoy';
+  if (type === 'TEY_SQUAD_GOAL_MET') return 'gift';
+  if (type.startsWith('TEY_SQUAD_')) return 'users';
+  if (type.startsWith('TEY_DUEL_')) return 'bolt';
+  if (type === 'TEY_BUDDY_STREAK_ENDING') return 'flame';
+  if (type.startsWith('TEY_BUDDY_')) return 'users';
+  if (type.startsWith('TEY_')) return 'flame';
+  if (type === 'ANNOUNCEMENT') return 'megaphone';
+  if (type === 'CREATOR_NUDGE') return 'bellRing';
+  if (type === 'CREATOR_CHEER') return 'party';
+  if (type === 'MENTION') return 'at';
+  if (type === 'POST_LIKE' || type === 'COMMENT_LIKE') return 'heart';
+  if (type === 'REPLY' || type === 'COMMENT') return 'bubble';
+  if (type === 'FOLLOW') return 'userPlus';
+  if (type === 'SUPPORT_REPLY') return 'lifebuoy';
+  return 'bell';
+}
+
 export function typeIcon(type: string, size = 12): React.ReactNode {
-  if (type.startsWith('TEY_LEAGUE_')) return <Trophy size={size} />;
-  if (type === 'TEY_STREAK_FREEZE_USED') return <Snowflake size={size} />;
-  if (type === 'TEY_COURSE_UNLOCK') return <LockOpen size={size} />;
-  if (type.startsWith('TEY_')) return <Flame size={size} />;
-  if (type === 'ANNOUNCEMENT') return <Megaphone size={size} />;
-  if (type === 'CREATOR_NUDGE') return <BellRing size={size} />;
-  if (type === 'CREATOR_CHEER') return <PartyPopper size={size} />;
-  if (type === 'MENTION') return <AtSign size={size} />;
-  if (type === 'POST_LIKE' || type === 'COMMENT_LIKE') return <Heart size={size} />;
-  if (type === 'REPLY' || type === 'COMMENT') return <MessageCircle size={size} />;
-  if (type === 'FOLLOW') return <UserPlus size={size} />;
-  if (type === 'SUPPORT_REPLY') return <LifeBuoy size={size} />;
-  return <Bell size={size} />;
+  return <Glyph name={typeGlyph(type)} size={size} strokeWidth={2.6} />;
 }
 
 /** CSS-module class name for the type chip's colour. */

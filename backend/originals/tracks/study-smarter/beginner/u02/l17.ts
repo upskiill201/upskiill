@@ -51,11 +51,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which request helps Kofi decode a question without skipping the work?',
         options: [
-          { text: "Don't answer this. Tell me the command word, what's given, what's asked, and what the marks suggest." },
           { text: 'Answer this question with full working.', why: 'Then he only reads it.' },
           { text: 'Is this question hard?', why: 'Not a decoding question.' },
+          { text: "Don't answer this. Tell me the command word, what's given, what's asked, and what the marks suggest." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         message: "I knew all the Physics in the mock, but I wrote one line for a 6-mark question.",
         prompt: 'What should Kofi tell David?',
         options: [
-          { text: 'Check the marks before you answer. 6 marks usually means about 6 points or steps.' },
           { text: 'One line is always enough.', why: 'Not for 6 marks.' },
+          { text: 'Check the marks before you answer. 6 marks usually means about 6 points or steps.' },
           { text: 'Write as much as possible every time.', why: 'Match the marks, not the most possible.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',

@@ -7,10 +7,18 @@
  * whole path), so search engines and first-time visitors see everything with
  * no account. Only the "who are you" part happens here, after load:
  *
- *  - Guest: START → create an account (no onboarding: /signup?course=) →
- *    back here with ?start=1 → enrol → lesson 1.
+ *  - Guest: START → onboarding with this course already picked
+ *    (/onboarding?course=: the taste of lesson 1, save progress, plan, Pro)
+ *    → the app. A course that isn't onboarding-ready falls back to
+ *    /signup?course= → back here with ?start=1 → enrol → lesson 1.
  *  - Signed in, not enrolled: START opens the enrolment scene, then lesson 1.
  *  - Enrolled: CONTINUE goes straight to the next lesson.
+ *
+ * What's free is the server's answer for this learner (GET /courses/:id/access
+ * freePreviewLessonIds): Chapter 1 if this is their free course, the two
+ * preview lessons otherwise, everything on Teyro Pro. Guests see Chapter 1,
+ * which is what they get when they start here. Access itself is enforced on
+ * the server for every lesson; this page only describes it honestly.
  *
  * Every number comes from the server; anything missing is hidden, never made up.
  */
@@ -21,21 +29,7 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import {
-  ArrowLeft,
-  BookOpen,
-  Check,
-  ChevronDown,
-  Clock,
-  Globe,
-  Infinity as InfinityIcon,
-  Layers,
-  Lock,
-  ShieldCheck,
-  Star,
-  Target,
-  Users,
-} from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Avatar from '@/components/ui/Avatar';
 import { CourseCover } from '@/components/course/CourseCover';
 import EnrollmentWizard, { type EnrollResponse } from '@/components/course/EnrollmentWizard';
@@ -90,8 +84,6 @@ export interface LandingCourse {
   };
 }
 
-/** Mirrors the backend paywall: a paid course's first 2 published lessons are free. */
-const FREE_PREVIEW_LESSONS = 2;
 /** The backend's real section-completion bonus. */
 const UNIT_CHEST_XP = 50;
 /** Unit banners cycle the home path's colours. */
@@ -127,6 +119,11 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
   }, []);
   const { data: enrollments, mutate: mutateEnrollments } = useSWR<Enrollment[]>(
     authState === 'authed' ? enrollmentsKey : null,
+    fetcher,
+  );
+  // What this learner can open, as the server decides it.
+  const { data: access } = useSWR<{ accessType: string; freePreviewLessonIds?: string[] }>(
+    authState === 'authed' ? `/api/courses/${course.id}/access` : null,
     fetcher,
   );
 
@@ -167,19 +164,33 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
   const reviewsCount = course.stats.reviewsCount ?? 0;
   const isOriginal = !!course.isOriginal;
   const isPaid = course.price > 0 || isOriginal;
-  // Creator courses advertise their free lessons; Originals deliberately do not.
-  const showFreeLessons = isPaid && !isOriginal;
+  const fullAccess = !!access && ['PRO', 'SUBSCRIPTION', 'INSTRUCTOR', 'FREE_COURSE'].includes(access.accessType);
+  const firstChapterIds = (sections.find((s) => (s.lessons || []).length > 0)?.lessons || [])
+    .map((l) => l.id)
+    .filter((id): id is string => !!id);
+  // The lessons that are free for this person; null means every lesson is open.
+  const freeIds: Set<string> | null = !isPaid || fullAccess
+    ? null
+    : access?.freePreviewLessonIds
+      ? new Set(access.freePreviewLessonIds)
+      : authState === 'authed'
+        ? null
+        : new Set(firstChapterIds);
+  const freeCount = freeIds ? freeIds.size : totalLessons;
+  const guestChapterOne = !!freeIds && authState !== 'authed';
+  const freeLine = !isPaid
+    ? 'Every lesson is free'
+    : fullAccess
+      ? access?.accessType === 'PRO'
+        ? 'Every lesson is yours with Teyro Pro'
+        : 'Every lesson is yours'
+      : !freeIds || freeCount >= totalLessons
+        ? 'Start free'
+        : guestChapterOne
+          ? 'Chapter 1 free, then Teyro Pro'
+          : `${freeCount} lesson${freeCount === 1 ? '' : 's'} free for you, then Teyro Pro`;
+  const showFreeLessons = !!freeIds;
   const level = prettyLevel(course.level);
-
-  // Global lesson order, for the free-preview rule.
-  const globalIndex = new Map<string, number>();
-  let cursor = 0;
-  sections.forEach((s) =>
-    (s.lessons || []).forEach((l) => {
-      if (l.id) globalIndex.set(l.id, cursor);
-      cursor += 1;
-    }),
-  );
 
   // A coupon link (?code=LAUNCH20): keep the code for the paywall.
   const [savedCode, setSavedCode] = useState<string | null>(null);
@@ -201,10 +212,14 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
     return next ? lessonHref(course.id, next.sectionIndex, next.id) : courseHomeHref(course.id);
   };
 
-  /** A new learner: account first (no onboarding), then straight back here to enrol. */
+  /** A new learner: onboarding with this course picked (its taste, save, plan, Pro). */
+  const startHref = LEARNER_ENTRY.gated
+    ? LEARNER_ENTRY.href
+    : `/onboarding?course=${encodeURIComponent(course.id)}&slug=${encodeURIComponent(course.slug)}`;
+  /** A session that expired mid-enrol: log back in and come straight back here. */
   const signupHref = LEARNER_ENTRY.gated
     ? LEARNER_ENTRY.href
-    : `/signup?course=${encodeURIComponent(course.slug)}`;
+    : `/login?mode=signin&next=${encodeURIComponent(`/courses/${course.slug}?start=1`)}`;
 
   const handlePrimary = () => {
     playHaptic('medium', false);
@@ -215,7 +230,7 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
     }
     if (authState === 'guest') {
       playSound('navTap', 1);
-      router.push(signupHref);
+      router.push(startHref);
       return;
     }
     playSound('nodeTap');
@@ -294,10 +309,8 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
       ? `Up next: Lesson ${enrollment.nextLesson.number} · ${enrollment.nextLesson.title}`
       : 'Pick up right where you left off'
     : isOriginal
-      ? 'A Teyro Original · taught by Tey'
-      : isPaid
-        ? `First ${FREE_PREVIEW_LESSONS} lessons free · unlock the rest anytime`
-        : 'Every lesson is free';
+      ? `Teyro Original · ${freeLine}`
+      : freeLine;
 
   const teyLine = isEnrolled
     ? enrollment?.nextLesson
@@ -305,9 +318,15 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
       : "You're in. Tap the button and let's go."
     : isOriginal
       ? "I wrote this one myself. Start now and I'll count your streak from lesson one."
-      : isPaid
-      ? `The first ${FREE_PREVIEW_LESSONS} lessons are on me. Try them, then decide.`
-      : 'This whole course is free. Start now and I’ll count your streak from lesson one.';
+      : !isPaid
+        ? 'This whole course is free. Start now and I’ll count your streak from lesson one.'
+        : fullAccess
+          ? 'You’re on Teyro Pro, so every lesson is yours. Start now and I’ll count your streak from lesson one.'
+          : guestChapterOne
+            ? 'Chapter 1 is on me. Try it, then decide.'
+            : freeIds
+              ? `The first ${freeCount} lesson${freeCount === 1 ? ' is' : 's are'} on me. Try them, then decide.`
+              : 'Start free. Try it, then decide.';
 
   // No entrance animation: the server-rendered page must be visible at first
   // paint (search engines, slow phones), not after hydration fades it in.
@@ -329,7 +348,7 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
           className={styles.backLink}
           onClick={() => playSound('navTap', 0)}
         >
-          <ArrowLeft size={20} strokeWidth={3} aria-hidden="true" />
+          <Glyph name="back" size={20} strokeWidth={3} />
           {authState === 'authed' ? 'Explore' : 'All courses'}
         </Link>
       </div>
@@ -367,37 +386,37 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
                     <strong>{creator.name}</strong>
                   )}
                 </span>
-                {creator.verified && <ShieldCheck size={16} className={styles.verified} aria-label="Verified creator" />}
+                {creator.verified && <span className={styles.verified} role="img" aria-label="Verified creator"><Glyph name="verified" size={16} /></span>}
               </div>
 
               <ul className={styles.chips} aria-label="Course stats">
                 {totalLessons > 0 && (
                   <li className={styles.chip}>
-                    <BookOpen size={16} strokeWidth={2.75} aria-hidden="true" />
+                    <Glyph name="book" size={16} strokeWidth={2.4} />
                     {totalLessons} lesson{totalLessons === 1 ? '' : 's'}
                   </li>
                 )}
                 {sections.length > 0 && (
                   <li className={styles.chip}>
-                    <Layers size={16} strokeWidth={2.75} aria-hidden="true" />
+                    <Glyph name="layers" size={16} strokeWidth={2.4} />
                     {sections.length} unit{sections.length === 1 ? '' : 's'}
                   </li>
                 )}
                 {duration && (
                   <li className={styles.chip}>
-                    <Clock size={16} strokeWidth={2.75} aria-hidden="true" />
+                    <Glyph name="clock" size={16} strokeWidth={2.6} />
                     {duration}
                   </li>
                 )}
                 {learners > 0 && (
                   <li className={styles.chip}>
-                    <Users size={16} strokeWidth={2.75} aria-hidden="true" />
+                    <Glyph name="users" size={16} strokeWidth={2.2} />
                     {learners.toLocaleString()} learner{learners === 1 ? '' : 's'}
                   </li>
                 )}
                 {ratingAvg !== null && reviewsCount > 0 && (
                   <li className={`${styles.chip} ${styles.chipGold}`}>
-                    <Star size={16} strokeWidth={2.5} fill="currentColor" aria-hidden="true" />
+                    <Glyph name="star" size={16} strokeWidth={2} />
                     {ratingAvg} ({reviewsCount.toLocaleString()})
                   </li>
                 )}
@@ -435,7 +454,7 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
                 {course.outcomes.map((o, i) => (
                   <li key={i} className={styles.outcome}>
                     <span className={styles.check} aria-hidden="true">
-                      <Check size={16} strokeWidth={4} />
+                      <Glyph name="check" size={16} strokeWidth={3.6} />
                     </span>
                     {o}
                   </li>
@@ -479,12 +498,7 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
                         </span>
                         <span className={styles.unitCount}>
                           {lessons.length} lesson{lessons.length === 1 ? '' : 's'}
-                          <ChevronDown
-                            size={20}
-                            strokeWidth={3}
-                            className={`${styles.chev} ${open ? styles.chevOpen : ''}`}
-                            aria-hidden="true"
-                          />
+                          <Glyph name="chevronDown" size={20} className={`${styles.chev} ${open ? styles.chevOpen : ''}`} />
                         </span>
                       </button>
 
@@ -498,9 +512,9 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
                             transition={{ duration: 0.22, ease: 'easeOut' }}
                           >
                             {lessons.map((lesson, lIdx) => {
-                              const g = lesson.id ? globalIndex.get(lesson.id) ?? 0 : 0;
-                              const locked = !isEnrolled && showFreeLessons && g >= FREE_PREVIEW_LESSONS;
-                              const freePreview = !isEnrolled && showFreeLessons && g < FREE_PREVIEW_LESSONS;
+                              const isFreeForYou = !!lesson.id && !!freeIds?.has(lesson.id);
+                              const locked = showFreeLessons && !isFreeForYou;
+                              const freePreview = showFreeLessons && isFreeForYou;
                               const meta = [
                                 lesson.durationMinutes ? `${lesson.durationMinutes} min` : null,
                                 lesson.lessonType
@@ -513,9 +527,9 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
                                 <>
                                   <span className={`${styles.node} ${locked ? styles.nodeLocked : ''}`} aria-hidden="true">
                                     {locked ? (
-                                      <Lock size={18} strokeWidth={3} />
+                                      <Glyph name="lock" size={18} strokeWidth={2.8} />
                                     ) : (
-                                      <Star size={20} strokeWidth={2.5} fill="currentColor" />
+                                      <Glyph name="star" size={20} strokeWidth={2} />
                                     )}
                                   </span>
                                   <span className={styles.lessonText}>
@@ -569,7 +583,7 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
         <aside className={styles.rail} aria-label="Start this course">
           <motion.div className={styles.startCard} {...rise(0.04)}>
             <span className={`${styles.priceTag} ${isPaid ? styles.pricePremium : ''}`}>
-              {isOriginal ? 'Teyro Original' : isPaid ? 'Premium' : 'Free course'}
+              {isOriginal ? 'Teyro Original' : isPaid ? 'Teyro Pro' : 'Free course'}
             </span>
             {isEnrolled && totalLessons > 0 ? (
               <div className={styles.progress}>
@@ -587,29 +601,29 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
             <ul className={styles.includes}>
               {totalLessons > 0 && (
                 <li>
-                  <BookOpen size={18} strokeWidth={2.5} aria-hidden="true" />
+                  <Glyph name="book" size={18} strokeWidth={2.2} />
                   {totalLessons} bite-sized lesson{totalLessons === 1 ? '' : 's'}
                 </li>
               )}
               {duration && (
                 <li>
-                  <Clock size={18} strokeWidth={2.5} aria-hidden="true" />
+                  <Glyph name="clock" size={18} strokeWidth={2.4} />
                   {duration} in total
                 </li>
               )}
               {level && (
                 <li>
-                  <Target size={18} strokeWidth={2.5} aria-hidden="true" />
+                  <Glyph name="target" size={18} strokeWidth={2.4} />
                   {level}
                 </li>
               )}
               <li>
-                <InfinityIcon size={18} strokeWidth={2.5} aria-hidden="true" />
+                <Glyph name="infinity" size={18} strokeWidth={2.4} />
                 Self-paced, learn anytime
               </li>
               {course.language && (
                 <li>
-                  <Globe size={18} strokeWidth={2.5} aria-hidden="true" />
+                  <Glyph name="globe" size={18} strokeWidth={2.2} />
                   {course.language}
                 </li>
               )}
@@ -623,7 +637,7 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
                 <span className={styles.creatorLabel}>{course.isOriginal ? 'Made by' : 'Your creator'}</span>
                 <span className={styles.creatorName}>
                   {creator.name}
-                  {creator.verified && <ShieldCheck size={16} className={styles.verified} aria-label="Verified creator" />}
+                  {creator.verified && <span className={styles.verified} role="img" aria-label="Verified creator"><Glyph name="verified" size={16} /></span>}
                 </span>
                 {creator.headline && <span className={styles.creatorHeadline}>{creator.headline}</span>}
               </div>
@@ -675,6 +689,7 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
             category={course.category ?? null}
             thumbnailUrl={course.thumbnailUrl ?? null}
             isPaid={isPaid}
+            freeLine={freeLine}
             firstLessonTitle={firstLesson?.title}
             secondLessonTitle={secondLesson?.title}
             unitTitle={firstSectionIndex >= 0 ? sections[firstSectionIndex].title : undefined}

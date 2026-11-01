@@ -1,0 +1,70 @@
+---
+title: "TypeScript Functions: Parameters, Return Types and Overloads"
+description: "Learn how to type functions in TypeScript: parameters, optional and default values, return types, rest parameters, void and callbacks."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [typescript functions, function types typescript, optional parameters typescript, return type annotation, typescript callbacks]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "TypeScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript for Beginners course"
+faq:
+  - question: "How do I type a function in TypeScript?"
+    answer: "Add types to the parameters and optionally to the return value."
+  - question: "How do I make a parameter optional?"
+    answer: "Add a question mark after its name, or give it a default value."
+  - question: "What is void?"
+    answer: "The return type of a function that does not return a value."
+---
+
+Typing functions is the most useful thing you can do in TypeScript.
+
+## Direct answer
+
+Annotate each parameter, and optionally the return type. Use `?` or a default value for optional parameters, `...rest` for variable arguments and `void` for functions that return nothing.
+
+## Examples
+
+```typescript
+function add(a: number, b: number): number {
+  return a + b;
+}
+
+function greet(name: string, greeting = "Hello"): string {
+  return `${greeting}, ${name}`;
+}
+
+function log(message: string, level?: "info" | "error"): void {
+  console.log(level ?? "info", message);
+}
+
+function sum(...nums: number[]): number {
+  return nums.reduce((a, b) => a + b, 0);
+}
+```
+
+## Function types
+
+```typescript
+type Callback = (error: Error | null, data?: string) => void;
+const run = (cb: Callback) => cb(null, "done");
+```
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 20 lessons, and you can start free.
+
+## The bottom line
+
+Type parameters, let inference do the return type, annotate public functions.
+
+## More guides
+
+- [TypeScript Classes](/blog/typescript-classes-guide)
+- [Common TypeScript Errors Explained and How to Fix Them](/blog/typescript-errors-explained)
+- [TypeScript Interface vs Type](/blog/typescript-interface-vs-type)
+- [Typescript tutorial for beginners](/blog/typescript-tutorial-for-beginners)
+- [TypeScript for Beginners course](/courses/typescript-for-beginners)

@@ -1,0 +1,69 @@
+---
+title: "SQL Injection Explained: How It Works and How to Prevent It"
+description: "SQL injection happens when user input changes a query's meaning. Learn a simple example, why it is dangerous and how parameterised queries prevent it."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [sql injection, what is sql injection, prevent sql injection, parameterized queries, web security basics]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "SQL and Databases for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/sql-and-databases-for-beginners
+  label: "See the SQL and Databases for Beginners course"
+faq:
+  - question: "What is SQL injection?"
+    answer: "An attack where malicious input is inserted into a SQL query so the database runs unintended commands."
+  - question: "How do I prevent it?"
+    answer: "Use parameterised queries or prepared statements and never build SQL by joining strings with user input."
+  - question: "Does escaping input work?"
+    answer: "It is error-prone. Parameterised queries are the reliable approach."
+---
+
+One of the oldest web vulnerabilities, and still one of the most common.
+
+## Direct answer
+
+SQL injection occurs when an application builds a query by pasting user input into the SQL text, letting an attacker change the query. Prevent it with parameterised queries (prepared statements), least-privilege database accounts and input validation.
+
+## A vulnerable pattern
+
+```javascript
+// Dangerous: never do this
+const sql = "SELECT * FROM users WHERE email = '" + email + "'";
+```
+
+If `email` is `' OR '1'='1`, the condition becomes always true.
+
+## The fix
+
+```javascript
+// Safe: values are sent separately from the SQL
+const result = await db.query(
+  "SELECT * FROM users WHERE email = $1",
+  [email]
+);
+```
+
+## Other protections
+
+1. Give the app's database user only the permissions it needs.
+2. Validate input types and lengths.
+3. Hide detailed database errors from users.
+4. Keep software updated.
+
+## Where Teyro fits
+
+Teyro's [SQL and Databases for Beginners](/courses/sql-and-databases-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Never concatenate user input into SQL. Use parameters.
+
+## More guides
+
+- [Database Indexes Explained](/blog/database-indexes-explained)
+- [MySQL vs PostgreSQL](/blog/mysql-vs-postgresql)
+- [SQL Practice Questions for Beginners With Answers](/blog/sql-practice-questions)
+- [How to learn sql for beginners](/blog/how-to-learn-sql-for-beginners)
+- [SQL and Databases for Beginners course](/courses/sql-and-databases-for-beginners)

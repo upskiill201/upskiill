@@ -259,7 +259,7 @@ export default async function BlogPostPage({ params }: PostPageProps) {
               {fm.faq && fm.faq.length > 0 && <FaqAccordion items={fm.faq} />}
 
               {/* ── Conversion + social ── */}
-              <CtaBlock cta={fm.cta} />
+              <CtaBlock cta={fm.cta} source={`blog:${slug}`} />
               <ShareButtons url={canonical} title={fm.title} />
               <AuthorBio author={author} />
             </div>

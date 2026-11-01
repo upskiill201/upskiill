@@ -10,7 +10,7 @@
 import React from 'react';
 import styles from './AchievementBadge.module.css';
 
-const KNOWN = new Set(['novice', 'wildfire', 'sage', 'champion', 'sharpshooter', 'explorer', 'marathon']);
+const KNOWN = new Set(['novice', 'wildfire', 'sage', 'champion', 'sharpshooter', 'explorer', 'marathon', 'helper']);
 
 interface AchievementBadgeProps {
   badgeId: string;

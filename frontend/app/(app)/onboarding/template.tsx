@@ -54,6 +54,11 @@ export default function OnboardingTemplate({
   const templateKey =
     currentStep >= 1 && currentStep <= TOTAL_STEPS ? 'onboarding-shell-all' : pathname;
 
+  // Onboarding v3 (/onboarding) moves between its own steps and plays a real
+  // lesson inside: a transformed wrapper here would turn the lesson player's
+  // position:fixed screens into boxes inside this div (blank lesson).
+  if (pathname === '/onboarding') return <>{children}</>;
+
   return (
     // Outer container: overflow-hidden clips the sliding content
     <div className="relative w-full min-h-screen overflow-hidden">

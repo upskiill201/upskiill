@@ -114,8 +114,4 @@ export function optionLabel<T extends string>(options: CreatorOption<T>[], id: T
   return options.find((o) => o.id === id)?.label ?? '';
 }
 
-/**
- * Default creator revenue share (backend EarningsService: every new
- * agreement starts STANDARD at 70%; FOUNDING is admin-granted).
- */
-export const DEFAULT_CREATOR_SHARE_PCT = 70;
+// Creator pay lives in lib/launch.ts (CREATOR_POOL_PCT): the Teyro Pro pool.

@@ -1,0 +1,64 @@
+---
+title: "Outliers: How to Detect Them and What to Do With Them"
+description: "Outliers are values far from the rest. Learn how to spot them with box plots and the IQR rule, and when to keep, fix or remove them."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [outliers, how to detect outliers, iqr rule, box plot outliers, data cleaning]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Data Science for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/data-science-for-beginners
+  label: "See the Data Science for Beginners course"
+faq:
+  - question: "What is an outlier?"
+    answer: "A data point that is very different from most of the others."
+  - question: "How do I detect outliers?"
+    answer: "Use box plots, the IQR rule or z-scores, and look at the data."
+  - question: "Should I always remove them?"
+    answer: "No. They may be errors or important real events. Investigate first."
+---
+
+Some outliers are mistakes. Some are the story.
+
+## Direct answer
+
+An outlier is a value far from the rest of the data. Detect them with box plots, the interquartile range (IQR) rule or z-scores, then investigate. Remove or correct them if they are errors. Keep them if they are real and relevant.
+
+## The IQR rule
+
+A value is a potential outlier if it is below Q1 minus 1.5 times IQR or above Q3 plus 1.5 times IQR.
+
+```python
+q1 = df["price"].quantile(0.25)
+q3 = df["price"].quantile(0.75)
+iqr = q3 - q1
+low, high = q1 - 1.5 * iqr, q3 + 1.5 * iqr
+outliers = df[(df["price"] < low) | (df["price"] > high)]
+```
+
+## What to do
+
+| Cause | Action |
+| :--- | :--- |
+| Data entry error | fix or remove |
+| Different group | analyse separately |
+| Real extreme | keep, consider robust methods |
+
+## Where Teyro fits
+
+Teyro's [Data Science for Beginners](/courses/data-science-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Investigate before you delete.
+
+## More guides
+
+- [Kaggle for Beginners](/blog/kaggle-for-beginners)
+- [NumPy for Beginners](/blog/numpy-for-beginners)
+- [Matplotlib for Beginners](/blog/matplotlib-for-beginners)
+- [Exploratory data analysis](/blog/exploratory-data-analysis)
+- [Mean median mode](/blog/mean-median-mode)
+- [Data Science for Beginners course](/courses/data-science-for-beginners)

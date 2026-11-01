@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         code: 'print("Share:", 200000 / 10, sep=" = ")',
         language: 'python',
         options: [
-          { text: 'Share: = 20000.0' },
           { text: 'Share: 20000.0', why: 'sep=" = " replaces the space between the two items.' },
+          { text: 'Share: = 20000.0' },
           { text: 'Share: = 20000', why: '/ always gives a decimal.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -78,11 +78,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: "Where does Python's name come from?",
         options: [
-          { text: "Monty Python's Flying Circus" },
           { text: 'A snake', why: 'Only the logo has snakes.' },
           { text: 'A company', why: 'It was one person\'s hobby project.' },
+          { text: "Monty Python's Flying Circus" },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -163,11 +163,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What will v0.2 of the Ajo Tracker add, according to the road map?',
         options: [
-          { text: 'The money maths' },
           { text: 'Who has paid', why: 'That is v0.4.' },
           { text: 'Everything at once', why: 'One feature per version.' },
+          { text: 'The money maths' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

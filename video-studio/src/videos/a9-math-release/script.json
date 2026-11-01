@@ -1,0 +1,28 @@
+{
+  "slug": "a9-math-release",
+  "account": "teyro",
+  "title": "OpenAI did decades of math in one release",
+  "voice": "cgSgspJ2msm6clMCkdW9",
+  "model": "eleven_multilingual_v2",
+  "fps": 30,
+  "lines": [
+    { "id": "h1", "text": "OpenAI just did *decades* of math in one release, | and the best mathematicians alive are *worried.*" },
+    { "id": "i1a", "text": "This week, OpenAI gave an unreleased model about *4,000* open problems. | It cracked less than *10%* of them, | but that's still *372* results." },
+    { "id": "i1b", "text": "One of them is the *Unique Games Conjecture,* | which Scott Aaronson says his wife spent her *whole career* working toward." },
+    { "id": "i2", "text": "OpenAI won't even *name* the model. | Almost every result came from *one prompt,* | with about *three hours* of thinking each." },
+    { "id": "i3", "text": "But here's the catch. | Less than *half* of the proofs are checked by a computer, | and nobody outside OpenAI can run the model | to see *how* it got there." },
+    { "id": "i4", "text": "And these models learned from decades of papers | mathematicians shared for *free.* | That's why *25* Fields Medal winners signed a letter | warning about *plagiarism* and *credit.*" },
+    { "id": "i5", "text": "Terence Tao says the race to be *first* should matter less, | and *explaining* a result should matter more." },
+    { "id": "s1", "text": "Because if sharing your work just trains a model that takes the *credit,* | people might stop *sharing* it." },
+    { "id": "c1", "text": "Want to understand AI like this, | *one lesson* a day? | Head to *Teyro.*" }
+  ],
+  "sources": [
+    "github.com/openai/math README (read 2026-10-09): unreleased internal OpenAI model; posed approximately 4,000 problems; 372 result families (~9%); vast majority via the same procedure, averaging three hours of ChatGPT Pro thinking compute per result; ~42% of top-line results formalized in Lean; 'Some of the unformalized results could have issues'; model not named",
+    "Decrypt (2026-10): OpenAI spokesperson: almost everything came from a single prompt to a single agent",
+    "Quanta Magazine (2026-10-07): OpenAI announced a Unique Games Conjecture proof among the results",
+    "Scott Aaronson, 'The Mathocalypse', scottaaronson.blog (2026-10-07): his wife Dana Moshkovitz spent her career working toward proving the Unique Games Conjecture",
+    "TechCrunch (2026-09-11): 25 Fields Medal winners signed an open letter: 'this raises severe attribution and plagiarism questions'; rushed announcements leave no time for citing previous work",
+    "Terence Tao on Mathstodon: 'Math 1.0' placed a premium on being the first to solve an open problem; his proposal: priority to the first to explain a result, not the first to generate it",
+    "Removed (not confirmed on a primary source): GPT-6-ASTRO / Epoch Erdős benchmark, 'Navier-Stokes needed 10,000 agents', 'written on psychedelics' quote, Miller sphere-packing credit + correction"
+  ]
+}

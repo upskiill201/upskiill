@@ -11,7 +11,7 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { BookOpen, Clock, Crosshair, Sparkles, Target, type LucideIcon } from 'lucide-react';
+import { Art, type ArtName } from '@/components/art/Art';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useSWRConfig } from 'swr';
@@ -21,7 +21,7 @@ import { playHaptic } from '@/lib/haptics';
 import { claimQuest, dailyQuestsKey, isClaimed, isDone, rewardKind, type DailyQuest } from '@/lib/quests/dailyQuests';
 import { QuestChest, type ChestState } from './QuestChest';
 
-type QuestIcon = { image: string } | { icon: LucideIcon; color: string };
+type QuestIcon = { image: string } | { art: ArtName; color: string };
 
 export function questIcon(objectiveType: string): QuestIcon {
   switch (objectiveType) {
@@ -30,15 +30,15 @@ export function questIcon(objectiveType: string): QuestIcon {
     case 'STREAK_ACTIVE':
       return { image: '/Icons/burn.png' };
     case 'CORRECT_ANSWERS':
-      return { icon: Target, color: 'var(--success-green)' };
+      return { art: 'target', color: 'var(--success-green)' };
     case 'ACCURATE_LESSON':
-      return { icon: Crosshair, color: 'var(--brand-purple)' };
+      return { art: 'search', color: 'var(--brand-purple)' };
     case 'PERFECT_LESSON':
-      return { icon: Sparkles, color: 'var(--warning)' };
+      return { art: 'spark', color: 'var(--warning)' };
     case 'LEARN_MINUTES':
-      return { icon: Clock, color: 'var(--color-brand)' };
+      return { art: 'clock', color: 'var(--color-brand)' };
     default:
-      return { icon: BookOpen, color: 'var(--color-brand)' };
+      return { art: 'book', color: 'var(--color-brand)' };
   }
 }
 
@@ -95,7 +95,7 @@ function QuestRow({ quest, onClaimed }: { quest: DailyQuest; onClaimed?: () => v
         {'image' in icon ? (
           <Image src={icon.image} alt="" aria-hidden="true" width={30} height={30} unoptimized className="w-[30px] h-[30px] object-contain" />
         ) : (
-          <icon.icon className="w-6 h-6 stroke-[2.5]" style={{ color: icon.color }} aria-hidden="true" />
+          <Art name={icon.art} size={34} />
         )}
       </span>
 

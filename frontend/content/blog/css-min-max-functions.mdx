@@ -1,0 +1,67 @@
+---
+title: "CSS min(), max() and clamp(): When to Use Each"
+description: "Compare the CSS comparison functions min, max and clamp with examples for widths, padding and font sizes, and tips on mixing units."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [css min max, css min function, css max function, css comparison functions, responsive width css]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Responsive Web Design with CSS turns this into short, playable lessons. Free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive Web Design with CSS course"
+faq:
+  - question: "What does min do in CSS?"
+    answer: "It picks the smallest of its values, useful for setting a maximum size."
+  - question: "What does max do?"
+    answer: "It picks the largest of its values, useful for setting a minimum size."
+  - question: "When do I use clamp instead?"
+    answer: "When you want both a minimum and a maximum with a flexible value in between."
+---
+
+Three small functions that give CSS some logic.
+
+## Direct answer
+
+`min()` returns the smallest value, `max()` the largest and `clamp()` keeps a value between a minimum and maximum. Use them to create flexible widths and spacing without media queries.
+
+## Examples
+
+```css
+.box {
+  width: min(100%, 600px);   /* never wider than 600px */
+}
+
+.sidebar {
+  width: max(240px, 20%);    /* at least 240px */
+}
+
+.title {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+}
+```
+
+## Quick guide
+
+| Function | Think of it as |
+| :--- | :--- |
+| `min(a, b)` | a ceiling |
+| `max(a, b)` | a floor |
+| `clamp(a, b, c)` | floor, target and ceiling |
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Fewer media queries, more fluid layouts.
+
+## More guides
+
+- [How to Build a Responsive Navigation Menu With CSS](/blog/responsive-navigation-menu)
+- [rem vs em in CSS](/blog/rem-vs-em)
+- [Responsive Tables](/blog/responsive-tables-css)
+- [Clamp css function](/blog/clamp-css-function)
+- [Responsive Web Design with CSS course](/courses/responsive-web-design-with-css)

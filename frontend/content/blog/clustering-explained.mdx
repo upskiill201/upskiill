@@ -1,0 +1,66 @@
+---
+title: "Clustering Explained: Group Similar Data With K-Means"
+description: "Clustering groups similar items without labels. Learn how k-means works, choosing k, real examples and a short scikit-learn demonstration."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [clustering, k means clustering, clustering machine learning, customer segmentation, unsupervised learning]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Machine Learning for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/machine-learning-for-beginners
+  label: "See the Machine Learning for Beginners course"
+faq:
+  - question: "What is clustering?"
+    answer: "An unsupervised method that groups data points so those in the same group are more similar to each other than to those in other groups."
+  - question: "How does k-means work?"
+    answer: "It picks k centres, assigns each point to the nearest centre, moves the centres to the group averages and repeats."
+  - question: "How do I choose k?"
+    answer: "Try different values and compare using methods such as the elbow method or silhouette score, together with business sense."
+---
+
+Find the groups hiding in your data.
+
+## Direct answer
+
+Clustering groups similar data points without labels. In k-means, you choose the number of groups k, and the algorithm repeatedly assigns points to the nearest centre and moves the centres until groups stabilise. It is used for customer segments, topic grouping and anomaly spotting.
+
+## Example
+
+```python
+from sklearn.cluster import KMeans
+import numpy as np
+
+X = np.array([[1, 2], [1, 4], [1, 0], [10, 2], [10, 4], [10, 0]])
+model = KMeans(n_clusters=2, n_init=10, random_state=0).fit(X)
+print(model.labels_)
+```
+
+## Choosing k
+
+- Elbow method: plot error against k and look for a bend.
+- Silhouette score: higher means better separated groups.
+- Practical meaning: do the groups make sense?
+
+## Cautions
+
+- Scale features first.
+- Results depend on starting points, so run several.
+- Clusters are not always meaningful.
+
+## Where Teyro fits
+
+Teyro's [Machine Learning for Beginners](/courses/machine-learning-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 200 lessons, and you can start free.
+
+## The bottom line
+
+Clustering finds patterns. You decide whether they matter.
+
+## More guides
+
+- [Confusion Matrix Explained](/blog/confusion-matrix-explained)
+- [10 Machine Learning Projects for Beginners (With Free Datasets)](/blog/ml-projects-for-beginners)
+- [Supervised vs Unsupervised Learning](/blog/supervised-vs-unsupervised-learning)
+- [Supervised vs unsupervised learning](/blog/supervised-vs-unsupervised-learning)
+- [Machine Learning for Beginners course](/courses/machine-learning-for-beginners)

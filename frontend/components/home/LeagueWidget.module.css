@@ -1,0 +1,269 @@
+/* This week's league — home rail. Flat, tokens only. */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-card);
+  font-family: var(--font-jakarta), sans-serif;
+  color: var(--text-primary);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.ends {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.view {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--color-brand);
+  text-decoration: none;
+}
+
+.view:hover {
+  text-decoration: underline;
+}
+
+/* ── Rows ── */
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 8px;
+  border-radius: 10px;
+}
+
+.rowMe {
+  background: color-mix(in srgb, var(--color-brand) 10%, var(--bg-card));
+}
+
+.rowMe .name,
+.rowMe .xp {
+  color: var(--color-brand);
+}
+
+.rank {
+  flex: none;
+  width: 24px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.rank1,
+.rank2,
+.rank3 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  color: var(--bg-page);
+}
+
+.rank1 {
+  background: var(--warning);
+}
+
+.rank2 {
+  background: var(--text-muted);
+}
+
+.rank3 {
+  background: color-mix(in srgb, var(--warning) 55%, var(--error-red));
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.xp {
+  flex: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.zone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.zone::before,
+.zone::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.4;
+}
+
+.zoneUp {
+  color: var(--success-green);
+}
+
+.zoneDown {
+  color: var(--error-red);
+}
+
+/* ── The one line ── */
+
+.status {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.status svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.status strong {
+  font-weight: 800;
+}
+
+.status_up {
+  background: color-mix(in srgb, var(--success-green) 12%, var(--bg-card));
+  color: var(--success-green);
+}
+
+.status_down {
+  background: color-mix(in srgb, var(--error-red) 10%, var(--bg-card));
+  color: var(--error-red);
+}
+
+.status_even {
+  background: var(--bg-section);
+  color: var(--text-secondary);
+}
+
+.status_even strong {
+  color: var(--color-ink);
+}
+
+/* ── Empty / error / loading ── */
+
+.muted {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  border-radius: 10px;
+  background: var(--color-brand);
+  color: var(--bg-page);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: filter 150ms ease;
+}
+
+.cta:hover {
+  filter: brightness(1.08);
+}
+
+.linkBtn {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--color-brand);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.skel {
+  display: block;
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--bg-section) 25%, var(--border) 50%, var(--bg-section) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+.skelTrophy {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skel {
+    animation: none;
+  }
+}

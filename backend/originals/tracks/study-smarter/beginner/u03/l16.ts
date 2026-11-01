@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: "Admit it, Kofi. Paper is better. Science says so.",
         prompt: 'What is the most accurate reply?',
         options: [
-          { text: 'Science says own words beat copying. On paper vs typing, later studies found the difference was small. Your notes win because you process, not because of the pen.' },
           { text: 'Paper is always better, you are right.', why: 'The evidence is not that clear.' },
           { text: 'Typing is always better.', why: 'Also not supported.' },
+          { text: 'Science says own words beat copying. On paper vs typing, later studies found the difference was small. Your notes win because you process, not because of the pen.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

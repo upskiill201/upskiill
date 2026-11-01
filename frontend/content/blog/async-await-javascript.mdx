@@ -1,0 +1,76 @@
+---
+title: "async and await in JavaScript: A Beginner's Guide"
+description: "async and await make asynchronous JavaScript look like normal code. Learn the syntax, error handling with try and catch and how to run tasks in parallel."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [async await, javascript async await, async await example, how does async await work, javascript asynchronous]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "JavaScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/javascript-for-beginners
+  label: "See the JavaScript for Beginners course"
+faq:
+  - question: "What does async do?"
+    answer: "It marks a function as asynchronous so it always returns a promise."
+  - question: "What does await do?"
+    answer: "It pauses the async function until a promise settles, then returns the result."
+  - question: "How do I handle errors with await?"
+    answer: "Wrap the await calls in try and catch."
+---
+
+async and await let you write asynchronous code that reads from top to bottom.
+
+## Direct answer
+
+Put `async` before a function to make it return a promise. Inside it, use `await` before a promise to wait for its result. Handle errors with `try` and `catch`. It is syntax built on top of [promises](/blog/javascript-promises-explained).
+
+## Example
+
+```javascript
+async function getUser(id) {
+  try {
+    const response = await fetch(`https://api.example.com/users/${id}`);
+    const user = await response.json();
+    console.log(user.name);
+  } catch (error) {
+    console.error("Something went wrong", error);
+  }
+}
+
+getUser(1);
+```
+
+## Run things in parallel
+
+```javascript
+const [users, posts] = await Promise.all([
+  fetch("/users").then(r => r.json()),
+  fetch("/posts").then(r => r.json()),
+]);
+```
+
+Awaiting one after another waits for each in turn. `Promise.all` runs them together.
+
+## Common mistakes
+
+- Forgetting `await`, so you get a promise instead of data.
+- Using `await` outside an async function (top-level await works only in modules).
+- Not handling errors.
+
+## Where Teyro fits
+
+Teyro's [JavaScript for Beginners](/courses/javascript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Use `async`, `await` and `try/catch` for readable asynchronous code.
+
+## More guides
+
+- [What Is JSON? A Beginner's Guide With Examples](/blog/what-is-json)
+- [The this Keyword in JavaScript](/blog/javascript-this-keyword)
+- [How to Debug JavaScript](/blog/debugging-javascript)
+- [Javascript promises explained](/blog/javascript-promises-explained)
+- [JavaScript for Beginners course](/courses/javascript-for-beginners)

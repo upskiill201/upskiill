@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { playHaptic } from '@/lib/haptics';
 import { useAnalyticsDashboard } from './hooks/useAnalyticsDashboard';
 import { AnalyticsHero } from './components/AnalyticsHero';
@@ -42,7 +42,7 @@ export default function AnalyticsPage() {
           onClick={handleBack}
           className="flex items-center gap-1.5 text-sm font-semibold text-[#64748B] hover:text-[#1F2A44] shrink-0"
         >
-          <ArrowLeft size={16} />
+          <Glyph name="back" size={16} />
           <span className="hidden sm:inline">Back</span>
         </button>
       </div>

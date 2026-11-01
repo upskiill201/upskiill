@@ -2,11 +2,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArrowRight } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import {
   APPLY_HREF,
   APPLY_LABEL,
-  CREATOR_SHARE_PCT,
+  CREATOR_POOL_PCT,
   SKILL_COPY,
   TEACH_PLACES,
   TEACH_SKILLS,
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const copy = SKILL_COPY[skill as TeachSkill];
   return {
     title: `Teach ${copy.noun} online: ${copy.label} creator opportunities by location | Teyro`,
-    description: `Teach ${copy.noun} online from your state, city or country. Keep ${CREATOR_SHARE_PCT}% of every monthly payment, paid in USD, with local pay data for every location.`,
+    description: `Teach ${copy.noun} online from your state, city or country. Earn from Teyro Pro every month, by the minutes learners spend in your course. Paid in USD, with local pay data for every location.`,
     alternates: { canonical: `/teach/${skill}` },
   };
 }
@@ -90,7 +90,7 @@ export default async function TeachSkillHub({ params }: Props) {
               Teach {copy.noun} online, <em>from wherever you are.</em>
             </h1>
             <p className={s.lead}>
-              Build a {copy.noun} course once, keep {CREATOR_SHARE_PCT}% of every payment and get paid in US dollars. Pick
+              Build a {copy.noun} course once and earn from Teyro Pro: {CREATOR_POOL_PCT}% of every Pro learner’s payment is shared among the creators they learn with, by minutes, paid in US dollars. Pick
               your location for local pay data, payout options and what to teach.
             </p>
             <div className={s.pillRow}>
@@ -102,7 +102,7 @@ export default async function TeachSkillHub({ params }: Props) {
             </div>
             <Link href={APPLY_HREF} className={s.btn}>
               {APPLY_LABEL}
-              <ArrowRight size={18} strokeWidth={3} aria-hidden="true" />
+              <Glyph name="arrow" size={18} strokeWidth={3} />
             </Link>
           </div>
           <div className={s.hubArt}>
@@ -154,7 +154,7 @@ export default async function TeachSkillHub({ params }: Props) {
           <CtaBlock
             cta={{
               title: `Teach ${copy.noun} on Teyro`,
-              text: `Keep ${CREATOR_SHARE_PCT}% of every payment, get paid in USD, and join as a Founding Creator.`,
+              text: `Earn from Teyro Pro for every minute learners spend in your course, get paid in USD, and join as a Founding Creator.`,
               href: APPLY_HREF,
               label: APPLY_LABEL,
             }}

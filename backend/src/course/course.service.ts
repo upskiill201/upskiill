@@ -1,3 +1,6 @@
+import { LessonAccessService } from '../pro/lesson-access.service';
+import { ProAccessService } from '../pro/pro-access.service';
+import { isProEnabled } from '../pro/pro.config';
 import {
   Injectable,
   NotFoundException,
@@ -26,6 +29,7 @@ import { assessCourseReadiness } from './course-readiness.util';
 import { CourseReviewService } from '../course-review/course-review.service';
 import * as crypto from 'crypto';
 import { slugUpdateFor, uniqueCourseSlug } from './course-slug.util';
+import { lessonPerformanceBonus, type LessonPerformance } from './lesson-bonus.util';
 
 const ALLOWED_LESSON_TYPES = ['video', 'text', 'quiz', 'assignment', 'project', 'audio', 'download', 'link', 'live', 'reflection'];
 
@@ -100,6 +104,9 @@ export class CourseService {
     private shopService: ShopService,
     private courseReview: CourseReviewService,
     private originalsService: OriginalsService,
+    // Teyro Pro: who may open which lesson, and the free tier's daily cap.
+    private lessonAccess: LessonAccessService,
+    private proAccess: ProAccessService,
   ) {}
 
   /**
@@ -604,18 +611,29 @@ export class CourseService {
       throw new NotFoundException('Course not found');
     }
 
-    const [enrollment, entitlement, original] = await Promise.all([
+    const proOn = isProEnabled();
+    const [enrollment, entitlement, original, pro, scope] = await Promise.all([
       this.prisma.enrollment.findUnique({
         where: { userId_courseId: { userId, courseId: course.id } },
-        select: { completedLessons: true },
+        select: { completedLessons: true, testedOutLessons: true },
       }),
       findActiveEntitlement(this.prisma, userId, course),
       this.originalsService.describe(course),
+      proOn ? this.proAccess.getAccess(userId) : Promise.resolve(null),
+      proOn ? this.lessonAccess.courseScope(userId, course) : Promise.resolve(null),
     ]);
+    const freeTier =
+      proOn && !pro?.isPro && !entitlement && !isInstructor
+        ? await this.lessonAccess.freeTierStatus(userId)
+        : null;
 
     const orderedLessons = course.sections.flatMap((s) => s.lessons);
     const completedLessons = Array.isArray(enrollment?.completedLessons)
       ? (enrollment.completedLessons as unknown[]).filter((id): id is string => typeof id === 'string')
+      : [];
+    // Skipped by Jump ahead / placement (Originals): open on the map, never "done".
+    const testedOutLessons = Array.isArray(enrollment?.testedOutLessons)
+      ? (enrollment.testedOutLessons as unknown[]).filter((id): id is string => typeof id === 'string')
       : [];
 
     const {
@@ -633,9 +651,19 @@ export class CourseService {
       sections,
       enrolled: !!enrollment,
       completedLessons,
+      testedOutLessons,
       access: {
-        hasAccess: isInstructor || !!entitlement || isFreeCourse({ ...course, price }),
-        freePreviewLessonIds: this.freePreviewIdsFor(course, orderedLessons),
+        // With Pro on, a $0 course's lessons are all in the free scope but
+        // still count toward the daily cap, so it isn't "full access".
+        hasAccess:
+          isInstructor ||
+          !!entitlement ||
+          (proOn ? !!pro?.isPro : isFreeCourse({ ...course, price })),
+        freePreviewLessonIds: scope
+          ? scope.freeLessonIds
+          : this.freePreviewIdsFor(course, orderedLessons),
+        isPro: !!pro?.isPro,
+        freeTier,
       },
       // Teyro Originals only: track, level, the next level and the hearts
       // rule. Null for creator courses.
@@ -652,7 +680,10 @@ export class CourseService {
     if (!course) throw new NotFoundException('Course not found');
 
     const orderedLessons = await this.getCourseLessonOrder(course.id);
-    const freePreviewLessonIds = this.freePreviewIdsFor(course, orderedLessons);
+    const proOn = isProEnabled();
+    const freePreviewLessonIds = proOn
+      ? (await this.lessonAccess.courseScope(userId, course)).freeLessonIds
+      : this.freePreviewIdsFor(course, orderedLessons);
     const pricing = calculateCoursePricingLadder(course.price, course);
 
     // Instructor has full creator access
@@ -684,6 +715,33 @@ export class CourseService {
         expiresAt: entitlement.expiresAt,
         cancelAtPeriodEnd: entitlement.cancelAtPeriodEnd,
         freePreviewLessonIds,
+        pricing,
+      };
+    }
+
+    // Teyro Pro: one subscription opens every course.
+    const pro = proOn ? await this.proAccess.getAccess(userId) : null;
+    if (pro?.isPro) {
+      return {
+        hasAccess: true,
+        isInstructor: false,
+        accessType: 'PRO',
+        plan: pro.plan,
+        expiresAt: pro.accessUntil,
+        cancelAtPeriodEnd: pro.cancelAtPeriodEnd,
+        freePreviewLessonIds,
+        pricing,
+      };
+    }
+
+    if (proOn) {
+      // Free tier: the lessons in scope, within the daily cap.
+      return {
+        hasAccess: false,
+        isInstructor: false,
+        accessType: 'FREE_TIER',
+        freePreviewLessonIds,
+        freeTier: await this.lessonAccess.freeTierStatus(userId),
         pricing,
       };
     }
@@ -764,22 +822,56 @@ export class CourseService {
       throw new NotFoundException('Lesson not found in this course');
     }
 
-    const orderedLessons = await this.getCourseLessonOrder(course.id);
-    const globalIndex = orderedLessons.findIndex((l) => l.id === lesson.id);
-    const isFreePreview = isFreeLessonAt(course, globalIndex, lesson.isFreePreview);
-
-    let hasAccess = isPrivileged || isFreeCourse(course) || isFreePreview;
-    if (!hasAccess && userId) {
-      hasAccess = !!(await this.getActiveEntitlement(userId, course));
-    }
-    if (!hasAccess) {
-      throw new ForbiddenException({
-        requiresPayment: true,
-        message: 'This lesson requires enrollment. Unlock the full course to continue.',
-      });
-    }
+    // Read mode: never spends a free daily slot, because the map prefetches
+    // lesson content on tap. Starting the lesson (startLesson) spends it.
+    await this.lessonAccess.check({
+      userId,
+      course,
+      lessonId: lesson.id,
+      lessonIsFreePreview: lesson.isFreePreview,
+      mode: 'read',
+      isAdmin,
+    });
 
     return lesson;
+  }
+
+  /**
+   * The learner pressed Start. Free learners spend one of today's lessons
+   * here and need a heart; Pro and per-course plans pass straight through.
+   * Replays of finished lessons are always free.
+   */
+  async startLesson(
+    userId: string,
+    idOrSlug: string,
+    lessonId: string,
+    timezoneOffsetMinutes = 0,
+    isAdmin = false,
+  ) {
+    const course = await this.prisma.course.findFirst({
+      where: { OR: [{ id: idOrSlug }, { slug: idOrSlug }] },
+      select: { id: true, price: true, published: true, instructorId: true, isOriginal: true, trackLevel: true },
+    });
+    if (!course) throw new NotFoundException('Course not found');
+    const isPrivileged = course.instructorId === userId || isAdmin;
+    if (!course.published && !isPrivileged) throw new NotFoundException('Course not found');
+
+    const lesson = await this.prisma.lesson.findFirst({
+      where: { id: lessonId, section: { courseId: course.id }, ...(isPrivileged ? {} : { status: 'published' }) },
+      select: { id: true, isFreePreview: true },
+    });
+    if (!lesson) throw new NotFoundException('Lesson not found in this course');
+
+    const result = await this.lessonAccess.check({
+      userId,
+      course,
+      lessonId: lesson.id,
+      lessonIsFreePreview: lesson.isFreePreview,
+      mode: 'start',
+      isAdmin,
+      timezoneOffsetMinutes,
+    });
+    return { ok: true, isPro: result.isPro, freeTier: result.freeTier };
   }
 
   /* ─── Lesson insight pings (creator analytics) ───────────────────────── */
@@ -898,6 +990,7 @@ export class CourseService {
     quizScorePct?: number,
     correctAnswers?: number,
     missedBlockIds?: string[],
+    performance?: Pick<LessonPerformance, 'bestCombo' | 'hintsUsed' | 'skipped'>,
   ) {
     if (!lessonId) {
       throw new BadRequestException('lessonId is required');
@@ -951,27 +1044,25 @@ export class CourseService {
         section: { courseId: course.id },
         ...(isPrivileged ? {} : { status: 'published' }),
       },
-      select: { id: true, xpReward: true, isFreePreview: true },
+      select: { id: true, xpReward: true, isFreePreview: true, durationMinutes: true },
     });
     if (!lesson) {
       throw new NotFoundException(`Lesson ${lessonId} not found in this course`);
     }
 
     // ─── ENFORCE ACCESS (server-side paywall) ─────────────────────────────
-    if (!isPrivileged && !isFreeCourse(course)) {
-      const orderedLessons = await this.getCourseLessonOrder(course.id);
-      const globalIndex = orderedLessons.findIndex((l) => l.id === lesson.id);
-      const isFreePreview = isFreeLessonAt(course, globalIndex, lesson.isFreePreview);
-      if (!isFreePreview) {
-        const entitlement = await this.getActiveEntitlement(userId, course);
-        if (!entitlement) {
-          throw new ForbiddenException({
-            requiresPayment: true,
-            message: 'Complete this lesson by unlocking the full course first.',
-          });
-        }
-      }
-    }
+    // Complete mode needs the daily slot taken at start (a lesson begun
+    // before midnight still counts); clients that never called start get
+    // one here if there is room. Pro and per-course plans pass through.
+    const access = await this.lessonAccess.check({
+      userId,
+      course,
+      lessonId: lesson.id,
+      lessonIsFreePreview: lesson.isFreePreview,
+      mode: 'complete',
+      isAdmin,
+      timezoneOffsetMinutes,
+    });
 
     let enrollment = await this.prisma.enrollment.findUnique({
       where: { userId_courseId: { userId, courseId: course.id } },
@@ -1056,8 +1147,18 @@ export class CourseService {
         // Honour the creator-configured reward (fallback 10) — previously a
         // flat 10 was paid no matter what the lesson promised.
         const baseLessonXp = Math.max(1, Math.min(500, lesson.xpReward ?? 10));
+        // How they did: a run and a flawless lesson add a little
+        // (lesson-bonus.util.ts — clamped and capped).
+        const bonus = lessonPerformanceBonus({
+          correctAnswers,
+          quizScorePct,
+          bestCombo: performance?.bestCombo,
+          hintsUsed: performance?.hintsUsed,
+          skipped: performance?.skipped,
+        });
+        const sectionBonusXp = sectionCompleted ? SECTION_BONUS_XP : 0;
         const baseXpEarned =
-          baseLessonXp + (sectionCompleted ? SECTION_BONUS_XP : 0);
+          baseLessonXp + sectionBonusXp + bonus.combo + bonus.perfect;
         // A purchased XP Boost multiplies the whole award, section bonus
         // included — the learner bought a window, not a per-lesson coupon.
         const xpEarned = Math.round(baseXpEarned * boost.xp);
@@ -1162,6 +1263,13 @@ export class CourseService {
           // Needed by the celebration payload builder after the tx commits.
           sectionId: lessonSectionId,
           xpEarned,
+          xpBreakdown: {
+            lesson: baseLessonXp,
+            section: sectionBonusXp,
+            combo: bonus.combo,
+            perfect: bonus.perfect,
+            boost: boost.xp,
+          },
           newXpTotal: updatedProfile.xp,
           newStreakDaysTotal: updatedProfile.streakDays,
           newCoinsTotal: updatedProfile.coins,
@@ -1188,6 +1296,7 @@ export class CourseService {
           newCoins: profileNow?.coins ?? 0,
           sectionCompleted: false,
           isFirstStreakOfDay: false,
+          isPro: access.isPro,
         };
       }
 
@@ -1295,6 +1404,35 @@ export class CourseService {
         })
         .catch(() => {});
 
+      // Teyro Pro creator pool: a Pro learner's first completion of someone
+      // else's lesson credits its creator with capped learning time. Capped so
+      // leaving a tab open can't inflate a creator's share.
+      if (access.isPro && !isPrivileged) {
+        const estimateSec = Math.max(60, (lesson.durationMinutes ?? 5) * 60);
+        const capSec = Math.min(Math.max(2 * estimateSec, 600), 1800);
+        const seconds = Math.min(clampedTimeSpent ?? estimateSec, capSec);
+        void this.proAccess
+          .getAccess(userId)
+          .then((pro) =>
+            this.prisma.proLearningMinute.createMany({
+              data: [
+                {
+                  userId,
+                  lessonId,
+                  courseId: course.id,
+                  creatorId: course.instructorId,
+                  isOriginal: !!course.isOriginal,
+                  seconds,
+                  proSubscriptionId: pro.subscriptionId,
+                  proStatus: pro.status ?? (pro.source === 'AMBASSADOR' ? 'AMBASSADOR' : 'UNKNOWN'),
+                },
+              ],
+              skipDuplicates: true,
+            }),
+          )
+          .catch(() => {});
+      }
+
       // Celebration payloads — both read settled post-transaction state, and
       // neither depends on the other, so they are built together rather than
       // stacking two waits onto the completion response.
@@ -1330,6 +1468,7 @@ export class CourseService {
         isNewCompletion: true,
         completedLessons: txResult.completed,
         xpEarned: txResult.xpEarned,
+        ...(txResult.xpBreakdown ? { xpBreakdown: txResult.xpBreakdown } : {}),
         coinsEarned: 5,
         newXp: txResult.newXpTotal,
         newStreakDays: txResult.newStreakDaysTotal,
@@ -1339,6 +1478,9 @@ export class CourseService {
         ...(sectionCompletion ? { sectionCompletion } : {}),
         ...(communityUnlock ? { communityUnlock } : {}),
         ...(levelComplete ? { levelComplete } : {}),
+        // Free learners: "2 of 3 free lessons today" and the after-success paywall.
+        ...(access.freeTier ? { freeTier: access.freeTier } : {}),
+        isPro: access.isPro,
       };
     }
 
@@ -1360,6 +1502,7 @@ export class CourseService {
       newCoins: profile.coins,
       sectionCompleted: false,
       isFirstStreakOfDay: false,
+      isPro: access.isPro,
     };
   }
 
@@ -2558,21 +2701,14 @@ export class CourseService {
         console.warn(`[Unenroll] Error processing courseSubscription: ${subErr?.message || subErr}`);
       }
 
-      // 2. Mark Entitlement as Cancelled
+      // 2. Stop the renewal, keep what was paid for. Setting the entitlement
+      //    to CANCELLED here used to end paid access the moment a learner
+      //    left a course, even with weeks of their period still bought.
       try {
-        const entitlements = await this.prisma.courseAccessEntitlement.findMany({
+        await this.prisma.courseAccessEntitlement.updateMany({
           where: { userId, courseId, status: 'ACTIVE' },
+          data: { cancelAtPeriodEnd: true },
         });
-
-        for (const ent of entitlements) {
-          await this.prisma.courseAccessEntitlement.update({
-            where: { id: ent.id },
-            data: {
-              status: 'CANCELLED',
-              cancelAtPeriodEnd: true,
-            },
-          });
-        }
       } catch (entErr: any) {
         console.warn(`[Unenroll] Error processing courseAccessEntitlement: ${entErr?.message || entErr}`);
       }

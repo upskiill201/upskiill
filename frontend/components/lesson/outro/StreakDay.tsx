@@ -18,7 +18,7 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { Snowflake, Sparkles, Trophy } from 'lucide-react';
+import { Emblem } from '@/components/art/Emblem';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSWRConfig } from 'swr';
 import { QuestChest } from '@/components/quests/QuestChest';
@@ -225,11 +225,11 @@ export function StreakDay({
           >
             {kind === 'thaw' ? (
               <>
-                <Snowflake className="w-4 h-4" aria-hidden="true" /> Your freeze saved yesterday
+                <Emblem name="snowflake" size={18} /> Your freeze saved yesterday
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4" aria-hidden="true" /> Day 1 of something good
+                <Emblem name="sparkle" size={18} /> Day 1 of something good
               </>
             )}
           </motion.span>
@@ -242,7 +242,7 @@ export function StreakDay({
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: reducedMotion ? 0 : t.big / 1000, type: 'spring', stiffness: 560, damping: 12 }}
           >
-            <Trophy className="w-4 h-4" aria-hidden="true" />
+            <Emblem name="trophy" size={18} />
             New personal best
           </motion.span>
         )}

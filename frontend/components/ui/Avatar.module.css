@@ -9,9 +9,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-brand), var(--brand-purple));
-  color: #fff;
+  background: var(--bg-section);
   overflow: hidden;
   user-select: none;
 }
@@ -20,19 +20,19 @@
   object-fit: cover;
 }
 
-.initials {
-  font-weight: 600;
-  letter-spacing: 0.5px;
+/* A Teyro character (lib/avatar/draw.ts), filling the circle. */
+.drawn {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
-.fallbackIcon {
-  width: 50%;
-  height: 50%;
-  color: rgba(255, 255, 255, 0.85);
+.drawn svg {
+  display: block;
 }
 
 .ring {
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--brand-blue);
+  box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 4px var(--color-brand);
 }
 
 /* ─── SIZES ───────────────────────────────────────────────── */
@@ -41,6 +41,7 @@
 .md { width: 40px; height: 40px; font-size: 14px; }
 .lg { width: 56px; height: 56px; font-size: 18px; }
 .xl { width: 80px; height: 80px; font-size: 24px; }
+.xxl { width: 120px; height: 120px; font-size: 32px; }
 
 /* ─── STATUS DOT ──────────────────────────────────────────── */
 .statusDot {
@@ -48,7 +49,7 @@
   bottom: 0;
   right: 0;
   background-color: var(--success-green);
-  border: 2px solid #fff;
+  border: 2px solid var(--bg-card);
   border-radius: 50%;
   z-index: 2;
 }

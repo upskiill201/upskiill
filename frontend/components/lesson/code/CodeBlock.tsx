@@ -7,7 +7,7 @@
  */
 
 import { useMemo, useState } from 'react';
-import { Check, Copy } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { CODE_LANGUAGE_LABEL, type CodeLanguage } from '@/lib/lesson/blocks';
 import { highlightCode } from '@/lib/lesson/highlight';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -43,7 +43,7 @@ export function CodeBlock({
       <div className={styles.bar}>
         <span className={styles.lang}>{language ? CODE_LANGUAGE_LABEL[language] : 'Code'}</span>
         <button type="button" className={styles.copy} onClick={() => void copy()} aria-label={copied ? 'Copied' : 'Copy code'}>
-          {copied ? <Check size={14} strokeWidth={3} aria-hidden="true" /> : <Copy size={14} strokeWidth={2.5} aria-hidden="true" />}
+          {copied ? <Glyph name="check" size={14} strokeWidth={3} /> : <Glyph name="copy" size={14} strokeWidth={2.5} />}
           {copied ? 'Copied' : 'Copy'}
         </button>
       </div>

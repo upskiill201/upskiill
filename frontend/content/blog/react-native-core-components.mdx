@@ -1,0 +1,77 @@
+---
+title: "React Native Core Components: View, Text, Image, ScrollView and More"
+description: "Learn the core React Native components: View, Text, Image, ScrollView, TextInput and Pressable, with a small example screen."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [react native components, react native view text, react native core components, scrollview, pressable]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "React Native for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/react-native-for-beginners
+  label: "See the React Native for Beginners course"
+faq:
+  - question: "What are React Native components?"
+    answer: "Building blocks that render native user interface elements, such as View, Text and Image."
+  - question: "What is the equivalent of div?"
+    answer: "View is similar to div, and Text is used for all text."
+  - question: "Can I use HTML tags?"
+    answer: "No. React Native uses its own components instead of HTML elements."
+---
+
+If you know HTML, think of `View` as `div` and `Text` as `p`, with some rules of its own.
+
+## Direct answer
+
+React Native has built-in components such as `View` (container), `Text` (all text must be inside it), `Image`, `ScrollView` (scrolling content), `TextInput` and `Pressable` (touch handling). You combine them to build screens.
+
+## Example screen
+
+```jsx
+import { View, Text, Image, TextInput, Pressable, StyleSheet } from "react-native";
+
+export default function Profile() {
+  return (
+    <View style={styles.container}>
+      <Image source={{ uri: "https://example.com/avatar.png" }} style={styles.avatar} />
+      <Text style={styles.name}>Ada Lovelace</Text>
+      <TextInput placeholder="Say something" style={styles.input} />
+      <Pressable style={styles.button} onPress={() => console.log("pressed")}>
+        <Text style={styles.buttonText}>Save</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, alignItems: "center" },
+  avatar: { width: 96, height: 96, borderRadius: 48 },
+  name: { fontSize: 20, marginVertical: 8 },
+  input: { borderWidth: 1, borderColor: "#ccc", padding: 8, width: "100%" },
+  button: { backgroundColor: "#3d5afe", padding: 12, marginTop: 12 },
+  buttonText: { color: "#fff" },
+});
+```
+
+## Rules to remember
+
+- Text must be inside `Text`.
+- Use `Pressable` instead of buttons for custom styling.
+- Use `ScrollView` for small lists and `FlatList` for long ones.
+
+## Where Teyro fits
+
+Teyro's [React Native for Beginners](/courses/react-native-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 80 lessons, and you can start free.
+
+## The bottom line
+
+Learn these six components and you can build most screens.
+
+## More guides
+
+- [React Native FlatList](/blog/react-native-flatlist)
+- [React Native Navigation](/blog/react-native-navigation-guide)
+- [React Native Styling](/blog/react-native-styling-guide)
+- [React native tutorial for beginners](/blog/react-native-tutorial-for-beginners)
+- [React Native for Beginners course](/courses/react-native-for-beginners)

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { BarChart3, Check } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import type { CommunityPost } from '@/lib/communityApi';
 import { votePoll } from '@/lib/communityApi';
 import styles from './PollBlock.module.css';
@@ -65,7 +65,7 @@ export default function PollBlock({ post, onChanged }: PollBlockProps) {
           </button>
         ))}
         <span className={styles.meta}>
-          <BarChart3 size={13} /> {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
+          <Glyph name="chart" size={13} /> {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
         </span>
         {error && <span className={styles.error}>{error}</span>}
       </div>
@@ -85,14 +85,14 @@ export default function PollBlock({ post, onChanged }: PollBlockProps) {
           >
             <span className={styles.resultBar} style={{ width: `${pct}%` }} />
             <span className={styles.resultLabel}>
-              {mine && <Check size={14} color="var(--brand-blue)" />} {o.text}
+              {mine && <Glyph name="check" size={14} color="var(--brand-blue)" />} {o.text}
             </span>
             <span className={styles.resultPct}>{pct}%</span>
           </button>
         );
       })}
       <span className={styles.meta}>
-        <BarChart3 size={13} /> {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'} · you voted
+        <Glyph name="chart" size={13} /> {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'} · you voted
       </span>
       {error && <span className={styles.error}>{error}</span>}
     </div>

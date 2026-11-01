@@ -1,0 +1,74 @@
+---
+title: "Undefined Behavior in C: What It Is and Common Examples"
+description: "Undefined behavior means the C standard places no rules on what happens. Learn common examples, why they are dangerous and how to avoid them."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [undefined behavior, undefined behavior in c, c undefined behaviour examples, signed integer overflow, uninitialized variable]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "C for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/c-for-beginners
+  label: "See the C for Beginners course"
+faq:
+  - question: "What is undefined behavior?"
+    answer: "Code for which the C standard does not define the result, so the program may crash, appear to work or do anything."
+  - question: "What are examples?"
+    answer: "Reading uninitialised variables, signed integer overflow, out-of-bounds access and dereferencing NULL."
+  - question: "How can I catch it?"
+    answer: "Compile with warnings and use sanitizers such as UBSan and AddressSanitizer."
+---
+
+In C, some mistakes do not give an error. They give no promises.
+
+## Direct answer
+
+Undefined behavior (UB) occurs when your code does something the C standard does not define, so anything can happen. It may work on your machine and fail on another. Avoid it by initialising variables, staying in bounds, checking pointers and testing with sanitizers.
+
+## Common examples
+
+```c
+int x;
+printf("%d\n", x);     // uninitialised
+
+int a = 2147483647;
+a = a + 1;             // signed overflow
+
+int arr[3];
+arr[3] = 1;            // out of bounds
+
+int *p = NULL;
+*p = 1;                // null dereference
+```
+
+## How to find it
+
+```bash
+gcc -Wall -Wextra -g -fsanitize=address,undefined main.c -o app
+./app
+```
+
+## Habits that help
+
+1. Initialise everything.
+2. Check array indexes.
+3. Check pointers.
+4. Compile with warnings and sanitizers.
+
+## Where Teyro fits
+
+Teyro's [C for Beginners](/courses/c-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 78 lessons, and you can start free.
+
+## The bottom line
+
+"It works on my machine" is not enough in C. Prevent UB by design.
+
+## More guides
+
+- [Pointers in C Explained for Beginners With Simple Examples](/blog/pointers-in-c)
+- [Arrays in C](/blog/c-arrays-guide)
+- [Strings in C](/blog/c-strings-guide)
+- [Segmentation fault c](/blog/segmentation-fault-c)
+- [C memory management](/blog/c-memory-management)
+- [C for Beginners course](/courses/c-for-beginners)

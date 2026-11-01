@@ -8,11 +8,14 @@
  *   1. cd backend && npm run originals -- --export
  *   2. open /dev/originals (on a phone: the dev server's LAN address)
  *
- * Admin review mode: nothing is written and no hearts are at risk. Not linked
+ * Two ways to play. "As a learner" (the default) runs everything a learner
+ * sees, from the start screen to the chapter map and the next lesson, with a
+ * simulated save: nothing is written and no hearts are spent. "Admin read"
+ * is the creator review mode: straight through, no chrome. Not linked
  * anywhere; 404 outside development.
  */
 
-import { List, Map as MapIcon, Medal, Play, Trophy } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { notFound } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { LearningPath } from '@/components/home/LearningPath';
@@ -45,6 +48,10 @@ export default function OriginalsBench() {
   const [view, setView] = useState<'map' | 'list'>('map');
   // Lessons treated as finished on the map (preview only, never saved).
   const [completed, setCompleted] = useState<string[]>([]);
+  // Play as a learner (simulated save) or as an admin read.
+  const [asLearner, setAsLearner] = useState(true);
+  // A paying learner: no paywall after lesson 5.
+  const [paid, setPaid] = useState(false);
 
   // The real home map, fed from the course file: what a learner on the free
   // tier sees (lessons 1–5 free, the paywall from lesson 6).
@@ -71,7 +78,7 @@ export default function OriginalsBench() {
       })),
       enrolled: true,
       completedLessons: completed,
-      access: { hasAccess: false, freePreviewLessonIds: ordered.slice(0, 5).map((l) => l.id) },
+      access: { hasAccess: paid, freePreviewLessonIds: ordered.slice(0, 5).map((l) => l.id) },
       original: {
         trackId: bundle.track.slug,
         trackSlug: bundle.track.slug,
@@ -84,7 +91,7 @@ export default function OriginalsBench() {
         nextLevel: null,
       },
     };
-  }, [bundle, completed]);
+  }, [bundle, completed, paid]);
 
   const lessonById = (id: string) => bundle?.units.flatMap((u) => u.lessons).find((l) => l.id === id) ?? null;
   const pretendDone = (n: number) => setCompleted((bundle?.units.flatMap((u) => u.lessons) ?? []).slice(0, n).map((l) => l.id));
@@ -114,7 +121,16 @@ export default function OriginalsBench() {
         lesson={playing}
         courseId={bundle.course.id}
         isReview={false}
-        adminReviewMode
+        adminReviewMode={!asLearner}
+        simulate={asLearner}
+        pathOverride={path}
+        onNextLesson={(next) => {
+          // The lesson just played counts as done; the next one opens.
+          setCompleted((c) => (c.includes(playing.id) ? c : [...c, playing.id]));
+          const l = lessonById(next.id);
+          setPlaying(l);
+          setRun((r) => r + 1);
+        }}
         onExit={() => setPlaying(null)}
         onCompleted={() => {}}
         onFinished={() => {
@@ -172,10 +188,18 @@ export default function OriginalsBench() {
                 color: view === v ? 'var(--color-brand)' : 'var(--color-ink)',
               }}
             >
-              {v === 'map' ? <MapIcon className="w-4 h-4" aria-hidden="true" /> : <List className="w-4 h-4" aria-hidden="true" />}
+              {v === 'map' ? <Glyph name="map" className="w-4 h-4" /> : <Glyph name="list" className="w-4 h-4" />}
               {v === 'map' ? 'Home map' : 'Lesson list'}
             </button>
           ))}
+          <label className="flex items-center gap-1.5 text-[14px] font-bold text-[var(--text-secondary)]">
+            <input type="checkbox" checked={asLearner} onChange={(e) => setAsLearner(e.target.checked)} />
+            As a learner
+          </label>
+          <label className="flex items-center gap-1.5 text-[14px] font-bold text-[var(--text-secondary)]">
+            <input type="checkbox" checked={paid} onChange={(e) => setPaid(e.target.checked)} />
+            Paid
+          </label>
           {view === 'map' && (
             <label className="ml-auto flex items-center gap-2 text-[14px] font-bold text-[var(--text-secondary)]">
               Pretend done
@@ -227,13 +251,13 @@ export default function OriginalsBench() {
                     <span className="flex-1 min-w-0">
                       <span className="block text-[16px] font-extrabold text-ink truncate">{lesson.title}</span>
                       <span className="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--text-secondary)]">
-                        {lesson.milestone === 'UNIT_CHALLENGE' && <Trophy className="w-3.5 h-3.5" aria-hidden="true" />}
-                        {lesson.milestone === 'CHECKPOINT' && <Medal className="w-3.5 h-3.5" aria-hidden="true" />}
+                        {lesson.milestone === 'UNIT_CHALLENGE' && <Glyph name="trophy" className="w-3.5 h-3.5" />}
+                        {lesson.milestone === 'CHECKPOINT' && <Glyph name="medal" className="w-3.5 h-3.5" />}
                         {lesson.milestone ? `${MILESTONE_LABEL[lesson.milestone]} · ` : ''}
                         {lesson.durationMinutes} min · {lesson.xpReward} XP
                       </span>
                     </span>
-                    <Play className="w-5 h-5 text-[var(--color-brand)]" aria-hidden="true" />
+                    <Glyph name="play" className="w-5 h-5 text-[var(--color-brand)]" />
                   </button>
                 </li>
               ))}

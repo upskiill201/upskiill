@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does watching a video feel like learning even when it isn\'t?',
         options: [
-          { text: 'Someone clever is talking, so your brain feels busy without doing the work' },
           { text: 'Videos are always better than books', why: 'They are not, on their own.' },
           { text: 'Because it takes a long time', why: 'Time spent is not learning.' },
+          { text: 'Someone clever is talking, so your brain feels busy without doing the work' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         message: "I watch my Maths videos at 2x. Same content, half the time.",
         prompt: 'What should Kofi say?',
         options: [
-          { text: "Same content in, but how much comes out? Try pausing to write from memory. If you can't, the speed cost you." },
           { text: 'Try 3x.', why: 'Faster is not the fix.' },
           { text: 'Videos are useless.', why: 'They are useful when you use them actively.' },
+          { text: "Same content in, but how much comes out? Try pausing to write from memory. If you can't, the speed cost you." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

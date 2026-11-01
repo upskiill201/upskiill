@@ -10,7 +10,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { BookOpen, Clock, Lock, LockOpen } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import SceneShell from '../SceneShell';
 import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
@@ -114,7 +114,7 @@ export default function SectionUnlockedScene({ scene, onAdvance }: SectionUnlock
                 : { type: 'spring', stiffness: 340, damping: 16 }
           }
         >
-          {revealed ? <LockOpen size={42} strokeWidth={2.4} /> : <Lock size={40} strokeWidth={2.4} />}
+          {revealed ? <Glyph name="unlock" size={42} strokeWidth={2.4} /> : <Glyph name="lock" size={40} strokeWidth={2.4} />}
           {!reducedMotion && revealed && (
             <motion.div
               className={styles.unlockFlash}
@@ -142,11 +142,11 @@ export default function SectionUnlockedScene({ scene, onAdvance }: SectionUnlock
         <span className={styles.milestoneTitle}>{scene.sectionTitle}</span>
         <div className={styles.milestoneMetaRow}>
           <span className={styles.milestoneMetaItem}>
-            <BookOpen size={15} strokeWidth={2.5} />
+            <Glyph name="book" size={15} strokeWidth={2.5} />
             {scene.lessonCount} {scene.lessonCount === 1 ? 'Lesson' : 'Lessons'}
           </span>
           <span className={styles.milestoneMetaItem}>
-            <Clock size={15} strokeWidth={2.5} />~{scene.estimatedMinutes} Minutes
+            <Glyph name="clock" size={15} strokeWidth={2.5} />~{scene.estimatedMinutes} Minutes
           </span>
         </div>
         {scene.description && <p className={styles.previewDesc}>{scene.description}</p>}

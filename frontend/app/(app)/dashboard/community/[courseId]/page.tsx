@@ -20,10 +20,7 @@ import Link from 'next/link';
 import useSWR from 'swr';
 import { useParams, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  AlertCircle, BookOpen, Check, GraduationCap, Hash, Lock, MessagesSquare, PanelRight,
-  Trophy, UserPlus, Users, X,
-} from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Button from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import PostCard, { PostCardSkeleton, TYPE_ICON } from '@/components/community/PostCard';
@@ -219,7 +216,7 @@ function CommunityPageInner() {
     return (
       <div className={styles.page}>
         <div className={shared.errorBanner}>
-          <AlertCircle size={28} />
+          <Glyph name="alert" size={28} />
           <span>{boot.error instanceof Error ? boot.error.message : 'Could not load this community.'}</span>
           <Button variant="outline" onClick={() => void boot.mutate()}>
             Try again
@@ -242,7 +239,7 @@ function CommunityPageInner() {
 
       <nav className={styles.tabs} aria-label="Community sections">
         <button className={`${styles.tabBtn} ${tab === 'feed' ? styles.tabActive : ''}`} onClick={() => pickTab('feed', 0)}>
-          <MessagesSquare size={18} strokeWidth={2.5} aria-hidden="true" /> Community
+          <Glyph name="bubble" size={18} strokeWidth={2.5} /> Community
         </button>
         {community.course && (
           <Link
@@ -255,17 +252,17 @@ function CommunityPageInner() {
               if (community.course) setHomeCourse(community.course.id);
             }}
           >
-            <GraduationCap size={18} strokeWidth={2.5} aria-hidden="true" /> Classroom
+            <Glyph name="cap" size={18} strokeWidth={2.5} /> Classroom
           </Link>
         )}
         <button className={`${styles.tabBtn} ${tab === 'members' ? styles.tabActive : ''}`} onClick={() => pickTab('members', 2)}>
-          <Users size={18} strokeWidth={2.5} aria-hidden="true" /> Members
+          <Glyph name="users" size={18} strokeWidth={2.5} /> Members
         </button>
         <button
           className={`${styles.tabBtn} ${tab === 'leaderboards' ? styles.tabActive : ''}`}
           onClick={() => pickTab('leaderboards', 3)}
         >
-          <Trophy size={18} strokeWidth={2.5} aria-hidden="true" /> Leaderboards
+          <Glyph name="trophy" size={18} strokeWidth={2.5} /> Leaderboards
         </button>
       </nav>
 
@@ -276,7 +273,7 @@ function CommunityPageInner() {
               {lessonParam && (
                 <div className={styles.lessonFilter}>
                   <span className={styles.lessonFilterText}>
-                    <BookOpen size={16} strokeWidth={2.5} />
+                    <Glyph name="book" size={16} strokeWidth={2.5} />
                     Discussions for: {lessonTitleParam || (posts[0]?.lesson?.title ?? 'this lesson')}
                   </span>
                   <Link href={`/dashboard/community/${courseId}`} className={styles.clearFilterBtn}>
@@ -303,7 +300,7 @@ function CommunityPageInner() {
               <div className={styles.controls}>
                 <div className={styles.chipRow} role="tablist" aria-label="Categories">
                   {TYPE_FILTERS.map((f, i) => {
-                    const Icon = f.value ? TYPE_ICON[f.value] ?? Hash : null;
+                    const Icon = f.value ? TYPE_ICON[f.value] ?? 'hash' : null;
                     return (
                       <button
                         key={f.value}
@@ -424,7 +421,7 @@ function CommunityPageInner() {
                   }}
                   aria-label="Close"
                 >
-                  <X size={20} strokeWidth={2.5} />
+                  <Glyph name="close" size={20} strokeWidth={2.5} />
                 </button>
               </div>
               <div className={styles.drawerRail}>
@@ -549,13 +546,13 @@ function CommunityHero({
           {community.description && <p className={styles.heroDesc}>{community.description}</p>}
           <div className={styles.heroMeta}>
             <span>
-              <Lock size={14} strokeWidth={2.5} aria-hidden="true" /> Private
+              <Glyph name="lock" size={14} strokeWidth={2.5} /> Private
             </span>
             <span>
-              <Users size={14} strokeWidth={2.5} aria-hidden="true" /> <b>{formatCount(community.stats.totalMembers)}</b> members
+              <Glyph name="users" size={14} strokeWidth={2.5} /> <b>{formatCount(community.stats.totalMembers)}</b> members
             </span>
             <span>
-              <MessagesSquare size={14} strokeWidth={2.5} aria-hidden="true" /> <b>{formatCount(community.stats.totalPosts)}</b> posts
+              <Glyph name="bubble" size={14} strokeWidth={2.5} /> <b>{formatCount(community.stats.totalPosts)}</b> posts
             </span>
             {instructor && (
               <span className={styles.heroHost}>
@@ -593,11 +590,11 @@ function CommunityHero({
 
         <div className={styles.heroActions}>
           <button type="button" className={styles.inviteBtn} onClick={() => void invite()}>
-            {copied ? <Check size={18} strokeWidth={3} /> : <UserPlus size={18} strokeWidth={2.75} />}
+            {copied ? <Glyph name="check" size={18} strokeWidth={3} /> : <Glyph name="userPlus" size={18} strokeWidth={2.75} />}
             {copied ? 'Copied' : 'Invite'}
           </button>
           <button type="button" className={styles.infoBtn} onClick={() => { playSound('menuOpen'); onInfo(); }} aria-label="About and leaderboard">
-            <PanelRight size={18} strokeWidth={2.5} />
+            <Glyph name="panel" size={18} strokeWidth={2.5} />
           </button>
         </div>
       </div>

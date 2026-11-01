@@ -70,6 +70,12 @@ const ManualInstallGuide = dynamic(() => import('@/components/start/ManualInstal
 
 interface RemindersScreenProps {
   onNext: () => void;
+  /**
+   * Onboarding v3 keeps its own answers; it passes this so the v2 session
+   * hook never writes (and overwrites) the server copy of a v3 learner's
+   * answers. Absent: the v2 behaviour, unchanged.
+   */
+  onNotificationsAnswer?: (value: { enabled: boolean; permission?: NotificationPermission | 'unsupported' }) => void;
 }
 
 type Phase =
@@ -185,8 +191,15 @@ function Benefit({ icon, label }: { icon: React.ReactNode; label: string }) {
   );
 }
 
-export default function RemindersScreen({ onNext }: RemindersScreenProps) {
-  const { saveAnswer } = useOnboardingSession({ currentStep: 15, disableGuard: true });
+export default function RemindersScreen({ onNext, onNotificationsAnswer }: RemindersScreenProps) {
+  const session = useOnboardingSession({ currentStep: 15, disableGuard: true });
+  const saveAnswer = useCallback(
+    (key: 'notifications', value: { enabled: boolean; permission?: NotificationPermission | 'unsupported' }) => {
+      if (onNotificationsAnswer) onNotificationsAnswer(value);
+      else session.saveAnswer(key, value);
+    },
+    [onNotificationsAnswer, session],
+  );
   const reduce = useReducedMotion() ?? false;
 
   const { ready, supported, permission, subscribed, needsInstall, busy, enable } = useTeyPush();

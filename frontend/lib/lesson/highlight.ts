@@ -6,6 +6,7 @@
 
 import hljs from 'highlight.js/lib/core';
 import bash from 'highlight.js/lib/languages/bash';
+import c from 'highlight.js/lib/languages/c';
 import css from 'highlight.js/lib/languages/css';
 import dart from 'highlight.js/lib/languages/dart';
 import java from 'highlight.js/lib/languages/java';
@@ -26,6 +27,7 @@ const REGISTERED: Partial<Record<CodeLanguage, string>> = {
   html: 'xml',
   css: 'css',
   sql: 'sql',
+  c: 'c',
   bash: 'bash',
   json: 'json',
   java: 'java',
@@ -44,6 +46,7 @@ function register() {
   hljs.registerLanguage('xml', xml);
   hljs.registerLanguage('css', css);
   hljs.registerLanguage('sql', sql);
+  hljs.registerLanguage('c', c);
   hljs.registerLanguage('bash', bash);
   hljs.registerLanguage('json', json);
   hljs.registerLanguage('java', java);

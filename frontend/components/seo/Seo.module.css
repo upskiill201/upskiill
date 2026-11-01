@@ -276,6 +276,11 @@
   margin-top: 88px;
 }
 
+/* Jump links (/courses#money) land below the sticky header, eyebrow included. */
+.section h2[id] {
+  scroll-margin-top: 136px;
+}
+
 .sectionHead {
   display: flex;
   flex-direction: column;

@@ -1,0 +1,262 @@
+=== if-statements-in-python
+title: Python If Statements: if, elif and else Explained for Beginners
+desc: Learn Python if statements with simple examples: if, elif, else, comparison operators, and, or, not and the most common beginner mistakes.
+tags: if statements python, python if else, python elif, python conditionals, python decision making
+rel: python-for-beginners-guide
+q: How does an if statement work in Python? | Python checks a condition. If it is true, the indented block under the if runs. Otherwise it moves to elif or else.
+q: What is the difference between elif and else? | elif checks another condition if the earlier ones were false. else runs when none of the conditions were true.
+q: Why do I get an indentation error? | Python uses indentation to group code. The lines inside an if must be indented consistently, usually four spaces.
+---
+Programs make decisions. In Python, that starts with `if`.
+
+## Direct answer
+
+A Python `if` statement runs a block of code only when a condition is true. Add `elif` to test more conditions and `else` for everything else. Indentation shows which lines belong to each block.
+
+## Basic example
+
+```python
+age = 18
+
+if age >= 18:
+    print("You can vote")
+elif age >= 16:
+    print("Almost there")
+else:
+    print("Too young")
+```
+
+## Comparison operators
+
+| Operator | Meaning |
+| :--- | :--- |
+| `==` | equal to |
+| `!=` | not equal |
+| `>` `<` | greater, less than |
+| `>=` `<=` | greater or equal, less or equal |
+
+## Combining conditions
+
+```python
+if age >= 18 and has_id:
+    print("Welcome in")
+```
+
+Use `and`, `or` and `not` to combine tests.
+
+## Common mistakes
+
+- Using `=` instead of `==` in a condition.
+- Forgetting the colon at the end of the `if` line.
+- Mixing tabs and spaces for indentation.
+
+## The bottom line
+
+Condition, colon, indented block. Practise with small examples until it feels natural.
+
+=== python-virtual-environments
+title: Python Virtual Environments: What They Are and How to Use venv
+desc: A Python virtual environment keeps each project's packages separate. Learn how to create, activate and delete one with venv, and why you should use them.
+tags: python virtual environment, python venv, how to create virtual environment python, venv activate, python environment
+rel: python-pip-explained
+q: What is a Python virtual environment? | It is an isolated folder containing its own Python packages so projects do not interfere with each other.
+q: How do I create a virtual environment? | Run python -m venv .venv in your project folder, then activate it.
+q: Do I need one for every project? | It is good practice. It avoids version conflicts between projects.
+---
+Without virtual environments, every project shares the same packages, and that gets messy fast.
+
+## Direct answer
+
+A virtual environment is an isolated copy of Python tools and packages for one project. Create one with `python -m venv .venv`, activate it, then install packages with pip. Each project then has its own set of versions.
+
+## Create and activate
+
+```bash
+python -m venv .venv
+```
+
+Activate it:
+
+```bash
+# macOS and Linux
+source .venv/bin/activate
+
+# Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+```
+
+When active, your prompt usually shows `(.venv)`.
+
+## Install packages
+
+```bash
+pip install requests
+pip freeze > requirements.txt
+```
+
+## Leave and delete
+
+```bash
+deactivate
+```
+
+To delete it, remove the `.venv` folder. Your code is not affected.
+
+## Why bother
+
+- Avoids conflicts between projects needing different versions.
+- Makes sharing easy with a `requirements.txt`.
+- Keeps your system Python clean.
+
+## The bottom line
+
+One project, one environment. It saves hours of debugging later.
+
+=== python-pip-explained
+title: What Is pip in Python? How to Install and Manage Packages
+desc: pip is Python's package installer. Learn how to install, upgrade and remove packages, use requirements files and fix common pip errors.
+tags: pip, python pip, what is pip, pip install, python package manager
+rel: python-virtual-environments
+q: What is pip? | pip is the standard tool for installing Python packages from the Python Package Index.
+q: How do I install a package with pip? | Run pip install package-name in your terminal, ideally inside a virtual environment.
+q: Why does pip say command not found? | pip may not be on your PATH. Try python -m pip install package-name instead.
+---
+Python's strength is its packages, and pip is how you get them.
+
+## Direct answer
+
+pip is Python's package installer. Run `pip install name` to add a library, `pip uninstall name` to remove one and `pip list` to see what is installed. Use it inside a virtual environment to keep projects separate.
+
+## Everyday commands
+
+```bash
+pip install requests
+pip install requests==2.31.0
+pip install --upgrade requests
+pip uninstall requests
+pip list
+pip show requests
+```
+
+## Requirements files
+
+```bash
+pip freeze > requirements.txt
+pip install -r requirements.txt
+```
+
+## Common problems
+
+- **"pip is not recognised":** use `python -m pip install ...`.
+- **Permission errors:** use a virtual environment instead of installing system-wide.
+- **Wrong Python version:** check with `python --version` and `pip --version`.
+
+## The bottom line
+
+pip plus a virtual environment is the standard way to manage Python libraries. See [virtual environments](/blog/python-virtual-environments).
+
+=== common-python-errors
+title: Common Python Errors for Beginners and How to Fix Them
+desc: Understand the most common Python errors: SyntaxError, IndentationError, NameError, TypeError and more, with simple examples and fixes.
+tags: python errors, common python errors, python syntax error, python nameerror, python typeerror
+rel: python-for-beginners-guide
+q: What is a SyntaxError in Python? | It means Python cannot understand your code's structure, often because of a missing colon, bracket or quote.
+q: What does NameError mean? | You used a variable or function name that has not been defined, or you misspelled it.
+q: How do I read a Python error message? | Start at the bottom line, which names the error, then look at the line number above it.
+---
+Errors are not failures. They are Python telling you what to fix.
+
+## Direct answer
+
+Read the last line of a Python error first: it names the error type and gives a clue. Then check the line number above it. Most beginner errors are typos, missing colons, wrong indentation or using a name before defining it.
+
+## The usual suspects
+
+| Error | Typical cause | Fix |
+| :--- | :--- | :--- |
+| `SyntaxError` | Missing colon, bracket or quote | Check the line and the one before it |
+| `IndentationError` | Inconsistent indentation | Use four spaces everywhere |
+| `NameError` | Misspelled or undefined name | Define it first, check spelling |
+| `TypeError` | Wrong type, such as adding a number to text | Convert with `int()` or `str()` |
+| `IndexError` | List position does not exist | Check the list length |
+| `KeyError` | Dictionary key missing | Use `.get()` or check the key |
+| `ZeroDivisionError` | Division by zero | Check the divisor |
+
+## Example
+
+```python
+age = 25
+print("Age: " + age)  # TypeError
+print("Age: " + str(age))  # fixed
+```
+
+## A debugging habit
+
+Read the message, find the line, form a guess, fix one thing, run again.
+
+## The bottom line
+
+Every programmer sees these daily. Learning to read them is a core skill.
+
+=== python-file-handling
+title: Python File Handling: Read and Write Files With open()
+desc: Learn how to read and write text files in Python with open(), the with statement, file modes, and simple examples for common tasks.
+tags: python file handling, python read file, python write file, python open, python with open
+rel: python-for-beginners-guide
+q: How do I read a file in Python? | Use with open("file.txt") as f: and then f.read() or loop over the lines.
+q: What are the file modes? | r reads, w writes and overwrites, a appends and r+ reads and writes.
+q: Why use the with statement? | It closes the file automatically, even if an error happens.
+---
+Files let your programs remember things.
+
+## Direct answer
+
+In Python, use `open()` inside a `with` block to read or write files. Use mode `"r"` to read, `"w"` to write and overwrite, and `"a"` to append. The `with` block closes the file automatically.
+
+## Read a file
+
+```python
+with open("notes.txt", "r") as f:
+    text = f.read()
+print(text)
+```
+
+Read line by line:
+
+```python
+with open("notes.txt") as f:
+    for line in f:
+        print(line.strip())
+```
+
+## Write a file
+
+```python
+with open("out.txt", "w") as f:
+    f.write("Hello\n")
+```
+
+Use `"a"` to add to the end instead of overwriting.
+
+## File modes
+
+| Mode | Meaning |
+| :--- | :--- |
+| `r` | read (default) |
+| `w` | write, overwrites |
+| `a` | append |
+| `r+` | read and write |
+
+## Handle missing files
+
+```python
+try:
+    with open("data.txt") as f:
+        print(f.read())
+except FileNotFoundError:
+    print("File not found")
+```
+
+## The bottom line
+
+Use `with open(...)`, choose the right mode and handle the case where the file is missing.

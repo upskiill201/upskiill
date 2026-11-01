@@ -1,0 +1,103 @@
+---
+title: "What Is Responsive Web Design? Meaning, Examples and How to Do It"
+description: "Responsive web design explained: what it means, why it matters, how media queries work, responsive vs adaptive, and how to learn it with HTML and CSS."
+publishedDate: "2026-10-25"
+category: skill-building
+tags: [responsive web design, what is responsive web design, responsive web design meaning, responsive web design examples, media queries, responsive web design vs adaptive, responsive web design certification]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn responsive layouts by building one"
+  text: "Responsive Web Design with CSS teaches layouts that fit every screen, from phones to laptops. 100 short lessons, free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive CSS course"
+faq:
+  - question: "What is responsive web design?"
+    answer: "Building web pages so they adapt to the size of the screen, whether a phone, tablet or laptop, using flexible layouts, images and CSS media queries."
+  - question: "Why is responsive design important?"
+    answer: "Many people browse on phones. A responsive site is readable and usable on every screen without zooming, and search engines favour mobile-friendly pages."
+  - question: "What is a media query?"
+    answer: "A CSS rule that applies styles only when a condition is true, such as the screen being narrower than 600 pixels."
+  - question: "What is the difference between responsive and adaptive design?"
+    answer: "Responsive layouts flow smoothly at any width. Adaptive layouts switch between a few fixed layouts at set widths."
+  - question: "Is there a responsive web design certification?"
+    answer: "Several free and paid courses offer certificates. A portfolio of responsive sites you built is usually a stronger proof of skill."
+---
+
+Open any good website on your phone and then on a laptop. The page rearranges itself. That's responsive web design.
+
+## Direct answer
+
+Responsive web design means building pages that adapt to any screen size. You use flexible layouts (Flexbox and Grid), images that scale, and CSS media queries that change styles at certain widths, so one page works on phones, tablets and desktops.
+
+## Why it matters
+
+- Most people visit sites from phones.
+- One site is easier to maintain than separate mobile and desktop versions.
+- Search engines prefer mobile-friendly pages.
+- It makes pages more accessible.
+
+## The three ingredients
+
+### 1. A viewport tag
+In your HTML `<head>`:
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1">
+```
+
+### 2. Flexible layouts and images
+
+```css
+img { max-width: 100%; height: auto; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+```
+
+### 3. Media queries
+
+```css
+.menu { display: flex; flex-direction: column; }
+
+@media (min-width: 700px) {
+  .menu { flex-direction: row; }
+}
+```
+
+On small screens the menu stacks, and from 700 pixels wide it becomes a row.
+
+## Mobile-first
+
+Write styles for phones first, then add media queries for larger screens. It keeps the code simple.
+
+## Responsive vs adaptive
+
+| | Responsive | Adaptive |
+| :--- | :--- | :--- |
+| Layout | Fluid at any width | Fixed layouts for set widths |
+| Effort | Less to maintain | More versions to build |
+
+## Examples
+
+Look at news sites, blogs and online shops on your phone and desktop. Notice the menu, images and columns change.
+
+## Learn it
+
+1. Know the basics: [HTML](/blog/html-tutorial-for-beginners) and [CSS](/blog/css-tutorial-for-beginners).
+2. Learn Flexbox and Grid.
+3. Practise media queries on a real page.
+4. Test on a phone.
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course builds a multi-section site using the box model, classes, Flexbox and Grid that adapts to phones, tablets and laptops. It is free to start, with ten-minute lessons.
+
+## The bottom line
+
+Make it flexible, test on small screens first and add media queries where it breaks.
+
+## More web guides
+
+- [How to learn HTML and CSS](/blog/how-to-learn-html-and-css)
+- [CSS tutorial for beginners](/blog/css-tutorial-for-beginners)
+- [How to make a website for beginners](/blog/how-to-make-a-website-for-beginners)
+- [Responsive CSS course](/courses/responsive-web-design-with-css)

@@ -65,7 +65,7 @@ function lintLesson(
   push: (level: LintIssue['level'], message: string) => void,
 ) {
   // ── Server rules: the same checks publishing runs ──────────────────────
-  const blocks = buildContentBlocks(lesson, keys.lesson(track, level, unit, lesson));
+  const blocks = buildContentBlocks(lesson, keys.lesson(track, level, unit, lesson), track.runner);
   const state = phaseStateFromBlocks(blocks);
   for (const e of [...(state.learn?.errors ?? []), ...(state.apply?.errors ?? [])]) push('error', e);
 
@@ -74,6 +74,13 @@ function lintLesson(
     if ((ex.kind === 'mcq' || ex.kind === 'chatReply') && !ex.options[ex.answer]) push('error', `"${ex.prompt}": answer index ${ex.answer} has no option.`);
     if (ex.kind === 'findBug' && !ex.lines[ex.bug]) push('error', `"${ex.prompt}": bug index ${ex.bug} has no line.`);
     if (ex.kind === 'sortGroups' && ex.items.some((it) => !ex.groups[it.group])) push('error', `"${ex.prompt}": an item points at a group that doesn't exist.`);
+    // Two cards with the same text look identical, so the matching is ambiguous.
+    if (ex.kind === 'matchPairs') {
+      for (const side of [0, 1] as const) {
+        const texts = ex.pairs.map((p) => p[side].trim().toLowerCase());
+        if (new Set(texts).size !== texts.length) push('error', `"${ex.prompt}": two ${side ? 'right' : 'left'}-hand cards say the same thing.`);
+      }
+    }
     // The player ignores case and punctuation (blocks.ts normalizeTyped), so
     // an answer made only of symbols, like "[?]", can never be typed right.
     if (ex.kind === 'typeAnswer' && ex.answers.some((a) => !/[\p{L}\p{N}]/u.test(a))) {
@@ -82,6 +89,20 @@ function lintLesson(
   }
   for (const c of lesson.learn) {
     if (c.kind === 'check' && !c.options[c.answer]) push('error', `Quick check "${c.question}": answer index ${c.answer} has no option.`);
+    // Prompt Lab: picking exactly the goal reply's parts must bring the goal
+    // back (the player picks the most specific reply, ties to the first), and
+    // the bare prompt must not already finish it.
+    if (c.kind === 'promptLab' && c.replies[c.goal]) {
+      const replyFor = (picked: Set<number>) => {
+        let best = -1;
+        c.replies.forEach((r, i) => {
+          if (r.uses.every((u) => picked.has(u)) && (best < 0 || r.uses.length > c.replies[best].uses.length)) best = i;
+        });
+        return best;
+      };
+      if (replyFor(new Set(c.replies[c.goal].uses)) !== c.goal) push('error', `Prompt Lab "${c.task}": the goal reply can never come back.`);
+      if (c.replies[c.goal].uses.length === 0) push('error', `Prompt Lab "${c.task}": the bare prompt already reaches the goal.`);
+    }
   }
 
   // ── Structure ───────────────────────────────────────────────────────────
@@ -137,6 +158,8 @@ function lintUnit(
   issues: LintIssue[],
 ) {
   const where = `${track.slug} L${level.level} ${unit.key}`;
+  // Short courses (track.format === 'short') have 10-lesson units.
+  const unitTarget = track.format === 'short' ? 10 : 20;
   const at = (lesson?: OriginalLesson) => (lesson ? `${where} ${lesson.key} "${lesson.title}"` : where);
 
   // Playbook §8a: every unit is a story chapter, shown on the map banner.
@@ -146,8 +169,8 @@ function lintUnit(
   if (unit.marker && unit.marker.length > 24) issues.push({ level: 'warning', where, message: 'Marker is over 24 characters; it has to fit the map banner.' });
   if (unit.story && unit.story.length > 140) issues.push({ level: 'warning', where, message: 'Story line is over 140 characters; keep it to one line on the map.' });
 
-  if (unit.lessons.length < 20) {
-    issues.push({ level: 'warning', where, message: `${unit.lessons.length} lessons; a full unit has 20 or more.` });
+  if (unit.lessons.length < unitTarget) {
+    issues.push({ level: 'warning', where, message: `${unit.lessons.length} lessons; a full unit has ${unitTarget} or more.` });
   }
 
   const seen = new Set<string>();
@@ -161,7 +184,7 @@ function lintUnit(
   const milestones = unit.lessons.filter((l) => l.milestone);
   milestones.forEach((l, i) => {
     const last = i === milestones.length - 1;
-    const isComplete = unit.lessons.length >= 20;
+    const isComplete = unit.lessons.length >= unitTarget;
     if (last && isComplete && l.milestone !== 'UNIT_CHALLENGE') {
       issues.push({ level: 'error', where: at(l), message: "A unit's last Checkpoint is its Unit Challenge." });
     }
@@ -194,8 +217,11 @@ export function lintTrack(track: OriginalTrackDef): LintIssue[] {
     if (levels.has(level.level)) issues.push({ level: 'error', where, message: `Level ${level.level} appears twice.` });
     levels.add(level.level);
     if (level.units.length === 0) issues.push({ level: 'warning', where, message: 'No units written yet: nothing to load for this level.' });
-    if (level.units.length + level.upcomingUnits < 10) {
-      issues.push({ level: 'warning', where, message: `${level.units.length + level.upcomingUnits} units planned; a full level has 10–15.` });
+    const planned = level.units.length + level.upcomingUnits;
+    const fiveUnits = track.format === 'short' || track.format === 'focused';
+    if (fiveUnits ? planned < 5 : planned < 10) {
+      const target = track.format === 'short' ? 'a short course has 5' : track.format === 'focused' ? 'a focused course has 5' : 'a full level has 10–15';
+      issues.push({ level: 'warning', where, message: `${planned} units planned; ${target}.` });
     }
     // Lessons 1–5 are the free stretch; lesson 5 must be the first Checkpoint.
     const firstUnit = level.units[0];

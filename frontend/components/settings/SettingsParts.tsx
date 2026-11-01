@@ -9,7 +9,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle, Check, RefreshCw } from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import styles from './Settings.module.css';
@@ -49,12 +49,12 @@ export function Switch({
 }
 
 export function Row({
-  icon: Icon,
+  icon,
   title,
   sub,
   children,
 }: {
-  icon: React.ElementType;
+  icon: GlyphName;
   title: string;
   sub?: string;
   children?: React.ReactNode;
@@ -62,7 +62,7 @@ export function Row({
   return (
     <div className={styles.row}>
       <span className={styles.rowIcon} aria-hidden="true">
-        <Icon size={20} strokeWidth={2.5} />
+        <Glyph name={icon} size={20} strokeWidth={2.5} />
       </span>
       <span className={styles.rowText}>
         <span className={styles.rowTitle}>{title}</span>
@@ -76,10 +76,10 @@ export function Row({
 export function SectionError({ onRetry, what }: { onRetry: () => void; what: string }) {
   return (
     <div className={styles.sectionError} role="alert">
-      <AlertCircle size={20} strokeWidth={2.5} aria-hidden="true" />
+      <Glyph name="alert" size={20} strokeWidth={2.5} />
       <span>Couldn&apos;t load your {what}.</span>
       <button type="button" className={styles.linkBtn} onClick={onRetry}>
-        <RefreshCw size={14} strokeWidth={2.75} aria-hidden="true" /> Try again
+        <Glyph name="refresh" size={14} strokeWidth={2.75} /> Try again
       </button>
     </div>
   );
@@ -110,7 +110,7 @@ export function SavedTick({ show }: { show: boolean }) {
           exit={{ opacity: 0 }}
           role="status"
         >
-          <Check size={14} strokeWidth={3} aria-hidden="true" /> Saved
+          <Glyph name="check" size={14} strokeWidth={3} /> Saved
         </motion.span>
       )}
     </AnimatePresence>

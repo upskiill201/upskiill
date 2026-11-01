@@ -1,0 +1,60 @@
+{
+  "slug": "c6-like-button",
+  "account": "teyro",
+  "title": "Don't trust that red heart: what happens when you tap Like",
+  "sources": [
+    "relay.dev/docs/guided-tour/updating-data/graphql-mutations/ (Relay, (c) Meta Platforms): 'Optimistic updates': 'if a user clicks the \"Like\" button, we would like to instantly show ... liked'; 'If the mutation ends up not succeeding, we would like to roll back that optimistic update'",
+    "react.dev/reference/react/useOptimistic: 'lets you optimistically update the UI'; example setOptimisticLike(true) then await saveChanges(); failed actions roll the UI back",
+    "Nielsen, 'Response Times: The 3 Important Limits' (nngroup.com, 1993): 0.1 s feels instantaneous; 1 s keeps flow of thought; 10 s keeps attention",
+    "teyro.app: coding track (web development, mobile apps), short daily lessons, real code with instant feedback"
+  ],
+  "voice": "cgSgspJ2msm6clMCkdW9",
+  "model": "eleven_multilingual_v2",
+  "fps": 30,
+  "lines": [
+    {
+      "id": "h1",
+      "text": "Don't trust that red heart. | It's *lying* to you."
+    },
+    {
+      "id": "h2",
+      "text": "Here's what really happens | in the *first second* after you tap."
+    },
+    {
+      "id": "i1",
+      "text": "First, at *zero* milliseconds, | the heart turns red | before your phone has even *asked* the server."
+    },
+    {
+      "id": "i2",
+      "text": "Second, a tiny message leaves your phone, | saying *like this post,* | and travels to the server | while you're already *scrolling.*"
+    },
+    {
+      "id": "i3",
+      "text": "Third, if that message fails, | say you lose signal, | the app quietly *rolls it back,* | or tries again later."
+    },
+    {
+      "id": "i4",
+      "text": "And finally, why? | Research says a *tenth of a second* feels *instant,* | and a trip to the server can take longer. | So the app *guesses* you'll succeed."
+    },
+    {
+      "id": "s1",
+      "text": "The full rule has *three* numbers. | A tenth of a second feels instant, | *one* second keeps your flow, | and after *ten* seconds, | people stop paying *attention.*"
+    },
+    {
+      "id": "n1",
+      "text": "It's called *optimistic UI,* | and Meta's own developer docs | use the *Like* button as the example."
+    },
+    {
+      "id": "t1",
+      "text": "Try it. | Turn on *airplane mode,* | tap Like, | and watch what *your* app does."
+    },
+    {
+      "id": "c1",
+      "text": "If you want to build apps that feel this fast, | the app I learn on is in my *bio.*"
+    },
+    {
+      "id": "c2",
+      "text": "It's called *Teyro.*"
+    }
+  ]
+}

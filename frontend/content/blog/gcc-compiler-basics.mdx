@@ -1,0 +1,73 @@
+---
+title: "How to Compile C Programs With GCC: Commands and Flags"
+description: "Learn how to compile a C program with GCC: basic commands, useful warning flags, multiple files, debugging symbols and what the compile stages do."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [compiler gcc, gcc basics, how to compile c program, gcc flags, gcc wall]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "C for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/c-for-beginners
+  label: "See the C for Beginners course"
+faq:
+  - question: "How do I compile a C program?"
+    answer: "Run gcc file.c -o program, then run the program."
+  - question: "What does -Wall do?"
+    answer: "It turns on a broad set of helpful warnings."
+  - question: "How do I compile several files?"
+    answer: "List them all in one gcc command, or compile each to an object file and link them."
+---
+
+The compiler turns your text into a program.
+
+## Direct answer
+
+Compile a C file with `gcc main.c -o app` and run it with `./app`. Add `-Wall -Wextra` to see warnings, `-g` to include debugging information and list multiple files to compile them together.
+
+## Common commands
+
+```bash
+gcc main.c -o app
+gcc -Wall -Wextra -g main.c -o app
+gcc main.c utils.c -o app
+./app
+```
+
+## Useful flags
+
+| Flag | Meaning |
+| :--- | :--- |
+| `-Wall -Wextra` | more warnings |
+| `-g` | debugging info |
+| `-O2` | optimise |
+| `-std=c11` | choose the language standard |
+| `-fsanitize=address` | catch memory errors |
+
+## What happens during compile
+
+1. **Preprocessing:** handles `#include` and `#define`.
+2. **Compiling:** turns C into assembly.
+3. **Assembling:** creates object files.
+4. **Linking:** joins objects and libraries.
+
+## Windows
+
+Install MinGW-w64 or use WSL to get GCC.
+
+## Where Teyro fits
+
+Teyro's [C for Beginners](/courses/c-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 78 lessons, and you can start free.
+
+## The bottom line
+
+Always compile with warnings on and read them.
+
+## More guides
+
+- [Segmentation Fault in C](/blog/segmentation-fault-c)
+- [Data Types in C](/blog/c-data-types)
+- [printf and scanf in C](/blog/printf-and-scanf-in-c)
+- [Learn c programming for beginners](/blog/learn-c-programming-for-beginners)
+- [C for Beginners course](/courses/c-for-beginners)

@@ -1,0 +1,180 @@
+=== leadership-styles-explained
+title: Leadership Styles Explained: 6 Types and When Each Works Best
+desc: Six leadership styles explained with examples: authoritative, democratic, coaching, pacesetting, affiliative and servant, and how to choose for the situation.
+tags: leadership styles, types of leadership, leadership styles examples, which leadership style is best, situational leadership styles
+rel: leadership-styles-for-beginners, new-manager-tips
+q: What are the main leadership styles? | Common ones include authoritative, democratic, coaching, pacesetting, affiliative and servant leadership.
+q: Which leadership style is best? | There is no single best style. Effective leaders adapt to the situation and people.
+q: How do I find my style? | Reflect on your strengths, ask for feedback and experiment.
+---
+Good leaders flex their style.
+
+## Direct answer
+
+Common leadership styles include authoritative (sets direction), democratic (seeks input), coaching (develops people), pacesetting (leads by high standards), affiliative (builds harmony) and servant (puts the team first). The best leaders choose the style to fit the situation and the people.
+
+## Quick guide
+
+| Style | Works well when | Risk |
+| :--- | :--- | :--- |
+| Authoritative | a clear vision is needed | can feel top-down |
+| Democratic | you need buy-in | slow decisions |
+| Coaching | developing people | takes time |
+| Pacesetting | skilled, motivated team | burnout |
+| Affiliative | repairing trust | avoids hard feedback |
+| Servant | building long-term teams | may be slow in a crisis |
+
+## How to adapt
+
+1. Read the situation: urgency, skill and trust.
+2. Ask what the team needs.
+3. Change style when circumstances change.
+
+## The bottom line
+
+Learn several styles and use the right one at the right time.
+
+=== transformational-leadership
+title: Transformational Leadership: Meaning, Traits and Examples
+desc: Transformational leaders inspire people toward a shared vision. Learn the four components, examples, strengths, limits and how to practise it.
+tags: transformational leadership, what is transformational leadership, transformational leader traits, leadership vision, inspiring leadership
+rel: leadership-styles-explained
+q: What is transformational leadership? | A style in which leaders inspire and motivate people to exceed expectations by sharing a compelling vision and supporting growth.
+q: What are its four components? | Inspirational motivation, idealised influence, intellectual stimulation and individual consideration.
+q: What are the downsides? | It can neglect details and processes, and depends on the leader's energy.
+---
+Leaders who change how people see what is possible.
+
+## Direct answer
+
+Transformational leadership inspires people with a shared vision, models integrity, encourages new thinking and supports individuals' growth. It is effective in times of change, but works best with attention to detail, process and wellbeing.
+
+## Four components
+
+1. **Inspirational motivation:** a clear, exciting vision.
+2. **Idealised influence:** being a role model.
+3. **Intellectual stimulation:** challenging assumptions.
+4. **Individual consideration:** coaching and caring about people.
+
+## How to practise
+
+- Explain the why behind goals.
+- Invite ideas and challenge respectfully.
+- Coach people individually.
+- Match words with actions.
+
+## Limits
+
+Vision needs execution. Pair it with clear plans and accountability.
+
+## The bottom line
+
+Inspire, support and deliver.
+
+=== situational-leadership
+title: Situational Leadership: How to Match Your Style to the Person and Task
+desc: Situational leadership adapts style to a person's skill and confidence on a task. Learn the four styles, how to diagnose development level and examples.
+tags: situational leadership, situational leadership model, hersey blanchard, adapt leadership style, directing coaching supporting delegating
+rel: leadership-styles-explained
+q: What is situational leadership? | A model that says leaders should adjust their style based on the follower's competence and commitment for a specific task.
+q: What are the four styles? | Directing, coaching, supporting and delegating.
+q: Does the same person always need the same style? | No. A person may need direction on a new task and delegation on a familiar one.
+---
+One size does not fit all, even for the same person.
+
+## Direct answer
+
+Situational leadership says to match your style to the person's readiness for the specific task. Use directing for beginners, coaching for developing people, supporting for capable but unsure people and delegating for skilled, confident people.
+
+## The four styles
+
+| Readiness | Style | What you do |
+| :--- | :--- | :--- |
+| New, enthusiastic | directing | give clear instructions |
+| Learning, some doubts | coaching | explain and encourage |
+| Capable, variable confidence | supporting | listen and build confidence |
+| Skilled and confident | delegating | give ownership |
+
+## How to use it
+
+1. Think of a task and a person.
+2. Assess skill and confidence for that task.
+3. Choose the style.
+4. Adjust as they grow.
+
+## The bottom line
+
+Meet people where they are, then help them move on.
+
+=== leader-vs-manager
+title: Leader vs Manager: What's the Difference and Do You Need Both?
+desc: Managers organise work and leaders inspire direction. Compare leader vs manager roles, skills and examples, and learn how to develop both sides.
+tags: leader vs manager, difference between leader and manager, leadership vs management, manager vs leader skills, be a better manager
+rel: leadership-for-beginners-guide, new-manager-tips
+q: What is the difference between a leader and a manager? | Managers plan, organise and control work. Leaders set direction and inspire people. Good managers often do both.
+q: Can someone be a leader without being a manager? | Yes. Leadership is influence, not a title.
+q: Which is more important? | Both matter. Organisations need direction and organisation.
+---
+You can manage tasks, but you lead people.
+
+## Direct answer
+
+Management is about organising work: planning, budgeting, tracking and solving problems. Leadership is about direction and influence: setting a vision, inspiring and developing people. Most roles need both, in different proportions.
+
+## Comparison
+
+| | Manager | Leader |
+| :--- | :--- | :--- |
+| Focus | tasks and systems | people and direction |
+| Asks | how and when? | what and why? |
+| Tools | plans, processes | vision, trust |
+| Authority | position | influence |
+
+## Building both
+
+**Management skills:** planning, delegation, prioritising, meetings.
+**Leadership skills:** communication, coaching, vision, integrity.
+
+## The bottom line
+
+Great teams need clear direction and good organisation.
+
+=== one-on-one-meetings
+title: One-on-One Meetings: How to Run Them and What to Ask
+desc: One-on-ones build trust and catch problems early. Learn how often to hold them, a simple agenda, great questions and mistakes to avoid.
+tags: 1 on 1 meetings, one on one meetings, how to run a 1 on 1, 1 on 1 questions, manager one to ones
+rel: new-manager-tips, feedback-culture
+q: How often should I hold one-on-ones? | Often weekly or every two weeks, for 30 minutes.
+q: Whose meeting is it? | The employee's. They should set much of the agenda.
+q: What should we discuss? | Wellbeing, progress, obstacles, feedback and development.
+---
+The best management tool is a regular conversation.
+
+## Direct answer
+
+A one-on-one is a regular private meeting between a manager and a team member. Hold it weekly or fortnightly for about 30 minutes, let the employee lead the agenda, ask open questions, give feedback and note actions. Do not cancel it casually.
+
+## A simple agenda
+
+1. **How are you?** (5 minutes)
+2. **Their topics.** (10 minutes)
+3. **Progress and blockers.** (10 minutes)
+4. **Feedback both ways.** (5 minutes)
+5. **Agree actions.**
+
+## Good questions
+
+- What is going well?
+- What is getting in your way?
+- What would you like more or less of from me?
+- What do you want to learn next?
+
+## Mistakes
+
+- Using it only for status updates.
+- Cancelling often.
+- Talking more than listening.
+
+## The bottom line
+
+Regular, protected time shows people they matter.

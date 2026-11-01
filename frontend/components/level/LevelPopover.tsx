@@ -8,7 +8,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Lock } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { useGamification } from '@/context/GamificationContext';
 import { prefetchCatalog } from '@/lib/shop/previewCache';
 import type { ShopItem } from '@/lib/shop/types';
@@ -86,7 +86,7 @@ export default function LevelPopover({ onClose }: LevelPopoverProps) {
             <span className={styles.infoText}>
               <span className={styles.infoTitle}>{nextUnlock.name}</span>
               <span className={styles.infoSub}>
-                <Lock size={12} strokeWidth={2.75} aria-hidden />
+                <Glyph name="lock" size={12} strokeWidth={2.75} />
                 Unlocks at Level {nextUnlock.unlock.target}
               </span>
             </span>

@@ -49,11 +49,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does import this do?',
         options: [
-          { text: 'Prints the Zen of Python' },
           { text: 'Imports the whole internet', why: 'It prints Python\'s guiding principles.' },
           { text: 'Shows an error', why: 'It is a real, built-in module.' },
+          { text: 'Prints the Zen of Python' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which version is more readable?',
         options: [
-          { text: '# Each member pays 20000\nprint("Pot:", 20000 * 10)' },
           { text: 'print(20000*10)', why: 'Works, but a reader has no idea what the numbers mean.' },
+          { text: '# Each member pays 20000\nprint("Pot:", 20000 * 10)' },
           { text: 'print( 20000*10 )#x', why: 'Odd spacing and a meaningless comment.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         message: 'My one-line version is shorter. Why rewrite it?',
         prompt: 'What would the Zen of Python say?',
         options: [
-          { text: 'Readability counts. Shorter is only better if it is still easy to read.' },
           { text: 'Shorter is always better.', why: 'Not if nobody can read it.' },
           { text: 'Longer is always better.', why: 'Simple is better than complex. Long is not the goal either.' },
+          { text: 'Readability counts. Shorter is only better if it is still easy to read.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

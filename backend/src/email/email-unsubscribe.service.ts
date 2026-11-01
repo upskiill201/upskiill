@@ -10,7 +10,8 @@ export type UnsubscribeScope =
   | 'LEAGUE'
   | 'REENGAGEMENT'
   | 'CREATOR_DIGEST'
-  | 'LEARNING';
+  | 'LEARNING'
+  | 'COMMUNITY';
 
 interface UnsubscribeTokenPayload {
   userId: string;

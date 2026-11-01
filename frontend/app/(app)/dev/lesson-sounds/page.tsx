@@ -17,6 +17,31 @@ import { createStudio } from '@/lib/audio/studio';
 
 const GROUPS: { title: string; cues: { cue: LessonSound; n?: number; label: string }[] }[] = [
   {
+    title: 'The lesson journey (2026-10 rebuild)',
+    cues: [
+      { cue: 'lessonStart', label: 'Start lesson' },
+      { cue: 'phaseGate', n: 1, label: 'Gate: into Apply' },
+      { cue: 'phaseGate', n: 2, label: 'Gate: into Reflect' },
+      { cue: 'comboBurst', n: 3, label: 'Combo: Heating up (3)' },
+      { cue: 'comboBurst', n: 5, label: 'Combo: On fire (5)' },
+      { cue: 'comboBurst', n: 7, label: 'Combo: Blazing (7)' },
+      { cue: 'comboBurst', n: 10, label: 'Combo: Unstoppable (10)' },
+      { cue: 'comboBurst', n: 15, label: 'Combo: Legendary (15)' },
+      { cue: 'comboBreak', label: 'Run ended' },
+      { cue: 'newBestRun', label: 'New best run' },
+      { cue: 'hint', label: 'Hint' },
+      { cue: 'skip', label: 'Skip' },
+      { cue: 'lessonComplete', n: 1, label: 'Finish: 1st today' },
+      { cue: 'lessonComplete', n: 2, label: 'Finish: 2nd today' },
+      { cue: 'lessonComplete', n: 3, label: 'Finish: 3rd today / perfect' },
+      { cue: 'lessonComplete', n: 4, label: 'Finish: chapter end / marathon' },
+      { cue: 'sessionLink', n: 2, label: "Today's chain link" },
+      { cue: 'bonusTally', n: 0, label: 'Bonus XP lands' },
+      { cue: 'nodeStamp', label: 'Chapter map: lesson stamped' },
+      { cue: 'upNext', label: 'Up next teaser' },
+    ],
+  },
+  {
     title: 'The path',
     cues: [
       { cue: 'arrive', label: 'Arrive on home' },

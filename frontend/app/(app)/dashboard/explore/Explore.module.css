@@ -1,5 +1,5 @@
-/* Explore — Duolingo's "add a course" screen. Tokens only
-   (docs/08-color-system.md). */
+/* Explore — topics, not product cards. Flat (hairlines, soft tints, no
+   chunky 3D edges), tokens only (docs/08-color-system.md). */
 
 .page {
   display: flex;
@@ -13,14 +13,15 @@
 
 .main {
   width: 100%;
-  max-width: 720px;
+  max-width: 680px;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 32px;
 }
 
-/* ─── Header ───────────────────────────────────────────────────────────── */
+/* ── Header ── */
+
 .title {
   margin: 0;
   font-size: 30px;
@@ -35,54 +36,49 @@
   color: var(--text-secondary);
 }
 
-/* ─── Search + filters ─────────────────────────────────────────────────── */
+/* ── Search + filters ── */
+
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .search {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 56px;
-  padding: 0 12px 0 16px;
-  border: 2px solid var(--border);
-  border-radius: 16px;
-  background: var(--bg-section);
-  transition: border-color 0.15s ease, background 0.15s ease;
-}
-
-.search:focus-within {
-  border-color: var(--color-brand);
-  background: var(--bg-card);
 }
 
 .searchIcon {
-  flex-shrink: 0;
+  position: absolute;
+  left: 16px;
   color: var(--text-muted);
-}
-
-.search:focus-within .searchIcon {
-  color: var(--color-brand);
+  pointer-events: none;
 }
 
 .searchInput {
-  flex: 1;
-  min-width: 0;
-  border: none;
-  outline: none;
-  background: transparent;
-  font: inherit;
-  font-size: 16px;
-  font-weight: 700;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 48px 0 44px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-card);
   color: var(--color-ink);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .searchInput::placeholder {
   color: var(--text-muted);
-  font-weight: 600;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 15%, transparent);
 }
 
 .searchInput::-webkit-search-cancel-button {
@@ -90,57 +86,53 @@
 }
 
 .searchClear {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
+  position: absolute;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   border: none;
   border-radius: 999px;
-  background: var(--border-strong);
-  color: var(--bg-card);
+  background: var(--bg-section);
+  color: var(--text-secondary);
   cursor: pointer;
 }
 
-/* Category chips scroll sideways on phones; they wrap on desktop. */
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 44px;
-  padding: 0 16px;
-  border: 2px solid var(--border);
-  border-bottom-width: 4px;
-  border-radius: 14px;
+  min-height: 36px;
+  padding: 0 16px 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
   background: var(--bg-card);
   color: var(--text-secondary);
-  font: inherit;
+  font-family: inherit;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
-  transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
 }
 
 .chip:hover {
-  background: var(--bg-section);
-}
-
-.chip:active {
-  transform: translateY(2px);
-  border-bottom-width: 2px;
+  border-color: color-mix(in srgb, var(--color-brand) 40%, var(--border));
+  color: var(--color-ink);
 }
 
 .chipOn,
 .chipOn:hover {
-  border-color: color-mix(in srgb, var(--color-brand) 55%, var(--bg-card));
-  background: color-mix(in srgb, var(--color-brand) 10%, var(--bg-card));
+  border-color: transparent;
+  background: color-mix(in srgb, var(--color-brand) 12%, var(--bg-card));
   color: var(--color-brand);
 }
 
@@ -149,395 +141,223 @@
   align-self: flex-start;
   gap: 4px;
   padding: 4px;
-  border: 2px solid var(--border);
-  border-radius: 14px;
+  border-radius: 12px;
   background: var(--bg-section);
 }
 
 .level {
-  min-height: 36px;
-  padding: 0 14px;
+  min-height: 32px;
+  padding: 0 16px;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   background: transparent;
-  color: var(--text-muted);
-  font: inherit;
+  color: var(--text-secondary);
+  font-family: inherit;
   font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
 }
 
 .level:hover {
-  color: var(--text-secondary);
+  color: var(--color-ink);
 }
 
 .levelOn,
 .levelOn:hover {
   background: var(--bg-card);
-  color: var(--color-brand);
-  box-shadow: 0 2px 0 var(--border);
-}
-
-/* ─── Section heads ────────────────────────────────────────────────────── */
-.sectionHead {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.sectionTitle {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 800;
   color: var(--color-ink);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--color-ink) 10%, transparent);
 }
 
-.textBtn {
-  padding: 4px 8px;
-  border: none;
-  background: none;
-  color: var(--color-brand);
-  font: inherit;
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
+/* ── Groups ── */
 
-/* ─── Cover (components/course/CourseCover) — sized here ──────────────── */
-.cover {
-  width: 100%;
-  aspect-ratio: 16 / 10;
-}
-
-/* ─── Meta row ─────────────────────────────────────────────────────────── */
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 12px;
-  margin-bottom: 8px;
-}
-
-.metaItem {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-muted);
-  white-space: nowrap;
-}
-
-.rating {
-  color: var(--warning);
-}
-
-/* ─── Featured ─────────────────────────────────────────────────────────── */
-.featured {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  overflow: hidden;
-  border: 2px solid var(--border);
-  border-bottom-width: 4px;
-  border-radius: 24px;
-  background: var(--bg-card);
-}
-
-.featuredCoverBtn {
-  display: block;
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-
-.featuredCoverBtn .cover {
-  height: 100%;
-  aspect-ratio: auto;
-  min-height: 220px;
-}
-
-.featuredBody {
+.group {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 24px;
-  min-width: 0;
 }
 
-.eyebrow {
+.groupHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.groupTitle {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-brand);
-}
-
-.featuredTitle {
+  gap: 12px;
   margin: 0;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 800;
-  line-height: 1.2;
   color: var(--color-ink);
 }
 
-.featuredDesc {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.5;
-  color: var(--text-secondary);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.featuredActions {
-  display: flex;
+.groupArt {
+  display: inline-flex;
   align-items: center;
-  gap: 14px;
-  margin-top: auto;
-  padding-top: 12px;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
 }
 
-.priceTag {
+.groupCount {
   font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--brand-purple);
+  font-weight: 700;
+  color: var(--text-muted);
 }
 
-.priceFree {
-  color: var(--success-green);
-}
-
-/* ─── Buttons ──────────────────────────────────────────────────────────── */
-.primaryBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  padding: 0 24px;
+.textBtn {
   border: none;
-  border-radius: 16px;
-  background: var(--success-green);
-  box-shadow: 0 4px 0 color-mix(in srgb, var(--success-green) 72%, black);
-  color: var(--bg-page);
-  font: inherit;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.primaryBtn:active {
-  transform: translateY(4px);
-  box-shadow: none;
-}
-
-.ghostBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  padding: 0 20px;
-  border: 2px solid var(--border);
-  border-bottom-width: 4px;
-  border-radius: 16px;
-  background: var(--bg-card);
+  background: none;
+  padding: 0;
   color: var(--color-brand);
-  font: inherit;
+  font-family: inherit;
   font-size: 14px;
   font-weight: 800;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
   cursor: pointer;
 }
 
-.ghostBtn:active {
-  transform: translateY(2px);
-  border-bottom-width: 2px;
-}
+/* ── Topic rows ── */
 
-/* ─── Course cards ─────────────────────────────────────────────────────── */
-.grid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 16px;
-}
-
-.card {
-  position: relative;
+.list {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  border: 2px solid var(--border);
-  border-bottom-width: 4px;
-  border-radius: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: 16px;
   background: var(--bg-card);
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  overflow: hidden;
 }
 
-.card:hover {
-  border-color: var(--border-strong);
-  transform: translateY(-2px);
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 72px;
+  padding: 12px 16px;
+  transition: background 150ms ease;
 }
 
-/* The whole card is one button; the byline and CONTINUE sit above it. */
-.cardHit {
+.row + .row {
+  border-top: 1px solid var(--border);
+}
+
+.row:hover {
+  background: var(--bg-section);
+}
+
+/* The whole row opens the course; the Continue button sits above it. */
+.rowHit {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 0;
   border: none;
   background: transparent;
   cursor: pointer;
 }
 
-.cardHit:focus-visible {
-  outline: 3px solid var(--color-brand);
-  outline-offset: -3px;
-  border-radius: 18px;
+.rowHit:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: -2px;
+  border-radius: inherit;
 }
 
-.card:hover .cardTitle {
-  color: var(--color-brand);
-}
-
-.tags {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  display: flex;
-  gap: 6px;
+.tile {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   pointer-events: none;
 }
 
-.tag {
-  display: inline-flex;
-  align-items: center;
+.tintBlue {
+  background: color-mix(in srgb, var(--color-brand) 12%, var(--bg-card));
+}
+
+.tintGreen {
+  background: color-mix(in srgb, var(--success-green) 14%, var(--bg-card));
+}
+
+.tintAmber {
+  background: color-mix(in srgb, var(--warning) 16%, var(--bg-card));
+}
+
+.tintRose {
+  background: color-mix(in srgb, var(--error-red) 11%, var(--bg-card));
+}
+
+.tintSky {
+  background: color-mix(in srgb, var(--color-brand) 6%, color-mix(in srgb, var(--success-green) 8%, var(--bg-card)));
+}
+
+.rowText {
+  position: relative;
+  display: flex;
+  flex-direction: column;
   gap: 4px;
-  padding: 4px 9px;
-  border-radius: 8px;
-  background: var(--bg-card);
-  box-shadow: 0 2px 0 color-mix(in srgb, var(--ink-fixed) 18%, transparent);
-  color: var(--brand-purple);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  flex: 1;
+  min-width: 0;
+  pointer-events: none;
 }
 
-.tagFree {
-  color: var(--success-green);
-}
-
-.tagOriginal {
-  background: var(--brand-purple);
-  color: var(--bg-card);
-}
-
-.originals {
-  margin-bottom: 32px;
-}
-
-.originalsTitle {
+.rowName {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: var(--brand-purple);
-}
-
-.originalsNote {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-secondary);
-}
-
-.tagAdded {
-  background: var(--success-green);
-  color: var(--bg-card);
-}
-
-.cardBody {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 14px 16px 16px;
   min-width: 0;
-}
-
-.cardCategory {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--color-ink);
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.cardTitle {
-  font-size: 17px;
-  font-weight: 800;
-  line-height: 1.3;
-  color: var(--color-ink);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  transition: color 0.15s ease;
+.original {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--warning) 18%, var(--bg-card));
+  color: color-mix(in srgb, var(--warning) 70%, var(--error-red));
 }
 
-.byline {
+.rowSub {
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-secondary);
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
-.bylineLink {
-  position: relative;
-  z-index: 2;
-  color: var(--text-secondary);
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.bylineLink:hover {
-  color: var(--color-brand);
-  text-decoration: underline;
-}
-
-.cardProgress {
+.rowProgress {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .track {
   flex: 1;
-  height: 12px;
+  max-width: 160px;
+  height: 6px;
   border-radius: 999px;
   background: var(--bg-section);
   overflow: hidden;
@@ -547,65 +367,57 @@
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: var(--warning);
-  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--warning) 75%, black 10%);
-}
-
-.progressText {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--text-muted);
-  white-space: nowrap;
-}
-
-.cardBtn {
-  position: relative;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 42px;
-  margin-top: auto;
-  border: 2px solid var(--border);
-  border-bottom-width: 4px;
-  border-radius: 14px;
-  background: var(--bg-card);
-  color: var(--color-brand);
-  font: inherit;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.cardBtn:active {
-  transform: translateY(2px);
-  border-bottom-width: 2px;
-}
-
-.cardBtnContinue {
-  border: none;
   background: var(--success-green);
-  box-shadow: 0 4px 0 color-mix(in srgb, var(--success-green) 72%, black);
+}
+
+.continueBtn {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  min-height: 36px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-brand);
   color: var(--bg-page);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: filter 150ms ease, transform 100ms ease;
 }
 
-.cardBtnContinue:active {
-  transform: translateY(4px);
-  box-shadow: none;
+.continueBtn:hover {
+  filter: brightness(1.08);
 }
 
-/* ─── States ───────────────────────────────────────────────────────────── */
+.continueBtn:active {
+  transform: scale(0.97);
+}
+
+.chev {
+  position: relative;
+  flex: none;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: transform 150ms ease, color 150ms ease;
+}
+
+.row:hover .chev {
+  color: var(--color-brand);
+  transform: translateX(2px);
+}
+
+/* ── States ── */
+
 .stateBox {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 40px 24px;
-  border: 2px solid var(--border);
-  border-radius: 24px;
+  gap: 8px;
+  padding: 48px 24px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
   background: var(--bg-card);
   text-align: center;
 }
@@ -615,184 +427,147 @@
 }
 
 .stateTitle {
-  margin: 0;
-  font-size: 22px;
+  margin: 8px 0 0;
+  font-size: 18px;
   font-weight: 800;
   color: var(--color-ink);
 }
 
 .stateText {
-  margin: 0 0 8px;
-  font-size: 15px;
-  font-weight: 600;
+  margin: 0;
+  max-width: 360px;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--text-secondary);
 }
 
-.skeletonCard {
+.primaryBtn,
+.ghostBtn {
+  margin-top: 8px;
+  min-height: 40px;
+  padding: 0 20px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.primaryBtn {
+  border: none;
+  background: var(--color-brand);
+  color: var(--bg-page);
+}
+
+.ghostBtn {
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--color-ink);
+}
+
+.skelRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 72px;
+  padding: 12px 16px;
+}
+
+.skelRow + .skelRow {
+  border-top: 1px solid var(--border);
+}
+
+.skelTile,
+.skelLine {
+  display: block;
+  background: linear-gradient(90deg, var(--bg-section) 25%, var(--border) 50%, var(--bg-section) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+.skelTile {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+}
+
+.skelLines {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding-bottom: 16px;
-  overflow: hidden;
-  border: 2px solid var(--border);
-  border-radius: 20px;
+  gap: 8px;
+  flex: 1;
 }
 
-.skeletonCover,
-.skeletonLine {
-  background: var(--bg-section);
-  animation: pulse 1.2s ease-in-out infinite;
+.skelLine {
+  height: 12px;
+  border-radius: 999px;
 }
 
-.skeletonCover {
-  aspect-ratio: 16 / 10;
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
 }
 
-.skeletonLine {
-  height: 14px;
-  margin: 0 16px;
-  border-radius: 8px;
-}
+/* ── Responsive ── */
 
-.skeletonShort {
-  width: 55%;
-}
-
-@keyframes pulse {
-  50% { opacity: 0.55; }
-}
-
-/* ─── Responsive ───────────────────────────────────────────────────────── */
 @media (max-width: 1100px) {
   .main {
     max-width: 880px;
   }
 }
 
-@media (max-width: 700px) {
-  .featured {
-    grid-template-columns: 1fr;
-  }
-  .featuredCoverBtn .cover {
-    min-height: 0;
-    aspect-ratio: 16 / 9;
-  }
-  .featuredBody {
-    padding: 18px 16px 20px;
-  }
-  .featuredTitle {
-    font-size: 21px;
-  }
-  .featuredActions .primaryBtn {
-    flex: 1;
-  }
-}
-
-/* Phones: chips scroll edge to edge, and cards become Duolingo-style rows. */
+/* Phones: chips scroll edge to edge. */
 @media (max-width: 600px) {
   .main {
-    gap: 22px;
+    gap: 24px;
   }
+
   .title {
     font-size: 26px;
   }
+
   .chips {
     flex-wrap: nowrap;
     overflow-x: auto;
-    margin: 0 -14px;
-    padding: 0 14px 4px;
+    margin: 0 -16px;
+    padding: 0 16px;
     scrollbar-width: none;
   }
-  .chips::-webkit-scrollbar {
-    display: none;
-  }
-  /* Sentence case fits all four levels on a 360px phone; it scrolls if a
-     creator adds more. */
-  .levels {
-    align-self: stretch;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
+
+  .chips::-webkit-scrollbar,
   .levels::-webkit-scrollbar {
     display: none;
   }
-  .level {
-    flex: 1 0 auto;
-    padding: 0 10px;
-    font-size: 13px;
-    letter-spacing: 0;
-    text-transform: none;
+
+  .levels {
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
 
-  .grid {
-    grid-template-columns: 1fr;
+  .level {
+    padding: 0 12px;
+  }
+
+  .row {
     gap: 12px;
+    padding: 12px;
   }
-  .card {
-    flex-direction: row;
-    align-items: stretch;
-  }
-  .card:hover {
-    transform: none;
-  }
-  .card > .cover {
-    width: 104px;
-    flex-shrink: 0;
-    aspect-ratio: auto;
-  }
-  .card .cover svg {
-    width: 30px;
-    height: 30px;
-  }
-  .tags {
-    top: 8px;
-    left: 8px;
-  }
-  .tag {
-    padding: 3px 7px;
-    font-size: 10px;
-  }
-  .cardBody {
-    padding: 12px 14px 14px;
-    gap: 4px;
-  }
-  .cardTitle {
-    font-size: 16px;
-  }
-  /* The row itself is the "view" tap; only CONTINUE keeps a button. */
-  .cardBtn:not(.cardBtnContinue) {
-    display: none;
-  }
-  .cardBtnContinue {
-    margin-top: 10px;
-    min-height: 40px;
-  }
-  .skeletonCard {
-    flex-direction: row;
-    padding: 0;
-    height: 112px;
-  }
-  .skeletonCover {
-    width: 104px;
-    aspect-ratio: auto;
-  }
-  .skeletonLine {
-    margin: 16px 16px 0 0;
-    flex: 1;
-  }
-  .skeletonShort {
-    display: none;
+
+  .continueBtn {
+    padding: 0 12px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .skeletonCover,
-  .skeletonLine {
+  .skelTile,
+  .skelLine {
     animation: none;
   }
-  .card,
-  .card:hover {
+
+  .row:hover .chev {
     transform: none;
-    transition: none;
   }
 }

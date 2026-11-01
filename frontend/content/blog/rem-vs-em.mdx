@@ -1,0 +1,70 @@
+---
+title: "rem vs em in CSS: The Difference and When to Use Each"
+description: "rem is relative to the root font size and em to the parent. Learn how they compound, examples and a simple rule for choosing between them."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [rem vs em, css rem, css em, rem and em units, relative units css]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Responsive Web Design with CSS turns this into short, playable lessons. Free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive Web Design with CSS course"
+faq:
+  - question: "What is the difference between rem and em?"
+    answer: "rem is relative to the root element's font size. em is relative to the current element's font size, which can compound when nested."
+  - question: "Which should I use for font sizes?"
+    answer: "rem is predictable. Use em when you want spacing to scale with a component's text size."
+  - question: "Why do em units get confusing?"
+    answer: "Because nested elements multiply, so a 1.2em inside another 1.2em becomes larger than expected."
+---
+
+Both scale with text size, but from different starting points.
+
+## Direct answer
+
+`rem` is based on the root (`html`) font size, so it is consistent everywhere. `em` is based on the element's own font size, so nested elements can compound. Use `rem` for most sizing and `em` for things that should scale with their own text, such as button padding.
+
+## Example
+
+```css
+html { font-size: 100%; }     /* 16px by default */
+
+h1 { font-size: 2rem; }       /* 32px */
+
+.button {
+  font-size: 1rem;
+  padding: 0.5em 1em;         /* scales with the button's text */
+}
+```
+
+## The compounding trap
+
+```css
+ul { font-size: 1.2em; }
+ul ul { font-size: 1.2em; }   /* now 1.44 times the base */
+```
+
+## Rule of thumb
+
+| Use | For |
+| :--- | :--- |
+| `rem` | font sizes, spacing, layout |
+| `em` | component padding that follows its text |
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Default to `rem`, reach for `em` on purpose.
+
+## More guides
+
+- [Responsive Tables](/blog/responsive-tables-css)
+- [CSS aspect-ratio](/blog/css-aspect-ratio)
+- [5 CSS Grid Layout Patterns Every Beginner Should Know](/blog/css-grid-layout-patterns)
+- [Css units rem em px](/blog/css-units-rem-em-px)
+- [Responsive Web Design with CSS course](/courses/responsive-web-design-with-css)

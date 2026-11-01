@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         code: 'print("Share:", 30000 / 10)',
         language: 'python',
         options: [
-          { text: 'Share: 3000.0' },
           { text: 'Share: 3000', why: '/ gives a decimal, so there is a .0.' },
           { text: 'Share:3000.0', why: 'The comma adds a space.' },
+          { text: 'Share: 3000.0' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         code: 'print("A")\n# print("B")\nprint()\nprint("C")',
         language: 'python',
         options: [
-          { text: '3' },
           { text: '4', why: 'The commented line prints nothing.' },
+          { text: '3' },
           { text: '2', why: 'print() prints an empty line, which counts.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'You predicted wrong. What is the best thing to do?',
         options: [
-          { text: 'Work out which line surprised you and why: that is the thing to learn' },
           { text: 'Ignore it and move on', why: 'A wrong prediction points straight at a gap.' },
           { text: 'Stop predicting', why: 'Predicting is what makes the learning stick.' },
+          { text: 'Work out which line surprised you and why: that is the thing to learn' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',

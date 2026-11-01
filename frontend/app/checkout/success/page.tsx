@@ -1,50 +1,10 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import React from 'react';
-import Link from 'next/link';
-import { CheckCircle2, BookOpen, LayoutDashboard } from 'lucide-react';
-import Button from '../../../components/ui/Button';
-
-export default function CheckoutSuccessPage() {
-  return (
-    <div style={{ padding: '80px 24px', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '32px' }}>
-        <CheckCircle2 size={80} color="#10B981" style={{ margin: '0 auto' }} />
-      </div>
-      
-      <h1 style={{ fontSize: '36px', fontWeight: '800', color: '#0F172A', marginBottom: '16px' }}>
-        Success! Your order is complete.
-      </h1>
-      
-      <p style={{ fontSize: '18px', color: '#475569', marginBottom: '40px', lineHeight: '1.6' }}>
-        Congratulations! You have successfully enrolled in your new courses. 
-        You can now start learning immediately from your dashboard.
-      </p>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-        <Link href="/dashboard">
-          <Button variant="primary" fullWidth size="lg">
-            <LayoutDashboard size={20} style={{ marginRight: '8px' }} />
-            Go to Dashboard
-          </Button>
-        </Link>
-        <Link href="/courses">
-          <Button variant="outline" fullWidth size="lg">
-            <BookOpen size={20} style={{ marginRight: '8px' }} />
-            Browse More
-          </Button>
-        </Link>
-      </div>
-
-      <div style={{ marginTop: '48px', padding: '24px', background: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-        <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#1E293B', marginBottom: '8px' }}>
-          What&apos;s next?
-        </h3>
-        <p style={{ fontSize: '14px', color: '#64748B' }}>
-          Check your email for a detailed receipt and instructions on how to access your learning portal. 
-          Happy learning!
-        </p>
-      </div>
-    </div>
-  );
+/**
+ * /checkout/success — retired 2026-10-23. Old per-course payment links land in the app.
+ * Teyro Pro (one subscription, every course) replaced per-course buying, so
+ * this old marketplace page is retired and sends people on.
+ */
+export default function Retired() {
+  redirect('/dashboard');
 }

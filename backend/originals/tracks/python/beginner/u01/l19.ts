@@ -125,11 +125,11 @@ const lesson: OriginalLesson = {
         message: "I keep making the same three mistakes. Am I bad at this?",
         prompt: "What's Arjun's honest answer?",
         options: [
-          { text: 'Everyone makes them in week one. You now spot them in seconds, and that is the skill.' },
           { text: 'Yes, real programmers never make mistakes.', why: 'They make them all the time.' },
+          { text: 'Everyone makes them in week one. You now spot them in seconds, and that is the skill.' },
           { text: 'Stop coding for a while.', why: 'Mistakes are how you learn. Keep going.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -141,11 +141,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Do professional programmers memorise everything?',
         options: [
-          { text: 'No. They look things up constantly, and read errors calmly' },
           { text: 'Yes, every function', why: 'Nobody does. Looking things up is normal.' },
           { text: 'Only the hard parts', why: 'Even the hard parts get looked up.' },
+          { text: 'No. They look things up constantly, and read errors calmly' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import useSWR from 'swr';
-import { Search } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { Modal } from '@/components/ui/Modal';
 import { fetcher } from '@/lib/swr';
 import { setFollowing } from '@/lib/social';
@@ -19,6 +19,7 @@ import { playHaptic } from '@/lib/haptics';
 import type { Person } from './types';
 import styles from './Profile.module.css';
 
+import { AvatarFill } from '@/components/ui/Avatar';
 export type PeopleTab = 'following' | 'followers' | 'classmates';
 
 function PersonRow({ person }: { person: Person }) {
@@ -43,12 +44,9 @@ function PersonRow({ person }: { person: Person }) {
         className={styles.personLink}
         onClick={() => playSound('navTap', 4)}
       >
-      {person.avatar ? (
-        // eslint-disable-next-line @next/next/no-img-element -- user avatar, any host
-        <img src={person.avatar} alt="" className={styles.personAvatar} />
-      ) : (
-        <span className={styles.personAvatar}>{person.name.charAt(0).toUpperCase()}</span>
-      )}
+      <span className={styles.personAvatar}>
+        <AvatarFill src={person.avatar} seed={person.id} name={person.name} />
+      </span>
       <span className={styles.personText}>
         <span className={styles.personName}>{person.name}</span>
         <span className={styles.personSub}>
@@ -167,7 +165,7 @@ export function FriendsCard({ onOpen }: { onOpen: (tab: PeopleTab) => void }) {
         }}
       >
         <span className={styles.findIcon}>
-          <Search size={20} strokeWidth={2.75} />
+          <Glyph name="search" size={20} strokeWidth={2.75} />
         </span>
         <span className={styles.personText}>
           <span className={styles.personName}>Find friends</span>

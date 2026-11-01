@@ -1,0 +1,65 @@
+---
+title: "Refactoring With AI: How to Improve Code Without Breaking It"
+description: "Use AI to refactor safely: add tests first, change small pieces, review diffs, keep behaviour the same and know when not to refactor."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [ai refactoring, refactor with ai, ai code cleanup, safe refactoring, refactoring with copilot]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Working with AI Coding Agents turns this into short, playable lessons. Free to start."
+  href: /courses/working-with-ai-coding-agents
+  label: "See the Working with AI Coding Agents course"
+faq:
+  - question: "Can AI refactor my code?"
+    answer: "Yes, it can suggest and make refactors, but you need tests and review to make sure behaviour does not change."
+  - question: "What should I do before refactoring?"
+    answer: "Make sure tests exist and pass, and commit your current state."
+  - question: "How big should the changes be?"
+    answer: "Small and focused, one idea at a time."
+---
+
+Refactoring means changing structure without changing behaviour. AI is fast at the first part and careless about the second.
+
+## Direct answer
+
+To refactor with AI safely, start with passing tests, commit, ask for one small change at a time, run the tests after each step and review the diff. If you do not have tests, write them first or refactor by hand in tiny steps.
+
+## A safe workflow
+
+1. **Run tests** and commit the current state.
+2. **State the goal:** "Extract this logic into a function, no behaviour changes."
+3. **Limit scope:** one file or one function.
+4. **Review the diff.**
+5. **Run tests and lint.**
+6. **Commit** and repeat.
+
+## Good refactoring tasks
+
+- Renaming for clarity.
+- Extracting repeated code.
+- Splitting large functions.
+- Removing dead code.
+
+## When not to
+
+- Without tests.
+- Right before a release.
+- When the goal is unclear.
+
+## Where Teyro fits
+
+Teyro's [Working with AI Coding Agents](/courses/working-with-ai-coding-agents) course turns this into short lessons you can play in a few minutes a day. It has 60 lessons, and you can start free.
+
+## The bottom line
+
+Small steps, tests after each, diff reviews always.
+
+## More guides
+
+- [How to Review AI-Generated Code](/blog/how-to-review-ai-generated-code)
+- [What Is a Context Window? Why It Matters for AI Coding](/blog/what-is-a-context-window)
+- [AI Hallucinations in Code](/blog/ai-hallucinations-in-code)
+- [Test driven development with ai](/blog/test-driven-development-with-ai)
+- [Working with AI Coding Agents course](/courses/working-with-ai-coding-agents)

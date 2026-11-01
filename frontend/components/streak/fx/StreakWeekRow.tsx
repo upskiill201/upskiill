@@ -11,15 +11,15 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { Check, Snowflake, Wrench } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { useEffect, useState } from 'react';
 import { counts, type WeekCell } from '@/lib/streak/week';
 import styles from './StreakFx.module.css';
 
 function Icon({ status }: { status: WeekCell['status'] }) {
-  if (status === 'lesson') return <Check size={18} strokeWidth={3.5} aria-hidden="true" />;
-  if (status === 'repaired') return <Wrench size={15} strokeWidth={3} aria-hidden="true" />;
-  if (status === 'frozen') return <Snowflake size={18} strokeWidth={3} aria-hidden="true" />;
+  if (status === 'lesson') return <Glyph name="check" size={18} strokeWidth={3.5} />;
+  if (status === 'repaired') return <Glyph name="wrench" size={15} strokeWidth={3} />;
+  if (status === 'frozen') return <Glyph name="snowflake" size={18} strokeWidth={3} />;
   return null;
 }
 

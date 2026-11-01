@@ -27,11 +27,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Kofi has one weekend. What should he do first?',
         options: [
-          { text: 'Study his red line (limiting reagents), then his amber' },
           { text: 'Reread all his notes from the start', why: 'Rereading everything ignores what he already knows.' },
+          { text: 'Study his red line (limiting reagents), then his amber' },
           { text: 'Revise his greens to feel confident', why: 'Greens need the least time.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: "I'm a visual learner so I'll just watch videos all weekend.",
         prompt: 'What is the best reply?',
         options: [
-          { text: 'Videos are fine for Pass 1, but test yourself after. Learning styles aren\'t backed by evidence; testing is.' },
           { text: 'Good plan.', why: 'Watching all weekend skips the strongest habit.' },
           { text: 'Never watch videos.', why: 'Videos can help. They are just not enough on their own.' },
+          { text: 'Videos are fine for Pass 1, but test yourself after. Learning styles aren\'t backed by evidence; testing is.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: "After Saturday's quiz, Kofi gets both limiting reagent questions right without notes. What colour is that line now?",
         options: [
-          { text: 'Green' },
           { text: 'Still red', why: 'He got them right without notes. It has earned green.' },
+          { text: 'Green' },
           { text: 'Amber', why: 'Green means right without notes, and he did that.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',

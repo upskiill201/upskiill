@@ -11,6 +11,7 @@
  *   compare   before / after, with what changed
  *   explore   a real artefact with tappable phrases
  *   myth      quick-fire: myth or fact?
+ *   promptLab build a prompt from parts, send it to a practice AI
  *   tryIt     runnable Python (components/code), done once it runs cleanly
  *
  * None of these cost hearts. The interactive ones call `onDone` once the
@@ -20,9 +21,10 @@
 
 import DOMPurify from 'dompurify';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowDown, Check, ChevronRight, MessageCircle, Sparkles, ThumbsDown, ThumbsUp, X } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-import { CAST_NAMES, type RichLearnCard, type StorySpeaker } from '@/lib/lesson/blocks';
+import { Emblem, type EmblemName } from '@/components/art/Emblem';
+import { Glyph } from '@/components/art/Glyph';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { CAST_NAMES, promptLabReply, type RichLearnCard, type StorySpeaker } from '@/lib/lesson/blocks';
 import { inlineMarkdown } from '@/lib/lesson/inlineMarkdown';
 import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -34,7 +36,7 @@ import styles from '../Lesson.module.css';
 const sanitize = (raw: string) => DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
 
 /** Kinds that must be finished before Continue lights up. */
-export const GATED_RICH_KINDS = new Set<RichLearnCard['kind']>(['story', 'chat', 'steps', 'explore', 'myth', 'tryIt']);
+export const GATED_RICH_KINDS = new Set<RichLearnCard['kind']>(['story', 'chat', 'steps', 'explore', 'myth', 'promptLab', 'tryIt']);
 
 /** A story without a decision has nothing to finish. */
 export function richCardNeedsAction(card: RichLearnCard): boolean {
@@ -144,7 +146,7 @@ function Story({
     <div className="flex flex-col gap-4">
       <Panel className="flex flex-col gap-3.5">
         <p className="flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.08em] text-[var(--brand-purple)]">
-          <Sparkles className="w-4 h-4" aria-hidden="true" />
+          <Emblem name="sparkle" size={18} />
           {card.title ?? 'Story'}
         </p>
         {card.beats.map((b, i) => {
@@ -228,7 +230,7 @@ function Chat({
   return (
     <Panel className="flex flex-col gap-3">
       <p className="flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.08em] text-[var(--color-brand)]">
-        <MessageCircle className="w-4 h-4" aria-hidden="true" />
+        <Emblem name="bubble" size={18} />
         Chat with Tey
       </p>
       {card.turns.slice(0, shown).map((t, i) => (
@@ -320,7 +322,7 @@ function Steps({
           }}
         >
           <span className="flex items-center justify-center gap-2 text-[var(--color-brand)]">
-            <ArrowDown className="w-5 h-5 stroke-[2.6]" aria-hidden="true" />
+            <Glyph name="arrowDown" className="w-5 h-5 stroke-[2.6]" />
             Next step ({shown + 1} of {card.steps.length})
           </span>
         </ChoiceButton>
@@ -333,20 +335,20 @@ function Steps({
 
 function Compare({ card }: { card: Extract<RichLearnCard, { kind: 'compare' }> }) {
   const sides = [
-    { side: card.before, label: card.before.label ?? 'Before', tone: 'var(--lesson-wrong)', bg: 'var(--lesson-wrong-bg)', Icon: X },
-    { side: card.after, label: card.after.label ?? 'After', tone: 'var(--lesson-correct)', bg: 'var(--lesson-correct-bg)', Icon: Check },
+    { side: card.before, label: card.before.label ?? 'Before', tone: 'var(--lesson-wrong)', bg: 'var(--lesson-wrong-bg)', glyph: 'wrong' as EmblemName },
+    { side: card.after, label: card.after.label ?? 'After', tone: 'var(--lesson-correct)', bg: 'var(--lesson-correct-bg)', glyph: 'right' as EmblemName },
   ];
   return (
     <div className="flex flex-col gap-3">
       <CardTitle>{card.title}</CardTitle>
       <div className="grid gap-3 md:grid-cols-2">
-        {sides.map(({ side, label, tone, bg, Icon }) => (
-          <div key={label} className="rounded-[20px] border-2 p-4" style={{ borderColor: tone, backgroundColor: bg }}>
+        {sides.map(({ side, label, tone, bg, glyph }) => (
+          <div key={label} className="min-w-0 rounded-[20px] border-2 p-4" style={{ borderColor: tone, backgroundColor: bg }}>
             <p className="flex items-center gap-1.5 text-[13px] font-extrabold uppercase tracking-[0.08em]" style={{ color: tone }}>
-              <Icon className="w-4 h-4 stroke-[3]" aria-hidden="true" />
+              <Emblem name={glyph} size={18} />
               {label}
             </p>
-            <p className="mt-2 text-[16px] font-semibold leading-[1.55] text-ink whitespace-pre-line">{side.text}</p>
+            <p className="mt-2 text-[16px] font-semibold leading-[1.55] text-ink whitespace-pre-line [overflow-wrap:anywhere]">{side.text}</p>
           </div>
         ))}
       </div>
@@ -355,7 +357,7 @@ function Compare({ card }: { card: Extract<RichLearnCard, { kind: 'compare' }> }
         <ul className="mt-2.5 flex flex-col gap-2">
           {card.notes.map((n, i) => (
             <li key={i} className="flex gap-2.5 text-[16px] font-semibold leading-snug text-ink">
-              <ChevronRight className="w-5 h-5 shrink-0 mt-px text-[var(--color-brand)]" aria-hidden="true" />
+              <Glyph name="chevron" className="w-5 h-5 shrink-0 mt-px text-[var(--color-brand)]" />
               {n}
             </li>
           ))}
@@ -488,9 +490,9 @@ function Myth({
             <p className="text-[17px] font-extrabold text-ink leading-snug">{s.text}</p>
             <div className="grid grid-cols-2 gap-2.5">
               {[
-                { label: 'Myth', value: false, Icon: ThumbsDown },
-                { label: 'Fact', value: true, Icon: ThumbsUp },
-              ].map(({ label, value, Icon }) => (
+                { label: 'Myth', value: false, glyph: 'thumbDown' as EmblemName },
+                { label: 'Fact', value: true, glyph: 'thumbUp' as EmblemName },
+              ].map(({ label, value, glyph }) => (
                 <ChoiceButton
                   key={label}
                   disabled={a !== null}
@@ -502,7 +504,7 @@ function Myth({
                   }}
                 >
                   <span className="flex items-center justify-center gap-2">
-                    <Icon className="w-5 h-5 stroke-[2.5]" aria-hidden="true" />
+                    <Emblem name={glyph} size={22} />
                     {label}
                   </span>
                 </ChoiceButton>
@@ -520,6 +522,155 @@ function Myth({
           </Panel>
         );
       })}
+    </div>
+  );
+}
+
+// ─── Prompt Lab ───────────────────────────────────────────────────────────
+
+function PromptLab({
+  card,
+  done,
+  onDone,
+}: {
+  card: Extract<RichLearnCard, { kind: 'promptLab' }>;
+  done: boolean;
+  onDone: () => void;
+}) {
+  const reduce = useReducedMotion();
+  const [picked, setPicked] = useState<Set<number>>(() => new Set(done ? card.replies[card.goal]?.uses ?? [] : []));
+  // The reply on screen. Cleared when the prompt changes, so it never answers a different prompt.
+  const [reply, setReply] = useState<number | null>(done ? card.goal : null);
+  const [sends, setSends] = useState(0);
+  const reached = reply === card.goal;
+  const replyRef = useRef<HTMLDivElement>(null);
+
+  // On a phone the reply lands below the fold: bring it into view after each send.
+  useEffect(() => {
+    if (sends > 0) replyRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }, [sends, reduce]);
+
+  useEffect(() => {
+    if (reached && !done) onDone();
+  }, [reached, done, onDone]);
+
+  const toggle = (i: number) => {
+    tap(i);
+    setReply(null);
+    setPicked((s) => {
+      const next = new Set(s);
+      if (next.has(i)) next.delete(i);
+      else next.add(i);
+      return next;
+    });
+  };
+
+  const send = () => {
+    const r = promptLabReply(card.replies, picked);
+    playSound(r === card.goal ? 'correct' : 'cardNext');
+    playHaptic('selection', false);
+    setSends((n) => n + 1);
+    setReply(r);
+  };
+
+  const shown = reply === null ? null : card.replies[reply];
+
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.08em] text-[var(--color-brand)]">
+        <Emblem name="flask" size={18} />
+        Prompt Lab
+      </p>
+      <CardTitle>{card.title}</CardTitle>
+      <p className="text-[16px] font-bold leading-snug text-ink">
+        <span className="text-[var(--text-secondary)]">Your job: </span>
+        {card.task}
+      </p>
+
+      <Panel className="flex flex-col gap-2">
+        <p className="text-[12px] font-extrabold uppercase tracking-[0.08em] text-[var(--text-secondary)]">Your prompt</p>
+        <p className="text-[16.5px] leading-[1.6] font-semibold text-ink">
+          {card.base}
+          {card.parts.map((p, i) =>
+            picked.has(i) ? (
+              <motion.span
+                key={i}
+                initial={reduce ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="rounded-[6px] px-1"
+                style={{ backgroundColor: 'var(--lesson-select-bg)', boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone' }}
+              >
+                {' '}
+                {p.text}
+              </motion.span>
+            ) : null,
+          )}
+        </p>
+      </Panel>
+
+      <p className="text-[14px] font-bold text-[var(--text-secondary)]">Tap to add or remove a part, then send.</p>
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Prompt parts">
+        {card.parts.map((p, i) => {
+          const on = picked.has(i);
+          return (
+            <button
+              key={i}
+              type="button"
+              aria-pressed={on}
+              onClick={() => toggle(i)}
+              className="flex items-center gap-1.5 rounded-full border-2 px-3.5 py-2 text-[15px] font-extrabold cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-brand)]/25"
+              style={{
+                borderColor: on ? 'var(--color-brand)' : 'var(--border)',
+                backgroundColor: on ? 'var(--lesson-select-bg)' : 'var(--bg-card)',
+                color: on ? 'var(--lesson-picked-ink)' : 'var(--text-primary)',
+                boxShadow: `0 3px 0 ${on ? 'var(--color-brand)' : 'var(--border)'}`,
+              }}
+            >
+              {on ? <Glyph name="check" className="w-4 h-4 stroke-[3]" /> : <Glyph name="plus" className="w-4 h-4 stroke-[3]" />}
+              {p.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <motion.button
+        type="button"
+        onClick={send}
+        disabled={reply !== null}
+        whileTap={reduce || reply !== null ? undefined : { y: 2 }}
+        className="flex min-h-[52px] items-center justify-center gap-2 rounded-[16px] px-4 py-3 text-[16px] font-extrabold uppercase tracking-[0.04em] text-white cursor-pointer disabled:cursor-default disabled:opacity-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-brand)]/25"
+        style={{ backgroundColor: 'var(--color-brand)', boxShadow: '0 4px 0 color-mix(in srgb, var(--color-brand) 70%, black)' }}
+      >
+        <Glyph name="send" className="w-5 h-5" />
+        {sends === 0 ? 'Send' : 'Send again'}
+      </motion.button>
+
+      {shown && (
+        <>
+          <motion.div
+            ref={replyRef}
+            key={`${reply}-${sends}`}
+            initial={reduce ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col gap-2 rounded-[18px] rounded-tl-[6px] border-2 px-4 py-3"
+            style={{ borderColor: reached ? 'var(--lesson-correct)' : 'var(--border)', backgroundColor: 'var(--bg-section)' }}
+          >
+            <p className="flex items-center gap-1.5 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[var(--text-secondary)]">
+              <Emblem name="bot" size={18} />
+              Practice AI
+            </p>
+            <p className="text-[16px] leading-[1.6] font-semibold text-ink whitespace-pre-line">{shown.text}</p>
+          </motion.div>
+          <TeySays pose={reached ? 'cheering' : 'thinking'} lineKey={`lab-${card.id}-${reply}-${sends}`}>
+            {shown.note}
+          </TeySays>
+        </>
+      )}
+      {sends === 0 && (
+        <p className="text-[13px] font-semibold text-[var(--text-secondary)]">
+          The practice AI stands in for a real chat tool, so you can try prompts safely here first.
+        </p>
+      )}
     </div>
   );
 }
@@ -548,6 +699,8 @@ export function RichLearnCardView({
       return <Explore card={card} done={done} onDone={onDone} />;
     case 'myth':
       return <Myth card={card} done={done} onDone={onDone} />;
+    case 'promptLab':
+      return <PromptLab card={card} done={done} onDone={onDone} />;
     case 'tryIt':
       return <TryItCard card={card} done={done} onDone={onDone} />;
   }

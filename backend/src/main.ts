@@ -24,6 +24,19 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule, { rawBody: true });
 
+  // ─── CLIENT IP BEHIND RENDER'S PROXY ───────────────────────────────────────
+  // Without this req.ip is Render's load balancer, so every @Throttle limit
+  // was one bucket shared by all users: 5 signups per 15 minutes for the whole
+  // world, and no real per-attacker limit at all. One hop (Render) is the
+  // spoof-proof default; set TRUST_PROXY_HOPS=2 only if direct traffic to the
+  // Render URL is blocked, so the Vercel rewrite's X-Forwarded-For can be
+  // trusted too.
+  const trustHops = Number(process.env.TRUST_PROXY_HOPS ?? 1);
+  (app.getHttpAdapter().getInstance() as { set: (k: string, v: unknown) => void }).set(
+    'trust proxy',
+    Number.isInteger(trustHops) && trustHops >= 0 ? trustHops : 1,
+  );
+
   app.use(cookieParser());
 
   // ─── RESPONSE COMPRESSION ──────────────────────────────────────────────────

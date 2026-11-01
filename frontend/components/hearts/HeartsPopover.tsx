@@ -10,7 +10,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Lock, Shield } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { useGamification } from '@/context/GamificationContext';
 import { prefetchCatalog } from '@/lib/shop/previewCache';
 import type { ShopItem } from '@/lib/shop/types';
@@ -123,9 +123,9 @@ export default function HeartsPopover({ onClose }: HeartsPopoverProps) {
             <div className={styles.shieldLeft}>
               <div className={styles.shieldIconWrap}>
                 {shield.unlock.unlocked ? (
-                  <Shield size={20} className="text-[#E11D48]" />
+                  <Glyph name="shield" size={20} color="var(--error-red)" />
                 ) : (
-                  <Lock size={20} color="#94A3B8" />
+                  <Glyph name="lock" size={20} color="var(--text-muted)" />
                 )}
               </div>
               <div className={styles.shieldText}>

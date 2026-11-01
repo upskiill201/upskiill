@@ -91,11 +91,11 @@ const lesson: OriginalLesson = {
         message: "I sent the AI a photo of my whole Physics chapter, 12 pages. Its summary was useless.",
         prompt: 'What should Kofi suggest?',
         options: [
-          { text: 'Send just the page or diagram you are stuck on, and point at the exact part.' },
           { text: 'Send 24 pages next time.', why: 'More pages, more vague.' },
           { text: 'Photos never work.', why: 'They work well when focused and checked.' },
+          { text: 'Send just the page or diagram you are stuck on, and point at the exact part.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does the number of each colour of atom stay the same on both sides of the diagram?',
         options: [
-          { text: 'Atoms are rearranged, not created or destroyed' },
           { text: 'The diagram is simplified', why: 'It is accurate. Mass really is conserved.' },
+          { text: 'Atoms are rearranged, not created or destroyed' },
           { text: 'Colours cannot change', why: 'The colours show atom types, and atoms keep their type.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

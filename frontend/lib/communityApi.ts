@@ -5,6 +5,7 @@
 
 import { extractErrorMessage } from './apiError';
 
+import { askForPhoto } from '@/lib/avatar/photoAsk';
 export interface CommunityAuthor {
   id: string;
   fullName: string;
@@ -261,11 +262,14 @@ export interface CreatePostInput {
   lessonId?: string;
 }
 
-export const createPost = (communityId: string, input: CreatePostInput) =>
-  jsonFetch<CommunityPost & { xpAwarded?: { xp: number; coins: number } }>(
+export const createPost = async (communityId: string, input: CreatePostInput) => {
+  // Classmates reply more to a face: ask for a photo first, now and then.
+  await askForPhoto('post');
+  return jsonFetch<CommunityPost & { xpAwarded?: { xp: number; coins: number } }>(
     `/api/community/${communityId}/posts`,
     { method: 'POST', body: JSON.stringify(input) },
   );
+};
 
 export const getMembers = (communityId: string, q = '', page = 1) =>
   jsonFetch<{

@@ -140,11 +140,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask for one job per question?',
         options: [
-          { text: 'Mixing jobs gets you a muddled answer that does none of them well' },
           { text: 'The AI can only read one sentence', why: 'It can read a lot. Clear jobs just work better.' },
+          { text: 'Mixing jobs gets you a muddled answer that does none of them well' },
           { text: 'It is a school rule', why: "It's a habit that gets better answers, not a rule." },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

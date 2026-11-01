@@ -1,0 +1,77 @@
+---
+title: "SQL WHERE Clause: Filter Rows With AND, OR, IN, LIKE and BETWEEN"
+description: "Learn how the SQL WHERE clause filters rows, with comparison operators, AND, OR, IN, BETWEEN, LIKE and NULL checks, plus common beginner mistakes."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [where clause, sql where, sql filter, sql like in between, sql null check]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "SQL and Databases for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/sql-and-databases-for-beginners
+  label: "See the SQL and Databases for Beginners course"
+faq:
+  - question: "What does WHERE do?"
+    answer: "It filters rows so only those meeting a condition are returned or changed."
+  - question: "How do I check for NULL?"
+    answer: "Use IS NULL or IS NOT NULL. Equals does not work with NULL."
+  - question: "What does LIKE do?"
+    answer: "It matches text patterns, where the percent sign means any characters."
+---
+
+WHERE decides which rows you get.
+
+## Direct answer
+
+`WHERE` filters rows using conditions. Combine conditions with `AND` and `OR`, test lists with `IN`, ranges with `BETWEEN` and text patterns with `LIKE`. Use `IS NULL` for missing values.
+
+## Examples
+
+```sql
+SELECT * FROM orders WHERE total > 100;
+
+SELECT * FROM customers
+WHERE city = 'Lagos' AND active = 1;
+
+SELECT * FROM products WHERE category IN ('books', 'games');
+
+SELECT * FROM orders
+WHERE created_at BETWEEN '2026-01-01' AND '2026-01-31';
+
+SELECT * FROM customers WHERE name LIKE 'A%';
+
+SELECT * FROM customers WHERE phone IS NULL;
+```
+
+## Operators
+
+| Operator | Meaning |
+| :--- | :--- |
+| `=`, `<>` | equal, not equal |
+| `>`, `<`, `>=`, `<=` | comparisons |
+| `AND`, `OR`, `NOT` | combine conditions |
+| `IN` | matches a list |
+| `LIKE` | text pattern |
+
+## Common mistakes
+
+- Using `= NULL` instead of `IS NULL`.
+- Mixing `AND` and `OR` without brackets.
+- Forgetting quotes around text.
+
+## Where Teyro fits
+
+Teyro's [SQL and Databases for Beginners](/courses/sql-and-databases-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Filter early, use brackets for clarity and test with small queries.
+
+## More guides
+
+- [INNER JOIN vs LEFT JOIN](/blog/inner-join-vs-left-join)
+- [Primary Key in SQL](/blog/primary-key-explained)
+- [Foreign Key in SQL](/blog/foreign-key-explained)
+- [Sql select statement](/blog/sql-select-statement)
+- [SQL and Databases for Beginners course](/courses/sql-and-databases-for-beginners)

@@ -1,0 +1,107 @@
+---
+title: "Build a To-Do List App in JavaScript: Step by Step"
+description: "Build a to-do list app with HTML, CSS and JavaScript: add, complete and delete tasks, and save them in localStorage. Full code included."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [to do list app javascript, javascript to do list, javascript project for beginners, build todo app, vanilla javascript project]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Interactive Web Pages with JavaScript turns this into short, playable lessons. Free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive Web Pages with JavaScript course"
+faq:
+  - question: "Is a to-do list a good first JavaScript project?"
+    answer: "Yes. It covers the DOM, events, arrays and storage in one small app."
+  - question: "How do I save tasks?"
+    answer: "Store the tasks array in localStorage using JSON.stringify and load it with JSON.parse."
+  - question: "What can I add next?"
+    answer: "Editing, filters, due dates, drag and drop and a clear completed button."
+---
+
+A to-do list is the classic first project for a reason.
+
+## Direct answer
+
+A to-do list app needs an input, a button, a list and a few functions: add a task, toggle done, delete and save. Keep tasks in an array, render the array to the page and save it to `localStorage` after every change.
+
+## HTML
+
+```html
+<form id="form">
+  <input id="text" placeholder="Add a task" required>
+  <button>Add</button>
+</form>
+<ul id="list"></ul>
+```
+
+## JavaScript
+
+```javascript
+const form = document.querySelector("#form");
+const text = document.querySelector("#text");
+const list = document.querySelector("#list");
+
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+function save() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function render() {
+  list.innerHTML = "";
+  tasks.forEach((task, index) => {
+    const li = document.createElement("li");
+    li.textContent = task.text;
+    if (task.done) li.style.textDecoration = "line-through";
+    li.addEventListener("click", () => {
+      task.done = !task.done;
+      save();
+      render();
+    });
+    const del = document.createElement("button");
+    del.textContent = "Delete";
+    del.addEventListener("click", (e) => {
+      e.stopPropagation();
+      tasks.splice(index, 1);
+      save();
+      render();
+    });
+    li.append(del);
+    list.append(li);
+  });
+}
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  tasks.push({ text: text.value, done: false });
+  text.value = "";
+  save();
+  render();
+});
+
+render();
+```
+
+## Ideas to extend it
+
+- Edit a task.
+- Filter all, active and done.
+- Add due dates.
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) course turns this into short lessons you can play in a few minutes a day. It has 37 lessons, and you can start free.
+
+## The bottom line
+
+Small app, big lessons. Build it, then change it.
+
+## More guides
+
+- [Debounce in JavaScript](/blog/debounce-javascript)
+- [How to Call an API in JavaScript](/blog/javascript-api-calls)
+- [Web Storage](/blog/web-storage-basics)
+- [Javascript localstorage](/blog/javascript-localstorage)
+- [Interactive Web Pages with JavaScript course](/courses/interactive-web-pages-with-javascript)

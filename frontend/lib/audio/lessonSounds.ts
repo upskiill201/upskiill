@@ -145,8 +145,19 @@ export type LessonSound =
   | 'streakFizzle' // the flame goes out: a hiss and a soft fall
   | 'freezeEquip' // a freeze slot fills with ice (n = slot)
   // ── In-lesson momentum ──
-  | 'comboBurst' // a run milestone: 3, 5, 7, 10 in a row (n = run)
-  | 'xpTick'; // the finish screen's XP rolls up (n = tick)
+  | 'comboBurst' // a run milestone: 3, 5, 7, 10, 15 in a row (n = run)
+  | 'xpTick' // the finish screen's XP rolls up (n = tick)
+  // ── The lesson journey (start screen, phase gates, the finish's chapter map) ──
+  | 'lessonStart' // START on the lesson's start screen: riser, then the band hits
+  | 'phaseGate' // a full-screen phase gate (n = phase 1..3)
+  | 'comboBreak' // a run of 3+ ends: a soft glassy fall
+  | 'newBestRun' // beat your best run in this lesson
+  | 'hint' // a hint lights up
+  | 'skip' // a question skipped
+  | 'nodeStamp' // this lesson's node on the chapter map gets its check
+  | 'upNext' // the next lesson's teaser: a curious, unresolved little phrase
+  | 'sessionLink' // a link in today's lesson chain lights up (n = index)
+  | 'bonusTally'; // a bonus line lands on the XP tally (n = line)
 
 const COOLDOWN_MS: Partial<Record<LessonSound, number>> = {
   nodeLocked: 250,
@@ -190,6 +201,16 @@ const COOLDOWN_MS: Partial<Record<LessonSound, number>> = {
   streakFizzle: 1200,
   comboBurst: 500,
   xpTick: 40,
+  lessonStart: 1200,
+  phaseGate: 900,
+  comboBreak: 600,
+  newBestRun: 1500,
+  hint: 250,
+  skip: 300,
+  nodeStamp: 600,
+  upNext: 1200,
+  sessionLink: 120,
+  bonusTally: 120,
 };
 
 /** C-major steps above a root, for anything that climbs. */
@@ -441,7 +462,13 @@ const CUES: Record<LessonSound, (s: Studio, n: number) => void> = {
   },
 
   // ── The finish ────────────────────────────────────────────────────────────
-  lessonComplete: (s) => {
+  lessonComplete: (s, tier) => {
+    // Tier 2+: the finish grows across a session (today's 2nd, 3rd, 4th
+    // lesson, a perfect run, a chapter's end), so no two sound the same.
+    if (tier >= 2) {
+      FINISH_TIERS[Math.min(tier, 4) - 2](s);
+      return;
+    }
     // Quick bell run up, then the band lands on the chord: "ta-da!"
     bell(s, N.C6, 0, { gain: 0.16, dur: 0.4 });
     bell(s, N.E6, 0.08, { gain: 0.17, dur: 0.4 });
@@ -846,6 +873,18 @@ const CUES: Record<LessonSound, (s: Studio, n: number) => void> = {
 
   // ── In-lesson momentum ────────────────────────────────────────────────────
   comboBurst: (s, run) => {
+    // 10+: a key change up and a cymbal; 15+: the whole band, twice.
+    if (run >= 10) {
+      const k = run >= 15 ? Math.pow(2, 4 / 12) : Math.pow(2, 2 / 12);
+      thud(s, 70, 0, { gain: 0.42, dur: 0.3 });
+      swoosh(s, 0, { dur: 0.32, from: 600, to: 7000, gain: 0.14, panFrom: -0.5, panTo: 0.5 });
+      [N.C6, N.E6, N.G6, N.C7].forEach((f, i) => bell(s, f * k, 0.04 + i * 0.05, { gain: 0.15, dur: 0.7 }));
+      for (const f of [N.C5, N.E5, N.G5, N.C6]) brass(s, f * k, 0.24, { dur: 0.8, gain: 0.08 });
+      wash(s, 0.24, { dur: 1.1, gain: 0.08 });
+      sparkle(s, 0.26, { count: 12, gain: 0.06, spread: 0.05 });
+      if (run >= 15) [N.G6, N.C7].forEach((f, i) => bell(s, f * k * 2, 0.6 + i * 0.08, { gain: 0.08, dur: 1 }));
+      return;
+    }
     // 3: a bright triad. 5: the triad climbs an octave. 7+: the band joins.
     const tier = run >= 7 ? 3 : run >= 5 ? 2 : 1;
     swoosh(s, 0, { dur: 0.28, from: 900, to: 5200, gain: 0.12, panFrom: -0.4, panTo: 0.4 });
@@ -859,7 +898,118 @@ const CUES: Record<LessonSound, (s: Studio, n: number) => void> = {
     // The XP number rolling up: tiny coin clicks that climb.
     coin(s, LADDER[n % LADDER.length], 0, { gain: 0.045 });
   },
+
+  // ── The lesson journey ──────────────────────────────────────────────────
+  lessonStart: (s) => {
+    // A short riser pulls you in, a kick lands, and the band hits the chord.
+    swoosh(s, 0, { dur: 0.42, from: 300, to: 4800, gain: 0.16, panFrom: -0.4, panTo: 0.4 });
+    [N.G5, N.C6, N.E6].forEach((f, i) => marimba(s, f, 0.08 + i * 0.08, { gain: 0.16, dur: 0.25 }));
+    thud(s, 80, 0.36, { gain: 0.45, dur: 0.25 });
+    for (const f of [N.C5, N.E5, N.G5, N.C6]) brass(s, f, 0.36, { dur: 0.55, gain: 0.08 });
+    bell(s, N.G6, 0.36, { gain: 0.16, dur: 1.0 });
+    sparkle(s, 0.4, { count: 6, gain: 0.05 });
+  },
+  phaseGate: (s, phase) => {
+    // A stage door: whoosh, a deep hit, and a rising rung per phase.
+    const k = Math.pow(2, ((Math.max(1, Math.min(phase, 3)) - 1) * 2) / 12);
+    swoosh(s, 0, { dur: 0.36, from: 500, to: 5200, gain: 0.15, panFrom: 0.4, panTo: -0.4 });
+    thud(s, 90, 0.2, { gain: 0.36, dur: 0.22 });
+    [N.C6, N.E6, N.G6].forEach((f, i) => bell(s, f * k, 0.22 + i * 0.07, { gain: 0.13, dur: 0.7 }));
+    brass(s, N.C5 * k, 0.22, { dur: 0.6, gain: 0.08 });
+    brass(s, N.G5 * k, 0.22, { dur: 0.6, gain: 0.07 });
+  },
+  comboBreak: (s) => {
+    // The run ends: a glassy note slides down. Gentle, but you hear it.
+    bell(s, N.E6, 0, { gain: 0.08, dur: 0.35, bright: 1.6 });
+    bell(s, N.B5, 0.09, { gain: 0.07, dur: 0.4, bright: 1.6 });
+    muted(s, N.G4, 0.16, { gain: 0.08, dur: 0.3 });
+  },
+  newBestRun: (s) => {
+    coin(s, N.B5, 0, { gain: 0.13 });
+    [N.E6, N.G6, N.C7].forEach((f, i) => bell(s, f, 0.1 + i * 0.07, { gain: 0.14, dur: 0.8 }));
+    for (const f of [N.E5, N.G5, N.C6]) brass(s, f, 0.3, { dur: 0.6, gain: 0.07 });
+    sparkle(s, 0.32, { count: 8, gain: 0.05 });
+  },
+  hint: (s) => {
+    // A light coming on: a soft rising glint.
+    bell(s, N.G6, 0, { gain: 0.1, dur: 0.5, bright: 1.4 });
+    bell(s, N.D6 * 2, 0.07, { gain: 0.09, dur: 0.8, bright: 1.5 });
+    sparkle(s, 0.06, { count: 5, gain: 0.04, spread: 0.04 });
+  },
+  skip: (s) => {
+    swoosh(s, 0, { dur: 0.24, from: 2400, to: 800, gain: 0.12, panFrom: -0.5, panTo: 0.5 });
+    marimba(s, N.D5, 0.08, { gain: 0.14, dur: 0.25 });
+  },
+  nodeStamp: (s) => {
+    thud(s, 140, 0, { gain: 0.4, dur: 0.14 });
+    pop(s, 520, 0.02, { gain: 0.6, dur: 0.09 });
+    bell(s, N.C7, 0.06, { gain: 0.14, dur: 0.9 });
+    sparkle(s, 0.08, { count: 5, gain: 0.04 });
+  },
+  upNext: (s) => {
+    // A question in music: a suspended chord that leans forward, unresolved.
+    [N.C5, N.F5, N.G5].forEach((f, i) => marimba(s, f, i * 0.09, { gain: 0.17, dur: 0.4 }));
+    bell(s, N.F6, 0.3, { gain: 0.1, dur: 0.6 });
+    bell(s, N.G6, 0.42, { gain: 0.12, dur: 1.1 });
+  },
+  sessionLink: (s, n) => {
+    const f = LADDER[Math.min(n, LADDER.length - 1)];
+    coin(s, f, 0, { gain: 0.09 });
+    marimba(s, f / 2, 0, { gain: 0.14, dur: 0.25 });
+  },
+  bonusTally: (s, n) => {
+    coin(s, LADDER[Math.min(n + 1, LADDER.length - 1)], 0, { gain: 0.11 });
+    bell(s, LADDER[Math.min(n + 2, LADDER.length - 1)], 0.05, { gain: 0.1, dur: 0.6 });
+  },
 };
+
+/**
+ * Finishes that grow (tiers 2–4). Each is its own little tune in C, so a
+ * learner's 1st, 2nd and 3rd lesson of the day each sound like a step up.
+ */
+const FINISH_TIERS: ((s: Studio) => void)[] = [
+  // Tier 2: the run up goes an octave further, the band holds longer.
+  (s) => {
+    [N.C6, N.E6, N.G6, N.C7].forEach((f, i) => bell(s, f, i * 0.07, { gain: 0.15 + i * 0.01, dur: 0.45 }));
+    for (const f of [N.C5, N.E5, N.G5, N.C6]) brass(s, f, 0.3, { dur: 0.95, gain: 0.09 });
+    marimba(s, N.C4, 0.3, { gain: 0.32, dur: 0.7 });
+    thud(s, 85, 0.3, { gain: 0.38, dur: 0.25 });
+    bell(s, N.E6 * 2, 0.32, { gain: 0.16, dur: 1.5 });
+    sparkle(s, 0.36, { count: 10, gain: 0.06 });
+    wash(s, 0.3, { dur: 1.4, gain: 0.08 });
+  },
+  // Tier 3: a real phrase (IV, V, then home) with a cymbal.
+  (s) => {
+    const phrase = [
+      [N.C5, N.F5, N.A5],
+      [N.D5, N.G5, N.B5],
+    ];
+    phrase.forEach((ch, i) => ch.forEach((f) => brass(s, f, i * 0.16, { dur: 0.2, gain: 0.08 })));
+    bell(s, N.A6, 0, { gain: 0.1, dur: 0.25 });
+    bell(s, N.B6, 0.16, { gain: 0.11, dur: 0.25 });
+    for (const f of [N.C5, N.E5, N.G5, N.C6, N.E6]) brass(s, f, 0.34, { dur: 1.1, gain: 0.085 });
+    thud(s, 75, 0.34, { gain: 0.45, dur: 0.3 });
+    marimba(s, N.C4, 0.34, { gain: 0.34, dur: 0.8 });
+    bell(s, N.C7, 0.34, { gain: 0.2, dur: 1.6 });
+    bell(s, N.G6 * 2, 0.5, { gain: 0.1, dur: 1.3 });
+    wash(s, 0.34, { dur: 1.7, gain: 0.1 });
+    sparkle(s, 0.4, { count: 14, gain: 0.06, spread: 0.05 });
+  },
+  // Tier 4: the big one: a key change up, two hits, a long glitter.
+  (s) => {
+    const up = Math.pow(2, 2 / 12);
+    [N.C6, N.E6, N.G6].forEach((f, i) => bell(s, f, i * 0.06, { gain: 0.14, dur: 0.35 }));
+    for (const f of [N.C5, N.E5, N.G5]) brass(s, f, 0.18, { dur: 0.22, gain: 0.08 });
+    thud(s, 80, 0.18, { gain: 0.4, dur: 0.2 });
+    for (const f of [N.C5, N.E5, N.G5, N.C6, N.E6]) brass(s, f * up, 0.42, { dur: 1.3, gain: 0.09 });
+    thud(s, 70, 0.42, { gain: 0.5, dur: 0.35 });
+    marimba(s, N.C4 * up, 0.42, { gain: 0.36, dur: 0.9 });
+    [N.C7, N.E6 * 2, N.G6 * 2].forEach((f, i) => bell(s, f * up, 0.42 + i * 0.1, { gain: 0.15, dur: 1.6 }));
+    wash(s, 0.42, { dur: 2, gain: 0.11 });
+    sparkle(s, 0.46, { count: 18, gain: 0.07, spread: 0.06 });
+    sparkle(s, 1.0, { count: 10, gain: 0.05, spread: 0.08 });
+  },
+];
 
 export function playSound(cue: LessonSound, n = 0): void {
   try {

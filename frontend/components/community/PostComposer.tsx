@@ -1,9 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Image as ImageIcon, Paperclip, BarChart3, X, Plus, AtSign, BookOpen, Send,
-} from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
 import type { CommunityOverview } from '@/lib/communityApi';
@@ -270,7 +268,7 @@ export default function PostComposer({ community, lessonLink, defaultOpen = fals
           {lessonLink && lessonId && (
             <div className={styles.lessonBanner}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <BookOpen size={14} /> Linked to lesson: {lessonLink.title}
+                <Glyph name="book" size={14} /> Linked to lesson: {lessonLink.title}
               </span>
               <button className={styles.unlinkBtn} onClick={() => setLessonId(null)}>
                 unlink
@@ -307,7 +305,7 @@ export default function PostComposer({ community, lessonLink, defaultOpen = fals
               <div className={styles.mentionMenu}>
                 {mentionResults.map((m) => (
                   <button key={m.id} className={styles.mentionItem} onClick={() => pickMention(m)}>
-                    <AtSign size={13} /> {m.fullName}
+                    <Glyph name="at" size={13} /> {m.fullName}
                   </button>
                 ))}
               </div>
@@ -334,7 +332,7 @@ export default function PostComposer({ community, lessonLink, defaultOpen = fals
                       aria-label="Remove option"
                       onClick={() => setPollOptions((prev) => prev.filter((_, j) => j !== i))}
                     >
-                      <X size={14} />
+                      <Glyph name="close" size={14} />
                     </button>
                   )}
                 </div>
@@ -345,7 +343,7 @@ export default function PostComposer({ community, lessonLink, defaultOpen = fals
                   style={{ width: '100%', height: 36 }}
                   onClick={() => setPollOptions((prev) => [...prev, ''])}
                 >
-                  <Plus size={14} /> Add option
+                  <Glyph name="plus" size={14} /> Add option
                 </button>
               )}
             </div>
@@ -362,7 +360,7 @@ export default function PostComposer({ community, lessonLink, defaultOpen = fals
                     aria-label="Remove image"
                     onClick={() => setImages((prev) => prev.filter((u) => u !== src))}
                   >
-                    <X size={12} />
+                    <Glyph name="close" size={12} />
                   </button>
                 </div>
               ))}
@@ -374,13 +372,13 @@ export default function PostComposer({ community, lessonLink, defaultOpen = fals
             <div className={styles.fileChips}>
               {files.map((f, i) => (
                 <div key={f.url} className={styles.fileChip}>
-                  <Paperclip size={13} />
+                  <Glyph name="paperclip" size={13} />
                   <span>{f.filename}</span>
                   <button
                     aria-label="Remove file"
                     onClick={() => setFiles((prev) => prev.filter((_, j) => j !== i))}
                   >
-                    <X size={13} />
+                    <Glyph name="close" size={13} />
                   </button>
                 </div>
               ))}
@@ -405,7 +403,7 @@ export default function PostComposer({ community, lessonLink, defaultOpen = fals
                 onChange={(e) => void handleImagePick(e.target.files)}
               />
               <span className={styles.toolBtn}>
-                <ImageIcon size={15} /> Images
+                <Glyph name="image" size={15} /> Images
               </span>
             </label>
             <label style={{ display: 'inline-flex' }}>
@@ -418,14 +416,14 @@ export default function PostComposer({ community, lessonLink, defaultOpen = fals
                 onChange={(e) => void handleFilePick(e.target.files)}
               />
               <span className={styles.toolBtn}>
-                <Paperclip size={15} /> Files
+                <Glyph name="paperclip" size={15} /> Files
               </span>
             </label>
             <button
               className={`${styles.toolBtn} ${isPoll ? styles.chipActive : ''}`}
               onClick={() => setPostType(isPoll ? 'QUESTION' : 'POLL')}
             >
-              <BarChart3 size={15} /> Poll
+              <Glyph name="chart" size={15} /> Poll
             </button>
           </div>
 
@@ -436,7 +434,7 @@ export default function PostComposer({ community, lessonLink, defaultOpen = fals
             <Button variant="ghost" onClick={reset} disabled={sending}>
               Cancel
             </Button>
-            <Button variant="primary" onClick={handleSubmit} disabled={!canSubmit} loading={sending} leftIcon={<Send size={15} />}>
+            <Button variant="primary" onClick={handleSubmit} disabled={!canSubmit} loading={sending} leftIcon={<Glyph name="send" size={15} />}>
               Post
             </Button>
           </div>

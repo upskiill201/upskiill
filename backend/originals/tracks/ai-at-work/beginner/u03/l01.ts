@@ -111,11 +111,11 @@ const lesson: OriginalLesson = {
         message: "I've got a 30-page market report and 10 minutes before a call with our CEO. Help!",
         prompt: 'Which request should Ada suggest?',
         options: [
-          { text: 'Executive summary for a CEO: 3 key conclusions, why each matters for our launch, with page numbers. Under 100 words.' },
           { text: 'Summarise this.', why: 'A gist will not prepare her for a CEO call.' },
+          { text: 'Executive summary for a CEO: 3 key conclusions, why each matters for our launch, with page numbers. Under 100 words.' },
           { text: 'Give me every detail.', why: 'She has 10 minutes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -171,11 +171,11 @@ const lesson: OriginalLesson = {
         message: "Why do you always ask for page numbers in summaries?",
         prompt: "What's Ada's answer?",
         options: [
-          { text: 'So I can check the important points myself in seconds. Summaries can be wrong.' },
           { text: 'It makes the summary longer.', why: 'It is about checking, not length.' },
           { text: 'No reason.', why: 'There is a very good reason.' },
+          { text: 'So I can check the important points myself in seconds. Summaries can be wrong.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -196,11 +196,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What makes a summary "useful"?',
         options: [
-          { text: 'It answers the question you actually have' },
           { text: 'It is as short as possible', why: 'Short and useless is still useless.' },
+          { text: 'It answers the question you actually have' },
           { text: 'It covers everything', why: 'Then it is not a summary.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

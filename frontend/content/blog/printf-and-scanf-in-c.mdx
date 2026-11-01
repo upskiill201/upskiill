@@ -1,0 +1,79 @@
+---
+title: "printf and scanf in C: Format Specifiers and Safe Input"
+description: "Learn how to print with printf and read input with scanf in C: format specifiers like %d, %f and %s, common mistakes and safer input with fgets."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [printf scanf, c printf, c scanf, format specifiers, c input output]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "C for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/c-for-beginners
+  label: "See the C for Beginners course"
+faq:
+  - question: "What does printf do?"
+    answer: "It prints formatted text to the screen using format specifiers."
+  - question: "What are common format specifiers?"
+    answer: "%d for int, %f for float and double, %c for char and %s for strings."
+  - question: "Why does scanf need &?"
+    answer: "It needs the address of the variable so it can store the value there."
+---
+
+Input and output are your first window into what a C program is doing.
+
+## Direct answer
+
+`printf` prints formatted text using specifiers such as `%d` for integers, `%f` for decimals, `%c` for characters and `%s` for strings. `scanf` reads input in the same format but needs the address of each variable, so use `&`. For lines of text, `fgets` is safer.
+
+## Example
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    int age;
+    char name[30];
+
+    printf("Name: ");
+    scanf("%29s", name);
+
+    printf("Age: ");
+    scanf("%d", &age);
+
+    printf("%s is %d years old\n", name, age);
+    return 0;
+}
+```
+
+## Specifiers
+
+| Specifier | Type |
+| :--- | :--- |
+| `%d` | int |
+| `%f` | float or double |
+| `%c` | char |
+| `%s` | string |
+| `%zu` | size_t |
+
+## Common mistakes
+
+- Missing `&` in `scanf` for numbers.
+- Wrong specifier for the type.
+- Using `scanf("%s")` without a width limit.
+
+## Where Teyro fits
+
+Teyro's [C for Beginners](/courses/c-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 78 lessons, and you can start free.
+
+## The bottom line
+
+Match specifiers to types and limit input sizes.
+
+## More guides
+
+- [Bitwise Operators in C](/blog/bitwise-operators-c)
+- [Undefined Behavior in C](/blog/undefined-behavior-c)
+- [Pointers in C Explained for Beginners With Simple Examples](/blog/pointers-in-c)
+- [C data types](/blog/c-data-types)
+- [C for Beginners course](/courses/c-for-beginners)

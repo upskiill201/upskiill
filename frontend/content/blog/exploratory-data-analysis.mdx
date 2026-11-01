@@ -1,0 +1,76 @@
+---
+title: "Exploratory Data Analysis (EDA): A Step-by-Step Guide for Beginners"
+description: "EDA is how you get to know a dataset before modelling. Learn the steps: shape, types, missing values, distributions, outliers and relationships."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [exploratory data analysis, eda, eda python, pandas eda, data exploration]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Data Science for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/data-science-for-beginners
+  label: "See the Data Science for Beginners course"
+faq:
+  - question: "What is exploratory data analysis?"
+    answer: "The process of examining and summarising a dataset to understand its structure, quality and patterns before further analysis."
+  - question: "What should I check first?"
+    answer: "Size, column types, missing values and basic statistics."
+  - question: "Which tools are used?"
+    answer: "Python with pandas and plotting libraries, or spreadsheets for small data."
+---
+
+Meet your data before you model it.
+
+## Direct answer
+
+Exploratory data analysis is looking at a dataset to understand its structure, quality and patterns. Check the shape and types, summarise numbers, find missing values and outliers, look at distributions and explore relationships between columns. It guides cleaning and modelling.
+
+## Steps with pandas
+
+```python
+import pandas as pd
+
+df = pd.read_csv("data.csv")
+
+df.shape
+df.head()
+df.info()
+df.describe()
+df.isna().sum()
+df["city"].value_counts()
+df.corr(numeric_only=True)
+```
+
+## What to look for
+
+1. **Shape:** how many rows and columns?
+2. **Types:** are numbers stored as text?
+3. **Missing values:** how many, and why?
+4. **Distributions:** skewed, odd peaks?
+5. **Outliers:** errors or real extremes?
+6. **Relationships:** which columns move together?
+
+## Plot it
+
+```python
+df["price"].hist()
+df.plot.scatter(x="size", y="price")
+```
+
+## Where Teyro fits
+
+Teyro's [Data Science for Beginners](/courses/data-science-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Time spent on EDA saves time and mistakes later.
+
+## More guides
+
+- [Jupyter Notebook for Beginners](/blog/jupyter-notebook-guide)
+- [Mean, Median and Mode](/blog/mean-median-mode)
+- [Correlation vs Causation](/blog/correlation-vs-causation)
+- [Pandas for beginners](/blog/pandas-for-beginners)
+- [Learn data science from scratch](/blog/learn-data-science-from-scratch)
+- [Data Science for Beginners course](/courses/data-science-for-beginners)

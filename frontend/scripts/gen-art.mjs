@@ -201,6 +201,13 @@ const badges = {
       `<circle cx="50" cy="58" r="15" fill="${C.gold[1]}"/><circle cx="50" cy="56" r="15" fill="${C.gold[0]}"/>` +
       `<path d="M50 48L52.5 53.5L58.5 54L54 58L55.5 64L50 61L44.5 64L46 58L41.5 54L47.5 53.5Z" fill="#fff"/>`,
   ),
+  // The Teyro Network: an answer (speech bubble) that worked (the check).
+  helper: badge(
+    C.ice,
+    `<rect x="27" y="32" width="46" height="32" rx="11" fill="${C.blue[1]}"/><rect x="27" y="30" width="46" height="32" rx="11" fill="#fff"/>` +
+      `<path d="M36 60L32 72L46 62Z" fill="#fff"/>` +
+      `<path d="M39 46L47 53L61 39" stroke="${C.green[0]}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`,
+  ),
 };
 
 // ─── UI stat icons (shop stats, level page) ──────────────────────────────────

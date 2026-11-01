@@ -15,6 +15,8 @@ import type { Config } from 'jest';
 const shared = {
   preset: 'ts-jest',
   moduleNameMapper: {
+    // CSS modules have no loader under Jest: class names read back as themselves.
+    '\\.css$': '<rootDir>/jest.styleMock.js',
     '^@/(.*)$': '<rootDir>/$1',
   },
 } satisfies Partial<Config>;

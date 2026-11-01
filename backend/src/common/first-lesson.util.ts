@@ -1,4 +1,5 @@
 import type { PrismaService } from '../prisma/prisma.service';
+import { lessonIds } from './passed-lessons.util';
 
 const HOUR = 3_600_000;
 
@@ -33,6 +34,7 @@ export async function firstLessonState(
     where: { userId_courseId: { userId, courseId } },
     select: {
       completedLessons: true,
+      testedOutLessons: true,
       user: { select: { accountStatus: true } },
       course: {
         select: {
@@ -80,12 +82,15 @@ export async function firstLessonState(
     },
   });
 
+  // The first lesson they haven't passed: lesson 1, unless a placement or
+  // Jump ahead test moved them on (then it's the first lesson at their level).
+  const testedOut = new Set(lessonIds(enrollment.testedOutLessons));
   let target: (typeof sections)[number]['lessons'][number] | undefined;
   let sectionIndex = 0;
   for (let i = 0; i < sections.length && !target; i++) {
     const hit = opts.lessonId
       ? sections[i].lessons.find((l) => l.id === opts.lessonId)
-      : sections[i].lessons[0];
+      : sections[i].lessons.find((l) => !testedOut.has(l.id));
     if (hit) {
       target = hit;
       sectionIndex = i;

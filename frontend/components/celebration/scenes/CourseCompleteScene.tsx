@@ -11,7 +11,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { Trophy } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import SceneShell from '../SceneShell';
 import CelebrationMascot from '../CelebrationMascot';
 import { AnimatedProgressBar, StatPillRow, TypewriterBubble } from '../ScenePrimitives';
@@ -108,7 +108,7 @@ export default function CourseCompleteScene({ scene, onAdvance }: CourseComplete
           if (!reducedMotion) playSound('shine');
         }}
       >
-        <Trophy size={46} strokeWidth={2.2} />
+        <Glyph name="trophy" size={46} strokeWidth={2.2} />
       </motion.div>
 
       <motion.h1

@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         message: "Your email had the wrong launch date. Did you read it before sending?",
         prompt: 'Which trap did Ada fall into, and what does she say?',
         options: [
-          { text: "I didn't read it closely enough, sorry. The launch is the 14th. I'll always check dates from now on." },
           { text: 'The AI wrote it, not me.', why: 'She sent it. She owns it (trap 7).' },
           { text: 'Dates are not important.', why: 'They are very important to a client.' },
+          { text: "I didn't read it closely enough, sorry. The launch is the 14th. I'll always check dates from now on." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -147,11 +147,11 @@ const lesson: OriginalLesson = {
         message: "I keep getting essays back from my AI tool when I just want a quick answer. What am I doing wrong?",
         prompt: 'What should Ada tell her?',
         options: [
-          { text: 'Add a length: "answer in 2 sentences" or "3 bullets". Without it, it tends to cover everything.' },
           { text: 'Use a different AI.', why: 'Same request, same essay. Add a length (trap 3).' },
+          { text: 'Add a length: "answer in 2 sentences" or "3 bullets". Without it, it tends to cover everything.' },
           { text: 'Ask it to "be brief, please".', why: 'Better than nothing, but a number works more reliably.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

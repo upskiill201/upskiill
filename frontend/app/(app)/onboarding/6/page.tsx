@@ -1,7 +1,5 @@
 'use client';
 
-import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
+import ToOnboarding from '@/components/onboarding/v3/ToOnboarding';
 
-export default function OnboardingStep6() {
-  return <OnboardingShell initialStep={6} />;
-}
+export default ToOnboarding;

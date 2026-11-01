@@ -3,24 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  ChevronLeft,
-  CircleCheck,
-  Crown,
-  Heart,
-  Loader2,
-  Lock,
-  RotateCcw,
-  ShieldCheck,
-  Zap,
-} from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import {
   FaCcVisa,
   FaCcMastercard,
   FaCcApplePay,
   FaGooglePay,
-  FaMobileAlt,
-  FaCreditCard,
 } from 'react-icons/fa';
 import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -319,7 +307,7 @@ export default function ScenePlans({
         onClick={onBack}
         aria-label="Back"
       >
-        <ChevronLeft size={19} />
+        <Glyph name="chevronLeft" size={19} />
       </button>
 
       <div className={styles.sceneScroll}>
@@ -383,7 +371,7 @@ export default function ScenePlans({
               onSelect={() => choosePlan('YEARLY')}
               format={show}
               badge={{
-                icon: Crown,
+                icon: 'crown',
                 text: ladder.yearly.savingsPercent ? `Best value · save ${ladder.yearly.savingsPercent}%` : 'Best value',
               }}
               anchorPrice={ladder.isFree ? undefined : yearAtMonthlyRate}
@@ -405,7 +393,7 @@ export default function ScenePlans({
           {/* One honest nudge back to yearly, with the real dollar saving. */}
           {selectedPlan === 'MONTHLY' && yearlySavingUsd > 0 && (
             <button type="button" className={styles.switchNudge} onClick={() => choosePlan('YEARLY')}>
-              <Crown size={14} strokeWidth={2.75} aria-hidden="true" />
+              <Glyph name="crown" size={14} strokeWidth={2.75} />
               <span>
                 Switch to yearly and keep <strong>{show(yearlySavingUsd)}</strong> a year
               </span>
@@ -437,7 +425,7 @@ export default function ScenePlans({
                 aria-pressed={!isMomo}
                 onClick={() => selectRail('STRIPE')}
               >
-                <FaCreditCard size={12} />
+                <Glyph name="card" size={12} />
                 <span>Card · Stripe</span>
               </button>
               <button
@@ -446,7 +434,7 @@ export default function ScenePlans({
                 aria-pressed={isMomo}
                 onClick={() => selectRail('MESOMB')}
               >
-                <FaMobileAlt size={12} />
+                <Glyph name="phone" size={12} />
                 <span>Mobile Money</span>
               </button>
             </div>
@@ -496,7 +484,7 @@ export default function ScenePlans({
           <div aria-live="polite">
             {errorMsg && (
               <div className={`${styles.msgBox} ${styles.msgError}`} role="alert">
-                <Zap size={14} />
+                <Glyph name="alert" size={14} />
                 <span>{errorMsg}</span>
               </div>
             )}
@@ -515,12 +503,12 @@ export default function ScenePlans({
         >
           {submitting ? (
             <>
-              <Loader2 size={18} className={styles.spinner} />
+              <Glyph name="spinner" size={18} className={styles.spinner} />
               <span>{ctaLabel}</span>
             </>
           ) : (
             <>
-              <Lock size={15} />
+              <Glyph name="lock" size={15} />
               <span>{ctaLabel}</span>
             </>
           )}
@@ -529,15 +517,15 @@ export default function ScenePlans({
         {/* TRUST MICROCOPY */}
         <div className={styles.trustBar}>
           <span className={styles.trustItem}>
-            <ShieldCheck size={13} />
+            <Glyph name="shieldCheck" size={13} />
             Secure payments
           </span>
           <span className={styles.trustItem}>
-            <RotateCcw size={13} />
+            <Glyph name="refresh" size={13} />
             Cancel anytime
           </span>
           <span className={styles.trustItem}>
-            <Heart size={13} />
+            <Glyph name="heart" size={13} />
             Progress saved
           </span>
         </div>
@@ -555,7 +543,7 @@ export default function ScenePlans({
         )}
 
         <p className={styles.billingNotice}>
-          <CircleCheck size={11} />
+          <Glyph name="checkCircle" size={11} />
           <span>
             {billingLine}
             {!isFree && (

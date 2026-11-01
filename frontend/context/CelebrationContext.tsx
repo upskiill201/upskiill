@@ -315,6 +315,11 @@ export type CelebrationScene =
        * button starts it.
        */
       lessonTitle?: string;
+      /**
+       * Asked right after gaining a study buddy: the preview is a buddy
+       * notification ("Ada just did today's lesson") — the reason to say yes.
+       */
+      buddyName?: string;
       onComplete?: () => void;
       dedupeKey?: string;
     }

@@ -11,7 +11,7 @@
  */
 
 import React, { type ReactNode } from 'react';
-import { X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import styles from './Leaderboard.module.css';
 
 interface LeaderboardSceneShellProps {
@@ -31,7 +31,7 @@ export default function LeaderboardSceneShell({ children, cta, onSkip }: Leaderb
     <div className={styles.backdrop} role="dialog" aria-modal="true" aria-label="Leaderboard">
       {onSkip && (
         <button type="button" className={styles.skipButton} onClick={onSkip} aria-label="Skip">
-          <X size={16} strokeWidth={2.6} />
+          <Glyph name="close" size={16} strokeWidth={2.6} />
         </button>
       )}
 

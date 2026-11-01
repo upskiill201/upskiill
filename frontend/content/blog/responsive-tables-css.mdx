@@ -1,0 +1,85 @@
+---
+title: "Responsive Tables: How to Make HTML Tables Work on Mobile"
+description: "Tables are hard on small screens. Learn simple patterns for responsive tables: horizontal scroll, stacked rows and priority columns with CSS."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [responsive tables, responsive table css, html table mobile, scrollable table, stacked table]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Responsive Web Design with CSS turns this into short, playable lessons. Free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive Web Design with CSS course"
+faq:
+  - question: "How do I make a table responsive?"
+    answer: "Wrap it in a container with horizontal scrolling, or restyle rows as stacked blocks on small screens."
+  - question: "Is overflow-x scroll okay?"
+    answer: "Yes, for data tables. Add visual cues and keep the first column readable."
+  - question: "Should I use tables for layout?"
+    answer: "No. Use tables only for tabular data and use Grid or Flexbox for layout."
+---
+
+A table with six columns will not fit on a 360 pixel screen.
+
+## Direct answer
+
+The simplest responsive table is to wrap it in a container with `overflow-x: auto` so it scrolls sideways. For a more phone-friendly view, restyle each row as a stacked block with labels from `data-label` attributes.
+
+## Scrolling table
+
+```html
+<div class="table-wrap">
+  <table>...</table>
+</div>
+```
+
+```css
+.table-wrap {
+  overflow-x: auto;
+}
+table {
+  border-collapse: collapse;
+  min-width: 600px;
+}
+```
+
+## Stacked rows
+
+```css
+@media (max-width: 600px) {
+  table, thead, tbody, tr, td { display: block; }
+  thead { position: absolute; left: -9999px; }
+  td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    display: block;
+  }
+}
+```
+
+```html
+<td data-label="Price">12.00</td>
+```
+
+## Tips
+
+- Keep key columns visible.
+- Use `th scope` for accessibility.
+- Do not hide important data.
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Scroll for dense data, stack for short rows.
+
+## More guides
+
+- [CSS aspect-ratio](/blog/css-aspect-ratio)
+- [5 CSS Grid Layout Patterns Every Beginner Should Know](/blog/css-grid-layout-patterns)
+- [CSS Media Queries Explained](/blog/css-media-queries-explained)
+- [What is responsive web design](/blog/what-is-responsive-web-design)
+- [Responsive Web Design with CSS course](/courses/responsive-web-design-with-css)

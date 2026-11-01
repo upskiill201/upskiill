@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         message: 'hi',
         prompt: 'Best reply to a bare "hi"?',
         options: [
-          { text: 'Hi Lucía! What can I help with?' },
           { text: '(say nothing until she asks)', why: 'Keeps you both waiting.' },
           { text: 'hi', why: 'Now you are both waiting.' },
+          { text: 'Hi Lucía! What can I help with?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -158,11 +158,11 @@ const lesson: OriginalLesson = {
         message: 'Could your team also make 10 social posts for launch day? Tomorrow?',
         prompt: "Ada's team can do 3 by tomorrow. Which reply?",
         options: [
-          { text: "Thanks for asking! 10 isn't possible by tomorrow, but we can do the 3 most important ones. Which 3 matter most?" },
           { text: "So sorry, so sorry, we're too busy, sorry!", why: 'Over-apology, and no alternative.' },
+          { text: "Thanks for asking! 10 isn't possible by tomorrow, but we can do the 3 most important ones. Which 3 matter most?" },
           { text: 'Sure, all 10!', why: 'A yes they cannot deliver.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -241,11 +241,11 @@ const lesson: OriginalLesson = {
         message: "It's 3am here and your team just pinged me again!",
         prompt: 'What should Ada say?',
         options: [
-          { text: "Sorry about that! We'll schedule messages for your working hours." },
           { text: 'Turn off notifications.', why: 'Puts the fix on her.' },
+          { text: "Sorry about that! We'll schedule messages for your working hours." },
           { text: 'It was urgent.', why: 'It was not; and scheduling fixes it.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

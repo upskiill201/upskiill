@@ -77,11 +77,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a template fix, so you only think about content?',
         options: [
-          { text: 'The shape of the message' },
           { text: 'The facts', why: 'The facts change every time; they come from you.' },
           { text: 'The recipient', why: 'Recipients change too.' },
+          { text: 'The shape of the message' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         message: "Could you introduce me to Grace? I hear she's the one doing our onboarding screens.",
         prompt: 'Which introduction should Ada send?',
         options: [
-          { text: "Lucía, meet Grace: she's designing your onboarding screens. Grace, meet Lucía: she leads marketing on the client side. You should talk about the welcome emails. Over to you!" },
           { text: 'Lucía, Grace. Grace, Lucía. Bye!', why: 'Neither knows who the other is or why to talk.' },
+          { text: "Lucía, meet Grace: she's designing your onboarding screens. Grace, meet Lucía: she leads marketing on the client side. You should talk about the welcome emails. Over to you!" },
           { text: 'Grace, please email Lucía at some point.', why: 'Not an introduction; no context for either.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -192,11 +192,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'How do you stop a template feeling copy-pasted?',
         options: [
-          { text: 'Add at least one specific detail every time' },
           { text: 'Change the font', why: 'Content, not looks.' },
+          { text: 'Add at least one specific detail every time' },
           { text: 'Use it less often', why: 'Personalise it instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

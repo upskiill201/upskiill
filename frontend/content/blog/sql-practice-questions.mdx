@@ -1,0 +1,85 @@
+---
+title: "SQL Practice Questions for Beginners With Answers"
+description: "Ten beginner SQL practice questions with sample tables and solutions covering SELECT, WHERE, ORDER BY, GROUP BY and JOIN. Try them before reading the answers."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [sql practice questions, sql exercises for beginners, sql practice problems, sql practice with answers, learn sql by doing]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "SQL and Databases for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/sql-and-databases-for-beginners
+  label: "See the SQL and Databases for Beginners course"
+faq:
+  - question: "How can I practise SQL?"
+    answer: "Use sample databases and exercises, write queries yourself and check your results against expected output."
+  - question: "Do I need to install a database?"
+    answer: "Not necessarily. Many tools run SQL in the browser, and SQLite is simple to install."
+  - question: "How often should I practise?"
+    answer: "Little and often. Short daily sessions work well."
+---
+
+You learn SQL by writing it. Try these before you read the answers.
+
+## Sample tables
+
+```text
+customers(id, name, city)
+orders(id, customer_id, total, created_at)
+```
+
+## Questions
+
+1. List all customers.
+2. List customers from "Lagos".
+3. List the 5 largest orders.
+4. Count how many orders exist.
+5. Show total revenue.
+6. Show revenue per customer.
+7. Show customers with more than 3 orders.
+8. List customers with their order totals.
+9. Find customers who have no orders.
+10. Find the average order total.
+
+## Answers
+
+```sql
+-- 1
+SELECT * FROM customers;
+-- 2
+SELECT * FROM customers WHERE city = 'Lagos';
+-- 3
+SELECT * FROM orders ORDER BY total DESC LIMIT 5;
+-- 4
+SELECT COUNT(*) FROM orders;
+-- 5
+SELECT SUM(total) FROM orders;
+-- 6
+SELECT customer_id, SUM(total) FROM orders GROUP BY customer_id;
+-- 7
+SELECT customer_id FROM orders GROUP BY customer_id HAVING COUNT(*) > 3;
+-- 8
+SELECT c.name, o.total FROM customers c JOIN orders o ON o.customer_id = c.id;
+-- 9
+SELECT c.name FROM customers c LEFT JOIN orders o ON o.customer_id = c.id WHERE o.id IS NULL;
+-- 10
+SELECT AVG(total) FROM orders;
+```
+
+## Where Teyro fits
+
+Teyro's [SQL and Databases for Beginners](/courses/sql-and-databases-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Type the queries yourself, change them and see what happens.
+
+## More guides
+
+- [SQL SELECT Statement](/blog/sql-select-statement)
+- [SQL WHERE Clause](/blog/sql-where-clause)
+- [INNER JOIN vs LEFT JOIN](/blog/inner-join-vs-left-join)
+- [Sql practice for beginners](/blog/sql-practice-for-beginners)
+- [How to learn sql for beginners](/blog/how-to-learn-sql-for-beginners)
+- [SQL and Databases for Beginners course](/courses/sql-and-databases-for-beginners)

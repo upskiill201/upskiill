@@ -1,0 +1,249 @@
+{
+  "slug": "m11-ai-summaries",
+  "compId": "M11-ai-summaries",
+  "title": "Don't forward an AI summary",
+  "look": "lab",
+  "voice": "TX3LPaxmHKxFdv7VOQHJ",
+  "model": "eleven_multilingual_v2",
+  "speed": 1.08,
+  "hook": {
+    "archetype": "\"Don't…\" (founder template, picked 2026-10-14)",
+    "igCaptionLine1": "Don't forward an AI summary until you watch this 📄",
+    "igCaptionLine2": "Every word can be true, and it can still send you the wrong way 👇"
+  },
+  "sources": [
+    {
+      "claim": "BBC study (Feb 2025): 51% of AI answers to news questions had significant issues; 19% of answers citing BBC content introduced factual errors (statements, numbers, dates); 13% of quotes from BBC articles altered or not in the article; ChatGPT, Copilot, Gemini, Perplexity; reviewed by BBC journalists",
+      "url": "https://www.bbc.co.uk/mediacentre/2025/bbc-research-shows-issues-with-answers-from-artificial-intelligence-assistants",
+      "note": "BBC Media Centre, published 11 Feb 2025",
+      "checked": "2026-10-14"
+    },
+    {
+      "claim": "Gemini said 'The NHS advises people not to start vaping, and recommends that smokers who want to quit should use other methods'; the NHS does recommend vaping as a method to quit smoking",
+      "url": "https://www.bbc.co.uk/mediacentre/2025/bbc-research-shows-issues-with-answers-from-artificial-intelligence-assistants",
+      "note": "example listed in the same BBC release",
+      "checked": "2026-10-14"
+    },
+    {
+      "claim": "EBU/BBC News Integrity in AI Assistants (Oct 2025): 3,000+ responses, 22 PSM orgs, 18 countries, 14 languages; 45% had at least one significant issue; 31% serious sourcing problems; 20% major accuracy issues",
+      "url": "https://www.bbc.co.uk/mediacentre/2025/new-ebu-research-ai-assistants-news-content",
+      "note": "BBC Media Centre, 22 Oct 2025",
+      "checked": "2026-10-14"
+    },
+    {
+      "claim": "Just over a third of UK adults trust AI to produce accurate summaries, almost half of under-35s",
+      "url": "https://www.bbc.co.uk/mediacentre/2025/new-ebu-research-ai-assistants-news-content",
+      "note": "BBC audience research cited in the same release; optional on-screen footnote",
+      "checked": "2026-10-14"
+    },
+    {
+      "claim": "Lesson content: four ways summaries go wrong (invented details, flipped meaning, wrong attribution, false certainty); 2-minute spot-check of the 2–3 claims you act on; ask for page numbers + keep the source's certainty; summaries drop caveats, conditions and dissent; 'What did you leave out…' question; phones-only / two-week holiday test / 2 of 5 designers example",
+      "url": "https://teyro.app/courses/ai-at-work-beginner",
+      "note": "AI at Work: Beginner, Unit 3 lessons 'Summaries you can trust' + 'When a summary leaves things out' (lesson text from backend/originals on feat/teyro-originals)",
+      "checked": "2026-10-14"
+    },
+    {
+      "claim": "AI at Work: Beginner: 60 lessons, 3 units; learn to write prompts, summarise long documents and meetings, check AI answers for mistakes before you use them",
+      "url": "https://teyro.app/courses/ai-at-work-beginner",
+      "note": "live course page",
+      "checked": "2026-10-14"
+    },
+    {
+      "claim": "Teyro lines: lessons in four steps (learn, apply, reflect, deepen); apply straight away with instant feedback; streaks + freezes; weekly leagues Bronze → Diamond; three daily quests, chests; friends; 'Built so you actually finish'; 'short daily lessons with streaks, leagues and friends'; free to start",
+      "url": "https://teyro.app/features",
+      "note": "features page + homepage footer line",
+      "checked": "2026-10-14"
+    }
+  ],
+  "teyro": {
+    "bridgeChips": [
+      "AI at Work",
+      "60 lessons",
+      "Short daily lessons"
+    ],
+    "outroHeadline": "Use AI at work. Check it before you send.",
+    "outroAsk": "Search Teyro · teyro.app"
+  },
+  "lines": [
+    {
+      "id": "h1",
+      "chapter": "00",
+      "text": "Don't forward an AI summary | until you *watch* this."
+    },
+    {
+      "id": "h2",
+      "chapter": "00",
+      "text": "When the BBC checked AI answers about the news, | *more than half* had a significant problem."
+    },
+    {
+      "id": "h3",
+      "chapter": "00",
+      "text": "And they read perfectly. | Let's follow one summary, | and catch every mistake."
+    },
+    {
+      "id": "o1",
+      "chapter": "00",
+      "text": "This is Ada. | Her boss needs a forty-page report | summed up by nine. | Seconds later, | one clean paragraph."
+    },
+    {
+      "id": "o2",
+      "chapter": "00",
+      "text": "It sounds great. | She's about to hit *forward*."
+    },
+    {
+      "id": "c1a",
+      "chapter": "01 Why it sounds sure",
+      "text": "First, | why it sounds so sure. | AI doesn't look things up. | Like a very good autocomplete, | it writes the most likely next words."
+    },
+    {
+      "id": "c1b",
+      "chapter": "01 Why it sounds sure",
+      "text": "Sounding right is its whole job. | So a wrong summary reads | *just as smoothly* as a right one."
+    },
+    {
+      "id": "c2a",
+      "chapter": "02 The invented number",
+      "text": "Mistake one. | *The invented number.* | The summary says sign-ups rose thirty-two percent. | That number isn't in the report."
+    },
+    {
+      "id": "c2b",
+      "chapter": "02 The invented number",
+      "text": "It filled a gap with something likely. | That's called a *hallucination*. | In the BBC study, | nearly one in five answers | added wrong facts, | numbers or dates."
+    },
+    {
+      "id": "c3a",
+      "chapter": "03 The flipped not",
+      "text": "Mistake two. | *The flipped not.* | The report: | the client did *not* approve the budget. | The summary: | the client approved it. | One word. | Opposite meaning."
+    },
+    {
+      "id": "c3b",
+      "chapter": "03 The flipped not",
+      "text": "Real example: | an assistant said the NHS tells smokers | to quit without vaping. | It actually *recommends* vaping."
+    },
+    {
+      "id": "c4a",
+      "chapter": "04 The wrong person",
+      "text": "Mistake three. | *The wrong person.* | Grace raised the risk. | The summary gives it to Sam."
+    },
+    {
+      "id": "c4b",
+      "chapter": "04 The wrong person",
+      "text": "Who said what gets lost all the time. | A bigger follow-up study found serious *sourcing* problems | in thirty-one percent of answers."
+    },
+    {
+      "id": "c5a",
+      "chapter": "05 False certainty",
+      "text": "Mistake four. | *False certainty.* | The report: | a few users suggested dark mode. | The summary: | *users want* dark mode."
+    },
+    {
+      "id": "c5b",
+      "chapter": "05 False certainty",
+      "text": "May becomes will. | Some becomes all. | A very different decision."
+    },
+    {
+      "id": "cliff",
+      "chapter": "05 False certainty",
+      "text": "So does Ada have to read | all forty pages herself?"
+    },
+    {
+      "id": "bridge",
+      "chapter": "bridge",
+      "text": "Quick thing. | This is straight out of AI at Work, | a beginner course on Teyro."
+    },
+    {
+      "id": "back",
+      "chapter": "bridge",
+      "text": "Short daily lessons. | Okay. | Forty pages? | No. | *Two minutes.*"
+    },
+    {
+      "id": "c6a",
+      "chapter": "06 The two-minute check",
+      "text": "Fix one. | *The two-minute check.* | Don't check every sentence. | Just the two or three claims | you'll act on."
+    },
+    {
+      "id": "c6b",
+      "chapter": "06 The two-minute check",
+      "text": "Find each one in the report. | Check the number, | the not, | who said it, | and how *sure* it was."
+    },
+    {
+      "id": "c7a",
+      "chapter": "07 Ask for proof",
+      "text": "Fix two. | *Ask for proof up front.* | Tell it: | only use claims from the text, | add page numbers, | and keep the report's certainty."
+    },
+    {
+      "id": "c7b",
+      "chapter": "07 Ask for proof",
+      "text": "Now every claim points to a page. | Checking takes *seconds*."
+    },
+    {
+      "id": "t1",
+      "chapter": "08 The weird part",
+      "text": "Now here's the weird part. | A summary can be *a hundred percent accurate*, | and still mislead you."
+    },
+    {
+      "id": "t2",
+      "chapter": "08 The weird part",
+      "text": "Sign-ups went up. | True. | But only on phones, | in a two-week holiday test, | and two of five designers disagreed."
+    },
+    {
+      "id": "t3",
+      "chapter": "08 The weird part",
+      "text": "The summary kept the headline, | and dropped every *but*. | Every word was true. | The decision would be wrong."
+    },
+    {
+      "id": "t4",
+      "chapter": "08 The weird part",
+      "text": "So ask: | what did you leave out | that a careful reader would want to *know*?"
+    },
+    {
+      "id": "cav",
+      "chapter": "08 The weird part",
+      "text": "To be fair, | most summaries are mostly right. | That's exactly why the wrong ones slip through."
+    },
+    {
+      "id": "recap",
+      "chapter": "Recap",
+      "text": "So. | It sounds sure by design. | Check the numbers, | the nots, | the names, | the certainty. | Then ask what it *left out*."
+    },
+    {
+      "id": "ty1",
+      "chapter": "teyro",
+      "text": "Using AI at work is a skill. | You can learn it on Teyro."
+    },
+    {
+      "id": "ty2",
+      "chapter": "teyro",
+      "text": "AI at Work is sixty lessons, | from your first prompt | to checking AI answers."
+    },
+    {
+      "id": "ty3",
+      "chapter": "teyro",
+      "text": "Lessons run in four steps, | and you practise straight away, | with instant feedback."
+    },
+    {
+      "id": "ty4",
+      "chapter": "teyro",
+      "text": "Your streak grows every day, | and a freeze covers a busy one. | Weekly leagues, | Bronze to Diamond. | Daily quests and chests."
+    },
+    {
+      "id": "ty5",
+      "chapter": "teyro",
+      "text": "It plays like a game, | so you actually *finish*."
+    },
+    {
+      "id": "punch",
+      "chapter": "end",
+      "text": "Trust the summary. | But check the *but*."
+    },
+    {
+      "id": "cta",
+      "chapter": "end",
+      "text": "Want to use AI at work without getting burned? | Learn it on Teyro."
+    },
+    {
+      "id": "cta2",
+      "chapter": "end",
+      "text": "Search for it in your browser, | or go straight to Teyro dot app."
+    }
+  ]
+}

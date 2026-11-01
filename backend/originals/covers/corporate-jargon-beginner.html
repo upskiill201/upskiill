@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=block" rel="stylesheet" />
+<style>
+  /* Teyro Originals cover: Corporate Jargon (Beginner). A still frame of a
+     motion-graphics scene: Brian's jargon message arrives, the phrases light
+     up, and the plain-English translation slides in underneath while jargon
+     chips fly past. No Tey. */
+  :root {
+    --brand: #0172FD;
+    --brand-dark: #0060D9;
+    --brand-deep: #0050B3;
+    --ink: #071233;
+    --muted: #5B6B8C;
+    --purple: #9333EA;
+    --purple-dark: #6B21A8;
+    --indigo: #6352FF;
+    --green: #22C55E;
+    --green-dark: #16A34A;
+    --amber: #F59E0B;
+    --amber-dark: #B45309;
+    --pink: #EC4899;
+    --pink-dark: #9D174D;
+    --white: #FFFFFF;
+    --mist: #E8F1FF;
+    --line: #E3EAF6;
+    --hl: #FDE68A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 1000px; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--brand); overflow: hidden; position: relative; }
+
+  .blob { position: absolute; border-radius: 50%; background: var(--brand-dark); }
+  .speed { position: absolute; height: 10px; border-radius: 999px; background: var(--white); transform: rotate(-18deg); transform-origin: left center; }
+  .ring { position: absolute; border-radius: 50%; border: 6px solid var(--white); }
+
+  .copy { position: absolute; left: 100px; top: 130px; width: 680px; z-index: 5; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--white); color: var(--purple);
+    font-weight: 800; font-size: 26px; letter-spacing: .08em; text-transform: uppercase;
+    padding: 14px 26px; border-radius: 999px; box-shadow: 0 6px 0 var(--brand-deep);
+  }
+  .pill i { width: 14px; height: 14px; border-radius: 50%; background: var(--purple); display: inline-block; }
+  h1 { margin-top: 40px; color: var(--white); font-weight: 800; font-size: 124px; line-height: .95; letter-spacing: -0.035em; }
+  h1 em { font-style: normal; color: var(--ink); background: var(--amber); padding: 0 18px 6px; border-radius: 26px; box-shadow: 0 8px 0 var(--amber-dark); display: inline-block; margin-top: 14px; }
+  .sub { margin-top: 40px; color: var(--mist); font-weight: 700; font-size: 34px; line-height: 1.3; width: 620px; }
+
+  .stage { position: absolute; left: 820px; top: 80px; width: 740px; height: 860px; transform: rotate(-4deg); }
+
+  /* Brian's message. */
+  .msg {
+    position: absolute; left: 60px; top: 40px; width: 610px;
+    background: var(--white); border-radius: 34px 34px 34px 10px; box-shadow: 0 12px 0 var(--brand-deep);
+    padding: 30px 34px;
+  }
+  .who { display: flex; align-items: center; gap: 14px; font-weight: 800; font-size: 24px; color: var(--brand); letter-spacing: .06em; text-transform: uppercase; }
+  .av { width: 46px; height: 46px; border-radius: 50%; background: var(--indigo); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 0 #3F33B8; letter-spacing: 0; }
+  .msg p { margin-top: 18px; font-weight: 800; font-size: 34px; line-height: 1.32; color: var(--ink); }
+  .msg mark { background: var(--hl); color: var(--ink); padding: 0 8px; border-radius: 10px; box-shadow: inset 0 -5px 0 var(--amber); }
+
+  /* Arrow: "translating". */
+  .arrow {
+    position: absolute; left: 300px; top: 368px; width: 120px; height: 120px; border-radius: 50%;
+    background: var(--amber); box-shadow: 0 8px 0 var(--amber-dark); display: flex; align-items: center; justify-content: center; z-index: 4;
+  }
+
+  /* Plain-English translation. */
+  .plain {
+    position: absolute; left: 110px; top: 470px; width: 600px;
+    background: var(--green); border-radius: 34px; box-shadow: 0 12px 0 var(--green-dark);
+    padding: 28px 34px; color: var(--white);
+  }
+  .plain .tag { font-weight: 800; font-size: 22px; letter-spacing: .12em; text-transform: uppercase; opacity: .9; }
+  .plain p { margin-top: 12px; font-weight: 800; font-size: 34px; line-height: 1.28; }
+
+  .day {
+    position: absolute; left: -20px; top: -30px; display: flex; align-items: center; gap: 12px;
+    background: var(--pink); color: var(--white); font-weight: 800; font-size: 28px;
+    padding: 14px 24px; border-radius: 22px; box-shadow: 0 7px 0 var(--pink-dark); transform: rotate(-8deg); z-index: 6;
+  }
+
+  .chip { position: absolute; padding: 13px 22px; border-radius: 18px; font-weight: 800; font-size: 27px; color: var(--white); white-space: nowrap; }
+  .ghostc { opacity: .25; color: transparent !important; box-shadow: none !important; }
+  .ghostc2 { opacity: .12; color: transparent !important; box-shadow: none !important; }
+  .c1 { background: var(--purple); box-shadow: 0 6px 0 var(--purple-dark); }
+  .c2 { background: var(--indigo); box-shadow: 0 6px 0 #3F33B8; }
+  .c3 { background: var(--ink); box-shadow: 0 6px 0 #000; }
+
+  .xp { position: absolute; left: 560px; top: 735px; background: var(--white); color: var(--brand); font-weight: 800; font-size: 32px; padding: 14px 24px; border-radius: 22px; box-shadow: 0 7px 0 var(--brand-deep); transform: rotate(8deg); }
+  .spark { position: absolute; }
+</style>
+</head>
+<body>
+  <div class="blob" style="width:820px;height:820px;right:-220px;top:-300px;opacity:.55"></div>
+  <div class="blob" style="width:540px;height:540px;left:-220px;bottom:-280px;opacity:.45"></div>
+
+  <div class="speed" style="left:-40px;top:930px;width:420px;opacity:.10"></div>
+  <div class="speed" style="left:300px;top:960px;width:260px;opacity:.16"></div>
+  <div class="speed" style="left:700px;top:100px;width:160px;opacity:.14"></div>
+  <div class="speed" style="left:1380px;top:920px;width:260px;opacity:.12"></div>
+  <div class="ring" style="width:150px;height:150px;left:690px;top:740px;opacity:.12"></div>
+  <div class="ring" style="width:60px;height:60px;left:1510px;top:60px;opacity:.25"></div>
+
+  <div class="copy">
+    <span class="pill"><i></i>Teyro Original · Beginner</span>
+    <h1>Corporate<br/><em>Jargon</em></h1>
+    <p class="sub">Remi's internship. Learn what they really mean, and say it plainly.</p>
+  </div>
+
+  <div class="stage">
+    <div class="day">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      Day 1
+    </div>
+
+    <div class="msg">
+      <div class="who"><span class="av">B</span>Brian, 9:00 a.m.</div>
+      <p>Let's <mark>circle back</mark>, take it <mark>offline</mark> and grab the <mark>low-hanging fruit</mark>.</p>
+    </div>
+
+    <div class="arrow">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#071233" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M5 13l7 7 7-7"/></svg>
+    </div>
+
+    <div class="plain">
+      <div class="tag">In plain English</div>
+      <p>Later, separately, and do the easy tasks first.</p>
+    </div>
+
+    <div class="chip c1 ghostc2" style="left:-150px;top:330px">Deep dive</div>
+    <div class="chip c1 ghostc" style="left:-112px;top:336px">Deep dive</div>
+    <div class="chip c1" style="left:-74px;top:342px;transform:rotate(-8deg)">Deep dive</div>
+
+    <div class="chip c2 ghostc2" style="left:620px;top:395px">Ping me</div>
+    <div class="chip c2 ghostc" style="left:585px;top:388px">Ping me</div>
+    <div class="chip c2" style="left:548px;top:380px;transform:rotate(7deg)">Ping me</div>
+
+    <div class="chip c3 ghostc2" style="left:-110px;top:760px">EOD</div>
+    <div class="chip c3 ghostc" style="left:-78px;top:752px">EOD</div>
+    <div class="chip c3" style="left:-46px;top:744px;transform:rotate(-6deg)">EOD</div>
+
+    <div class="xp">+10 XP</div>
+
+    <svg class="spark" style="left:690px;top:-10px" width="54" height="54" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#fff"/></svg>
+    <svg class="spark" style="left:40px;top:640px" width="40" height="40" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F59E0B"/></svg>
+    <svg class="spark" style="left:420px;top:820px" width="34" height="34" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#fff" opacity=".8"/></svg>
+  </div>
+</body>
+</html>

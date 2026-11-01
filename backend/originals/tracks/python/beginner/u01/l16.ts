@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         message: "I stared at an empty editor for 20 minutes. I didn't know where to start.",
         prompt: "What's Arjun's best advice?",
         options: [
-          { text: 'Write the plan in comments first, in plain words. Then turn one comment at a time into code.' },
           { text: 'Just type anything and hope.', why: 'A plan makes the first line obvious.' },
+          { text: 'Write the plan in comments first, in plain words. Then turn one comment at a time into code.' },
           { text: 'Programmers always know where to start.', why: 'They don\'t. They plan.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -128,11 +128,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write the plan as comments?',
         options: [
-          { text: 'Python ignores them, so the plan can live right next to the code it describes' },
           { text: 'Comments make code run faster', why: 'Python ignores comments completely.' },
           { text: 'Python reads the plan and writes the code', why: 'You write the code. The plan just guides you.' },
+          { text: 'Python ignores them, so the plan can live right next to the code it describes' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

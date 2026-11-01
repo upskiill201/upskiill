@@ -12,9 +12,7 @@ import useSWR from 'swr';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import {
-  AlertCircle, ArrowLeft, BookOpen, Eye, Hash, Lock, Paperclip, Pin, Trash2,
-} from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Button from '@/components/ui/Button';
 import CommentThread from '@/components/community/CommentThread';
 import PollBlock from '@/components/community/PollBlock';
@@ -49,7 +47,7 @@ export default function PostDetailPage() {
     return (
       <div className={styles.page}>
         <div className={shared.errorBanner}>
-          <AlertCircle size={28} />
+          <Glyph name="alert" size={28} />
           <span>{error instanceof Error ? error.message : 'Could not load this post.'}</span>
           <Button variant="outline" onClick={() => router.back()}>
             Go back
@@ -70,7 +68,7 @@ export default function PostDetailPage() {
   }
 
   const backHref = `/dashboard/community/${courseId ?? post.community?.courseId ?? ''}`;
-  const Icon = TYPE_ICON[post.postType] ?? Hash;
+  const Icon = TYPE_ICON[post.postType] ?? 'hash';
 
   const like = async () => {
     if (likeBusy.current) return;
@@ -105,13 +103,13 @@ export default function PostDetailPage() {
   return (
     <div className={styles.page}>
       <Link href={backHref} className={styles.backLink} onClick={() => playSound('navTap', 0)}>
-        <ArrowLeft size={18} strokeWidth={2.75} /> Back to community
+        <Glyph name="back" size={18} strokeWidth={2.75} /> Back to community
       </Link>
 
       <article className={styles.card}>
         {post.isPinned && (
           <div className={styles.pinned}>
-            <Pin size={14} strokeWidth={2.75} /> Pinned
+            <Glyph name="pin" size={14} strokeWidth={2.75} /> Pinned
           </div>
         )}
 
@@ -134,12 +132,12 @@ export default function PostDetailPage() {
               </span>
               {typeof post.viewCount === 'number' && (
                 <span className={styles.metaItem}>
-                  <Eye size={13} strokeWidth={2.5} /> {post.viewCount}
+                  <Glyph name="eye" size={13} strokeWidth={2.5} /> {post.viewCount}
                 </span>
               )}
               {post.isLocked && (
                 <span className={styles.metaItem}>
-                  <Lock size={13} strokeWidth={2.5} /> Comments locked
+                  <Glyph name="lock" size={13} strokeWidth={2.5} /> Comments locked
                 </span>
               )}
             </span>
@@ -151,7 +149,7 @@ export default function PostDetailPage() {
 
         {post.lesson && (
           <Link href={courseHomeHref(post.community?.courseId ?? courseId)} className={styles.lessonTag}>
-            <BookOpen size={14} strokeWidth={2.75} /> {post.lesson.title}
+            <Glyph name="book" size={14} strokeWidth={2.75} /> {post.lesson.title}
           </Link>
         )}
 
@@ -170,7 +168,7 @@ export default function PostDetailPage() {
           <div className={styles.attachments}>
             {post.attachments.map((a) => (
               <a key={a.id} href={a.url} target="_blank" rel="noreferrer" className={styles.attachment}>
-                <Paperclip size={16} strokeWidth={2.5} /> {a.filename}
+                <Glyph name="paperclip" size={16} strokeWidth={2.5} /> {a.filename}
               </a>
             ))}
           </div>
@@ -216,10 +214,10 @@ export default function PostDetailPage() {
         {post.canModerate && (
           <div className={styles.modRow}>
             <button type="button" className={styles.modBtn} onClick={() => void moderate('pin', !post.isPinned)}>
-              <Pin size={14} strokeWidth={2.75} /> {post.isPinned ? 'Unpin' : 'Pin'}
+              <Glyph name="pin" size={14} strokeWidth={2.75} /> {post.isPinned ? 'Unpin' : 'Pin'}
             </button>
             <button type="button" className={styles.modBtn} onClick={() => void moderate('lock', !post.isLocked)}>
-              <Lock size={14} strokeWidth={2.75} /> {post.isLocked ? 'Unlock comments' : 'Lock comments'}
+              <Glyph name="lock" size={14} strokeWidth={2.75} /> {post.isLocked ? 'Unlock comments' : 'Lock comments'}
             </button>
             <button
               type="button"
@@ -236,7 +234,7 @@ export default function PostDetailPage() {
                 }
               }}
             >
-              <Trash2 size={14} strokeWidth={2.75} /> Delete
+              <Glyph name="trash" size={14} strokeWidth={2.75} /> Delete
             </button>
           </div>
         )}

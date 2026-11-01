@@ -45,11 +45,11 @@ const lesson: OriginalLesson = {
         code: 'print("5" + "5")',
         language: 'python',
         options: [
-          { text: '55' },
           { text: '10', why: 'Those are strings. + joins strings instead of adding.' },
+          { text: '55' },
           { text: 'An error', why: 'Joining two strings is allowed.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does print(Hello) cause an error?',
         options: [
-          { text: 'Without quotes, Python looks for something named Hello, and nothing has that name' },
           { text: 'Hello is a banned word', why: 'Any text works in quotes.' },
           { text: 'print only works with numbers', why: 'print works with text and numbers.' },
+          { text: 'Without quotes, Python looks for something named Hello, and nothing has that name' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         message: 'Single quotes or double quotes? Which is right?',
         prompt: 'What is the best answer?',
         options: [
-          { text: 'Both work. Match them at both ends, and use double quotes when the text has an apostrophe.' },
           { text: 'Only double quotes work in Python.', why: 'Single quotes work too.' },
+          { text: 'Both work. Match them at both ends, and use double quotes when the text has an apostrophe.' },
           { text: 'Single quotes are for numbers.', why: 'Both kinds are for text.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',

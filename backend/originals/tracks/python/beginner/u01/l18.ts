@@ -105,11 +105,11 @@ const lesson: OriginalLesson = {
         message: 'Your v0.1 only prints a welcome screen. Is that really worth showing people?',
         prompt: "What's Ada's best reply?",
         options: [
-          { text: "Yes. It works, they can see progress, and v0.2 adds the money maths." },
           { text: "No, I'll wait until it is perfect.", why: 'Perfect never ships. Small working versions do.' },
           { text: "No, I'll build everything at once.", why: 'That is how projects stall.' },
+          { text: "Yes. It works, they can see progress, and v0.2 adds the money maths." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which skill does "Who has paid?" need?',
         options: [
-          { text: 'Making decisions with if' },
           { text: 'Only print', why: 'It needs to check something and choose what to say.' },
+          { text: 'Making decisions with if' },
           { text: 'Comments', why: 'Comments explain code; they don\'t make decisions.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

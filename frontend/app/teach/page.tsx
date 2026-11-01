@@ -35,7 +35,7 @@ const baloo2 = Baloo_2({
 
 const TITLE = 'Teach on Teyro: Earn Monthly From Coding & AI Courses';
 const DESCRIPTION =
-  'Turn your coding or AI skills into monthly income. Keep 70% of every subscription while streaks, leagues and a community keep your learners coming back.';
+  'Turn your coding or AI skills into monthly income from Teyro Pro, paid by the minutes learners spend in your course, while streaks, leagues and a community keep them coming back.';
 
 export const metadata: Metadata = {
   title: TITLE,

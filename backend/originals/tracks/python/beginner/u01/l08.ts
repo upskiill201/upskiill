@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         code: '# print("A")\nprint("B")',
         language: 'python',
         options: [
-          { text: 'B' },
           { text: 'A then B', why: 'The first line is a comment, so Python skips it.' },
           { text: 'Nothing', why: 'The second line still runs.' },
+          { text: 'B' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -67,11 +67,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which symbol starts a comment in Python?',
         options: [
-          { text: '#' },
           { text: '//', why: 'That starts a comment in JavaScript and some other languages, not Python.' },
+          { text: '#' },
           { text: '--', why: 'That is a comment in SQL, not Python.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -120,11 +120,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does Python do with print("A")  # show the first letter ?',
         options: [
-          { text: 'Prints A and ignores the comment after #' },
           { text: 'Prints the whole line', why: 'Everything after # is ignored.' },
+          { text: 'Prints A and ignores the comment after #' },
           { text: 'Skips the whole line', why: 'Only the part from # onwards is skipped.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

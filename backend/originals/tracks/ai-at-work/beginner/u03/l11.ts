@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The summary says "either side can cancel". Clause 9.2 says 90 days\' written notice. Which do you trust?',
         options: [
-          { text: 'The quoted clause' },
           { text: 'The summary', why: 'Summaries drop exactly these details.' },
+          { text: 'The quoted clause' },
           { text: 'Neither, sign anyway', why: 'This is a deadline you could miss.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -159,11 +159,11 @@ const lesson: OriginalLesson = {
         message: "A report says 'users prefer dark mode'. Should we build it?",
         prompt: 'What should Ada ask first?',
         options: [
-          { text: "Who ran it, how many users, and which users? A survey of 12 people is very different from 12,000." },
           { text: 'Build it, the report says so.', why: 'Check what the claim is based on first.' },
+          { text: "Who ran it, how many users, and which users? A survey of 12 people is very different from 12,000." },
           { text: 'Ignore all reports.', why: 'Read them with good questions instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -184,11 +184,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is AI\'s right role with contracts?',
         options: [
-          { text: 'Help you find and understand the parts that matter, so you know what to ask an expert' },
           { text: 'Replace your lawyer', why: 'It is not a lawyer and makes mistakes.' },
           { text: 'None at all', why: 'It is very useful for finding and explaining clauses.' },
+          { text: 'Help you find and understand the parts that matter, so you know what to ask an expert' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

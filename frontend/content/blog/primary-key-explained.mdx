@@ -1,0 +1,67 @@
+---
+title: "Primary Key in SQL: What It Is and How to Choose One"
+description: "A primary key uniquely identifies each row in a table. Learn the rules, natural vs surrogate keys, auto-increment IDs and a simple CREATE TABLE example."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [primary key, sql primary key, what is a primary key, primary key example, surrogate key]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "SQL and Databases for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/sql-and-databases-for-beginners
+  label: "See the SQL and Databases for Beginners course"
+faq:
+  - question: "What is a primary key?"
+    answer: "A column or set of columns that uniquely identifies each row in a table and cannot be NULL."
+  - question: "Can a table have more than one primary key?"
+    answer: "Only one primary key per table, but it can include multiple columns, called a composite key."
+  - question: "What is a surrogate key?"
+    answer: "An artificial identifier, such as an auto-incrementing number or UUID, used instead of real-world data."
+---
+
+Every row needs an identity.
+
+## Direct answer
+
+A primary key is a column, or combination of columns, that uniquely identifies every row in a table. It must be unique and not NULL. Most tables use an artificial ID, called a surrogate key, such as an auto-incrementing number.
+
+## Example
+
+```sql
+CREATE TABLE customers (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT UNIQUE
+);
+```
+
+## Natural vs surrogate
+
+| | Natural key | Surrogate key |
+| :--- | :--- | :--- |
+| Example | email, passport number | id number, UUID |
+| Pros | meaningful | stable, simple |
+| Cons | can change | no meaning on its own |
+
+## Good rules
+
+1. Keep it unique and never NULL.
+2. Do not change it after creation.
+3. Prefer simple keys.
+
+## Where Teyro fits
+
+Teyro's [SQL and Databases for Beginners](/courses/sql-and-databases-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+A stable ID per row makes relationships and updates safe. See [foreign keys](/blog/foreign-key-explained).
+
+## More guides
+
+- [Foreign Key in SQL](/blog/foreign-key-explained)
+- [Database Normalization Explained](/blog/database-normalization-explained)
+- [SQL Aggregate Functions](/blog/sql-aggregate-functions)
+- [Foreign key explained](/blog/foreign-key-explained)
+- [SQL and Databases for Beginners course](/courses/sql-and-databases-for-beginners)

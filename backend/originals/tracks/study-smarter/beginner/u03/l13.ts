@@ -58,11 +58,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why are History notes better as cause → event → effect chains?',
         options: [
-          { text: 'History questions usually ask why things happened and what they led to' },
           { text: 'They are shorter', why: 'Maybe, but that is not the main reason.' },
           { text: 'Dates do not matter', why: 'Dates matter. Chains show how they connect.' },
+          { text: 'History questions usually ask why things happened and what they led to' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -70,11 +70,11 @@ const lesson: OriginalLesson = {
         message: 'My French notes are a list of 300 single words. I still can\'t say anything.',
         prompt: 'What should Kofi suggest?',
         options: [
-          { text: 'Learn useful phrases in full sentences instead, and get the AI to quiz you English to French.' },
           { text: 'Learn 300 more words.', why: 'More single words, same problem.' },
+          { text: 'Learn useful phrases in full sentences instead, and get the AI to quiz you English to French.' },
           { text: 'French is too hard.', why: 'The note format is the problem.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'David starts Economics, a subject he has never studied. Which request helps him set up his notes?',
         options: [
-          { text: "I'm starting Economics at final-year level. What note format suits it best, and why? Show me one example page." },
           { text: 'Write my Economics notes.', why: 'He needs a format, not someone else\'s notes.' },
           { text: 'Is Economics hard?', why: 'Not helpful for notes.' },
+          { text: "I'm starting Economics at final-year level. What note format suits it best, and why? Show me one example page." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

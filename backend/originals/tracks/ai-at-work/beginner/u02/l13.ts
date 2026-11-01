@@ -45,8 +45,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'What does a back-translation help you check?',
-      options: ['That the meaning did not drift', 'That the font is right', 'That the email was sent'],
-      answer: 0,
+      options: ['That the font is right', 'That the email was sent', 'That the meaning did not drift'],
+      answer: 2,
     },
   ],
   apply: {
@@ -56,11 +56,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask for a "natural" translation instead of just "translate"?',
         options: [
-          { text: 'Literal translations can sound odd; natural ones sound like a native speaker' },
           { text: 'Natural means shorter', why: 'It means sounding right, not shorter.' },
+          { text: 'Literal translations can sound odd; natural ones sound like a native speaker' },
           { text: 'There is no difference', why: 'Literal word-by-word can sound strange.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         message: "Your Spanish message to my team was lovely! One thing: you used 'tú' with our director. In a first message we'd use 'usted'.",
         prompt: 'What should Ada add to her request next time?',
         options: [
-          { text: '"For a new business contact: formal \'usted\'."' },
           { text: '"Make it more Spanish."', why: 'Vague. Name the formality.' },
           { text: '"Translate better."', why: 'Better how? Formality was the issue.' },
+          { text: '"For a new business contact: formal \'usted\'."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -183,11 +183,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Lucía writes to Ada in Spanish. What is a good use of AI?',
         options: [
-          { text: 'Translate it to understand it, then reply with the translation habits from this lesson' },
           { text: 'Ignore it', why: 'AI makes it easy to understand.' },
           { text: 'Reply in Spanish without checking anything', why: 'Check meaning and formality first.' },
+          { text: 'Translate it to understand it, then reply with the translation habits from this lesson' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Database, MapPin } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import {
   EXAMPLE_YEARLY_USD,
   EXAMPLE_MONTHLY_PLAN_USD,
@@ -28,7 +28,7 @@ import s from '@/components/seo/Seo.module.css';
 
 /*
  * One track in one place: /learn-coding/austin-tx, /learn-ai/nigeria. The
- * numbers are the page — BLS pay for US places, the example course price in
+ * numbers are the page — BLS pay for US places, the Teyro Pro price in
  * local money for countries — so no two pages read the same.
  */
 
@@ -72,7 +72,7 @@ export function PlacePage({ sub, place: p }: { sub: LearnSubject; place: TeachPl
 
   const answer = us
     ? `Want to learn ${sub.noun} in ${p.name}? ${capitalise(where)} employs ${num(us.jobs)} ${occupation.name} at a median ${usd(us.median)} a year — ${ordinal(us.pay.rank)} for pay of the ${us.pay.of} ${p.kind === 'state' ? 'states' : 'metro areas'} we cover. Teyro teaches ${sub.noun} from zero in ${DAILY}, on your phone or in the browser, with streaks and leagues that keep you going.${launchNote}`
-    : `Want to learn ${sub.noun} in ${p.name}? Teyro is online, so you can learn from anywhere in ${p.inSentence} in ${DAILY}. Many courses are free; an example paid course costs ${money(price!.perMonthLocal, price!.currency)} a month on the yearly plan at today’s rate. It runs in the browser and installs to your Home Screen — no app store needed.${launchNote}`;
+    : `Want to learn ${sub.noun} in ${p.name}? Teyro is online, so you can learn from anywhere in ${p.inSentence} in ${DAILY}. Many courses are free; Teyro Pro, which opens every course, costs ${money(price!.perMonthLocal, price!.currency)} a month on the yearly plan at today’s rate. It runs in the browser and installs to your Home Screen — no app store needed.${launchNote}`;
 
   const faq = [
     {
@@ -86,7 +86,7 @@ export function PlacePage({ sub, place: p }: { sub: LearnSubject; place: TeachPl
         }
       : {
           question: `How much does it cost to learn ${sub.noun} in ${p.name}?`,
-          answer: `${TEYRO.price}. As an example, a paid course priced at ${usd(EXAMPLE_YEARLY_USD)} a year is about ${money(price!.yearlyLocal, price!.currency)} a year, or ${money(price!.monthlyPlanLocal, price!.currency)} paid month to month, at the ${TEACH_SOURCES.fx} rate.`,
+          answer: `${TEYRO.price}. Teyro Pro, at $${EXAMPLE_YEARLY_USD} a year, is about ${money(price!.yearlyLocal, price!.currency)} a year, or ${money(price!.monthlyPlanLocal, price!.currency)} paid month to month, at the ${TEACH_SOURCES.fx} rate, for every course.`,
         },
     {
       question: `Do I need experience to learn ${sub.noun}?`,
@@ -108,7 +108,7 @@ export function PlacePage({ sub, place: p }: { sub: LearnSubject; place: TeachPl
       text: qs
         ? `${num(qs.jobs)} ${occupation.name}, median ${usd(qs.median)}.`
         : qp
-          ? `Example course: ${money(qp.perMonthLocal, qp.currency)} a month.`
+          ? `Teyro Pro: ${money(qp.perMonthLocal, qp.currency)} a month.`
           : `${bigNum(q.country!.population!)} people.`,
     };
   });
@@ -178,7 +178,7 @@ export function PlacePage({ sub, place: p }: { sub: LearnSubject; place: TeachPl
                   : `It is a smaller local market, so remote roles and freelance work matter more — and you can learn online from anywhere.`}
               </p>
               <p className={s.source}>
-                <Database size={12} aria-hidden="true" /> Source: {TEACH_SOURCES.bls} ({occupation.name}, SOC {occupation.soc}).
+                <Glyph name="database" size={12} strokeWidth={2.4} /> Source: {TEACH_SOURCES.bls} ({occupation.name}, SOC {occupation.soc}).
                 Ranks compare the places on this site.
               </p>
             </>
@@ -187,9 +187,9 @@ export function PlacePage({ sub, place: p }: { sub: LearnSubject; place: TeachPl
               <div className={s.stats}>
                 <Stat
                   value={money(price!.perMonthLocal, price!.currency)}
-                  label={`A month for an example ${usd(EXAMPLE_YEARLY_USD)}/year course`}
+                  label={`A month of Teyro Pro on the $${EXAMPLE_YEARLY_USD}/year plan`}
                 />
-                <Stat value={money(price!.yearlyLocal, price!.currency)} label="The same course, per year" />
+                <Stat value={money(price!.yearlyLocal, price!.currency)} label="Teyro Pro, per year" />
                 {p.country!.internetPct != null && <Stat value={pct(p.country!.internetPct)} label="Of people use the internet" />}
                 <Stat value={bigNum(p.country!.population!)} label="People" />
               </div>
@@ -204,7 +204,7 @@ export function PlacePage({ sub, place: p }: { sub: LearnSubject; place: TeachPl
                   : `Lessons are short enough for a commute or a break, and keep working offline once Teyro is installed.`}
               </p>
               <p className={s.source}>
-                <Database size={12} aria-hidden="true" /> Sources: {TEACH_SOURCES.worldBank}
+                <Glyph name="database" size={12} strokeWidth={2.4} /> Sources: {TEACH_SOURCES.worldBank}
                 {p.country!.wbYear ? ` (${p.country!.wbYear})` : ''}; exchange rate {TEACH_SOURCES.fx}. Example price only —
                 creators set their own, and many courses are free.
               </p>
@@ -323,11 +323,11 @@ function LocalCard({ sub, place }: { sub: LearnSubject; place: TeachPlace }) {
   const occupation = OCCUPATION[sub.localData!];
 
   return (
-    <div className={s.earn} aria-label={us ? 'Local pay' : 'Example course price'}>
+    <div className={s.earn} aria-label={us ? 'Local pay' : 'Teyro Pro price'}>
       <div className={s.earnHead}>
-        <span>{us ? capitalise(occupation.name) : 'Example course'}</span>
+        <span>{us ? capitalise(occupation.name) : 'Teyro Pro'}</span>
         <span className={s.earnBadge}>
-          <MapPin size={12} strokeWidth={2.75} aria-hidden="true" /> {place.kind === 'metro' ? place.name.split(',')[0] : place.name}
+          <Glyph name="pin" size={12} strokeWidth={2.4} /> {place.kind === 'metro' ? place.name.split(',')[0] : place.name}
         </span>
       </div>
       {us ? (
@@ -380,12 +380,12 @@ function LocalCard({ sub, place }: { sub: LearnSubject; place: TeachPlace }) {
             <li>
               <span>In USD</span>
               <span>
-                {usd(EXAMPLE_YEARLY_USD)}/yr · ${EXAMPLE_MONTHLY_PLAN_USD.toFixed(2)}/mo
+                ${EXAMPLE_YEARLY_USD}/yr · ${EXAMPLE_MONTHLY_PLAN_USD.toFixed(2)}/mo
               </span>
             </li>
             <li>
-              <span>Free lessons</span>
-              <span>First 2 on every paid course</span>
+              <span>Free to start</span>
+              <span>Chapter 1 + 2 lessons a day</span>
             </li>
           </ul>
         </>

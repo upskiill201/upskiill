@@ -1,0 +1,398 @@
+=== compound-interest-explained
+title: Compound Interest Explained: How Your Money Grows Over Time
+desc: Compound interest means earning interest on your interest. See a simple example, the formula and why starting early makes such a big difference.
+tags: compound interest, compound interest explained, what is compound interest, compound interest formula, compound interest example
+rel: money-habits-that-build-wealth, how-to-build-wealth-from-nothing
+q: What is compound interest? | It is interest calculated on both your original amount and the interest it has already earned.
+q: What is the compound interest formula? | A = P(1 + r/n)^(nt), where P is the amount, r the annual rate, n the number of times compounded per year and t the years.
+q: Why does starting early matter? | Compounding rewards time. The longer money stays invested, the more growth builds on earlier growth.
+---
+Compound interest is why small, early savings can matter more than large, late ones.
+
+## Direct answer
+
+Compound interest means you earn interest on your original money and on the interest it has already earned. Over time the growth speeds up. The formula is A = P(1 + r/n)^(nt). Starting early and staying invested are the two biggest levers.
+
+## A simple example
+
+Suppose you save 1,000 at 5 percent a year, compounded annually.
+- After 1 year: 1,050
+- After 2 years: 1,102.50
+- After 10 years: about 1,629
+- After 30 years: about 4,322
+
+Simple interest would give only 2,500 after 30 years. The extra comes from compounding.
+
+## What makes it work
+
+1. **Time:** the longer, the better.
+2. **Regular contributions:** adding money keeps feeding the snowball.
+3. **Rate:** higher rates compound faster, with more risk for investments.
+4. **Not withdrawing:** taking money out interrupts the effect.
+
+## It works against you too
+
+Debt compounds as well. Credit card interest can grow quickly if left unpaid.
+
+## The bottom line
+
+Start early, add regularly and let time do the heavy lifting. Returns on investments are not guaranteed.
+
+=== rule-of-72
+title: The Rule of 72: How to Estimate When Money Doubles
+desc: The Rule of 72 is a quick way to estimate how long an investment takes to double. Learn the formula, examples and when the shortcut stops being accurate.
+tags: rule of 72, rule of 72 explained, how long to double money, doubling time, compound growth shortcut
+rel: compound-interest-explained, money-habits-that-build-wealth
+q: What is the rule of 72? | Divide 72 by the annual rate of return to estimate the number of years it takes to double your money.
+q: How accurate is it? | It is a good estimate for typical rates, roughly 6 to 10 percent, and gets less accurate at very high or low rates.
+q: Can it be used for inflation? | Yes. Divide 72 by the inflation rate to estimate how long it takes prices to double.
+---
+A mental shortcut that makes compounding feel real.
+
+## Direct answer
+
+The Rule of 72 says: years to double ≈ 72 ÷ annual rate of return. At 6 percent, money doubles in about 12 years. At 9 percent, about 8 years. It is an approximation, useful for quick comparisons.
+
+## Examples
+
+| Annual rate | Years to double (72 ÷ rate) |
+| :--- | :--- |
+| 2% | 36 |
+| 4% | 18 |
+| 6% | 12 |
+| 8% | 9 |
+| 12% | 6 |
+
+## Uses
+
+- Compare savings rates quickly.
+- See what inflation does: at 3 percent, prices double in about 24 years.
+- Understand how interest on debt grows if you do not pay it down.
+
+## Limits
+
+It is an estimate. Returns on investments are not guaranteed and vary year to year.
+
+## The bottom line
+
+A quick way to see why rate and time matter. For exact figures, use a calculator.
+
+=== dollar-cost-averaging
+title: Dollar-Cost Averaging: What It Is and How It Works
+desc: Dollar-cost averaging means investing a fixed amount at regular intervals. Learn how it works, an example, its benefits and its limits for beginners.
+tags: dollar cost averaging, dollar-cost averaging, what is dollar cost averaging, invest regularly, investing for beginners
+rel: what-is-investment-risk, money-habits-that-build-wealth
+q: What is dollar-cost averaging? | It is investing the same amount at regular intervals, regardless of price, so you buy more when prices are low and fewer when they are high.
+q: Does it reduce risk? | It reduces the risk of investing everything at a bad moment, but it does not remove market risk.
+q: Is it better than lump sum investing? | Historically, lump sums often do slightly better because markets tend to rise over time, but regular investing suits people who earn monthly and want a steady habit.
+---
+Instead of trying to time the market, you invest on a schedule.
+
+## Direct answer
+
+Dollar-cost averaging means investing a fixed amount at regular intervals, such as monthly. When prices are low, your money buys more units. When they are high, it buys fewer. It helps you build a habit and avoid worrying about timing, but it does not guarantee profits or prevent losses.
+
+## Example
+
+You invest 100 a month. In month one the price per unit is 10, so you get 10 units. In month two it is 5, so you get 20 units. In month three it is 10, so you get 10. You paid 300 for 40 units, an average of 7.50 per unit.
+
+## Pros and cons
+
+**Pros:** builds discipline, reduces timing stress, fits monthly pay.
+**Cons:** you may do worse than a lump sum in rising markets, and fees can add up on small purchases.
+
+## Tips
+
+- Automate the investment.
+- Keep costs low.
+- Keep going when markets fall.
+
+## The bottom line
+
+A simple routine beats guessing. This is general education, not a recommendation of any investment.
+
+=== passive-income-explained
+title: Passive Income Explained: Realistic Ideas for Beginners
+desc: Passive income is money earned with little ongoing effort after setup. See realistic examples, what they cost in time or money and the common myths.
+tags: passive income, passive income ideas, what is passive income, passive income for beginners, is passive income real
+rel: how-to-build-wealth-from-nothing, money-habits-that-build-wealth
+q: What is passive income? | It is income that continues with little day-to-day effort after you have put in work or money up front.
+q: Is passive income really passive? | Rarely completely. Most sources need upfront effort, capital or occasional maintenance.
+q: What are examples? | Interest on savings, dividends from investments, rental income and royalties from books, music or courses.
+---
+Passive income is real, but it is not free.
+
+## Direct answer
+
+Passive income is money you earn with little ongoing effort after an upfront investment of time or money. Examples include interest, dividends, rental income and royalties. It is rarely fully passive: it often needs setup, capital or maintenance, and income is not guaranteed.
+
+## Common sources
+
+- **Interest** from savings or bonds
+- **Dividends** from shares or funds
+- **Rent** from property, with costs and management
+- **Royalties** from creative or digital products
+- **Affiliate or ad income** from content
+
+## Myths to avoid
+
+- "Make money while you sleep" with no work.
+- Guaranteed returns.
+- Courses that sell you the dream of passive income.
+
+## What to do
+
+1. Build your emergency fund first.
+2. Learn how each source works and its risks.
+3. Start small and measure.
+4. Be wary of anything that promises easy or guaranteed returns.
+
+## The bottom line
+
+Passive income is built with time, money or skills first. Be realistic about the effort and risk.
+
+=== retirement-accounts-basics
+title: Retirement Accounts Basics: Types and How They Work
+desc: A beginner guide to retirement accounts: workplace pensions, individual accounts, tax advantages, employer matching and how to start saving early.
+tags: retirement accounts, retirement accounts for beginners, pension basics, how to start saving for retirement, employer match
+rel: money-habits-that-build-wealth, compound-interest-explained
+q: What is a retirement account? | It is an account designed to save and invest for retirement, often with tax advantages that depend on the country.
+q: What is an employer match? | Some employers add money to your retirement account when you contribute. It is often worth taking in full.
+q: When should I start saving for retirement? | As early as you can. Compounding rewards time.
+---
+Retirement can feel far away. Compounding is why that is the point.
+
+## Direct answer
+
+Retirement accounts are accounts designed to hold long-term savings, often with tax benefits. Types and rules vary by country, but the common ideas are the same: save regularly, take any employer match, understand fees, and invest according to your time horizon and risk tolerance.
+
+## Common types
+
+- **Workplace pensions or plans** where your employer helps you save.
+- **Individual retirement accounts** you open yourself.
+- **Government pension systems** that pay in later life.
+
+## Key ideas
+
+1. **Start early** so compounding has time.
+2. **Take any employer match.** It is extra pay.
+3. **Watch fees,** which reduce long-term returns.
+4. **Diversify** rather than putting all savings in one asset.
+5. **Check the rules** on withdrawals and taxes in your country.
+
+## Where to learn more
+
+Your government's pension or tax website and a licensed adviser can explain rules for your situation.
+
+## The bottom line
+
+Small regular contributions, started early, make a big difference. This is general information, not personal advice.
+
+=== asset-vs-liability
+title: Asset vs Liability: What's the Difference and Why It Matters
+desc: Assets put money in your pocket and liabilities take it out. Learn the definitions, examples and how tracking both gives you your net worth.
+tags: asset vs liability, assets and liabilities, what is an asset, what is a liability, net worth
+rel: money-habits-that-build-wealth
+q: What is an asset? | Something you own that has value or produces income, such as savings, investments or property.
+q: What is a liability? | Something you owe, such as a loan, credit card balance or mortgage.
+q: How do assets and liabilities relate to net worth? | Net worth equals assets minus liabilities.
+---
+Net worth starts with two columns: what you own and what you owe.
+
+## Direct answer
+
+An asset is something you own that has value or can generate income. A liability is money you owe. Subtract liabilities from assets to find your net worth. Building wealth usually means growing assets and reducing liabilities over time.
+
+## Examples
+
+| Assets | Liabilities |
+| :--- | :--- |
+| Savings and cash | Credit card balances |
+| Investments | Student loans |
+| Property you own | Mortgage |
+| Business value | Car loans |
+| Pension | Unpaid bills |
+
+## A caution on cars and homes
+
+Whether something is an asset in practice depends on its value and costs. A car may lose value and cost money to run, even though it is something you own.
+
+## How to use it
+
+1. List your assets with current values.
+2. List your liabilities with balances.
+3. Subtract to find net worth.
+4. Track it every few months.
+
+## The bottom line
+
+Know both columns and aim for the gap to widen.
+
+=== financial-independence
+title: Financial Independence: What It Means and How to Work Toward It
+desc: Financial independence means your money covers your living costs without needing a paycheck. Learn the idea, a simple target and the first steps.
+tags: financial independence, what is financial independence, how to become financially independent, financial freedom, financial independence goal
+rel: money-habits-that-build-wealth, how-to-build-wealth-from-nothing
+q: What is financial independence? | It is having enough income from savings, investments or other sources to cover your living costs without depending on a paycheck.
+q: How much do I need? | It depends on your annual spending. One common rule of thumb is 25 times your yearly expenses, but it is a guide, not a guarantee.
+q: What are the first steps? | Track spending, build an emergency fund, reduce high-interest debt and save a steady percentage of income.
+---
+Financial independence is about choices, not luxury.
+
+## Direct answer
+
+Financial independence means your assets produce enough income to cover your living costs, so work becomes optional. Work out your yearly spending, set a savings target, and build it through regular saving and investing. Rules of thumb exist, but they are estimates and carry risk.
+
+## First steps
+
+1. **Know your annual spending.**
+2. **Save a fixed share of income.**
+3. **Clear high-interest debt.**
+4. **Build an emergency fund.**
+5. **Invest regularly** in a diversified way suited to your risk and time horizon.
+6. **Raise income** through skills and career growth.
+
+## Common rule of thumb
+
+A target of around 25 times annual spending comes from the idea of withdrawing about 4 percent a year. It is a rough guide that depends on markets, costs and how long you need the money to last.
+
+## The bottom line
+
+Start with your spending, build habits and keep the plan flexible. This is general education, not financial advice.
+
+=== fire-movement-explained
+title: The FIRE Movement: What It Is, Types and Honest Trade-offs
+desc: FIRE stands for financial independence, retire early. Learn the main types, how people approach it and the trade-offs and risks to think about.
+tags: fire movement, what is fire, financial independence retire early, lean fire fat fire, early retirement
+rel: financial-independence, compound-interest-explained
+q: What does FIRE stand for? | Financial Independence, Retire Early.
+q: What are the types of FIRE? | Lean FIRE, with a smaller budget, Fat FIRE, with a larger budget, and Barista FIRE, where part-time work covers some costs.
+q: Is FIRE realistic? | It can be for people with a high savings rate, but it depends on income, costs and markets, and returns are not guaranteed.
+---
+FIRE turns savings rate into a goal.
+
+## Direct answer
+
+FIRE means Financial Independence, Retire Early. People following it save a large share of their income, invest it and aim to live on the returns sooner than the usual retirement age. It requires high savings, low or planned spending and acceptance of market risk.
+
+## Types
+
+- **Lean FIRE:** a minimal budget.
+- **Fat FIRE:** a more comfortable budget.
+- **Barista FIRE:** some part-time income covers costs.
+- **Coast FIRE:** you save enough early that growth alone could fund retirement by the usual age.
+
+## Trade-offs
+
+- It often means high savings rates and trimmed spending.
+- Markets may underperform, so plans need flexibility.
+- Healthcare, inflation and longevity matter.
+
+## Takeaways even if you never retire early
+
+Saving more, spending intentionally and investing regularly are useful for anyone.
+
+## The bottom line
+
+FIRE is a framework, not a promise. This is general education and not advice.
+
+=== diversification-basics
+title: Diversification: Why You Should Not Put All Your Eggs in One Basket
+desc: Diversification spreads money across different investments to reduce risk. Learn what it is, simple ways to do it and what it cannot protect you from.
+tags: diversification, what is diversification, diversification examples, how to diversify investments, spread risk
+rel: what-is-investment-risk, investment-risk-tolerance
+q: What is diversification? | It means spreading your money across different assets, sectors or regions so one poor performer does not hurt too much.
+q: Does diversification remove risk? | No. It reduces the impact of individual losses but not market-wide risk.
+q: How can a beginner diversify? | Many people use broad funds that hold lots of assets, but fees and risks vary, so check what you buy.
+---
+Different investments rise and fall at different times.
+
+## Direct answer
+
+Diversification means spreading your money across different types of assets, industries and regions. If one falls, others may hold up, which smooths the ride. It reduces the risk of a single investment hurting you badly, but it cannot remove the risk of the whole market falling.
+
+## Ways to diversify
+
+- **Across asset types:** shares, bonds, cash, property.
+- **Across industries:** technology, health, energy and so on.
+- **Across regions:** domestic and international.
+- **Through funds** that hold many holdings.
+
+## What it cannot do
+
+It cannot guarantee a profit or prevent losses in a broad downturn.
+
+## Mistakes
+
+- Holding lots of similar assets and calling it diversified.
+- Putting most of your savings in your employer's shares.
+- Chasing last year's best performer.
+
+## The bottom line
+
+Spread risk deliberately and review it. This is general education, not advice.
+
+=== credit-score-basics
+title: Credit Score Basics: What It Is and How to Improve It
+desc: A credit score summarises how reliably you borrow. Learn what affects it, how to check it and the habits that help improve it over time.
+tags: credit score, credit score basics, what is a credit score, how to improve credit score, what affects credit score
+rel: good-debt-vs-bad-debt, money-habits-that-build-wealth
+q: What is a credit score? | A number that summarises your borrowing history to help lenders judge how likely you are to repay.
+q: What affects a credit score? | Payment history, how much credit you use, the length of your history, new applications and the mix of credit.
+q: How can I improve it? | Pay on time, keep balances low relative to limits, avoid many applications and check your report for errors.
+---
+Lenders use your score to decide whether to lend and at what price.
+
+## Direct answer
+
+A credit score is a number based on your credit history that lenders use to judge risk. Scoring systems differ by country, but common factors are payment history, how much of your limit you use, the age of your accounts, new applications and the types of credit. Paying on time and keeping balances low helps most.
+
+## Habits that help
+
+1. **Pay at least the minimum on time,** ideally in full.
+2. **Keep balances low** compared with your limits.
+3. **Avoid applying for lots of credit** in a short time.
+4. **Keep older accounts** open where it makes sense.
+5. **Check your credit report** for errors and dispute them.
+
+## What does not help
+
+Quick-fix schemes and companies that promise to "repair" your credit for large fees.
+
+## The bottom line
+
+Reliable habits build your score over time. Rules vary by country, so check local guidance.
+
+=== good-debt-vs-bad-debt
+title: Good Debt vs Bad Debt: How to Tell the Difference
+desc: Not all debt is equal. Learn how to tell useful borrowing from harmful debt, with examples, questions to ask and when borrowing is a bad idea.
+tags: good debt vs bad debt, good debt, bad debt, is debt good or bad, types of debt
+rel: how-to-budget-to-pay-off-debt, credit-score-basics
+q: What is good debt? | Borrowing that helps you build long-term value or earning power at a manageable cost, such as some education or a home loan.
+q: What is bad debt? | Borrowing for things that lose value quickly or carry high interest, such as unpaid credit card balances.
+q: Is any debt truly good? | It depends on interest, affordability and what it buys. Debt always carries risk.
+---
+The label depends on cost, purpose and your ability to repay.
+
+## Direct answer
+
+Good debt usually helps you build long-term value or earning power at a manageable cost. Bad debt is typically high-interest borrowing for things that lose value fast. The line is not fixed: any debt becomes harmful if you cannot afford the repayments.
+
+## Questions to ask
+
+1. What is the interest rate and total cost?
+2. What will I get out of it, and will it last?
+3. Can I afford the repayment even if my income drops?
+4. Is there a cheaper way to get the same thing?
+
+## Examples
+
+| More likely useful | More likely harmful |
+| :--- | :--- |
+| Education that raises earning power | Unpaid credit card balances |
+| A sensible home loan | Payday loans |
+| Business loan with a clear plan | Buying luxuries on credit |
+
+## The bottom line
+
+Borrow only with a plan and a way to repay. This is general education, not advice.

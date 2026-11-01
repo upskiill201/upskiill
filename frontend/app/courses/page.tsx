@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { Art } from '@/components/art/Art';
+import { Glyph } from '@/components/art/Glyph';
 import { fetchPublicCourses, coursePath } from '@/lib/courses/public';
+import { SUBJECTS, subjectOf } from '@/lib/courses/subjects';
 import { START_HREF, START_LABEL, TEYRO } from '@/lib/seo/facts';
 import { breadcrumbSchema, collectionSchema, itemListSchema, schemas } from '@/lib/seo/schema';
 import JsonLd from '@/components/features/blog/JsonLd';
@@ -12,31 +14,33 @@ import PublicCourseGrid from '@/components/courses/PublicCourseGrid';
 import s from '@/components/seo/Seo.module.css';
 
 /**
- * /courses — every published Coding and AI course, public. Each card links to
- * the course's own page (/courses/<slug>), where anyone can see the whole
- * path and start learning.
+ * /courses — every published course, public, grouped by subject (the same
+ * list the homepage's skills grid reads: lib/courses/subjects.ts), shown as
+ * what you can learn rather than finished courses (founder, 2026-10-27). Each
+ * card links to the course's own page (/courses/<slug>). Teyro Originals lead
+ * each subject.
  */
 
 export const revalidate = 300;
 
-const TITLE = 'Online Coding and AI Courses for Beginners | Teyro';
-const DESCRIPTION = `Browse Teyro's coding and AI courses: short daily lessons, streaks and leagues. ${TEYRO.priceShort}; paid courses let you try the first two lessons free.`;
+const TITLE = 'Online Courses in Coding, AI, Money and More | Teyro';
+const DESCRIPTION = `Browse Teyro courses in coding, AI, data, personal finance, leadership, communication and more: short daily lessons, streaks and leagues. ${TEYRO.priceShort}.`;
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: '/courses' },
   openGraph: { type: 'website', url: '/courses', title: TITLE, description: DESCRIPTION },
+  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION },
 };
-
-const TRACKS = [
-  { id: 'coding', label: 'Coding', noun: 'coding', lead: 'Web, mobile, programming fundamentals and real software.', learn: '/learn-coding' },
-  { id: 'ai', label: 'AI', noun: 'AI', lead: 'AI tools, AI agents and automations you can use at work.', learn: '/learn-ai' },
-] as const;
 
 export default async function CoursesCatalog() {
   const courses = await fetchPublicCourses();
-  const originals = courses.filter((c) => c.isOriginal);
+  const groups = SUBJECTS.map((subject) => ({
+    subject,
+    list: courses.filter((c) => subjectOf(c) === subject.id),
+  })).filter((g) => g.list.length > 0);
+  const other = courses.filter((c) => subjectOf(c) === null);
 
   return (
     <div className={s.page}>
@@ -56,24 +60,23 @@ export default async function CoursesCatalog() {
       <div className={s.hubBand}>
         <header className={s.hubHero}>
           <div className={s.hubCopy}>
-            <span className={s.eyebrow}>Teyro courses</span>
+            <span className={s.eyebrow}>What you can learn</span>
             <h1 className={`${s.display} ${s.hubTitle}`}>
-              Coding and AI courses, <em>a few minutes a day.</em>
+              Learn coding, AI, money and more, <em>a few minutes a day.</em>
             </h1>
             <p className={s.lead}>
-              Pick a course and start straight away — no setup, no long videos. {TEYRO.lessonFormat}.
+              Pick what you want to learn. Tell Teyro your goal and level, and you start at the right lesson: no setup, no long videos. {TEYRO.lessonFormat}.
             </p>
-            <div className={s.pillRow}>
-              {TRACKS.map((t) => {
-                const n = courses.filter((c) => c.track === t.id && !c.isOriginal).length;
-                return (
-                  <a key={t.id} href={`#${t.id}`} className={s.pill}>
-                    {t.label}
-                    {n > 0 ? ` · ${n}` : ''}
+            {groups.length > 0 && (
+              <div className={s.pillRow}>
+                {groups.map(({ subject }) => (
+                  <a key={subject.id} href={`#${subject.id}`} className={s.pill}>
+                    <Art name={subject.art} size={20} />
+                    {subject.short}
                   </a>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className={s.hubArt}>
             <Image src="/User onbarding Assets/tey/tablet.webp" alt="" width={260} height={300} className={s.hubTey} priority />
@@ -82,33 +85,28 @@ export default async function CoursesCatalog() {
       </div>
 
       <div className={s.container}>
-        {originals.length > 0 && (
-          <section className={s.section} aria-labelledby="originals">
+        {groups.map(({ subject, list }) => (
+          <section key={subject.id} className={s.section} aria-labelledby={subject.id}>
             <SectionHead
-              id="originals"
-              eyebrow="Made by Teyro"
-              title="Teyro Originals"
-              lead="Full courses written by Teyro and taught by Tey. One subscription unlocks them all."
+              id={subject.id}
+              eyebrow="Learn"
+              title={subject.title}
+              lead={subject.sub}
             />
-            <PublicCourseGrid courses={originals} priorityCount={3} />
+            <PublicCourseGrid courses={list} />
+          </section>
+        ))}
+        {other.length > 0 && (
+          <section className={s.section} aria-labelledby="more">
+            <SectionHead id="more" eyebrow="And more" title="More to learn" />
+            <PublicCourseGrid courses={other} />
           </section>
         )}
-        {TRACKS.map((t) => {
-          const list = courses.filter((c) => c.track === t.id && !c.isOriginal);
-          return (
-            <section key={t.id} className={s.section} aria-labelledby={t.id}>
-              <SectionHead id={t.id} eyebrow={`${t.label} track`} title={`${t.label} courses`} lead={t.lead} />
-              {list.length > 0 ? (
-                <PublicCourseGrid courses={list} priorityCount={t.id === 'coding' ? 3 : 0} />
-              ) : (
-                <p className={s.note}>
-                  New {t.noun} courses are on the way.{' '}
-                  <Link href={t.learn}>See what you can learn in {t.noun}</Link>.
-                </p>
-              )}
-            </section>
-          );
-        })}
+        {courses.length === 0 && (
+          <p className={s.note}>
+            Courses are loading slowly right now. <Link href="/courses">Try again</Link> in a moment.
+          </p>
+        )}
 
         <div className={s.narrow}>
           <CtaBlock
@@ -122,7 +120,7 @@ export default async function CoursesCatalog() {
           <p className={s.note}>
             Know your subject?{' '}
             <Link href="/teach">
-              Teach a course on Teyro <ArrowRight size={14} strokeWidth={3} aria-hidden="true" />
+              Teach a course on Teyro <Glyph name="arrow" size={14} strokeWidth={3} />
             </Link>
           </p>
         </div>

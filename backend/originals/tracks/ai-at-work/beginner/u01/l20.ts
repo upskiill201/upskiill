@@ -28,21 +28,21 @@ const lesson: OriginalLesson = {
         message: 'Morning Ada! My boss wants a status in 2 lines before her 9:30. Can you help?',
         prompt: 'Which request should Ada give the AI?',
         options: [
-          { text: 'For a senior manager who reads in seconds: 2 lines, status first, then the one decision needed. Facts: sign-up done; testing Friday; palette approval needed by Wednesday.' },
           { text: 'Write a status update.', why: 'No reader, no facts, no length.' },
+          { text: 'For a senior manager who reads in seconds: 2 lines, status first, then the one decision needed. Facts: sign-up done; testing Friday; palette approval needed by Wednesday.' },
           { text: 'Write a detailed status report for a boss.', why: 'She asked for 2 lines.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
         prompt: 'Why did the AI\'s first draft yesterday say "launch confirmed for May"?',
         options: [
-          { text: 'Ada did not give the launch date, so it guessed one' },
           { text: 'It found the date online', why: 'Private dates are not online.' },
           { text: 'May is correct', why: 'Confident is not correct.' },
+          { text: 'Ada did not give the launch date, so it guessed one' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         message: 'I love the start of option 2 and the end of option 4!',
         prompt: 'Which follow-up?',
         options: [
-          { text: 'Combine the start of option 2 with the end of option 4. Under 8 words.' },
           { text: 'Try again.', why: 'She told you exactly what she wants.' },
+          { text: 'Combine the start of option 2 with the end of option 4. Under 8 words.' },
           { text: 'Give us 4 new options.', why: 'She already chose.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -137,11 +137,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: '1:00pm. The AI draft is 90% right but too long. What does Ada do?',
         options: [
-          { text: 'Follow up: "Keep the content and the opening, cut it to half the length."' },
           { text: 'Start a new chat from scratch', why: 'It is 90% right. Steer it.' },
           { text: 'Send it as it is', why: 'Too long for the reader.' },
+          { text: 'Follow up: "Keep the content and the opening, cut it to half the length."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -220,11 +220,11 @@ const lesson: OriginalLesson = {
         message: 'Last thing today: your AI said our competitor charges $49. Can I put that in my deck?',
         prompt: 'What should Ada say?',
         options: [
-          { text: "Let's check it on their website first. It may be guessed or out of date." },
           { text: 'Yes, it sounded sure.', why: 'It always sounds sure.' },
           { text: 'Only if it is a round number.', why: 'Check it regardless.' },
+          { text: "Let's check it on their website first. It may be guessed or out of date." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -253,11 +253,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the one idea behind all of Unit 1?',
         options: [
-          { text: 'Every gap in a request is something the AI has to guess, so close the gaps and check the result' },
           { text: 'AI tools are always right', why: 'The opposite.' },
+          { text: 'Every gap in a request is something the AI has to guess, so close the gaps and check the result' },
           { text: 'Longer requests are always better', why: 'Clear beats long.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

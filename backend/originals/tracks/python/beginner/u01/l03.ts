@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a program?',
         options: [
-          { text: 'A list of instructions the computer follows exactly, in order' },
           { text: 'A computer that understands what you mean', why: 'It follows what you wrote, not what you meant.' },
+          { text: 'A list of instructions the computer follows exactly, in order' },
           { text: 'An app you download', why: 'Apps are programs, but a program can be one line you wrote.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -73,11 +73,11 @@ const lesson: OriginalLesson = {
         code: 'print("Collect the pot")\nprint("Pay in")',
         language: 'python',
         options: [
-          { text: 'Collect the pot' },
           { text: 'Pay in', why: 'Python runs top to bottom, even when the order is silly.' },
           { text: 'Both at the same time', why: 'One line at a time, in order.' },
+          { text: 'Collect the pot' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -137,11 +137,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'In a 4-line program, line 2 goes wrong while it runs (say, dividing by zero). Which lines run?',
         options: [
-          { text: 'Only line 1' },
           { text: 'All of them', why: 'Python stops at the error.' },
+          { text: 'Only line 1' },
           { text: 'Lines 3 and 4', why: 'Python never gets past the mistake on line 2.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'writeCode',

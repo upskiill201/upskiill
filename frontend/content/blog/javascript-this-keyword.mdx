@@ -1,0 +1,86 @@
+---
+title: "The this Keyword in JavaScript: How It Works With Examples"
+description: "this changes depending on how a function is called. Learn the rules for global, method, arrow, constructor and event handler contexts, plus call and bind."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [javascript this keyword, this in javascript, what is this in javascript, this keyword explained, call apply bind]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "JavaScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/javascript-for-beginners
+  label: "See the JavaScript for Beginners course"
+faq:
+  - question: "What does this refer to in JavaScript?"
+    answer: "It refers to the object that is calling the function. The value depends on how the function is called."
+  - question: "Why is this undefined in my function?"
+    answer: "A method was probably detached from its object or called without a receiver."
+  - question: "How do I fix this problems?"
+    answer: "Use arrow functions, bind the function or call it as a method on the object."
+---
+
+Most beginners find `this` confusing because it is decided at call time.
+
+## Direct answer
+
+In JavaScript, `this` refers to the object that calls the function. In a method call it is the object before the dot. In a regular function in strict mode it is undefined. Arrow functions do not have their own `this`, they use the one from where they were written.
+
+## The main cases
+
+```javascript
+const person = {
+  name: "Ada",
+  greet() {
+    console.log(this.name);
+  },
+};
+
+person.greet(); // Ada
+
+const fn = person.greet;
+fn(); // this is not person here
+```
+
+## Fixes
+
+```javascript
+const bound = person.greet.bind(person);
+bound(); // Ada
+```
+
+Arrow functions inherit `this`:
+
+```javascript
+const timer = {
+  seconds: 0,
+  start() {
+    setInterval(() => {
+      this.seconds++;
+    }, 1000);
+  },
+};
+```
+
+## Quick rules
+
+1. `obj.method()` means `this` is `obj`.
+2. `new Fn()` means `this` is the new object.
+3. Arrow functions use outer `this`.
+4. `call`, `apply` and `bind` set `this` explicitly.
+
+## Where Teyro fits
+
+Teyro's [JavaScript for Beginners](/courses/javascript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Look at how a function is called, not where it is written, except for arrow functions.
+
+## More guides
+
+- [How to Debug JavaScript](/blog/debugging-javascript)
+- [ES6 Features Every JavaScript Beginner Should Know](/blog/es6-features-javascript)
+- [let vs const vs var in JavaScript](/blog/let-const-var-javascript)
+- [Javascript arrow functions](/blog/javascript-arrow-functions)
+- [JavaScript for Beginners course](/courses/javascript-for-beginners)

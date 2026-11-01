@@ -1,0 +1,435 @@
+=== value-proposition-explained
+title: Value Proposition Explained: How to Write One That Works
+desc: A value proposition says why customers should choose you. Learn the formula, examples, how to test it and common mistakes.
+tags: value proposition, what is a value proposition, value proposition examples, how to write a value proposition, unique value
+rel: how-to-write-an-elevator-pitch
+q: What is a value proposition? | A clear statement of the benefit you provide, for whom and why it is better than alternatives.
+q: What is a simple formula? | For [audience] who [need], we provide [benefit], unlike [alternative], because [reason].
+q: How do I test it? | Show it to potential customers and ask if they understand and care.
+---
+If customers cannot say why you matter, you do not have a value proposition yet.
+
+## Direct answer
+
+A value proposition is a short statement of who you help, what problem you solve, the benefit and why you are different. A simple formula is: "For [audience] who [need], we [do X] so that [benefit], unlike [alternative]." Test it with real customers.
+
+## Examples
+
+- "For busy parents who struggle to plan meals, our app creates a weekly plan in two minutes, so dinner is never a scramble."
+- "For freelancers who dislike chasing payments, we send invoices and reminders automatically."
+
+## How to write one
+
+1. Describe the customer and their problem.
+2. State the main benefit.
+3. Say what makes you different.
+4. Use plain words.
+5. Test and refine.
+
+## Mistakes
+
+- Listing features instead of benefits.
+- Vague claims such as "best quality".
+- Too many ideas at once.
+
+## The bottom line
+
+One clear promise to one clear audience.
+
+=== personal-brand-statement
+title: Personal Brand Statement: How to Write One With Examples
+desc: A personal brand statement sums up who you are, what you do and the value you offer. Learn a simple formula, examples and how to use it online and in person.
+tags: personal brand statement, personal branding statement examples, how to write a personal brand statement, professional bio, who am i statement
+rel: how-to-write-an-elevator-pitch, linkedin-profile-tips-for-job-seekers
+q: What is a personal brand statement? | A short statement that explains who you are, what you do and the value you bring.
+q: How long should it be? | One or two sentences.
+q: Where do I use it? | LinkedIn headline, bio, networking introductions and interviews.
+---
+Introduce yourself in a way people remember.
+
+## Direct answer
+
+A personal brand statement is one or two sentences that say who you help, what you do and the result you create. Use a formula such as "I help [audience] to [result] by [method]" and adapt it for LinkedIn, interviews and networking.
+
+## Examples
+
+- "I help small shops sell online by building simple, fast websites."
+- "I am a data analyst who turns messy spreadsheets into clear decisions for operations teams."
+
+## Steps
+
+1. List your strengths and the problems you solve.
+2. Choose your audience.
+3. Write the formula.
+4. Cut jargon.
+5. Test it out loud.
+
+## The bottom line
+
+Short, specific, human.
+
+=== pitch-deck-basics
+title: Pitch Deck Basics: What to Include and How Many Slides
+desc: A pitch deck tells your story in a few slides. Learn the usual structure: problem, solution, market, traction, team and ask, with tips to keep it short.
+tags: pitch deck, pitch deck structure, how to make a pitch deck, startup pitch deck slides, investor presentation
+rel: investor-pitch-guide, how-to-write-an-elevator-pitch
+q: What should a pitch deck include? | Problem, solution, product, market, business model, traction, team and what you are asking for.
+q: How many slides should it have? | Often ten to fifteen, but shorter is fine.
+q: Should I send or present it? | Have both a presentation version and a clear send-ahead version.
+---
+A pitch deck supports your story. It is not the story.
+
+## Direct answer
+
+A pitch deck typically covers the problem, your solution, the market, your business model, traction, the team and the ask. Keep slides simple, lead with the problem and make each slide support one idea.
+
+## Typical slides
+
+1. Title and one-liner
+2. Problem
+3. Solution
+4. Product
+5. Market
+6. Business model
+7. Traction
+8. Competition
+9. Team
+10. The ask
+
+## Tips
+
+- One idea per slide.
+- Use big, clear visuals.
+- Tell a story with a beginning and end.
+- Practise the talk.
+
+## The bottom line
+
+Make it short, clear and honest.
+
+=== networking-event-introductions
+title: How to Introduce Yourself at Networking Events
+desc: Introduce yourself confidently at networking events: a short formula, example lines, how to ask good questions and how to follow up afterwards.
+tags: networking events, how to introduce yourself at a networking event, networking introduction examples, networking tips, follow up after networking
+rel: how-to-network-for-a-job, how-to-make-small-talk
+q: How do I introduce myself at a networking event? | Say your name, what you do or are learning and one interesting detail, then ask a question.
+q: What if I am nervous? | Arrive early, set a small goal and focus on being curious about others.
+q: How do I follow up? | Send a short message within two days mentioning something you discussed.
+---
+The goal is a conversation, not a performance.
+
+## Direct answer
+
+At a networking event, introduce yourself with your name, what you do and a short detail that invites a question, then ask about the other person. Listen, take a card or contact, and follow up within a couple of days.
+
+## A simple formula
+
+"Hi, I'm [name]. I [what you do], and I'm especially interested in [topic]. What brings you here?"
+
+## Questions to ask
+
+- What are you working on right now?
+- How did you get into this field?
+- What would make this event worthwhile for you?
+
+## Follow up
+
+"Great to meet you at [event]. I enjoyed hearing about [topic]. Here is the article I mentioned."
+
+## The bottom line
+
+Be curious, be brief, follow up.
+
+=== thirty-second-pitch
+title: The 30-Second Pitch: A Template You Can Use Today
+desc: A 30-second pitch is short, clear and memorable. Use this template, see examples for job seekers and founders and practise until it sounds natural.
+tags: 30 second pitch, 30 second elevator pitch, how to write a 30 second pitch, pitch template, short pitch examples
+rel: how-to-write-an-elevator-pitch, elevator-pitch-examples
+q: How many words is a 30-second pitch? | About 75 to 90 words at a natural pace.
+q: What should I include? | Who you are, who you help, the problem, your solution or strength and a call to action.
+q: Should I memorise it? | Know the points well, but keep it conversational.
+---
+Half a minute is enough to be remembered.
+
+## Direct answer
+
+A 30-second pitch tells people who you are, what problem you solve, how you solve it and what you want next, in about 75 to 90 words. Practise until it sounds natural and adapt it to the listener.
+
+## Template
+
+1. **Hook:** a question or striking fact.
+2. **Who you help.**
+3. **The problem.**
+4. **What you do** and the result.
+5. **The ask.**
+
+## Example for a job seeker
+
+"I help customer teams reduce wait times. At my last job I built a simple triage process that cut average replies from two days to four hours. I'm looking for a support operations role where I can do that at scale."
+
+## The bottom line
+
+Short, specific, human.
+
+=== unique-selling-point
+title: Unique Selling Point (USP): How to Find and Communicate Yours
+desc: A USP is what makes you different in a way customers care about. Learn how to find yours, examples and how to use it in your marketing and pitch.
+tags: unique selling point, usp, what is a usp, usp examples, how to find your usp
+rel: value-proposition-explained
+q: What is a unique selling point? | The feature or benefit that sets you apart from competitors and matters to your customers.
+q: Does every business need a USP? | A clear point of difference helps people choose you.
+q: How do I find mine? | Study competitors, ask customers why they chose you and look for gaps you can fill.
+---
+If you are the same as everyone else, price becomes the only reason to choose you.
+
+## Direct answer
+
+A unique selling point is a specific reason customers should pick you over alternatives. Find it by listing what customers value, checking what competitors say and choosing something true, specific and important to your audience.
+
+## Steps
+
+1. Ask customers why they chose you.
+2. List competitors' claims.
+3. Find the gap.
+4. Make sure it is true and provable.
+5. State it simply.
+
+## Examples
+
+- "Free shipping and returns, always."
+- "Same-day repairs or your money back."
+
+## The bottom line
+
+Be different where it counts.
+
+=== investor-pitch-guide
+title: Investor Pitch Guide: How to Present Your Startup in 10 Minutes
+desc: How to pitch investors: structure, what they listen for, handling questions, mistakes to avoid and how to practise.
+tags: investor pitch, how to pitch investors, startup pitch, pitch to investors tips, fundraising pitch
+rel: pitch-deck-basics, thirty-second-pitch
+q: What do investors look for? | A real problem, a big enough market, a credible team, evidence of traction and a plan.
+q: How long should a pitch be? | Often 10 to 15 minutes with time for questions.
+q: What mistakes do founders make? | Too much detail, unrealistic projections and avoiding hard questions.
+---
+Investors back people and plans they believe in.
+
+## Direct answer
+
+A good investor pitch tells a clear story: the problem, your solution, why now, evidence it works, how you make money, who is on the team and what you need. Be honest about risks and ready for hard questions.
+
+## Structure
+
+1. Hook and problem.
+2. Solution and demo.
+3. Market and timing.
+4. Traction.
+5. Business model.
+6. Team.
+7. The ask and use of funds.
+
+## Tips
+
+- Practise out loud with feedback.
+- Know your numbers.
+- Admit what you do not know.
+- Follow up quickly after meetings.
+
+## The bottom line
+
+Clarity and credibility win more than polish.
+
+=== call-to-action-writing
+title: Call to Action: How to Close a Pitch or Message With a Clear Ask
+desc: A call to action tells people what to do next. Learn how to write clear asks for pitches, emails and networking, with examples and mistakes to avoid.
+tags: call to action, call to action examples, how to write a call to action, clear ask, pitch closing
+rel: thirty-second-pitch
+q: What is a call to action? | A clear instruction or request that tells someone what to do next.
+q: How specific should it be? | Specific enough that the person knows exactly what to do and by when.
+q: Where do I put it? | At the end of your message, and sometimes at the start for busy readers.
+---
+People rarely act on vague hints.
+
+## Direct answer
+
+A call to action is a clear, specific request that follows your pitch or message, such as "Could we book 20 minutes on Thursday?". Make it easy, specific and time-bound.
+
+## Examples
+
+| Weak | Strong |
+| :--- | :--- |
+| Let me know. | Could you reply by Friday with your preferred date? |
+| Maybe we can talk. | Could we have a 15-minute call on Tuesday at 10? |
+| Check it out. | Try the demo at the link and tell me what you think. |
+
+## Tips
+
+1. One ask per message.
+2. Make it easy: link, time, one click.
+3. Say why it benefits them.
+
+## The bottom line
+
+Always finish with a clear next step.
+
+=== founder-pitch-story
+title: Founder Pitch Story: How to Tell Your Startup's Story in a Pitch
+desc: Stories make pitches memorable. Learn a simple founder story structure: a person, a problem, the turning point, the solution and the vision, with examples.
+tags: founder pitch, startup story, pitch storytelling, founder story examples, how to tell your story
+rel: investor-pitch-guide
+q: Why use a story in a pitch? | Stories help people understand and remember the problem and your motivation.
+q: How long should it be? | Thirty to sixty seconds in a short pitch.
+q: What makes a good startup story? | A specific person, a real problem and a clear moment that led to your solution.
+---
+Facts persuade the head. Stories reach the heart.
+
+## Direct answer
+
+A founder story explains why you care and why you can solve the problem. Use a simple arc: meet a person, show their problem, describe the turning point, introduce your solution and share the vision. Keep it short and true.
+
+## Structure
+
+1. **A person:** "Maria runs a bakery."
+2. **A problem:** "She loses hours to manual orders."
+3. **Turning point:** "I watched her miss a big order."
+4. **Solution:** "So we built a simple ordering tool."
+5. **Vision:** "Every small shop can sell easily online."
+
+## Tips
+
+- Use specific details.
+- Keep it honest.
+- Move quickly to what you built.
+
+## The bottom line
+
+A specific person beats a general market.
+
+=== one-liner-pitch
+title: One-Liner Pitch: How to Describe Your Idea in a Single Sentence
+desc: A one-liner pitch explains your idea in one sentence. Learn formulas, examples and how to test whether people understand it.
+tags: one liner, one liner pitch, pitch in one sentence, startup one liner, elevator pitch one sentence
+rel: thirty-second-pitch, value-proposition-explained
+q: What is a one-liner pitch? | A single sentence that captures what you do, for whom and why it matters.
+q: What is a good formula? | We help [audience] [achieve result] by [method].
+q: How do I test it? | Say it to someone unfamiliar and ask them to repeat it back.
+---
+If you cannot say it in one sentence, you may not have clarity yet.
+
+## Direct answer
+
+A one-liner pitch states what you do, for whom and the benefit in one clear sentence. Use the formula "We help [audience] [result] by [method]" and test it by asking someone to repeat it back.
+
+## Examples
+
+- "We help small teams share files securely without IT support."
+- "I help startups turn customer feedback into product decisions."
+
+## Steps
+
+1. Write ten versions.
+2. Remove jargon.
+3. Pick the clearest.
+4. Test with three people.
+
+## The bottom line
+
+Clear beats clever.
+
+=== pain-point-in-pitch
+title: Pain Points: How to Identify and Use Them in a Pitch
+desc: A pain point is a problem customers want solved. Learn how to find real pain points, describe them in customers' words and use them to open a pitch.
+tags: pain point, customer pain points, how to find pain points, pitch problem statement, problem solution
+rel: value-proposition-explained, how-to-validate-a-business-idea
+q: What is a pain point? | A specific problem or frustration that a customer experiences and wants to solve.
+q: How do I find pain points? | Talk to customers, read reviews and watch how people work today.
+q: How do I use them in a pitch? | Start with the problem in the customer's own words, then show your solution.
+---
+People buy relief from pain, not features.
+
+## Direct answer
+
+A pain point is a real, felt problem. Find it by interviewing customers, reading reviews and watching workflows. In a pitch, state the pain in the customer's words, show its cost and then show how you remove it.
+
+## Types
+
+| Type | Example |
+| :--- | :--- |
+| Financial | overpaying for tools |
+| Productivity | wasting time on admin |
+| Process | confusing steps |
+| Support | slow replies |
+
+## Using it
+
+1. Open with the pain.
+2. Quantify it if you can.
+3. Show your solution.
+4. Show the result.
+
+## The bottom line
+
+Start with the problem your audience feels.
+
+=== problem-solution-fit
+title: Problem-Solution Fit: How to Know Your Idea Solves a Real Problem
+desc: Problem-solution fit means your solution actually solves a problem people have. Learn how to test it with interviews and small experiments before building.
+tags: problem solution fit, problem solution fit meaning, validate startup idea, customer interviews, product market fit
+rel: how-to-validate-a-business-idea, pain-point-in-pitch
+q: What is problem-solution fit? | Evidence that a real problem exists and your solution addresses it for a specific group.
+q: How is it different from product-market fit? | Problem-solution fit comes first. Product-market fit means enough customers want the product at scale.
+q: How do I test it? | Interview target customers and try a simple prototype or landing page.
+---
+Before you build, check the problem is real.
+
+## Direct answer
+
+Problem-solution fit means you have evidence that a specific group has a real problem and that your solution helps. Test it with customer interviews, a simple prototype or a landing page test, and look for clear signs: people describe the problem unprompted and ask for the solution.
+
+## Steps
+
+1. **Define the customer and the problem.**
+2. **Interview** at least ten people.
+3. **Listen** for strong, specific stories.
+4. **Test a solution** with a prototype.
+5. **Look for commitment:** time, data or money.
+
+## Warning signs
+
+- People are polite but not interested.
+- The problem is rare or mild.
+- They already have an easy fix.
+
+## The bottom line
+
+Fall in love with the problem first.
+
+=== pitch-practice-tips
+title: How to Practise a Pitch: 8 Drills That Make It Natural
+desc: Practise your pitch until it sounds natural: record yourself, use the mirror, rehearse with friends, time it and prepare for questions.
+tags: pitch practice, practice your pitch, how to rehearse a pitch, presentation practice, pitch coaching
+rel: thirty-second-pitch, handling-qa-sessions
+q: How do I practise a pitch? | Say it aloud, record it, time it and get feedback from others.
+q: How many times should I rehearse? | Until you are comfortable with the flow, not word for word.
+q: Should I memorise it? | Learn the structure and key lines, but keep it conversational.
+---
+Fluent pitches are practised pitches.
+
+## Direct answer
+
+Practise your pitch aloud, record it, time it and rehearse in front of friends. Focus on the structure and key lines rather than memorising every word. Prepare for questions and practise in the real setting if you can.
+
+## 8 drills
+
+1. Say it to a mirror.
+2. Record audio.
+3. Time it.
+4. Pitch to a friend.
+5. Shorten it by a third.
+6. Change the order of points.
+7. Practise questions.
+8. Run it standing as you will on the day.
+
+## The bottom line
+
+Practice makes it sound like you.

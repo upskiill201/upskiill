@@ -6,6 +6,7 @@ import {
   DEFAULT_DAILY_GOAL_XP,
   qualifiesForDailyGoal,
 } from '../../common/daily-goal.util';
+import { resolveFocusCourseId } from '../../common/focus-course.util';
 import type {
   LearnerStateSnapshot,
   TeyTarget,
@@ -25,6 +26,7 @@ import {
   resolveLocalNow,
   TeyLocalNow,
 } from './local-time.util';
+import { passedLessons } from '../../common/passed-lessons.util';
 
 interface LearnerStateRow {
   userId: string;
@@ -313,13 +315,17 @@ export class LearnerStateService {
       daysSinceActivity: null,
     };
 
+    // The learner's focus course (their home-screen choice, else the most
+    // recently active one) — the same course community pings follow.
+    const focusId = await resolveFocusCourseId(this.prisma, userId);
     const enrollment = await this.prisma.enrollment.findFirst({
-      where: { userId },
+      where: focusId ? { userId, courseId: focusId } : { userId },
       orderBy: { updatedAt: 'desc' },
       select: {
         courseId: true,
         progress: true,
         completedLessons: true,
+        testedOutLessons: true,
         updatedAt: true,
         course: { select: { id: true, title: true } },
       },
@@ -352,11 +358,9 @@ export class LearnerStateService {
       },
     });
 
-    const completed = new Set(
-      Array.isArray(enrollment.completedLessons)
-        ? (enrollment.completedLessons as unknown[]).map(String)
-        : [],
-    );
+    // Next lesson = first one not passed: tested-out lessons (Jump ahead /
+    // placement) are skipped, exactly as the map skips them.
+    const completed = passedLessons(enrollment.completedLessons, enrollment.testedOutLessons);
 
     for (let sIdx = 0; sIdx < sections.length; sIdx++) {
       const next = sections[sIdx].lessons.find((l) => !completed.has(l.id));

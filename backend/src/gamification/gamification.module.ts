@@ -11,6 +11,7 @@ import { ChestModule } from '../chest/chest.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { ShopModule } from '../shop/shop.module';
 import { StreakModule } from '../streak/streak.module';
+import { ProAccessModule } from '../pro/pro-access.module';
 
 @Module({
   imports: [
@@ -23,6 +24,8 @@ import { StreakModule } from '../streak/streak.module';
     ShopModule,
     // Streaks reconcile in one place: StreakService.
     StreakModule,
+    // Pro learners have unlimited hearts.
+    ProAccessModule,
   ],
   controllers: [GamificationController, AchievementsController],
   providers: [GamificationService, AchievementsService, GamificationListener],

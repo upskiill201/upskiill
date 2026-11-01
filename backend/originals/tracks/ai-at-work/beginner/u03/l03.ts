@@ -102,11 +102,11 @@ const lesson: OriginalLesson = {
         message: "I uploaded a 120-page contract and the AI's summary never mentions the termination section. Weird?",
         prompt: 'What should Ada suggest?',
         options: [
-          { text: "Ask which pages it could read, then summarise the termination section on its own, with page numbers." },
           { text: "There's probably no termination section.", why: 'Do not assume; long documents lose sections.' },
+          { text: "Ask which pages it could read, then summarise the termination section on its own, with page numbers." },
           { text: 'Trust the summary.', why: 'A missing section is a red flag.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -165,11 +165,11 @@ const lesson: OriginalLesson = {
         message: "Your summary says 'users want dark mode (p.44)'. I checked page 44 and it's about pricing!",
         prompt: 'What should Ada do?',
         options: [
-          { text: "Thank Lucía, find the real page (or remove the claim if it isn't in the report), and check other references too." },
           { text: 'Insist it is on page 44.', why: 'She checked. Look again.' },
           { text: 'Remove all page numbers.', why: 'Page numbers are how she caught it. Keep them, fix this one.' },
+          { text: "Thank Lucía, find the real page (or remove the claim if it isn't in the report), and check other references too." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -190,11 +190,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What do page numbers give you at every step?',
         options: [
-          { text: 'A way to check any point in seconds' },
           { text: 'A longer summary', why: 'They are for checking, not length.' },
+          { text: 'A way to check any point in seconds' },
           { text: 'Nothing useful', why: 'They are how you catch mistakes.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

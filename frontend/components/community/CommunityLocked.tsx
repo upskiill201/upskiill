@@ -11,7 +11,7 @@
 import React, { useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Check, Lock } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { lessonHref, useEnrollments } from '@/hooks/useCourse';
 import { playSound } from '@/lib/audio/lessonSounds';
 import PostTypeArt from './PostTypeArt';
@@ -56,7 +56,7 @@ export default function CommunityLocked({ lock }: { lock: CommunityLockInfo }) {
       <div className={styles.art}>
         <Image src="/art/ui/community.svg" alt="" width={132} height={132} priority />
         <span className={styles.lock} aria-hidden="true">
-          <Lock size={22} strokeWidth={3} />
+          <Glyph name="lock" size={22} strokeWidth={3} />
         </span>
       </div>
 
@@ -79,7 +79,7 @@ export default function CommunityLocked({ lock }: { lock: CommunityLockInfo }) {
             <li key={i} className={styles.nodeItem}>
               {i > 0 && <span className={`${styles.link} ${i <= lock.lessonsDone ? styles.linkDone : ''}`} aria-hidden="true" />}
               <span className={`${styles.node} ${done ? styles.nodeDone : current ? styles.nodeCurrent : ''}`}>
-                {done ? <Check size={26} strokeWidth={3.5} /> : i + 1}
+                {done ? <Glyph name="check" size={26} strokeWidth={3.5} /> : i + 1}
               </span>
               <span className={styles.nodeLabel}>Lesson {i + 1}</span>
             </li>

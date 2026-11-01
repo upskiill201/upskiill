@@ -10,7 +10,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Check, Snowflake, Wrench } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { dayKey, monthOf, shiftMonth, useStreakCalendar, useStreakStats } from '@/hooks/useStreak';
 import { useGamification } from '@/context/GamificationContext';
 import type { CalendarDay } from '@/context/StreakContext';
@@ -105,9 +105,9 @@ export default function StreakPopover({ onClose }: StreakPopoverProps) {
                         : ''
                 }`}
               >
-                {status === 'lesson' && <Check size={14} strokeWidth={3.5} aria-label="Practiced" />}
-                {status === 'repaired' && <Wrench size={12} strokeWidth={3} aria-label="Repaired" />}
-                {status === 'frozen' && <Snowflake size={14} strokeWidth={3} aria-label="Freeze used" />}
+                {status === 'lesson' && <Glyph name="check" size={14} strokeWidth={3.5} label="Practiced" />}
+                {status === 'repaired' && <Glyph name="wrench" size={12} strokeWidth={3} label="Repaired" />}
+                {status === 'frozen' && <Glyph name="snowflake" size={14} strokeWidth={3} label="Freeze used" />}
               </span>
             </div>
           );
@@ -117,7 +117,7 @@ export default function StreakPopover({ onClose }: StreakPopoverProps) {
       <div className={styles.body}>
         <div className={styles.row}>
           <span className={styles.rowIcon} aria-hidden="true">
-            <Snowflake size={20} strokeWidth={2.5} />
+            <Glyph name="snowflake" size={20} strokeWidth={2.5} />
           </span>
           <span className={styles.rowText}>
             <span className={styles.rowTitle}>Streak freeze</span>

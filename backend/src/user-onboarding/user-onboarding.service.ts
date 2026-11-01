@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { createHash, randomBytes } from 'crypto';
+import { OnboardingFlowService } from '../onboarding-flow/onboarding-flow.service';
+import { sanitizeLearnerAnswers } from './dto/upsert-onboarding-session.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { XpAwardedEvent } from '../league/events/xp-awarded.event';
 import { normalisePhone, maskPhone } from '../whatsapp/phone.util';
@@ -9,6 +11,7 @@ import {
   COMMITMENT_TO_DAILY_GOAL_XP,
   PREFERRED_TIME_TO_HOUR,
   answersAreComplete,
+  trackForCategory,
   readChallengeClaim,
   readLegacyWhatsapp,
   type DailyCommitment,
@@ -30,6 +33,8 @@ export class UserOnboardingService {
   constructor(
     private prisma: PrismaService,
     private eventEmitter: EventEmitter2,
+    // Onboarding v3: the lesson played before signup, and its analytics.
+    private onboardingFlow: OnboardingFlowService,
   ) {}
 
   /** Get the session for a user. Returns null if no session exists yet. */
@@ -115,9 +120,20 @@ export class UserOnboardingService {
    */
   async applyPreSignupAnswers(userId: string, answers: any): Promise<void> {
     if (!answers) return;
+    // Legacy proofs read their own v1 keys ('6', '9') from the raw answers.
     await this.reconcileWhatsappVerification(userId, answers);
     await this.settlePendingChallengeReward(userId, answers);
-    await this.applyLearningPreferences(userId, answers);
+    // Everything that writes the profile or pays out reads validated answers.
+    const clean = sanitizeLearnerAnswers(answers) as any;
+    await this.applyLearningPreferences(userId, clean);
+    // v3: everything this device did before signup now belongs to the
+    // account, and the lesson they played becomes their real lesson 1.
+    await this.onboardingFlow.linkAnonymousEvents(userId, clean.anonymousId);
+    await this.onboardingFlow.settleLessonClaim(
+      userId,
+      clean.lesson?.claimToken,
+      Number(clean.lesson?.timezoneOffset) || 0,
+    );
   }
 
   /**
@@ -149,7 +165,9 @@ export class UserOnboardingService {
         answers.dailyCommitment !== undefined
           ? COMMITMENT_TO_DAILY_GOAL_XP[answers.dailyCommitment as DailyCommitment]
           : undefined;
-      const learningTrack = answers.category;
+      // v3 categories are course categories ("Personal Finance"); only Coding
+      // and AI have a v2 learning track, which the dashboard still reads.
+      const learningTrack = trackForCategory(answers.category) ?? undefined;
       const learningInterests =
         Array.isArray(answers.interests) && answers.interests.length > 0
           ? answers.interests

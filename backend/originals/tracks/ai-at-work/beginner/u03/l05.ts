@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A 120-page contract summary never mentions the termination section. What first?',
         options: [
-          { text: 'Ask which pages it could read, then summarise that section on its own' },
           { text: 'Assume there is no such section', why: 'Long documents lose sections.' },
+          { text: 'Ask which pages it could read, then summarise that section on its own' },
           { text: 'Ignore it', why: 'Missing sections are a red flag.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         message: "The summary cites page 44 for a finding, but page 44 is about pricing!",
         prompt: 'What should Ada do?',
         options: [
-          { text: "Find the real page, or remove the claim if it isn't in the report, and check other references." },
           { text: 'Insist on page 44.', why: 'Lucía checked. Look again.' },
           { text: 'Remove all page numbers.', why: 'They are how mistakes get caught.' },
+          { text: "Find the real page, or remove the claim if it isn't in the report, and check other references." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',
@@ -178,11 +178,11 @@ const lesson: OriginalLesson = {
         message: 'My CEO and my team both need the research summary. One email or two?',
         prompt: "What's the best advice?",
         options: [
-          { text: 'Two, asked for in one request: impact and recommendation for the CEO, specifics for the team.' },
           { text: 'One long one for both.', why: 'Wrong for both readers.' },
+          { text: 'Two, asked for in one request: impact and recommendation for the CEO, specifics for the team.' },
           { text: 'Just the CEO.', why: 'The team needs it too.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

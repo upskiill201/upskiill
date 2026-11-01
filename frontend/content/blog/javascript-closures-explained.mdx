@@ -1,0 +1,77 @@
+---
+title: "JavaScript Closures Explained Simply With Examples"
+description: "A closure is a function that remembers variables from where it was created. Learn closures with simple examples, common uses and a classic loop bug."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [javascript closures, closures explained, what is a closure, closure examples, javascript closure interview question]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "JavaScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/javascript-for-beginners
+  label: "See the JavaScript for Beginners course"
+faq:
+  - question: "What is a closure in JavaScript?"
+    answer: "A function that keeps access to variables from the scope in which it was created, even after that outer function has finished."
+  - question: "What are closures used for?"
+    answer: "Private data, function factories, counters and callbacks."
+  - question: "Why are closures asked in interviews?"
+    answer: "They show whether you understand scope and how functions work."
+---
+
+Closures sound scary, but the idea is simple: a function remembers where it came from.
+
+## Direct answer
+
+A closure is a function bundled with the variables around it when it was created. Even after the outer function returns, the inner function can still use those variables. Closures let you keep private state and build function factories.
+
+## A counter
+
+```javascript
+function makeCounter() {
+  let count = 0;
+  return function () {
+    count = count + 1;
+    return count;
+  };
+}
+
+const counter = makeCounter();
+console.log(counter()); // 1
+console.log(counter()); // 2
+```
+
+`count` is not accessible from outside, yet the returned function can use it.
+
+## Function factory
+
+```javascript
+function multiplier(factor) {
+  return n => n * factor;
+}
+const double = multiplier(2);
+console.log(double(5)); // 10
+```
+
+## Common use cases
+
+- Private variables
+- Event handlers that need context
+- Partial application and configuration
+
+## Where Teyro fits
+
+Teyro's [JavaScript for Beginners](/courses/javascript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Every function you return from another function can be a closure. Practise with counters and factories.
+
+## More guides
+
+- [JavaScript Promises Explained](/blog/javascript-promises-explained)
+- [async and await in JavaScript](/blog/async-await-javascript)
+- [What Is JSON? A Beginner's Guide With Examples](/blog/what-is-json)
+- [Javascript scope explained](/blog/javascript-scope-explained)
+- [JavaScript for Beginners course](/courses/javascript-for-beginners)

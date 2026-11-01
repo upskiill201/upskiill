@@ -1,0 +1,71 @@
+---
+title: "Linear Regression Explained: Predict Numbers From Data"
+description: "Linear regression fits a straight line to predict a number. Learn the idea, the equation, how error is measured and a short scikit-learn example."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [linear regression, linear regression explained, simple linear regression, regression in machine learning, scikit-learn linear regression]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Machine Learning for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/machine-learning-for-beginners
+  label: "See the Machine Learning for Beginners course"
+faq:
+  - question: "What is linear regression?"
+    answer: "A method that models the relationship between inputs and a numeric output as a straight line or plane."
+  - question: "What is the equation?"
+    answer: "y equals m times x plus b for one input, where m is the slope and b is the intercept."
+  - question: "How is the best line chosen?"
+    answer: "By minimising the sum of squared differences between predictions and actual values."
+---
+
+The simplest and most useful predictive model.
+
+## Direct answer
+
+Linear regression predicts a number by fitting a straight line through data. For one input the model is y = m·x + b. It finds the slope and intercept that minimise the squared errors between predictions and real values.
+
+## Example
+
+```python
+from sklearn.linear_model import LinearRegression
+import numpy as np
+
+hours = np.array([[1], [2], [3], [4], [5]])
+score = np.array([52, 58, 65, 70, 78])
+
+model = LinearRegression().fit(hours, score)
+print(model.coef_, model.intercept_)
+print(model.predict([[6]]))
+```
+
+## Measuring error
+
+| Metric | Meaning |
+| :--- | :--- |
+| MAE | average absolute error |
+| MSE | average squared error |
+| R squared | share of variation explained |
+
+## Assumptions
+
+- A roughly linear relationship.
+- Errors that are not wildly uneven.
+- Inputs not strongly overlapping.
+
+## Where Teyro fits
+
+Teyro's [Machine Learning for Beginners](/courses/machine-learning-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 200 lessons, and you can start free.
+
+## The bottom line
+
+A solid first model for numeric predictions.
+
+## More guides
+
+- [Decision Trees Explained](/blog/decision-tree-explained)
+- [Neural Networks Explained in Simple Terms](/blog/neural-network-explained)
+- [Accuracy, Precision and Recall](/blog/accuracy-precision-recall)
+- [Classification vs regression](/blog/classification-vs-regression)
+- [Machine Learning for Beginners course](/courses/machine-learning-for-beginners)

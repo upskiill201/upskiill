@@ -108,11 +108,11 @@ const lesson: OriginalLesson = {
         message: "Welcome back! While you were away we went with the bolder banner. Hope that's OK!",
         prompt: 'Which reply is best?',
         options: [
-          { text: "Thanks! I've read why, and it makes sense on small screens. I'll build on it from today." },
           { text: 'I would have chosen the other one.', why: 'Re-opens a settled decision with no new reason.' },
           { text: '(No reply)', why: 'A short acknowledgement keeps things smooth.' },
+          { text: "Thanks! I've read why, and it makes sense on small screens. I'll build on it from today." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -171,11 +171,11 @@ const lesson: OriginalLesson = {
         message: "I'm off next week. Any tips so I don't drown when I'm back?",
         prompt: 'What should Ada suggest?',
         options: [
-          { text: "Set an out-of-office that names who to contact, and when you're back, triage subjects first instead of reading in order." },
           { text: 'Check email every day on holiday.', why: 'Not much of a holiday.' },
+          { text: "Set an out-of-office that names who to contact, and when you're back, triage subjects first instead of reading in order." },
           { text: 'Delete everything when you return.', why: 'You would miss what needs you.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

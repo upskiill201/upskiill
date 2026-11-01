@@ -1,0 +1,28 @@
+{
+  "slug": "c13-tap-to-pay",
+  "account": "teyro",
+  "title": "What happens when you tap to pay",
+  "voice": "cgSgspJ2msm6clMCkdW9",
+  "model": "eleven_multilingual_v2",
+  "fps": 30,
+  "lines": [
+    { "id": "h1", "text": "One coffee. *Six* stops. *Two* seconds. And *zero* money moved." },
+    { "id": "i1", "text": "Stop one, your phone. | *Face ID* unlocks a separate chip, | a *vault* the rest of the phone can't read." },
+    { "id": "i2", "text": "Stop two, inside the vault. | Not your card number, | but a *stand-in* that only works on this phone. | It signs this one purchase, | so a copy is already *dead.*" },
+    { "id": "i3", "text": "Stop three, the reader. | *NFC* only reaches about *four centimeters,* | that's why you have to touch it." },
+    { "id": "i4", "text": "Stop four, the shop's bank. | It reads the first few digits, | sees *Visa,* | and passes it on." },
+    { "id": "i5", "text": "Stop five, Visa. | It swaps the stand-in for your *real* number, | and an AI checks over *500* signals | in about one *millisecond.*" },
+    { "id": "i6", "text": "Stop six, your bank. | It checks the *fraud score* and your balance, | and says *yes.* | Beep. Coffee's yours." },
+    { "id": "s1", "text": "But no money moved. | That beep was a *promise.* | The real money moves later, | in a batch called *settlement.*" },
+    { "id": "c1", "text": "Want to build stuff like this, | *one lesson* a day? | Head to *Teyro.*", "speed": 1.15 }
+  ],
+  "sources": [
+    "Apple: Apple Pay security and privacy overview (support.apple.com/101554): card numbers not stored on device or Apple servers; Device Account Number stored in the Secure Element, isolated from the OS; after Face ID/Touch ID/passcode the Secure Element provides the Device Account Number + a transaction-specific dynamic security code; neither Apple nor the device sends the actual card number",
+    "EMV contactless: the cryptogram covers the transaction data incl. amount and an application transaction counter, so a replay fails (EMVCo Book C / general EMV); contactless operating range up to ~4 cm (EMVCo contactless specification)",
+    "Routing: the acquirer routes by the leading digits (BIN/IIN) to the card network",
+    "Visa press release 2019 (investor.visa.com): Visa Advanced Authorization evaluates 500+ risk attributes in about one millisecond; risk score 1-99 shared with the issuer",
+    "Visa Token Service: the network maps the token back to the card number (de-tokenization) before the issuer authorizes",
+    "Settlement: authorization moves no funds; clearing and settlement happen later in batches (typically daily)",
+    "Cut from the founder's script: '80,000 messages a second' (Visa 10-K: 'more than 65,000'); 258 billion transactions (true, 257.5B FY2025, cut for length)"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "slug": "a10-claude-mods",
+  "account": "teyro",
+  "title": "Claude Code can now rewrite itself (mods)",
+  "voice": "cgSgspJ2msm6clMCkdW9",
+  "model": "eleven_multilingual_v2",
+  "fps": 30,
+  "speed": 1.08,
+  "lines": [
+    { "id": "h1", "text": "You can now use Claude Code to *rewrite* Claude Code itself, | and someone's already running *Doom* inside it." },
+    { "id": "i1", "text": "Last week, Anthropic shipped *mods,* | a way to change almost everything in it, | from the *spinner* to your *prompts.*" },
+    { "id": "i2", "text": "Under the hood, it runs on *events.* | Sending a prompt is one. | Running a tool is one. | Even drawing the *spinner* is one." },
+    { "id": "i3", "text": "A mod is a bit of *TypeScript* that sits on those events, | and it can *watch* one, *change* it, | or *answer* it, so the original never runs." },
+    { "id": "i4", "text": "Anthropic's *Blast Radius* mod catches a risky *delete* | and shows what it would wipe. | *Token Weather* draws a forecast of your context." },
+    { "id": "i5", "text": "You don't even have to write them. | Ask Claude for one that shows your *Git branch,* | and it loads when the turn *ends.*" },
+    { "id": "i6", "text": "The catch? | Mods aren't *sandboxed,* | so a bad one could read your *API keys.*" },
+    { "id": "i7", "text": "And Claude Code's own *diff view* | is already a mod." },
+    { "id": "c1", "text": "Want to learn *Claude Code,* | *one lesson* a day? | Head to *Teyro.*", "speed": 1.15 }
+  ],
+  "sources": [
+    "code.claude.com/docs/en/plugins/mods/overview (read 2026-10-09): mods = JS/TS event handlers (tool call, submitted prompt, interface drawn incl. spinner); a hook can observe, rewrite, or answer so the usual behavior doesn't run; on by default from Claude Code v2.1.287; install from marketplaces; 'Mods aren't sandboxed'; can read secrets incl. API keys in env/settings; sample mods token-weather (forecast of context above the prompt) and blast-radius (holds rm -rf / force push, shows what it would change); built-in mods incl. /diff (cc-plugin-diff), AGENTS.md loader, sec-default guard",
+    "code.claude.com/docs/en/plugins/mods/create (read 2026-10-09): ask Claude e.g. 'make a mod that shows the current git branch above the prompt'; with hot reloading enabled, mods load when the turn ends",
+    "Launch: early October 2026, Claude Code v2.1.287 (The New Stack; X @ClaudeDevs announcement Oct 2)",
+    "Doom: Jarrod Watts' 'intermission' mod (jarrodwatts/intermission): multiplayer Doom while Claude works, released ~1 day after launch (skillsllm.com listing; inside.com.tw)",
+    "CTA claim (Teyro has Claude Code courses in the AI category): confirmed by the founder in chat 2026-10-09; not yet stated on the live teyro.app pages",
+    "Cut from the founder's script (not in docs): 5,000-line 'Context Mod', 'system prompt', 'Anthropic is rebuilding Claude Code out of mods / core keeps shrinking'"
+  ]
+}

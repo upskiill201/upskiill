@@ -1,0 +1,184 @@
+---
+title: "Python Cheat Sheet for Beginners: Syntax You Need (Free, Printable)"
+description: "A free Python cheat sheet for beginners: variables, strings, lists, dictionaries, loops, functions and files in one page. Copy it, print it, or save it as a PDF."
+publishedDate: "2026-10-25"
+category: skill-building
+tags: [python cheat sheet, python for beginners pdf, python syntax, python basics, python quick reference, learn python pdf]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Practise it, don't just read it"
+  text: "The Python for Beginners course turns every line of this sheet into short lessons with real code you run. Free to start."
+  href: /courses/python-for-beginners
+  label: "See the Python course"
+faq:
+  - question: "Is there a free Python cheat sheet for beginners?"
+    answer: "Yes. This page is one: it covers variables, strings, lists, dictionaries, loops, functions and files. Print this page or use your browser's Save as PDF option to keep a copy."
+  - question: "How do I save this cheat sheet as a PDF?"
+    answer: "Open your browser's print dialog (Ctrl+P or Cmd+P) and choose Save as PDF as the destination."
+  - question: "What are the most important Python basics?"
+    answer: "Variables and data types, conditions, loops, lists and dictionaries, and functions. Almost every beginner program uses these."
+  - question: "Does a cheat sheet help me learn Python?"
+    answer: "It helps as a reference, but you learn by writing code. Use it while practising, not instead of it."
+---
+
+A cheat sheet does not teach you Python. It saves you from forgetting the syntax while you practise. Here is a one-page **Python cheat sheet for beginners**. Print it (use your browser's Save as PDF if you prefer a file), and keep it next to you while you code.
+
+## Direct answer
+
+The core of beginner Python is variables, strings, lists, dictionaries, conditions, loops, functions and files. The sections below show each with the syntax you need.
+
+## Variables and data types
+
+```python
+name = "Ada"        # string (str)
+age = 30            # integer (int)
+price = 4.99        # float
+is_ready = True     # boolean (bool)
+type(age)           # <class 'int'>
+```
+
+## Maths
+
+```python
+10 + 3    # 13
+10 - 3    # 7
+10 * 3    # 30
+10 / 3    # 3.333... (always a float)
+10 // 3   # 3 (whole number division)
+10 % 3    # 1 (remainder)
+2 ** 3    # 8 (power)
+```
+
+## Strings
+
+```python
+s = "hello world"
+len(s)                 # 11
+s.upper()              # "HELLO WORLD"
+s.title()              # "Hello World"
+s.replace("l", "L")    # "heLLo worLd"
+s.split(" ")           # ["hello", "world"]
+s[0]                   # "h"
+s[0:5]                 # "hello"
+f"Hi {name}, you are {age}"   # f-string
+```
+
+## Input and output
+
+```python
+answer = input("Your name? ")   # always a string
+n = int(input("A number: "))    # convert to a number
+print("Hello", answer)
+```
+
+## Conditions
+
+```python
+if age >= 18:
+    print("adult")
+elif age >= 13:
+    print("teen")
+else:
+    print("child")
+
+# comparisons: ==  !=  <  >  <=  >=
+# logic:       and  or  not
+```
+
+## Lists
+
+```python
+fruits = ["apple", "pear"]
+fruits.append("plum")    # add to end
+fruits.remove("pear")    # remove by value
+fruits[0]                # first item
+fruits[-1]               # last item
+len(fruits)              # how many
+"apple" in fruits        # True
+sorted([3, 1, 2])        # [1, 2, 3]
+```
+
+## Dictionaries
+
+```python
+person = {"name": "Ada", "age": 30}
+person["name"]            # "Ada"
+person["city"] = "Paris"  # add or change
+person.get("job", "n/a")  # "n/a" if missing
+for key, value in person.items():
+    print(key, value)
+```
+
+## Loops
+
+```python
+for i in range(5):        # 0 to 4
+    print(i)
+
+for fruit in fruits:
+    print(fruit)
+
+n = 3
+while n > 0:
+    print(n)
+    n -= 1
+
+# break = leave the loop, continue = skip to the next round
+```
+
+## Functions
+
+```python
+def add(a, b=0):
+    return a + b
+
+add(2, 3)   # 5
+add(2)      # 2
+```
+
+## Files
+
+```python
+with open("notes.txt", "w") as f:
+    f.write("hello\n")
+
+with open("notes.txt") as f:
+    text = f.read()
+```
+
+## Errors
+
+```python
+try:
+    n = int(input("Number: "))
+except ValueError:
+    print("That was not a number")
+```
+
+## Handy built-ins
+
+| Function | What it does |
+| :--- | :--- |
+| `len(x)` | length of a string, list or dictionary |
+| `range(n)` | numbers from 0 to n-1 |
+| `sum(list)` | add up a list of numbers |
+| `min(list)`, `max(list)` | smallest, largest |
+| `sorted(list)` | a new sorted list |
+| `round(x, 2)` | round to 2 decimals |
+| `type(x)` | the data type |
+
+## Common beginner errors
+
+- **IndentationError:** the spaces at the start of a line do not match. Use four spaces.
+- **NameError:** you used a name you have not defined (often a typo).
+- **TypeError:** mixing types, such as adding a string and a number. Convert with `int()` or `str()`.
+- **SyntaxError:** a missing colon, bracket or quote.
+
+## How to use this sheet
+
+Keep it open, but do not copy and paste. Type each snippet, change the values, and predict the result before you run it. For a practice plan, see [learn Python in 30 days](/blog/learn-python-in-30-days), and for a project list, [Python projects for beginners](/blog/python-projects-for-beginners).
+
+## The bottom line
+
+A cheat sheet is a memory aid. The skill comes from writing code every day. The [Python for Beginners course](/courses/python-for-beginners) gives you short lessons with real code to run, free to start.

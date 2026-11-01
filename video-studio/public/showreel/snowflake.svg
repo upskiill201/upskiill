@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Teyro streak-freeze token — ice-blue snowflake -->
+  <g fill="none" stroke="#1CB0F6" stroke-width="4.5" stroke-linecap="round">
+    <path d="M32 6 V58"/>
+    <path d="M9.5 19 L54.5 45"/>
+    <path d="M54.5 19 L9.5 45"/>
+    <path d="M32 13 L25.5 8 M32 13 L38.5 8"/>
+    <path d="M32 51 L25.5 56 M32 51 L38.5 56"/>
+    <path d="M15.5 22.7 L14.2 15.3 L21.6 16.4"/>
+    <path d="M48.5 41.3 L49.8 48.7 L42.4 47.6"/>
+    <path d="M48.5 22.7 L49.8 15.3 L42.4 16.4"/>
+    <path d="M15.5 41.3 L14.2 48.7 L21.6 47.6"/>
+  </g>
+  <circle cx="32" cy="32" r="4.5" fill="#FFFFFF" stroke="#1CB0F6" stroke-width="3"/>
+</svg>

@@ -28,6 +28,7 @@ export class EmailPreferenceService {
       league?: boolean;
       digest?: boolean;
       creatorDigest?: boolean;
+      community?: boolean;
     },
   ): Promise<boolean> {
     if (isAlwaysOn(category)) return true;
@@ -42,6 +43,7 @@ export class EmailPreferenceService {
     if (options?.league && pref.leagueEmailsOptOut) return false;
     if (options?.digest && pref.weeklyDigestOptOut) return false;
     if (options?.creatorDigest && pref.creatorDigestOptOut) return false;
+    if (options?.community && pref.communityOptOut) return false;
 
     const field = CATEGORY_FIELD[category];
     if (field && (pref as unknown as Record<string, boolean>)[field])
@@ -64,6 +66,7 @@ export class EmailPreferenceService {
       weeklyDigestOptOut: pref?.weeklyDigestOptOut ?? false,
       reengagementOptOut: pref?.reengagementOptOut ?? false,
       creatorDigestOptOut: pref?.creatorDigestOptOut ?? false,
+      communityOptOut: pref?.communityOptOut ?? false,
     };
   }
 
@@ -93,6 +96,7 @@ export class EmailPreferenceService {
         weeklyDigestOptOut: true,
         reengagementOptOut: true,
         creatorDigestOptOut: true,
+        communityOptOut: true,
       },
       update: {
         marketingOptOut: true,
@@ -103,6 +107,7 @@ export class EmailPreferenceService {
         weeklyDigestOptOut: true,
         reengagementOptOut: true,
         creatorDigestOptOut: true,
+        communityOptOut: true,
       },
     });
   }
@@ -117,4 +122,5 @@ type CategoryUpdate = {
   weeklyDigestOptOut: boolean;
   reengagementOptOut: boolean;
   creatorDigestOptOut: boolean;
+  communityOptOut: boolean;
 };

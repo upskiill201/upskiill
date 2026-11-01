@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         code: 'print("Pay day")\nprint()\nprint("Collect")',
         language: 'python',
         options: [
-          { text: '3' },
           { text: '2', why: 'print() with nothing inside still prints a line: an empty one.' },
           { text: '1', why: 'Each print() starts a new line.' },
+          { text: '3' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

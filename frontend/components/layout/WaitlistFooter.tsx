@@ -19,7 +19,7 @@ const COLUMNS: { title: string; links: [string, string][] }[] = [
       ['Learn coding', '/learn-coding'],
       ['Learn AI', '/learn-ai'],
       ['Learn online', '/learn-online'],
-      ['How it works', '/#how-it-works'],
+      ['How it works', '/#lessons'],
       ['Leagues', '/#leagues'],
       [LEARNER_ENTRY.gated ? 'Get notified' : 'Get the app', LEARNER_ENTRY.href],
     ],

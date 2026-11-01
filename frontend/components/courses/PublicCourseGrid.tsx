@@ -1,65 +1,45 @@
 import Link from 'next/link';
-import { BookOpen, Clock, Users } from 'lucide-react';
-import { CourseCover } from '@/components/course/CourseCover';
-import { coursePath, formatMinutes, type PublicCourseCard } from '@/lib/courses/public';
+import { Art, topicArt } from '@/components/art/Art';
+import { Glyph } from '@/components/art/Glyph';
+import { coursePath, type PublicCourseCard } from '@/lib/courses/public';
+import { topicOf } from '@/lib/onboarding/v3/lines';
 import s from './PublicCourseGrid.module.css';
 
 /**
- * Course cards for the public pages (/courses, the homepage). Server
+ * What you can learn, for the public pages (/courses, the homepage). Server
  * component: every card is a real link with real text, so it is crawlable.
- * Only numbers the server sent are shown; zero means hidden, never padded.
+ *
+ * Shown as skills, not as finished courses (founder, 2026-10-27): the subject
+ * in plain words, its picture and what you'll be able to do. No cover, no
+ * lesson counts, no author: the learner's course takes shape around their
+ * goal and level once they start, the way onboarding tells it.
  */
-export function PublicCourseGrid({ courses, priorityCount = 0 }: { courses: PublicCourseCard[]; priorityCount?: number }) {
+export function PublicCourseGrid({ courses }: { courses: PublicCourseCard[] }) {
+  // Two courses that shorten to the same subject keep their full titles.
+  const counts = new Map<string, number>();
+  for (const c of courses) {
+    const t = topicOf(c.title) ?? c.title;
+    counts.set(t, (counts.get(t) ?? 0) + 1);
+  }
   return (
     <ul className={s.grid}>
-      {courses.map((c, i) => {
-        const minutes = formatMinutes(c.durationMinutes);
+      {courses.map((c) => {
+        const short = topicOf(c.title) ?? c.title;
+        const name = (counts.get(short) ?? 0) > 1 ? c.title : short;
+        const art = topicArt(c.title) === 'book' ? topicArt(c.category ?? '') : topicArt(c.title);
+        const about = c.shortDescription || c.description;
         return (
           <li key={c.id}>
             <Link href={coursePath(c.slug)} className={s.card}>
-              <CourseCover
-                id={c.id}
-                category={c.category}
-                thumbnailUrl={c.thumbnailUrl}
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 340px"
-                className={s.cover}
-                priority={i < priorityCount}
-              />
+              <span className={s.art}>
+                <Art name={art} size={56} />
+              </span>
               <span className={s.body}>
-                <span className={s.tags}>
-                  {c.isOriginal ? (
-                    <span className={`${s.tag} ${s.tagOriginal}`}>Teyro Original</span>
-                  ) : (
-                    <span className={`${s.tag} ${c.track === 'ai' ? s.tagAi : s.tagCoding}`}>
-                      {c.track === 'ai' ? 'AI' : 'Coding'}
-                    </span>
-                  )}
-                  {/* Only free courses get a price tag; paid ones show none. */}
-                  {c.price <= 0 && <span className={`${s.tag} ${s.tagFree}`}>Free</span>}
+                <span className={s.title}>{name}</span>
+                {about && <span className={s.text}>{about}</span>}
+                <span className={s.start}>
+                  Start learning <Glyph name="arrow" size={16} strokeWidth={3} />
                 </span>
-                <span className={s.title}>{c.title}</span>
-                {(c.shortDescription || c.description) && (
-                  <span className={s.text}>{c.shortDescription || c.description}</span>
-                )}
-                <span className={s.meta}>
-                  {c.lessonsCount > 0 && (
-                    <span>
-                      <BookOpen size={14} strokeWidth={2.5} aria-hidden="true" /> {c.lessonsCount} lesson
-                      {c.lessonsCount === 1 ? '' : 's'}
-                    </span>
-                  )}
-                  {minutes && (
-                    <span>
-                      <Clock size={14} strokeWidth={2.5} aria-hidden="true" /> {minutes}
-                    </span>
-                  )}
-                  {c.studentsCount > 0 && (
-                    <span>
-                      <Users size={14} strokeWidth={2.5} aria-hidden="true" /> {c.studentsCount.toLocaleString()}
-                    </span>
-                  )}
-                </span>
-                {c.instructor.fullName && <span className={s.by}>by {c.instructor.fullName}</span>}
               </span>
             </Link>
           </li>

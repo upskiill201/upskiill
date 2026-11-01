@@ -1,0 +1,712 @@
+=== typescript-interface-vs-type
+title: TypeScript Interface vs Type: Differences and When to Use Each
+desc: Interface or type alias? Learn how they differ in TypeScript, where each works best, declaration merging, unions and a simple rule for choosing.
+tags: interfaces vs types, typescript interface vs type, interface or type, typescript type alias, declaration merging
+rel: typescript-tutorial-for-beginners
+q: What is the difference between interface and type in TypeScript? | Both describe shapes of data. Interfaces can be extended and merged. Type aliases can also describe unions, tuples and primitives.
+q: Which should I use? | Use interface for object shapes you may extend, and type for unions and more complex types. Consistency matters most.
+q: Can they be used together? | Yes. You can extend interfaces with types and vice versa in many cases.
+---
+Both describe the shape of data. The differences are small but real.
+
+## Direct answer
+
+Use `interface` to describe object shapes that may be extended, and `type` for unions, tuples and other complex types. For simple objects, either works. Pick one convention in your project and stick to it.
+
+## Side by side
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+}
+
+type UserType = {
+  id: number;
+  name: string;
+};
+
+type Status = "active" | "inactive"; // only a type can do this
+```
+
+## Extending
+
+```typescript
+interface Admin extends User {
+  permissions: string[];
+}
+
+type AdminType = UserType & { permissions: string[] };
+```
+
+## Key differences
+
+| | `interface` | `type` |
+| :--- | :--- | :--- |
+| Extend | `extends` | `&` intersection |
+| Union types | no | yes |
+| Declaration merging | yes | no |
+| Primitives and tuples | no | yes |
+
+## The bottom line
+
+Choose one for objects, use `type` for unions, and be consistent.
+
+=== typescript-generics
+title: TypeScript Generics Explained With Simple Examples
+desc: Generics let you write reusable code that works with many types. Learn generic functions, interfaces, constraints and when generics are worth using.
+tags: generics, typescript generics, typescript generic function, generic constraints, reusable types
+rel: typescript-tutorial-for-beginners
+q: What are generics in TypeScript? | A way to write functions and types that work with different types while keeping type safety.
+q: What does the T mean? | T is a type parameter, a placeholder for a type that is decided when the function or type is used.
+q: When should I use generics? | When the same logic should work for different types and you want the output type to depend on the input.
+---
+Generics are type placeholders.
+
+## Direct answer
+
+Generics let you write one function or type that works for many types without losing type safety. You declare a type parameter, often `T`, and TypeScript fills it in when you use it.
+
+## A generic function
+
+```typescript
+function first<T>(items: T[]): T {
+  return items[0];
+}
+
+const n = first([1, 2, 3]);       // number
+const s = first(["a", "b"]);      // string
+```
+
+## Generic interface
+
+```typescript
+interface ApiResponse<T> {
+  data: T;
+  error: string | null;
+}
+
+const res: ApiResponse<{ name: string }> = {
+  data: { name: "Ada" },
+  error: null,
+};
+```
+
+## Constraints
+
+```typescript
+function getLength<T extends { length: number }>(x: T) {
+  return x.length;
+}
+```
+
+## Tips
+
+- Start with plain types. Add generics when you see repetition.
+- Use clear names like `TItem` when `T` is not enough.
+
+## The bottom line
+
+Generics keep code flexible and safe. They look scary but are simple placeholders.
+
+=== typescript-union-types
+title: TypeScript Union Types: Combine Types and Narrow Them Safely
+desc: Union types let a value be one of several types. Learn the syntax, literal unions, narrowing with typeof and in, and discriminated unions.
+tags: union types, typescript union types, typescript literal types, type narrowing, discriminated unions
+rel: typescript-type-guards
+q: What is a union type? | A type that can be one of several types, written with a vertical bar, such as string or number.
+q: How do I use a union value safely? | Narrow it with checks such as typeof, in or equality before using type-specific features.
+q: What is a discriminated union? | A union of object types that share a literal property, which TypeScript uses to tell them apart.
+---
+Real data is not always one type.
+
+## Direct answer
+
+A union type, written with `|`, says a value can be one of several types. Before using a type-specific feature, narrow the type with a check like `typeof`. Literal unions limit values to specific strings or numbers.
+
+## Examples
+
+```typescript
+let id: string | number;
+id = "abc";
+id = 123;
+
+type Direction = "up" | "down" | "left" | "right";
+
+function print(value: string | number) {
+  if (typeof value === "string") {
+    console.log(value.toUpperCase());
+  } else {
+    console.log(value.toFixed(2));
+  }
+}
+```
+
+## Discriminated unions
+
+```typescript
+type Shape =
+  | { kind: "circle"; radius: number }
+  | { kind: "square"; size: number };
+
+function area(s: Shape) {
+  switch (s.kind) {
+    case "circle": return Math.PI * s.radius ** 2;
+    case "square": return s.size ** 2;
+  }
+}
+```
+
+## The bottom line
+
+Unions describe real-world variety. Narrowing keeps you safe.
+
+=== typescript-type-inference
+title: TypeScript Type Inference: When You Do Not Need to Write Types
+desc: TypeScript can work out many types for you. Learn how inference works, when to add annotations and common situations where inference gets it wrong.
+tags: type inference, typescript type inference, typescript annotations, infer types, typescript best practices
+rel: typescript-tutorial-for-beginners
+q: What is type inference? | TypeScript working out the type of a value from how it is created or used, without you writing it.
+q: When should I add a type annotation? | For function parameters, public APIs, empty arrays or objects, and when inference is too broad or wrong.
+q: Does inference make code less safe? | No. Inferred types are checked just like written ones.
+---
+You do not have to annotate everything.
+
+## Direct answer
+
+Type inference means TypeScript works out types from your code. `let n = 5` is inferred as `number`. Let inference do the work for local variables and return values, and add annotations on function parameters, exported APIs and places where the inferred type is too wide.
+
+## Examples
+
+```typescript
+let count = 5;            // number
+const name = "Ada";       // "Ada" (literal)
+const nums = [1, 2, 3];   // number[]
+
+function add(a: number, b: number) {
+  return a + b;           // return type inferred as number
+}
+```
+
+## When to annotate
+
+```typescript
+const items: string[] = [];          // empty array needs help
+function greet(user: User): string { // parameters need types
+  return `Hi ${user.name}`;
+}
+```
+
+## Tip
+
+Hover over a variable in your editor to see what TypeScript inferred.
+
+## The bottom line
+
+Annotate boundaries, infer the middle.
+
+=== tsconfig-explained
+title: tsconfig.json Explained: The Options That Matter
+desc: tsconfig.json controls how TypeScript compiles your project. Learn the key options like target, module, strict, outDir and include with a starter config.
+tags: tsconfig, tsconfig.json, typescript config, tsconfig options, typescript compiler options
+rel: typescript-strict-mode
+q: What is tsconfig.json? | A file that tells the TypeScript compiler which files to include and how to compile them.
+q: How do I create one? | Run npx tsc --init in your project folder.
+q: Which options matter most? | strict, target, module, outDir and include.
+---
+One small file controls how strict and how modern your TypeScript is.
+
+## Direct answer
+
+`tsconfig.json` is the TypeScript project configuration file. Create it with `npx tsc --init`. The options that matter most for beginners are `strict`, `target`, `module`, `outDir` and `include`.
+
+## A starter config
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "strict": true,
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
+```
+
+## What the options do
+
+| Option | Purpose |
+| :--- | :--- |
+| `target` | which JavaScript version to output |
+| `module` | module system for imports |
+| `strict` | turns on the strict checks |
+| `outDir` | where compiled files go |
+| `include` | which folders to compile |
+
+## Tips
+
+- Keep `strict` on for new projects.
+- Framework templates usually give you a good tsconfig already.
+
+## The bottom line
+
+Start with strict mode and change other settings only when you need to.
+
+=== typescript-type-guards
+title: TypeScript Type Guards and Narrowing Explained
+desc: Type guards let TypeScript narrow a type inside a block. Learn typeof, instanceof, in, custom type predicates and common narrowing patterns.
+tags: type guards, typescript type guards, typescript narrowing, typeof instanceof, type predicate
+rel: typescript-union-types
+q: What is a type guard? | A check that tells TypeScript a value has a more specific type inside a block of code.
+q: What is a type predicate? | A function that returns value is Type, telling TypeScript to narrow the type when it returns true.
+q: What is the difference between typeof and instanceof? | typeof checks primitive types like string and number. instanceof checks whether an object is an instance of a class.
+---
+Narrowing is how TypeScript lets you use the right methods on the right type.
+
+## Direct answer
+
+A type guard is a runtime check that narrows a type within a block. Built-in guards include `typeof`, `instanceof`, `in` and equality checks. You can write custom guards with a type predicate such as `value is Cat`.
+
+## Built-in guards
+
+```typescript
+function format(x: string | number | Date) {
+  if (typeof x === "string") return x.trim();
+  if (typeof x === "number") return x.toFixed(1);
+  if (x instanceof Date) return x.toISOString();
+}
+
+type Fish = { swim: () => void };
+type Bird = { fly: () => void };
+
+function move(animal: Fish | Bird) {
+  if ("swim" in animal) animal.swim();
+  else animal.fly();
+}
+```
+
+## Custom type guard
+
+```typescript
+function isString(value: unknown): value is string {
+  return typeof value === "string";
+}
+```
+
+## The bottom line
+
+Check, then use. TypeScript follows your checks.
+
+=== typescript-enums
+title: TypeScript Enums: How They Work and What to Use Instead
+desc: Learn numeric and string enums in TypeScript, how they compile, their drawbacks and when to use union types or const objects instead.
+tags: enums typescript, typescript enum, string enum, typescript enum vs union, const enum
+rel: typescript-union-types
+q: What is an enum in TypeScript? | A named set of constants, such as directions or statuses.
+q: Are enums recommended? | They work, but many teams prefer string literal unions or const objects because they are simpler and add no runtime code.
+q: What is the difference between numeric and string enums? | Numeric enums map names to numbers and can be reversed. String enums map names to strings.
+---
+Enums give names to related values.
+
+## Direct answer
+
+An enum is a named group of constants. Numeric enums assign numbers starting at 0, and string enums assign text. Enums produce real JavaScript code. Many developers prefer union types of string literals for simplicity.
+
+## Examples
+
+```typescript
+enum Status {
+  Active = "ACTIVE",
+  Inactive = "INACTIVE",
+}
+
+function setStatus(s: Status) {}
+setStatus(Status.Active);
+```
+
+## The union alternative
+
+```typescript
+type Status = "active" | "inactive";
+function setStatus(s: Status) {}
+setStatus("active");
+```
+
+## Const object alternative
+
+```typescript
+const Status = { Active: "active", Inactive: "inactive" } as const;
+type StatusType = typeof Status[keyof typeof Status];
+```
+
+## Which to choose
+
+- Union types for most cases.
+- Enums when you want a named object with values at runtime and your team prefers them.
+
+## The bottom line
+
+Both work. Follow your team's convention.
+
+=== typescript-strict-mode
+title: TypeScript Strict Mode: What It Turns On and Why to Use It
+desc: strict mode enables a family of checks in TypeScript. Learn what it includes, such as noImplicitAny and strictNullChecks, and how to adopt it.
+tags: strict mode, typescript strict mode, noimplicitany, strictnullchecks, typescript compiler options
+rel: tsconfig-explained
+q: What does strict mode do in TypeScript? | It enables a group of stricter type-checking options, catching more errors at compile time.
+q: What is noImplicitAny? | It makes TypeScript report an error when it cannot infer a type and would otherwise fall back to any.
+q: Can I turn on strict mode in an existing project? | Yes, gradually. Enable the individual flags one at a time and fix errors as you go.
+---
+Strict mode is the difference between "TypeScript as a suggestion" and "TypeScript as a safety net".
+
+## Direct answer
+
+Setting `"strict": true` in `tsconfig.json` turns on several checks, including `noImplicitAny`, `strictNullChecks` and `strictFunctionTypes`. It catches more bugs at compile time, especially `null` and `undefined` mistakes. New projects should start with it on.
+
+## What it catches
+
+```typescript
+// noImplicitAny
+function double(x) {   // error: parameter has an implicit any type
+  return x * 2;
+}
+
+// strictNullChecks
+let name: string = null; // error
+const user = users.find(u => u.id === 1);
+console.log(user.name);  // error: user may be undefined
+```
+
+## Adopting it in an existing project
+
+1. Turn on one flag at a time.
+2. Fix the errors it reveals.
+3. Use `// @ts-expect-error` sparingly for temporary exceptions.
+
+## The bottom line
+
+Turn it on early. The errors it shows are real bugs waiting to happen.
+
+=== any-vs-unknown-typescript
+title: any vs unknown in TypeScript: Which to Use and Why
+desc: any turns off type checking. unknown forces you to check first. Learn the difference, examples and why unknown is safer for data you do not control.
+tags: any vs unknown, typescript any, typescript unknown, unknown type, avoid any typescript
+rel: typescript-type-guards
+q: What is the difference between any and unknown? | any disables type checking. unknown accepts any value but requires you to narrow it before use.
+q: Why avoid any? | It removes type safety and hides bugs.
+q: When should I use unknown? | For values from outside your code, such as parsed JSON or caught errors.
+---
+`any` says "trust me". `unknown` says "prove it".
+
+## Direct answer
+
+Use `unknown` instead of `any` when you do not know a value's type. `any` allows anything and turns off checking. `unknown` accepts any value but you must narrow it with checks before using it.
+
+## Example
+
+```typescript
+let a: any = "hello";
+a.toFixed(); // no error, crashes at runtime
+
+let u: unknown = "hello";
+// u.toUpperCase();  // error
+if (typeof u === "string") {
+  u.toUpperCase();   // fine
+}
+```
+
+## Good use for unknown
+
+```typescript
+function parse(text: string): unknown {
+  return JSON.parse(text);
+}
+
+try {
+  // ...
+} catch (error: unknown) {
+  if (error instanceof Error) console.log(error.message);
+}
+```
+
+## The bottom line
+
+Prefer `unknown`. Treat `any` as a last resort.
+
+=== typescript-with-react
+title: TypeScript With React: Props, State, Events and Hooks
+desc: Learn how to type React components in TypeScript: props, useState, event handlers, children and custom hooks, with a ready-to-use pattern.
+tags: typescript with react, react typescript, typescript props, usestate typescript, react event types
+rel: typescript-tutorial-for-beginners
+q: How do I type props in React with TypeScript? | Define an interface or type for props and use it on the component's parameter.
+q: How do I type useState? | Let it infer from the initial value, or pass a type such as useState of string or null.
+q: How do I type event handlers? | Use React event types such as React.ChangeEvent of HTMLInputElement.
+---
+TypeScript makes React components self-documenting.
+
+## Direct answer
+
+Type your props with an interface or type, let `useState` infer from its initial value (or pass a generic when it starts as `null`) and use React's event types for handlers. The editor then autocompletes and warns about mistakes.
+
+## Props
+
+```tsx
+interface ButtonProps {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+}
+
+function Button({ label, onClick, disabled = false }: ButtonProps) {
+  return <button onClick={onClick} disabled={disabled}>{label}</button>;
+}
+```
+
+## State and events
+
+```tsx
+const [count, setCount] = useState(0);
+const [user, setUser] = useState<User | null>(null);
+
+function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  setValue(e.target.value);
+}
+```
+
+## Children
+
+```tsx
+interface CardProps {
+  children: React.ReactNode;
+}
+```
+
+## The bottom line
+
+Type the boundaries (props), infer the rest.
+
+=== typescript-type-assertion
+title: TypeScript Type Assertions: as, Non-Null ! and Safer Alternatives
+desc: Type assertions tell TypeScript to treat a value as a specific type. Learn the as syntax, the non-null operator, the risks and safer alternatives.
+tags: type assertion, typescript as, typescript non null assertion, as keyword typescript, type casting typescript
+rel: any-vs-unknown-typescript
+q: What is a type assertion? | A way to tell TypeScript you know a value's type better than it does, using the as keyword.
+q: Is a type assertion the same as casting? | Not exactly. It does not change the value at runtime; it only affects the compiler.
+q: What does the exclamation mark do? | The non-null assertion says a value is not null or undefined. If you are wrong, it will fail at runtime.
+---
+Assertions silence the compiler. They do not make you right.
+
+## Direct answer
+
+A type assertion uses `as Type` to tell TypeScript to treat a value as a different type. It has no runtime effect. If you are wrong, errors appear at runtime. Prefer type guards, which check the value for real.
+
+## Examples
+
+```typescript
+const input = document.querySelector("#name") as HTMLInputElement;
+console.log(input.value);
+
+const el = document.getElementById("app")!; // non-null assertion
+```
+
+## Safer pattern
+
+```typescript
+const input = document.querySelector("#name");
+if (input instanceof HTMLInputElement) {
+  console.log(input.value);
+}
+```
+
+## When assertions are reasonable
+
+- You know something the compiler cannot, such as a DOM element that definitely exists.
+- Working with untyped third-party data after validation.
+
+## The bottom line
+
+Use assertions rarely and prefer checks.
+
+=== typescript-optional-chaining
+title: Optional Chaining and Nullish Coalescing in TypeScript
+desc: Use the ?. and ?? operators to handle undefined and null safely. Learn the syntax, the difference between ?? and ||, and common patterns.
+tags: optional chaining, nullish coalescing, typescript optional chaining, double question mark operator, handle undefined
+rel: typescript-strict-mode
+q: What is optional chaining? | The ?. operator, which stops and returns undefined if the value before it is null or undefined.
+q: What is nullish coalescing? | The ?? operator, which returns the right side only when the left side is null or undefined.
+q: How is ?? different from ||? | || treats 0, empty string and false as missing. ?? only treats null and undefined as missing.
+---
+Two small operators that remove a lot of defensive code.
+
+## Direct answer
+
+Optional chaining (`?.`) safely reads a property or calls a function when a value may be `null` or `undefined`. Nullish coalescing (`??`) supplies a default only when the value is `null` or `undefined`. Together they handle missing data cleanly.
+
+## Examples
+
+```typescript
+const city = user?.address?.city;
+const length = items?.length ?? 0;
+user?.sendMessage?.("Hello");
+
+const count = 0;
+console.log(count || 10); // 10, because 0 is falsy
+console.log(count ?? 10); // 0, because 0 is not null
+```
+
+## When to use which
+
+| Situation | Use |
+| :--- | :--- |
+| Might be missing | `?.` |
+| Default only for null or undefined | `??` |
+| Default for any falsy value | the or operator |
+
+## The bottom line
+
+`?.` to read safely, `??` to default safely.
+
+=== typescript-functions-guide
+title: TypeScript Functions: Parameters, Return Types and Overloads
+desc: Learn how to type functions in TypeScript: parameters, optional and default values, return types, rest parameters, void and callbacks.
+tags: typescript functions, function types typescript, optional parameters typescript, return type annotation, typescript callbacks
+rel: typescript-tutorial-for-beginners
+q: How do I type a function in TypeScript? | Add types to the parameters and optionally to the return value.
+q: How do I make a parameter optional? | Add a question mark after its name, or give it a default value.
+q: What is void? | The return type of a function that does not return a value.
+---
+Typing functions is the most useful thing you can do in TypeScript.
+
+## Direct answer
+
+Annotate each parameter, and optionally the return type. Use `?` or a default value for optional parameters, `...rest` for variable arguments and `void` for functions that return nothing.
+
+## Examples
+
+```typescript
+function add(a: number, b: number): number {
+  return a + b;
+}
+
+function greet(name: string, greeting = "Hello"): string {
+  return `${greeting}, ${name}`;
+}
+
+function log(message: string, level?: "info" | "error"): void {
+  console.log(level ?? "info", message);
+}
+
+function sum(...nums: number[]): number {
+  return nums.reduce((a, b) => a + b, 0);
+}
+```
+
+## Function types
+
+```typescript
+type Callback = (error: Error | null, data?: string) => void;
+const run = (cb: Callback) => cb(null, "done");
+```
+
+## The bottom line
+
+Type parameters, let inference do the return type, annotate public functions.
+
+=== typescript-classes-guide
+title: TypeScript Classes: Properties, Access Modifiers and Inheritance
+desc: Learn TypeScript classes: constructors, public private and protected, readonly, parameter properties, inheritance and implementing interfaces.
+tags: typescript classes, typescript class example, public private protected, typescript inheritance, implements interface
+rel: typescript-interface-vs-type
+q: How do I define a class in TypeScript? | Use the class keyword with typed properties and a constructor.
+q: What are access modifiers? | public, private and protected control where a member can be accessed.
+q: Can a class implement an interface? | Yes, with the implements keyword. The class must include all the members.
+---
+Classes work like JavaScript classes, with types and access control added.
+
+## Direct answer
+
+TypeScript classes add type annotations and access modifiers to JavaScript classes. Use `public`, `private`, `protected` and `readonly` to control access, and `implements` to make a class follow an interface.
+
+## Example
+
+```typescript
+interface Shape {
+  area(): number;
+}
+
+class Rectangle implements Shape {
+  constructor(
+    private readonly width: number,
+    private readonly height: number
+  ) {}
+
+  area(): number {
+    return this.width * this.height;
+  }
+}
+
+const r = new Rectangle(3, 4);
+console.log(r.area()); // 12
+```
+
+## Inheritance
+
+```typescript
+class Animal {
+  constructor(protected name: string) {}
+}
+class Dog extends Animal {
+  speak() {
+    console.log(`${this.name} barks`);
+  }
+}
+```
+
+## Notes
+
+- `private` is checked by TypeScript at compile time. Use `#field` for runtime privacy.
+- Prefer small classes and composition over deep inheritance.
+
+## The bottom line
+
+Types and access modifiers make classes clearer and safer.
+
+=== typescript-errors-explained
+title: Common TypeScript Errors Explained and How to Fix Them
+desc: Understand common TypeScript errors such as "is not assignable", "possibly undefined" and "implicitly has an any type", with simple fixes.
+tags: type errors, typescript errors, typescript is not assignable, possibly undefined, typescript error messages
+rel: typescript-strict-mode
+q: What does "Type X is not assignable to type Y" mean? | You tried to put a value of one type where another type is expected.
+q: What does "Object is possibly undefined" mean? | The value might be undefined at runtime, and TypeScript wants you to check first.
+q: How do I read long TypeScript errors? | Start at the last line, which usually shows the real mismatch.
+---
+TypeScript errors look long, but the message is usually in the last line.
+
+## Direct answer
+
+Read the error from the bottom up. Most beginner errors are one of three: a type mismatch ("not assignable"), a value that may be `undefined`, or a parameter with no type. Fix by correcting the type, checking the value or adding an annotation.
+
+## Common messages
+
+| Message | Fix |
+| :--- | :--- |
+| Type 'string' is not assignable to type 'number' | Use the right type or convert it |
+| Object is possibly 'undefined' | Check with `if` or use `?.` |
+| Parameter 'x' implicitly has an 'any' type | Add a type to the parameter |
+| Property 'foo' does not exist on type | Add it to the type or fix the name |
+| Cannot find name 'x' | Import it or check the spelling |
+
+## Example
+
+```typescript
+const user = users.find(u => u.id === 1);
+console.log(user.name);      // possibly undefined
+console.log(user?.name);     // fixed
+```
+
+## The bottom line
+
+The compiler is pointing at real mistakes. Read, fix, repeat.

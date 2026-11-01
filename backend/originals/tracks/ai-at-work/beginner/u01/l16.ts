@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ada needs a 2-line chat reply to a teammate. Which recipe lines matter most?',
         options: [
-          { text: 'Reader, facts and length' },
           { text: 'All six, always', why: 'Overkill for a 2-line reply.' },
           { text: 'Only the role', why: 'The role alone gives no facts or length.' },
+          { text: 'Reader, facts and length' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -181,11 +181,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is a saved recipe better than remembering the ideas?',
         options: [
-          { text: 'Under time pressure you forget pieces; the template never does' },
           { text: 'It makes the AI faster', why: 'It makes YOU faster and more consistent.' },
           { text: 'Templates are required by AI tools', why: 'They are not required, just useful.' },
+          { text: 'Under time pressure you forget pieces; the template never does' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

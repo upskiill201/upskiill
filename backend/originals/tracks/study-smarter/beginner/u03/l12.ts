@@ -50,11 +50,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which request finds the gap?',
         options: [
-          { text: '[syllabus lines + my notes] Which syllabus lines do my notes not cover?' },
           { text: 'What did I miss in Biology?', why: 'It cannot know what happened in his class.' },
+          { text: '[syllabus lines + my notes] Which syllabus lines do my notes not cover?' },
           { text: 'Write the notes I missed.', why: 'Find the gap first, then fill it yourself.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why mark which notes came from the AI?',
         options: [
-          { text: 'Those are the bits most worth double-checking later' },
           { text: 'AI notes are banned', why: 'Not banned, but worth checking.' },
+          { text: 'Those are the bits most worth double-checking later' },
           { text: 'To show off', why: 'It is for checking, not showing off.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',

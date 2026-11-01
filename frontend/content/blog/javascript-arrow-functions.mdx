@@ -1,0 +1,77 @@
+---
+title: "JavaScript Arrow Functions: Syntax, Examples and When to Use Them"
+description: "Arrow functions are a shorter way to write functions in JavaScript. Learn the syntax, implicit returns, how this differs and when not to use them."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [arrow functions, javascript arrow functions, arrow function syntax, arrow function vs regular function, es6 arrow functions]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "JavaScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/javascript-for-beginners
+  label: "See the JavaScript for Beginners course"
+faq:
+  - question: "What is an arrow function?"
+    answer: "A shorter syntax for writing functions using =>, introduced in ES6."
+  - question: "What is the difference between arrow and regular functions?"
+    answer: "Arrow functions do not have their own this, arguments or the ability to be used as constructors."
+  - question: "When should I not use an arrow function?"
+    answer: "As object methods that need this, and as constructors."
+---
+
+Arrow functions make small functions neat.
+
+## Direct answer
+
+An arrow function is a compact way to write a function using `=>`. If the body is a single expression, the result is returned automatically. Arrow functions do not have their own `this`, which is useful in callbacks but wrong for object methods that rely on `this`.
+
+## Syntax
+
+```javascript
+// regular
+function add(a, b) {
+  return a + b;
+}
+
+// arrow
+const add = (a, b) => a + b;
+
+// one parameter
+const double = n => n * 2;
+
+// multiple lines
+const greet = (name) => {
+  const message = "Hi " + name;
+  return message;
+};
+```
+
+## Great in callbacks
+
+```javascript
+const numbers = [1, 2, 3];
+const doubled = numbers.map(n => n * 2);
+```
+
+## When not to use them
+
+- Object methods that need `this`.
+- Constructors (`new` will fail).
+- Functions that need `arguments`.
+
+## Where Teyro fits
+
+Teyro's [JavaScript for Beginners](/courses/javascript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Use arrow functions for short callbacks and utilities. Use regular functions when you need `this`.
+
+## More guides
+
+- [JavaScript Arrays](/blog/javascript-arrays-guide)
+- [JavaScript Scope Explained](/blog/javascript-scope-explained)
+- [JavaScript Closures Explained Simply With Examples](/blog/javascript-closures-explained)
+- [Javascript for beginners guide](/blog/javascript-for-beginners-guide)
+- [JavaScript for Beginners course](/courses/javascript-for-beginners)

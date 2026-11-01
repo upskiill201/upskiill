@@ -1,0 +1,61 @@
+---
+title: "Common TypeScript Errors Explained and How to Fix Them"
+description: "Understand common TypeScript errors such as \"is not assignable\", \"possibly undefined\" and \"implicitly has an any type\", with simple fixes."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [type errors, typescript errors, typescript is not assignable, possibly undefined, typescript error messages]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "TypeScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript for Beginners course"
+faq:
+  - question: "What does \"Type X is not assignable to type Y\" mean?"
+    answer: "You tried to put a value of one type where another type is expected."
+  - question: "What does \"Object is possibly undefined\" mean?"
+    answer: "The value might be undefined at runtime, and TypeScript wants you to check first."
+  - question: "How do I read long TypeScript errors?"
+    answer: "Start at the last line, which usually shows the real mismatch."
+---
+
+TypeScript errors look long, but the message is usually in the last line.
+
+## Direct answer
+
+Read the error from the bottom up. Most beginner errors are one of three: a type mismatch ("not assignable"), a value that may be `undefined`, or a parameter with no type. Fix by correcting the type, checking the value or adding an annotation.
+
+## Common messages
+
+| Message | Fix |
+| :--- | :--- |
+| Type 'string' is not assignable to type 'number' | Use the right type or convert it |
+| Object is possibly 'undefined' | Check with `if` or use `?.` |
+| Parameter 'x' implicitly has an 'any' type | Add a type to the parameter |
+| Property 'foo' does not exist on type | Add it to the type or fix the name |
+| Cannot find name 'x' | Import it or check the spelling |
+
+## Example
+
+```typescript
+const user = users.find(u => u.id === 1);
+console.log(user.name);      // possibly undefined
+console.log(user?.name);     // fixed
+```
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 20 lessons, and you can start free.
+
+## The bottom line
+
+The compiler is pointing at real mistakes. Read, fix, repeat.
+
+## More guides
+
+- [TypeScript Interface vs Type](/blog/typescript-interface-vs-type)
+- [TypeScript Generics Explained With Simple Examples](/blog/typescript-generics)
+- [TypeScript Union Types](/blog/typescript-union-types)
+- [Typescript strict mode](/blog/typescript-strict-mode)
+- [TypeScript for Beginners course](/courses/typescript-for-beginners)

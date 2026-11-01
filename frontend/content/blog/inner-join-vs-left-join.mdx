@@ -1,0 +1,88 @@
+---
+title: "INNER JOIN vs LEFT JOIN: The Difference Explained With Examples"
+description: "Learn the difference between INNER JOIN and LEFT JOIN in SQL with a simple customers and orders example, plus RIGHT and FULL joins and common mistakes."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [inner join vs left join, sql joins, sql left join, sql inner join, join tables sql]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "SQL and Databases for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/sql-and-databases-for-beginners
+  label: "See the SQL and Databases for Beginners course"
+faq:
+  - question: "What is the difference between INNER JOIN and LEFT JOIN?"
+    answer: "INNER JOIN returns only rows with matches in both tables. LEFT JOIN returns all rows from the left table, with NULLs where there is no match."
+  - question: "When should I use LEFT JOIN?"
+    answer: "When you want all records from one table even if they have no related records, such as customers with no orders."
+  - question: "Why did my join return too many rows?"
+    answer: "The join condition may match multiple rows, or you may be missing a condition."
+---
+
+Joins combine tables. The type decides what happens to rows with no match.
+
+## Direct answer
+
+`INNER JOIN` returns only rows that match in both tables. `LEFT JOIN` returns every row from the left table and fills in `NULL` for the right table when there is no match. Use a left join to find things like customers who have not ordered.
+
+## Example tables
+
+```text
+customers: id, name
+orders: id, customer_id, total
+```
+
+## INNER JOIN
+
+```sql
+SELECT c.name, o.total
+FROM customers c
+INNER JOIN orders o ON o.customer_id = c.id;
+```
+
+Only customers with orders appear.
+
+## LEFT JOIN
+
+```sql
+SELECT c.name, o.total
+FROM customers c
+LEFT JOIN orders o ON o.customer_id = c.id;
+```
+
+All customers appear. Those without orders show `NULL` for total.
+
+## Find customers with no orders
+
+```sql
+SELECT c.name
+FROM customers c
+LEFT JOIN orders o ON o.customer_id = c.id
+WHERE o.id IS NULL;
+```
+
+## Summary
+
+| Join | Returns |
+| :--- | :--- |
+| `INNER` | matches only |
+| `LEFT` | all left rows plus matches |
+| `RIGHT` | all right rows plus matches |
+| `FULL` | all rows from both |
+
+## Where Teyro fits
+
+Teyro's [SQL and Databases for Beginners](/courses/sql-and-databases-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Picture two circles. Inner is the overlap. Left is the left circle with its overlap.
+
+## More guides
+
+- [Primary Key in SQL](/blog/primary-key-explained)
+- [Foreign Key in SQL](/blog/foreign-key-explained)
+- [Database Normalization Explained](/blog/database-normalization-explained)
+- [How to learn sql for beginners](/blog/how-to-learn-sql-for-beginners)
+- [SQL and Databases for Beginners course](/courses/sql-and-databases-for-beginners)

@@ -1,0 +1,67 @@
+---
+title: "What Is pip in Python? How to Install and Manage Packages"
+description: "pip is Python's package installer. Learn how to install, upgrade and remove packages, use requirements files and fix common pip errors."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [pip, python pip, what is pip, pip install, python package manager]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Python for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/python-for-beginners
+  label: "See the Python for Beginners course"
+faq:
+  - question: "What is pip?"
+    answer: "pip is the standard tool for installing Python packages from the Python Package Index."
+  - question: "How do I install a package with pip?"
+    answer: "Run pip install package-name in your terminal, ideally inside a virtual environment."
+  - question: "Why does pip say command not found?"
+    answer: "pip may not be on your PATH. Try python -m pip install package-name instead."
+---
+
+Python's strength is its packages, and pip is how you get them.
+
+## Direct answer
+
+pip is Python's package installer. Run `pip install name` to add a library, `pip uninstall name` to remove one and `pip list` to see what is installed. Use it inside a virtual environment to keep projects separate.
+
+## Everyday commands
+
+```bash
+pip install requests
+pip install requests==2.31.0
+pip install --upgrade requests
+pip uninstall requests
+pip list
+pip show requests
+```
+
+## Requirements files
+
+```bash
+pip freeze > requirements.txt
+pip install -r requirements.txt
+```
+
+## Common problems
+
+- **"pip is not recognised":** use `python -m pip install ...`.
+- **Permission errors:** use a virtual environment instead of installing system-wide.
+- **Wrong Python version:** check with `python --version` and `pip --version`.
+
+## Where Teyro fits
+
+Teyro's [Python for Beginners](/courses/python-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 120 lessons, and you can start free.
+
+## The bottom line
+
+pip plus a virtual environment is the standard way to manage Python libraries. See [virtual environments](/blog/python-virtual-environments).
+
+## More guides
+
+- [Common Python Errors for Beginners and How to Fix Them](/blog/common-python-errors)
+- [Python File Handling](/blog/python-file-handling)
+- [Python If Statements](/blog/if-statements-in-python)
+- [Python virtual environments](/blog/python-virtual-environments)
+- [Python for Beginners course](/courses/python-for-beginners)

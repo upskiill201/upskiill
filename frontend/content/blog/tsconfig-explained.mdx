@@ -1,0 +1,74 @@
+---
+title: "tsconfig.json Explained: The Options That Matter"
+description: "tsconfig.json controls how TypeScript compiles your project. Learn the key options like target, module, strict, outDir and include with a starter config."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [tsconfig, tsconfig.json, typescript config, tsconfig options, typescript compiler options]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "TypeScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript for Beginners course"
+faq:
+  - question: "What is tsconfig.json?"
+    answer: "A file that tells the TypeScript compiler which files to include and how to compile them."
+  - question: "How do I create one?"
+    answer: "Run npx tsc --init in your project folder."
+  - question: "Which options matter most?"
+    answer: "strict, target, module, outDir and include."
+---
+
+One small file controls how strict and how modern your TypeScript is.
+
+## Direct answer
+
+`tsconfig.json` is the TypeScript project configuration file. Create it with `npx tsc --init`. The options that matter most for beginners are `strict`, `target`, `module`, `outDir` and `include`.
+
+## A starter config
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "strict": true,
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
+```
+
+## What the options do
+
+| Option | Purpose |
+| :--- | :--- |
+| `target` | which JavaScript version to output |
+| `module` | module system for imports |
+| `strict` | turns on the strict checks |
+| `outDir` | where compiled files go |
+| `include` | which folders to compile |
+
+## Tips
+
+- Keep `strict` on for new projects.
+- Framework templates usually give you a good tsconfig already.
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 20 lessons, and you can start free.
+
+## The bottom line
+
+Start with strict mode and change other settings only when you need to.
+
+## More guides
+
+- [TypeScript Type Guards and Narrowing Explained](/blog/typescript-type-guards)
+- [TypeScript Enums](/blog/typescript-enums)
+- [TypeScript Strict Mode](/blog/typescript-strict-mode)
+- [Typescript strict mode](/blog/typescript-strict-mode)
+- [TypeScript for Beginners course](/courses/typescript-for-beginners)

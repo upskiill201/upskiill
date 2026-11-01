@@ -11,7 +11,7 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowRight, Hourglass, Lock, Mountain } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { useRouter } from 'next/navigation';
 import { playPathCue } from '@/lib/audio/pathAudio';
 import { playHaptic } from '@/lib/haptics';
@@ -39,7 +39,7 @@ export function OriginalsTrail({ original, levelDone }: { original: OriginalInfo
             className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
             style={{ backgroundColor: 'var(--bg-card)' }}
           >
-            <Hourglass className="w-5 h-5 stroke-[2.5] text-[var(--text-secondary)]" aria-hidden="true" />
+            <Glyph name="hourglass" size={20} strokeWidth={2.5} className="text-[var(--text-secondary)]" />
           </span>
           <div className="min-w-0">
             <p className="text-[16px] font-extrabold text-ink leading-snug">
@@ -71,9 +71,9 @@ export function OriginalsTrail({ original, levelDone }: { original: OriginalInfo
         >
           <span className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center shrink-0">
             {nextOpen ? (
-              <Mountain className="w-5 h-5 stroke-[2.6]" aria-hidden="true" />
+              <Glyph name="mountain" size={20} strokeWidth={2.2} />
             ) : (
-              <Lock className="w-5 h-5 stroke-[2.6]" aria-hidden="true" />
+              <Glyph name="lock" size={20} strokeWidth={2.6} />
             )}
           </span>
           <span className="flex-1 min-w-0">
@@ -85,7 +85,7 @@ export function OriginalsTrail({ original, levelDone }: { original: OriginalInfo
               {nextOpen ? 'Your next level is ready. Keep climbing!' : `Finish ${original.levelLabel} to open it.`}
             </span>
           </span>
-          {nextOpen && <ArrowRight className="w-5 h-5 stroke-[2.8] shrink-0" aria-hidden="true" />}
+          {nextOpen && <Glyph name="arrow" size={20} strokeWidth={2.8} className="shrink-0" />}
         </motion.button>
       )}
     </div>

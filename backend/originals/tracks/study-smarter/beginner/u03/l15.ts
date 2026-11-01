@@ -33,11 +33,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Kofi missed a lesson on enzymes. Which first request is best?',
         options: [
-          { text: '[syllabus lines + my notes] Which syllabus lines do my notes not cover?' },
           { text: 'Write the enzyme notes I missed.', why: 'Find the gap, then fill it himself.' },
+          { text: '[syllabus lines + my notes] Which syllabus lines do my notes not cover?' },
           { text: "Summarise Efua's notes.", why: 'Not his learning.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         message: 'I paused the video 5 times and wrote notes each time. But I rewound and copied the screen each time.',
         prompt: 'What should Kofi say?',
         options: [
-          { text: 'Nearly. Write from memory at each pause, without rewinding. Then check.' },
           { text: 'Perfect.', why: 'Rewinding to copy is copying.' },
           { text: 'Stop pausing.', why: 'Pausing is good. Copying at the pause is the problem.' },
+          { text: 'Nearly. Write from memory at each pause, without rewinding. Then check.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -89,11 +89,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The AI gave Kofi a literature quote with no page number. What should he do?',
         options: [
-          { text: 'Find it in his own copy of the book, or leave it out' },
           { text: 'Use it in his essay', why: 'It may be misquoted or invented.' },
+          { text: 'Find it in his own copy of the book, or leave it out' },
           { text: 'Ask the AI if it is real', why: 'The book is the only real check.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -123,11 +123,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which of Kofi\'s notes should he double-check first before the mocks?',
         options: [
-          { text: 'The bits marked AI' },
           { text: 'The bits from the textbook', why: 'Worth checking, but the AI bits are most likely to be off.' },
           { text: 'None, they are all fine', why: 'Checking the AI-marked bits is cheap insurance.' },
+          { text: 'The bits marked AI' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

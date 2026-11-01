@@ -1,0 +1,98 @@
+---
+title: "How to Install Python and Run Your First Program (Windows, Mac)"
+description: "How to install Python on Windows or Mac, check it works, choose an editor and run your first program. Or skip installing and learn Python in your browser."
+publishedDate: "2026-10-25"
+category: skill-building
+tags: [how to install python, python download, python for beginners download, python programming on mac, install python windows 11, python ide, python interpreter]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Skip the setup and just learn"
+  text: "Teyro's Python for Beginners course runs real Python in your browser, with nothing to install. Free to start."
+  href: /courses/python-for-beginners
+  label: "See the Python course"
+faq:
+  - question: "How do I install Python on Windows?"
+    answer: "Download the installer from python.org, run it, tick 'Add python.exe to PATH' on the first screen, then choose Install Now. Open a terminal and type python --version to check."
+  - question: "How do I install Python on a Mac?"
+    answer: "Download the macOS installer from python.org and run it. Then open Terminal and type python3 --version. On a Mac the command is usually python3."
+  - question: "Do I need to install Python to learn it?"
+    answer: "Not at the start. Browser-based courses and online editors run Python for you. Install it when you want to build your own projects on your computer."
+  - question: "What is the best editor for Python beginners?"
+    answer: "IDLE comes with Python and is enough to start. Visual Studio Code is a popular free editor with a Python extension when you want more."
+---
+
+Installing Python is easy, but the first screens confuse many beginners. Here is the process step by step, and a way to learn without installing anything.
+
+## Direct answer
+
+Download Python from the official site, python.org. On Windows, tick **Add python.exe to PATH** in the installer, then install. On a Mac, run the installer. Open a terminal and type `python --version` (Windows) or `python3 --version` (Mac) to check. Then run a file with `python hello.py`.
+
+## Install on Windows
+
+1. Go to **python.org/downloads** and download the latest Python 3 installer.
+2. Open the installer. On the first screen, **tick "Add python.exe to PATH"**. This is the step beginners miss.
+3. Choose **Install Now** and wait for it to finish.
+4. Open **Command Prompt** or **PowerShell** and type:
+
+```
+python --version
+```
+
+You should see a version number such as `Python 3.x.x`.
+
+## Install on Mac
+
+1. Download the macOS installer from **python.org/downloads** and open it.
+2. Follow the steps.
+3. Open **Terminal** and type:
+
+```
+python3 --version
+```
+
+On a Mac, the command is usually `python3`, not `python`.
+
+## Run your first program
+
+1. Create a file called `hello.py` in a folder you can find.
+2. Put this inside:
+
+```python
+print("Hello, world!")
+name = input("What is your name? ")
+print("Nice to meet you,", name)
+```
+
+3. Open a terminal in that folder and run:
+
+```
+python hello.py
+```
+
+(Use `python3 hello.py` on a Mac.)
+
+## Pick an editor
+
+- **IDLE** comes with Python. Open it, choose File, New File, and run with F5. It is enough to start.
+- **Visual Studio Code** is a popular free editor. Install the Python extension to run and debug.
+- Any text editor works: Python files are just text.
+
+## Common problems
+
+- **"python is not recognized":** you missed the PATH box. Run the installer again, choose Modify or Uninstall, then reinstall with the box ticked.
+- **Wrong version on a Mac:** use `python3`.
+- **Cannot find the file:** your terminal must be in the same folder as `hello.py`. Use `cd folder-name` to move.
+- **IndentationError:** check the spaces at the start of lines.
+
+## Or learn without installing
+
+You do not need to install anything to begin. Many courses and online editors run Python for you. Teyro's [Python for Beginners course](/courses/python-for-beginners) runs real code in the lesson, in your browser and on your phone, so your first program is a tap away.
+
+## Next steps
+
+Once it works, follow the [30-day plan](/blog/learn-python-in-30-days), keep the [cheat sheet](/blog/python-cheat-sheet-for-beginners) open, and build [your first project](/blog/python-projects-for-beginners).
+
+## The bottom line
+
+Install from python.org, tick the PATH box on Windows, check the version and run `hello.py`. If setup puts you off, start in the browser and install later.

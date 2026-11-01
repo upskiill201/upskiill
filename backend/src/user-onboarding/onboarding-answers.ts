@@ -12,7 +12,56 @@
  * goal, a learning track — has to be validated here before it is trusted.
  */
 
-export const ONBOARDING_SCHEMA_VERSION = 2;
+export const ONBOARDING_SCHEMA_VERSION = 3;
+
+// ─── Onboarding v3 (2026-10-23) ─────────────────────────────────────────────
+// Mirrors frontend/lib/onboarding/goals.ts and the v3 screens. v3 asks the
+// outcome first, then a category and a real course, and plays that course's
+// first lesson before signup.
+
+export const GOAL_IDS = [
+  'tech-job',
+  'grow-at-work',
+  'build-my-own',
+  'money',
+  'lead-team',
+  'speak-confidently',
+  'keep-up-ai',
+  'stay-sharp',
+] as const;
+
+export const SITUATIONS = [
+  'job-hunting',
+  'new-role',
+  'side-project',
+  'studying',
+  'career-change',
+  'curious',
+] as const;
+
+export const SOURCES = [
+  'friend',
+  'tiktok',
+  'instagram',
+  'youtube',
+  'google',
+  'x',
+  'linkedin',
+  'app-store',
+  'other',
+] as const;
+
+export const V3_EXPERIENCE = ['new', 'some', 'lots'] as const;
+
+/** v3 answers required before the flow may be marked complete. */
+export const V3_REQUIRED_ANSWER_KEYS = ['name', 'goal', 'courseId', 'dailyCommitment'] as const;
+
+/** Course.category → the v2 learning track, where one exists. */
+export function trackForCategory(category: unknown): 'coding' | 'ai' | null {
+  if (typeof category !== 'string') return null;
+  const c = category.trim().toLowerCase();
+  return c === 'coding' ? 'coding' : c === 'ai' ? 'ai' : null;
+}
 
 export const LEARNING_CATEGORIES = ['coding', 'ai'] as const;
 export type LearningCategory = (typeof LEARNING_CATEGORIES)[number];
@@ -121,6 +170,15 @@ export interface OnboardingAnswersV2 {
   preferredTime?: PreferredTime;
   challenge?: { completed?: boolean; skipped?: boolean; claimToken?: string };
   notifications?: { enabled?: boolean; permission?: string };
+  // v3
+  goal?: string;
+  courseId?: string;
+  situation?: string;
+  source?: string;
+  committed?: boolean;
+  lesson?: { claimToken?: string; courseId?: string; lessonId?: string };
+  anonymousId?: string;
+  installed?: boolean;
 }
 
 /**
@@ -132,7 +190,10 @@ export interface OnboardingAnswersV2 {
 export function answersAreComplete(answers: OnboardingAnswersV2 | null | undefined): boolean {
   if (!answers) return false;
 
-  return REQUIRED_ANSWER_KEYS.every((key) => {
+  const required: readonly (keyof OnboardingAnswersV2)[] = answers.goal
+    ? V3_REQUIRED_ANSWER_KEYS
+    : REQUIRED_ANSWER_KEYS;
+  return required.every((key) => {
     const value = answers[key];
     if (Array.isArray(value)) return value.length > 0;
     if (typeof value === 'string') return value.trim().length > 0;

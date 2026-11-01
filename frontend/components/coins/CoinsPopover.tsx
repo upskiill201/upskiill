@@ -12,7 +12,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { AlertCircle, Lock, RefreshCw, ShoppingBag } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useGamification } from '@/context/GamificationContext';
 import { useShopEngine } from '@/context/ShopEngineContext';
@@ -218,10 +218,10 @@ export default function CoinsPopover({ onClose }: CoinsPopoverProps) {
 
         {!loading && error && (
           <div className={styles.errorRow}>
-            <AlertCircle size={16} strokeWidth={2.4} />
+            <Glyph name="alert" size={16} strokeWidth={2.4} />
             <span>{error}</span>
             <button type="button" className={styles.retryLink} onClick={handleRetry}>
-              <RefreshCw size={12} strokeWidth={2.6} />
+              <Glyph name="refresh" size={12} strokeWidth={2.6} />
               Retry
             </button>
           </div>
@@ -261,7 +261,7 @@ export default function CoinsPopover({ onClose }: CoinsPopoverProps) {
                         <h4 className={styles.itemTitle}>{item.name}</h4>
                         {locked ? (
                           <span className={styles.lockedBadge}>
-                            <Lock size={10} strokeWidth={2.6} />
+                            <Glyph name="lock" size={10} strokeWidth={2.6} />
                             {item.unlock.current}/{item.unlock.target}
                           </span>
                         ) : item.owned && item.slot ? (
@@ -311,7 +311,7 @@ export default function CoinsPopover({ onClose }: CoinsPopoverProps) {
       {/* Popover Action Button (Go to Shop) */}
       <div className={styles.footerRow}>
         <button type="button" onClick={handleGoToShop} className={styles.actionBtn3D}>
-          <ShoppingBag size={18} />
+          <Image src="/art/ui/bag.svg" alt="" aria-hidden="true" width={20} height={20} />
           <span>VISIT SHOP</span>
         </button>
       </div>

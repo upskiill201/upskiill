@@ -54,11 +54,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where does the football analogy for 2H₂ + O₂ → 2H₂O break?',
         options: [
-          { text: 'Players stay players, but atoms rearrange into a new substance' },
           { text: 'It does not break anywhere', why: 'Every analogy breaks somewhere.' },
           { text: 'Football has two teams', why: 'True, but that is not the important difference.' },
+          { text: 'Players stay players, but atoms rearrange into a new substance' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -104,11 +104,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Kofi plays football every day. Which request is best?',
         options: [
-          { text: 'Explain mole ratios with a football analogy, then tell me where the analogy breaks.' },
           { text: 'Explain mole ratios with any analogy.', why: '"Any" might be from a world he doesn\'t know.' },
           { text: 'Explain mole ratios with three analogies at once.', why: 'One good analogy, then its limits.' },
+          { text: 'Explain mole ratios with a football analogy, then tell me where the analogy breaks.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',

@@ -1,4 +1,4 @@
-import { buildPathModel, nodeOffset, UNIT_COLORS } from '../model';
+import { buildPathModel, certificateGoal, nodeOffset, UNIT_COLORS } from '../model';
 import type { LearningPath, PathLesson } from '@/hooks/useCourse';
 
 const lesson = (id: string, extra: Partial<PathLesson> = {}): PathLesson => ({
@@ -112,5 +112,33 @@ describe('nodeOffset', () => {
     expect(nodeOffset(2)).toBeGreaterThan(nodeOffset(1));
     expect(nodeOffset(6)).toBeLessThan(0);
     expect(nodeOffset(8)).toBe(0);
+  });
+});
+
+describe('certificateGoal', () => {
+  const goal = (p: LearningPath) => certificateGoal(buildPathModel(p));
+
+  it('is far while the next lesson is before the final unit', () => {
+    expect(goal(path({ completedLessons: ['a'] }))).toEqual({ state: 'far', left: 3, testedOutLeft: 0 });
+  });
+
+  it('is close once the next lesson is in the final unit', () => {
+    expect(goal(path({ completedLessons: ['a', 'b', 'c'] }))).toEqual({ state: 'close', left: 1, testedOutLeft: 0 });
+  });
+
+  it('is earned only when every lesson is really done', () => {
+    expect(goal(path({ completedLessons: ['a', 'b', 'c', 'd'] }))?.state).toBe('earned');
+  });
+
+  it('never counts tested-out lessons, like the certificate service', () => {
+    expect(goal(path({ completedLessons: ['c', 'd'], testedOutLessons: ['a', 'b'] }))).toEqual({
+      state: 'close',
+      left: 2,
+      testedOutLeft: 2,
+    });
+  });
+
+  it('promises nothing for a course with no lessons', () => {
+    expect(goal(path({ sections: [] }))).toBeNull();
   });
 });

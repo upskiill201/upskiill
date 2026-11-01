@@ -1,0 +1,56 @@
+---
+title: "Web Storage: localStorage, sessionStorage and Cookies Compared"
+description: "Compare localStorage, sessionStorage, cookies and IndexedDB: what each stores, how long data lasts, size limits and which to choose."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [web storage, localstorage vs sessionstorage, cookies vs localstorage, indexeddb, browser storage]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Interactive Web Pages with JavaScript turns this into short, playable lessons. Free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive Web Pages with JavaScript course"
+faq:
+  - question: "What is web storage?"
+    answer: "A set of browser features for saving data on the user's device, including localStorage and sessionStorage."
+  - question: "What is the difference between cookies and localStorage?"
+    answer: "Cookies are sent to the server with each request and have small limits. localStorage stays in the browser and holds more."
+  - question: "Which should I use?"
+    answer: "localStorage for preferences, sessionStorage for temporary data and cookies for server-side sessions with secure flags."
+---
+
+Browsers offer several ways to remember data.
+
+## Direct answer
+
+localStorage keeps data until cleared. sessionStorage keeps it until the tab closes. Cookies are small pieces of data sent to the server with requests. IndexedDB stores larger structured data. Choose based on how long you need the data, how much, and whether the server needs it.
+
+## Comparison
+
+| | localStorage | sessionStorage | Cookies | IndexedDB |
+| :--- | :--- | :--- | :--- | :--- |
+| Lasts | until cleared | until tab closes | set by expiry | until cleared |
+| Sent to server | no | no | yes | no |
+| Size | a few MB | a few MB | very small | much larger |
+| Data type | strings | strings | strings | structured |
+
+## Safety
+
+Do not store passwords or sensitive tokens in localStorage or sessionStorage. Use secure, HTTP-only cookies for authentication where appropriate.
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) course turns this into short lessons you can play in a few minutes a day. It has 37 lessons, and you can start free.
+
+## The bottom line
+
+Pick the simplest tool that fits the job.
+
+## More guides
+
+- [JSON.parse and JSON.stringify](/blog/json-parse-and-stringify)
+- [How to Build a Simple Image Carousel With JavaScript](/blog/javascript-carousel)
+- [JavaScript Event Listeners](/blog/javascript-event-listeners)
+- [Javascript localstorage](/blog/javascript-localstorage)
+- [Interactive Web Pages with JavaScript course](/courses/interactive-web-pages-with-javascript)

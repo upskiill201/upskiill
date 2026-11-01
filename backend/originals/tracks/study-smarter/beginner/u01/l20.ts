@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         message: 'You got 6 out of 6?! Kofi. How. You were failing moles three weeks ago.',
         prompt: "What's the most honest reply?",
         options: [
-          { text: 'I used AI to explain it at my level, then made it quiz me every day. And your jollof explanation saved me.' },
           { text: 'AI did it for me.', why: 'It did not. Kofi did the test alone. AI helped him learn.' },
           { text: "I'm just a genius.", why: 'Funny, but not the real reason.' },
+          { text: 'I used AI to explain it at my level, then made it quiz me every day. And your jollof explanation saved me.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -117,11 +117,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The AI says the answer to a homework question is 2.5 moles. Kofi\'s working says 25. What should he do?',
         options: [
-          { text: 'Compare his working with the AI\'s step by step, and check against his textbook' },
           { text: 'Copy 2.5', why: "He still wouldn't know which is right, or why." },
+          { text: 'Compare his working with the AI\'s step by step, and check against his textbook' },
           { text: 'Trust his own answer, AI is useless', why: 'Either could be wrong. Check the steps.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',

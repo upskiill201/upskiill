@@ -1,0 +1,68 @@
+---
+title: "JavaScript Promises Explained: then, catch and Real Examples"
+description: "Promises represent a value that will arrive later. Learn pending, fulfilled and rejected states, then and catch, chaining and Promise.all with simple examples."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [javascript promises, what is a promise, promise then catch, promise all, asynchronous javascript]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "JavaScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/javascript-for-beginners
+  label: "See the JavaScript for Beginners course"
+faq:
+  - question: "What is a promise in JavaScript?"
+    answer: "An object representing the eventual result of an asynchronous operation, either a value or an error."
+  - question: "What are the promise states?"
+    answer: "Pending, fulfilled and rejected."
+  - question: "What is the difference between then and await?"
+    answer: "Both handle a promise result. await lets you write asynchronous code that reads like synchronous code."
+---
+
+Some things take time: network requests, timers, files. Promises handle the waiting.
+
+## Direct answer
+
+A promise is an object that represents a result that will arrive later. It starts as pending and becomes either fulfilled with a value or rejected with an error. Use `.then()` for success, `.catch()` for failure and `Promise.all()` to wait for several at once.
+
+## Example
+
+```javascript
+fetch("https://api.example.com/users")
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error("Failed:", error));
+```
+
+## Creating a promise
+
+```javascript
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+wait(1000).then(() => console.log("One second later"));
+```
+
+## Waiting for many
+
+```javascript
+Promise.all([fetch(urlA), fetch(urlB)]).then(([a, b]) => {
+  console.log("Both done");
+});
+```
+
+## Where Teyro fits
+
+Teyro's [JavaScript for Beginners](/courses/javascript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Promises are the foundation of asynchronous JavaScript. Next, learn [async and await](/blog/async-await-javascript).
+
+## More guides
+
+- [async and await in JavaScript](/blog/async-await-javascript)
+- [What Is JSON? A Beginner's Guide With Examples](/blog/what-is-json)
+- [The this Keyword in JavaScript](/blog/javascript-this-keyword)
+- [Async await javascript](/blog/async-await-javascript)
+- [JavaScript for Beginners course](/courses/javascript-for-beginners)

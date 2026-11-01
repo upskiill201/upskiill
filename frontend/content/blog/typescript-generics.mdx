@@ -1,0 +1,81 @@
+---
+title: "TypeScript Generics Explained With Simple Examples"
+description: "Generics let you write reusable code that works with many types. Learn generic functions, interfaces, constraints and when generics are worth using."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [generics, typescript generics, typescript generic function, generic constraints, reusable types]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "TypeScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript for Beginners course"
+faq:
+  - question: "What are generics in TypeScript?"
+    answer: "A way to write functions and types that work with different types while keeping type safety."
+  - question: "What does the T mean?"
+    answer: "T is a type parameter, a placeholder for a type that is decided when the function or type is used."
+  - question: "When should I use generics?"
+    answer: "When the same logic should work for different types and you want the output type to depend on the input."
+---
+
+Generics are type placeholders.
+
+## Direct answer
+
+Generics let you write one function or type that works for many types without losing type safety. You declare a type parameter, often `T`, and TypeScript fills it in when you use it.
+
+## A generic function
+
+```typescript
+function first<T>(items: T[]): T {
+  return items[0];
+}
+
+const n = first([1, 2, 3]);       // number
+const s = first(["a", "b"]);      // string
+```
+
+## Generic interface
+
+```typescript
+interface ApiResponse<T> {
+  data: T;
+  error: string | null;
+}
+
+const res: ApiResponse<{ name: string }> = {
+  data: { name: "Ada" },
+  error: null,
+};
+```
+
+## Constraints
+
+```typescript
+function getLength<T extends { length: number }>(x: T) {
+  return x.length;
+}
+```
+
+## Tips
+
+- Start with plain types. Add generics when you see repetition.
+- Use clear names like `TItem` when `T` is not enough.
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 20 lessons, and you can start free.
+
+## The bottom line
+
+Generics keep code flexible and safe. They look scary but are simple placeholders.
+
+## More guides
+
+- [TypeScript Union Types](/blog/typescript-union-types)
+- [TypeScript Type Inference](/blog/typescript-type-inference)
+- [tsconfig.json Explained](/blog/tsconfig-explained)
+- [Typescript tutorial for beginners](/blog/typescript-tutorial-for-beginners)
+- [TypeScript for Beginners course](/courses/typescript-for-beginners)

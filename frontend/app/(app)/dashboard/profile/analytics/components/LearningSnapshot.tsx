@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/swr';
-import { Flame, Clock, BookOpen, Zap, Calendar } from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
+import { Mark, type MarkKind } from '@/components/art/Mark';
 import { CardSkeleton } from './AnalyticsSkeleton';
 import { AnalyticsSectionError } from './AnalyticsSectionError';
 
@@ -40,12 +41,13 @@ export function LearningSnapshot() {
   if (isLoading && !data) return <CardSkeleton height={80} />;
   if (error) return <AnalyticsSectionError label="your snapshot" onRetry={() => mutate()} />;
 
-  const stats = [
-    { icon: Calendar, color: '#0172FD', value: data?.activeDays ?? 0, label: 'Days' },
-    { icon: Clock, color: '#8B5CF6', value: data?.hoursLearned ?? '0m', label: 'Time' },
-    { icon: BookOpen, color: '#0EA5E9', value: data?.lessonsCompleted ?? 0, label: 'Lessons' },
-    { icon: Zap, color: '#22C55E', value: `${data?.xpEarned ?? 0} XP`, label: 'XP' },
-    { icon: Flame, color: '#FF9600', value: `${data?.currentStreak ?? 0}`, label: 'Streak' },
+  // Streak and XP show Teyro's own marks; the rest are glyphs.
+  const stats: { icon?: GlyphName; mark?: MarkKind; color: string; value: string | number; label: string }[] = [
+    { icon: 'calendar', color: 'var(--color-brand)', value: data?.activeDays ?? 0, label: 'Days' },
+    { icon: 'clock', color: 'var(--brand-purple)', value: data?.hoursLearned ?? '0m', label: 'Time' },
+    { icon: 'book', color: 'var(--color-brand)', value: data?.lessonsCompleted ?? 0, label: 'Lessons' },
+    { mark: 'xp', color: 'var(--success-green)', value: `${data?.xpEarned ?? 0} XP`, label: 'XP' },
+    { mark: 'streak', color: 'var(--warning)', value: `${data?.currentStreak ?? 0}`, label: 'Streak' },
   ];
 
   return (
@@ -71,7 +73,7 @@ export function LearningSnapshot() {
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         {stats.map((s) => (
           <div key={s.label} className="flex flex-col items-center gap-1 rounded-lg bg-[#F5F7FB] py-3">
-            <s.icon size={18} color={s.color} />
+            {s.mark ? <Mark kind={s.mark} size={18} /> : s.icon ? <Glyph name={s.icon} size={18} color={s.color} /> : null}
             <span className="text-sm font-extrabold text-[#1F2A44]">{s.value}</span>
             <span className="text-[11px] font-semibold text-[#94A3B8]">{s.label}</span>
           </div>

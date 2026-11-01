@@ -1,0 +1,98 @@
+---
+title: "React Native Tutorial for Beginners: Your First App Step by Step"
+description: "A beginner React Native tutorial: what it is, how to set up with Expo, a first screen with state, free ways to learn and common mistakes."
+publishedDate: "2026-10-25"
+category: skill-building
+tags: [react native tutorial for beginners, learn react native, react native course free, learn react native expo, react native for beginners, react native tutorial]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Tap your app in the lesson"
+  text: "React Native for Beginners lets you build and tap screens in every lesson. 80 short lessons, free to start."
+  href: /courses/react-native-for-beginners
+  label: "See the React Native course"
+faq:
+  - question: "What is React Native?"
+    answer: "A framework from Meta for building mobile apps for Android and iPhone using JavaScript and React."
+  - question: "How do I start with React Native?"
+    answer: "Learn JavaScript basics, set up a project with Expo, build a screen with components and state, and test it on your phone or an emulator."
+  - question: "What is Expo?"
+    answer: "A set of tools that makes starting React Native projects easier, including running your app on a phone while you develop."
+  - question: "Is there a free React Native course?"
+    answer: "Yes. There are free tutorials and courses, including Teyro's React Native for Beginners, which is free to start."
+---
+
+React Native lets you write one app and run it on Android and iPhone. Here is how to get started.
+
+## Direct answer
+
+To start with React Native: learn JavaScript basics, create a project with Expo (the easiest way to begin), build a screen from components such as `View`, `Text` and `Button`, add state to make it interactive, and run it on your phone. Build small things first.
+
+## Setting up
+
+1. Install Node.js from its official website.
+2. Create a project using Expo's official instructions (they change, so use the current docs).
+3. Start the development server.
+4. Open the app on your phone with the Expo app, or use an emulator.
+
+## A first screen with state
+
+```jsx
+import { useState } from 'react';
+import { View, Text, Button } from 'react-native';
+
+export default function App() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>You tapped {count} times</Text>
+      <Button title="Tap me" onPress={() => setCount(count + 1)} />
+    </View>
+  );
+}
+```
+
+Each tap changes `count`, and the screen updates.
+
+## Core ideas
+
+| Idea | What it is |
+| :--- | :--- |
+| Components | Reusable building blocks like `View` and `Text` |
+| Props | Data you pass into a component |
+| State | Data that changes and updates the screen |
+| Styles | A JavaScript way of describing layout |
+| Navigation | Moving between screens |
+
+## Learning path
+
+1. JavaScript. See [JavaScript for beginners](/blog/javascript-for-beginners-guide).
+2. Components, props, state
+3. Lists and forms
+4. Navigation
+5. Saving data
+6. Publishing
+
+## Common mistakes
+
+- Skipping JavaScript basics
+- Copying code you don't understand
+- Building a big app first
+
+More: [is React Native easy to learn](/blog/is-react-native-easy-to-learn).
+
+## Where Teyro fits
+
+Teyro's [React Native for Beginners](/courses/react-native-for-beginners) course builds a real phone app step by step, with code in every lesson and screens you can tap right in the lesson. It's free to start.
+
+## The bottom line
+
+One small app teaches more than ten tutorials.
+
+## More coding guides
+
+- [Is React Native easy to learn?](/blog/is-react-native-easy-to-learn)
+- [JavaScript for beginners](/blog/javascript-for-beginners-guide)
+- [TypeScript tutorial for beginners](/blog/typescript-tutorial-for-beginners)
+- [React Native course](/courses/react-native-for-beginners)

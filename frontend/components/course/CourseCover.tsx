@@ -8,21 +8,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import {
-  BookOpen,
-  BrainCircuit,
-  Briefcase,
-  Camera,
-  CodeXml,
-  HeartPulse,
-  Languages,
-  Megaphone,
-  Music,
-  Palette,
-  PenLine,
-  TrendingUp,
-  type LucideIcon,
-} from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import styles from './CourseCover.module.css';
 
 export const COURSE_TINTS = ['tintBlue', 'tintGreen', 'tintOrange', 'tintPurple'] as const;
@@ -36,24 +22,24 @@ export function tintFor(id: string | undefined | null): CourseTint {
 }
 
 /** A recognisable icon per category, matched loosely against creator text. */
-const CATEGORY_ICONS: [RegExp, LucideIcon][] = [
-  [/\b(ai|artificial|machine|data)\b/, BrainCircuit],
-  [/develop|software|code|coding|programming|web|\bit\b/, CodeXml],
-  [/business|entrepreneur|finance|money|career/, Briefcase],
-  [/market|sales|social media|brand/, Megaphone],
-  [/design|art|creative|ui|ux/, Palette],
-  [/photo|video|film/, Camera],
-  [/music|audio/, Music],
-  [/writ|content|copy/, PenLine],
-  [/language|english|french|spanish/, Languages],
-  [/health|fitness|wellness|mind/, HeartPulse],
-  [/growth|productiv|personal|leader/, TrendingUp],
+const CATEGORY_ICONS: [RegExp, GlyphName][] = [
+  [/\b(ai|artificial|machine|data)\b/, 'brain'],
+  [/develop|software|code|coding|programming|web|\bit\b/, 'code'],
+  [/business|entrepreneur|finance|money|career/, 'briefcase'],
+  [/market|sales|social media|brand/, 'megaphone'],
+  [/design|art|creative|ui|ux/, 'palette'],
+  [/photo|video|film/, 'camera'],
+  [/music|audio/, 'music'],
+  [/writ|content|copy/, 'pencil'],
+  [/language|english|french|spanish/, 'languages'],
+  [/health|fitness|wellness|mind/, 'activity'],
+  [/growth|productiv|personal|leader/, 'trendUp'],
 ];
 
 export function categoryGlyph(category: string | null | undefined, size: number, strokeWidth = 2.5) {
   const c = (category ?? '').toLowerCase();
-  const icon = CATEGORY_ICONS.find(([re]) => re.test(c))?.[1] ?? BookOpen;
-  return React.createElement(icon, { size, strokeWidth, 'aria-hidden': true });
+  const icon = CATEGORY_ICONS.find(([re]) => re.test(c))?.[1] ?? 'book';
+  return <Glyph name={icon} size={size} strokeWidth={strokeWidth} />;
 }
 
 export function CourseCover({

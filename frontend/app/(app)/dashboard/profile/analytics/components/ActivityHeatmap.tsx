@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { useAnalyticsHeatmap } from '../hooks/useAnalyticsHeatmap';
 import { CardSkeleton } from './AnalyticsSkeleton';
 import { AnalyticsSectionError } from './AnalyticsSectionError';
@@ -31,7 +31,7 @@ export function ActivityHeatmap() {
     <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Calendar size={18} color="#64748B" />
+          <Glyph name="calendar" size={18} color="var(--text-secondary)" />
           <h2 className="text-sm font-extrabold text-[#1F2A44]">12-Week Activity</h2>
         </div>
         {data.mostActiveMonth && (

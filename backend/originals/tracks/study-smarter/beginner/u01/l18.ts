@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: "In Miracle's story, why did she struggle in the exam?",
         options: [
-          { text: 'The AI did the practice, so she never learned to do it herself' },
           { text: 'The AI made mistakes in her homework', why: 'It did the homework perfectly. That was the problem.' },
+          { text: 'The AI did the practice, so she never learned to do it herself' },
           { text: 'The exam was unfair', why: 'It tested what the homework should have taught her.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         message: 'But my homework marks are great with AI. Why would I make it harder?',
         prompt: 'What should Kofi reply?',
         options: [
-          { text: "Because there's no AI in the exam room. Homework is practice. If the AI practises, you don't." },
           { text: 'Your marks are fake.', why: 'True-ish, but not helpful. Explain why it matters.' },
           { text: 'Keep doing it.', why: "That's Miracle's story." },
+          { text: "Because there's no AI in the exam room. Homework is practice. If the AI practises, you don't." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',

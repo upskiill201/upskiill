@@ -1,0 +1,68 @@
+---
+title: "Debounce in JavaScript: What It Is and How to Write One"
+description: "Debounce delays a function until the user stops triggering it. Learn why it matters for search boxes and resize events, with a simple implementation."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [debounce, javascript debounce, debounce function, debounce vs throttle, search input debounce]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Interactive Web Pages with JavaScript turns this into short, playable lessons. Free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive Web Pages with JavaScript course"
+faq:
+  - question: "What is debounce?"
+    answer: "A technique that delays running a function until a set time has passed since it was last called."
+  - question: "What is the difference between debounce and throttle?"
+    answer: "Debounce waits until activity stops. Throttle runs at most once per interval while activity continues."
+  - question: "When should I use debounce?"
+    answer: "Search-as-you-type, window resize handlers and auto-save."
+---
+
+Without debounce, typing "hello" can fire five network requests.
+
+## Direct answer
+
+Debounce wraps a function so it only runs after the user has stopped triggering it for a set delay. It reduces unnecessary work, such as sending a search request on every keystroke.
+
+## Implementation
+
+```javascript
+function debounce(fn, delay) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
+const search = debounce((query) => {
+  console.log("Searching for", query);
+}, 300);
+
+input.addEventListener("input", (e) => search(e.target.value));
+```
+
+## Debounce vs throttle
+
+| | Debounce | Throttle |
+| :--- | :--- | :--- |
+| Runs | after activity stops | at regular intervals |
+| Good for | search, auto-save | scroll, resize |
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) course turns this into short lessons you can play in a few minutes a day. It has 37 lessons, and you can start free.
+
+## The bottom line
+
+Debounce is a closure plus `setTimeout`. A small function with a big impact.
+
+## More guides
+
+- [How to Call an API in JavaScript](/blog/javascript-api-calls)
+- [Web Storage](/blog/web-storage-basics)
+- [JSON.parse and JSON.stringify](/blog/json-parse-and-stringify)
+- [Javascript event listeners](/blog/javascript-event-listeners)
+- [Interactive Web Pages with JavaScript course](/courses/interactive-web-pages-with-javascript)

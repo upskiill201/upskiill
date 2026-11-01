@@ -1,0 +1,79 @@
+---
+title: "malloc and free in C: Dynamic Memory Explained"
+description: "Learn how to allocate and release memory in C with malloc, calloc, realloc and free, plus how to avoid leaks, dangling pointers and double frees."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [malloc and free, c malloc, c dynamic memory allocation, calloc realloc, memory leak c]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "C for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/c-for-beginners
+  label: "See the C for Beginners course"
+faq:
+  - question: "What does malloc do?"
+    answer: "It allocates a block of memory of the size you request and returns a pointer to it, or NULL if it fails."
+  - question: "Why must I call free?"
+    answer: "To return memory to the system. Not freeing causes a memory leak."
+  - question: "What is a dangling pointer?"
+    answer: "A pointer that still holds an address after the memory has been freed."
+---
+
+When you need memory that outlives a function or whose size is decided at run time, you ask for it with `malloc`.
+
+## Direct answer
+
+`malloc(size)` allocates `size` bytes on the heap and returns a pointer, or `NULL` if it fails. Check the result, use the memory, then release it with `free`. Set the pointer to `NULL` afterwards to avoid using freed memory.
+
+## Example
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    int n = 5;
+    int *numbers = malloc(n * sizeof *numbers);
+    if (numbers == NULL) {
+        return 1;
+    }
+
+    for (int i = 0; i < n; i++) numbers[i] = i * i;
+    for (int i = 0; i < n; i++) printf("%d ", numbers[i]);
+
+    free(numbers);
+    numbers = NULL;
+    return 0;
+}
+```
+
+## Related functions
+
+| Function | Purpose |
+| :--- | :--- |
+| `calloc` | allocate and zero memory |
+| `realloc` | resize a block |
+| `free` | release a block |
+
+## Common bugs
+
+- **Memory leak:** forgetting `free`.
+- **Double free:** freeing the same pointer twice.
+- **Use after free:** using memory after releasing it.
+
+## Where Teyro fits
+
+Teyro's [C for Beginners](/courses/c-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 78 lessons, and you can start free.
+
+## The bottom line
+
+Every `malloc` needs exactly one `free`.
+
+## More guides
+
+- [Memory Management in C](/blog/c-memory-management)
+- [Structs in C](/blog/c-structs-guide)
+- [Header Files in C](/blog/c-header-files)
+- [C memory management](/blog/c-memory-management)
+- [C for Beginners course](/courses/c-for-beginners)

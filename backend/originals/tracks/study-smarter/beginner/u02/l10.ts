@@ -75,11 +75,11 @@ const lesson: OriginalLesson = {
         message: 'Kofi, what did the AI ask you last night that you couldn\'t answer?',
         prompt: 'Why does Miracle ask this?',
         options: [
-          { text: "Those questions are exactly where Kofi's holes are, so they are what he should study next" },
           { text: 'She wants to check the AI is working', why: "It's about Kofi's understanding, not the AI." },
           { text: 'To make him feel bad', why: 'Mentors ask this to help, not to embarrass.' },
+          { text: "Those questions are exactly where Kofi's holes are, so they are what he should study next" },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

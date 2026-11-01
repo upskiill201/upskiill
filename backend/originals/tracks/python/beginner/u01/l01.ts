@@ -63,11 +63,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Who created Python?',
         options: [
-          { text: 'Guido van Rossum' },
           { text: 'The cast of Monty Python', why: 'They inspired the name, not the language.' },
+          { text: 'Guido van Rossum' },
           { text: 'A team at a big tech company', why: 'It started as one person\'s hobby project.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'mcq',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         code: 'print("Ajo")',
         language: 'python',
         options: [
-          { text: 'Ajo' },
           { text: '"Ajo"', why: 'The quotes tell Python where the text starts and ends. They are not printed.' },
           { text: 'print("Ajo")', why: 'Python runs the code. It does not print the code itself.' },
+          { text: 'Ajo' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',

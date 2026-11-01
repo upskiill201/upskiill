@@ -106,6 +106,7 @@ const CODE_LANGUAGES = [
   'html',
   'css',
   'sql',
+  'c',
   'bash',
   'json',
   'java',

@@ -26,11 +26,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Kofi photographs a textbook question for Efua. What should he ask the AI first?',
         options: [
-          { text: 'To write the question out exactly as it sees it, so he can check it' },
           { text: 'To solve it', why: 'Read back first, or it may solve a misread question.' },
+          { text: 'To write the question out exactly as it sees it, so he can check it' },
           { text: 'Whether the question is hard', why: 'Not a useful first step.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Efua wants to start limiting reagents properly. Which first request is best?',
         options: [
-          { text: 'What are the key words for limiting reagent questions? One-line plain definition and tiny example for each.' },
           { text: 'Solve 10 limiting reagent questions.', why: 'Answers, not understanding.' },
+          { text: 'What are the key words for limiting reagent questions? One-line plain definition and tiny example for each.' },
           { text: 'Is chemistry worth it?', why: 'Not a study question.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Kofi wants to help Efua without doing it for her. What fits the think-first rule?',
         options: [
-          { text: 'Ask her to try one, then explain her working back to him' },
           { text: 'Do her homework so she has the answers', why: 'Then she learns nothing.' },
           { text: 'Send her his answers', why: 'Same problem.' },
+          { text: 'Ask her to try one, then explain her working back to him' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

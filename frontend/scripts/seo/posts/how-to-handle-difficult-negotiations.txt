@@ -1,0 +1,251 @@
+=== what-is-batna
+title: BATNA Explained: Your Best Alternative to a Negotiated Agreement
+desc: BATNA is your best option if talks fail. Learn how to work out yours, use it for leverage and improve it before you negotiate, with examples.
+tags: batna, what is batna, batna negotiation, best alternative to a negotiated agreement, negotiation preparation
+rel: negotiation-skills-for-beginners-guide, negotiation-tactics-and-strategies
+q: What does BATNA stand for? | Best Alternative to a Negotiated Agreement.
+q: Why does BATNA matter? | It tells you when to walk away and gives you confidence, since you know your options.
+q: How do I improve my BATNA? | Create more alternatives, such as other offers, before you negotiate.
+---
+Your power in a negotiation is mostly what you can do if you say no.
+
+## Direct answer
+
+BATNA is your best alternative if you do not reach an agreement. Knowing it tells you the lowest deal worth accepting and gives you confidence to walk away. Improve it by developing options before you negotiate, such as a second job offer or another supplier.
+
+## How to work it out
+
+1. List what you could do if talks fail.
+2. Estimate the value of each.
+3. Pick the best one. That is your BATNA.
+4. Compare any offer against it.
+
+## Example
+
+You have a job offer at 50,000 and another at 55,000. Your BATNA for the first is 55,000, so you need a better offer than that to accept the first.
+
+## Tips
+
+- Think about the other side's BATNA too.
+- Do not reveal a weak BATNA.
+
+## The bottom line
+
+The better your alternatives, the stronger your position.
+
+=== what-is-zopa
+title: ZOPA: The Zone of Possible Agreement Explained With Examples
+desc: ZOPA is the overlap between what both sides will accept. Learn how to find it, use it in price negotiations and what to do if there is none.
+tags: zopa, zone of possible agreement, zopa negotiation, negotiation range, reservation price
+rel: what-is-batna, negotiation-skills-for-beginners-guide
+q: What is ZOPA? | The Zone of Possible Agreement: the range where both sides' acceptable outcomes overlap.
+q: What if there is no ZOPA? | There is no deal at the current terms unless one side changes its position or adds value.
+q: How do I estimate the other side's limits? | Research, ask questions and observe their reactions.
+---
+A deal exists only where the ranges overlap.
+
+## Direct answer
+
+ZOPA is the zone where both sides can agree. If a seller will accept 800 or more and a buyer will pay up to 1,000, the ZOPA is 800 to 1,000. A deal is possible within it. If the ranges do not overlap, you need new options to create value.
+
+## Example
+
+| | Limit |
+| :--- | :--- |
+| Seller minimum | 800 |
+| Buyer maximum | 1,000 |
+| ZOPA | 800 to 1,000 |
+
+## How to use it
+
+1. Know your own limit.
+2. Estimate theirs.
+3. Aim for the best point inside the zone.
+4. If there is no zone, look for other terms to trade.
+
+## The bottom line
+
+Find the overlap, then negotiate within it.
+
+=== principled-negotiation
+title: Principled Negotiation: The Four Principles From Getting to Yes
+desc: Principled negotiation focuses on interests, people, options and criteria. Learn the four principles with examples you can use at work and at home.
+tags: principled negotiation, getting to yes, interests not positions, negotiation principles, win win negotiation
+rel: what-is-batna, tactical-empathy
+q: What is principled negotiation? | An approach popularised by Fisher and Ury that aims for fair, mutually beneficial agreements.
+q: What are its four principles? | Separate people from the problem, focus on interests, generate options and use objective criteria.
+q: Does it work with tough negotiators? | It can, since it keeps you focused on interests and fairness rather than pressure.
+---
+Solve the problem together, not fight over positions.
+
+## Direct answer
+
+Principled negotiation has four principles: separate the people from the problem, focus on interests not positions, invent options for mutual gain and insist on objective criteria. It aims for fair agreements without damaging relationships.
+
+## The four principles
+
+1. **People:** be kind to people, firm on the problem.
+2. **Interests:** ask why they want what they want.
+3. **Options:** brainstorm before deciding.
+4. **Criteria:** use fair standards such as market prices.
+
+## Example
+
+A buyer wants a lower price (position). The interest is staying within budget. Options include a smaller order, longer payment terms or a bundle.
+
+## The bottom line
+
+Look behind positions to the interests.
+
+=== counteroffer-guide
+title: How to Make a Counteroffer: Scripts for Salary, Price and Terms
+desc: A counteroffer responds to an initial offer with your own terms. Learn when to counter, how to phrase it and examples for salary and prices.
+tags: counteroffer, how to make a counteroffer, counter offer example, counter offer script, negotiation response
+rel: how-to-negotiate-salary, negotiation-tactics-and-strategies
+q: What is a counteroffer? | A response to an offer in which you propose different terms.
+q: Should I always counter? | Often yes, if the offer is below what you can reasonably expect. Be prepared and polite.
+q: How do I phrase it? | Express appreciation, state your counter with reasons and ask for their view.
+---
+The first offer is rarely the final one.
+
+## Direct answer
+
+To make a counteroffer, thank them, restate your interest, propose specific terms with a reason and invite discussion. Be polite, clear and ready to discuss trade-offs.
+
+## Script
+
+"Thank you for the offer. I am excited about the role. Based on my experience and market research, I was hoping for a salary of X. Is there flexibility?"
+
+## Tips
+
+1. Research a fair range.
+2. Counter with a number slightly above your target.
+3. Give a reason.
+4. Be willing to discuss other terms.
+5. Get the final agreement in writing.
+
+## The bottom line
+
+A polite counter shows you value the role and yourself.
+
+=== good-cop-bad-cop
+title: Good Cop, Bad Cop Negotiation: How It Works and How to Respond
+desc: Good cop bad cop is a tactic where one negotiator is tough and one is friendly. Learn how to recognise it and respond calmly.
+tags: good cop bad cop, good cop bad cop negotiation, negotiation tactics, negotiation tricks, how to counter negotiation tactics
+rel: negotiation-tactics-and-strategies, principled-negotiation
+q: What is good cop, bad cop in negotiation? | A tactic in which one person takes a hard line and another appears sympathetic, to make you accept the second person's terms.
+q: How do I respond? | Name the dynamic politely, stick to your interests and criteria and take time to think.
+q: Is it always intentional? | Not always, but treat it the same way.
+---
+When one person is tough and the other helps you out, ask who benefits.
+
+## Direct answer
+
+In good cop, bad cop, one negotiator makes harsh demands while another seems reasonable, nudging you to accept the "reasonable" offer. Respond by recognising the pattern, staying focused on your interests and objective criteria and taking a break if needed.
+
+## How to respond
+
+1. **Notice** the shift in tone.
+2. **Do not reward pressure.**
+3. **Return to criteria:** "What standard are we using to judge this?"
+4. **Take time:** "I will get back to you tomorrow."
+5. **Stay respectful.**
+
+## The bottom line
+
+Judge the offer on its merits, not on contrast.
+
+=== concessions-in-negotiation
+title: Concessions in Negotiation: How to Give and Get Without Losing Ground
+desc: Concessions move talks forward. Learn how to plan them, trade rather than give, make them smaller over time and signal that each one has a cost.
+tags: concessions in negotiation, make concessions, negotiation trade offs, how to negotiate step by step, give and take
+rel: negotiation-tactics-and-strategies, what-is-zopa
+q: What is a concession? | Something you give up or agree to as part of a negotiation.
+q: How should I make concessions? | Trade them for something in return, make them smaller as you go and explain the value.
+q: Should I make the first concession? | Often not, unless it helps build momentum, and always with a link to what you want.
+---
+Every concession should buy something.
+
+## Direct answer
+
+Plan your concessions in advance, rank them by cost to you and value to the other side and trade them for something in return, using "if you, then I" phrasing. Make later concessions smaller to signal you are near your limit.
+
+## Phrases
+
+- "If you can commit to a two-year term, I can offer a lower rate."
+- "I could do that if we agree on delivery by the 15th."
+
+## Tips
+
+1. List what you can give and want.
+2. Trade, do not give.
+3. Make concessions smaller over time.
+4. Keep a record.
+
+## The bottom line
+
+Give with a purpose and always ask for something back.
+
+=== negotiating-with-your-boss
+title: How to Negotiate With Your Boss: Raises, Workload and Flexibility
+desc: How to negotiate with your manager for a raise, workload, flexible hours or development. Preparation, scripts and what to do if the answer is no.
+tags: negotiating with your boss, negotiate with manager, ask for flexibility, ask for a raise, workplace negotiation
+rel: how-to-ask-for-a-promotion, how-to-negotiate-salary
+q: How do I negotiate with my boss? | Prepare evidence of your value, know what you want, ask at a good time and be open to alternatives.
+q: What if my boss says no? | Ask what would change the answer and agree on next steps.
+q: When is a good time? | After a success or during a review, not at a stressful moment.
+---
+Your manager is a person with limits and goals. Work with them.
+
+## Direct answer
+
+To negotiate with your boss, prepare your case with evidence, decide your target and fallback, pick a calm moment, link your request to their goals and listen. If the answer is no, ask what would change it and agree on a follow-up.
+
+## Steps
+
+1. **Define the ask.**
+2. **Collect evidence:** results, feedback, market data.
+3. **Frame it** around shared goals.
+4. **Ask clearly.**
+5. **Listen** and explore options.
+6. **Agree next steps** in writing.
+
+## Script
+
+"I have delivered X and Y this year. I would like to discuss a pay increase to reflect that. What would you need to see?"
+
+## The bottom line
+
+Be prepared, polite and persistent.
+
+=== tactical-empathy
+title: Tactical Empathy: Understand the Other Side to Negotiate Better
+desc: Tactical empathy means understanding the other side's perspective and showing it. Learn labelling, mirroring and calibrated questions with examples.
+tags: tactical empathy, labelling emotions, calibrated questions, negotiation psychology, never split the difference
+rel: principled-negotiation, mirroring-in-conversation
+q: What is tactical empathy? | Understanding another person's feelings and perspective and showing that you understand, in order to influence the conversation.
+q: What is labelling? | Naming an emotion you notice: "It sounds like you are worried about the timeline."
+q: What are calibrated questions? | Open how or what questions that invite the other side to solve the problem.
+---
+People agree more readily when they feel understood.
+
+## Direct answer
+
+Tactical empathy is understanding someone's perspective and showing it in your words. Techniques include labelling emotions, mirroring key words and asking calibrated questions such as "How can we make this work?". It builds trust and uncovers real concerns.
+
+## Techniques
+
+| Technique | Example |
+| :--- | :--- |
+| Label | "It seems like the deadline is a concern." |
+| Mirror | repeat the last few words as a question |
+| Calibrated question | "What would make this workable for you?" |
+| Summarise | "So the main issue is cost and timing." |
+
+## Use it honestly
+
+The goal is understanding, not trickery.
+
+## The bottom line
+
+Understanding is a powerful negotiation tool.

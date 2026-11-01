@@ -61,11 +61,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask where an analogy stops being accurate?',
         options: [
-          { text: 'Every analogy breaks somewhere, and you should know where' },
           { text: 'Analogies are always wrong', why: 'They help a lot; they just have limits.' },
+          { text: 'Every analogy breaks somewhere, and you should know where' },
           { text: 'To make the answer longer', why: 'It is about accuracy.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
         message: "My boss wants me to 'get up to speed on SEO' by Friday. I know nothing about it.",
         prompt: 'What should Ada suggest?',
         options: [
-          { text: "Tell the AI your level, ask for a simple explanation and an analogy, explain it back, then get it to quiz you." },
           { text: 'Read 10 long articles.', why: 'Slow, and reading is not the same as understanding.' },
           { text: 'Ask for a summary and stop there.', why: 'A summary feels like understanding but often is not.' },
+          { text: "Tell the AI your level, ask for a simple explanation and an analogy, explain it back, then get it to quiz you." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -179,11 +179,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does Teyro quiz you at the end of every lesson?',
         options: [
-          { text: 'Recalling what you learned makes it stick far better than re-reading' },
           { text: 'To fill time', why: 'It is how learning lasts.' },
           { text: 'To catch you out', why: 'It is practice, not a trap.' },
+          { text: 'Recalling what you learned makes it stick far better than re-reading' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

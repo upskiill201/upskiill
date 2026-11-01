@@ -11,7 +11,7 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -122,7 +122,7 @@ function NoticeCard({ notice }: { notice: Notice }) {
         {hasAction && (
           <span className="shrink-0 inline-flex items-center gap-0.5 text-[13px] font-extrabold uppercase tracking-[0.05em]" style={{ color: tone.color }}>
             {notice.action ?? 'View'}
-            <ChevronRight className="w-4 h-4 stroke-[3]" aria-hidden="true" />
+            <Glyph name="chevron" size={16} strokeWidth={3.4} />
           </span>
         )}
         {/* The time left, draining along the bottom edge. */}

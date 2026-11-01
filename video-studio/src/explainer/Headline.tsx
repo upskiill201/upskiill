@@ -23,6 +23,11 @@ const displayWords = (ws: Word[]) => {
       i = j; continue;
     }
     const next = ws[i + 1];
+    // "slash council" → "/council" (spoken slash commands)
+    if (bare(raw) === 'slash' && next) {
+      out.push({ w: { ...w, accent: w.accent || next.accent }, text: '/' + next.w.replace(/\*/g, '') });
+      i++; continue;
+    }
     if (next && bare(next.w) === 'percent') {
       const n = NUM[bare(raw)] ?? (/^\d+$/.test(bare(raw)) ? bare(raw) : null);
       if (n) {

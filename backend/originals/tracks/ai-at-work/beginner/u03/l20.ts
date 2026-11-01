@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Wednesday 2pm. The contract summary says "either side can cancel". What should Ada do?',
         options: [
-          { text: 'Ask for the termination and renewal clauses quoted, with numbers, and read them herself' },
           { text: 'Trust the summary', why: 'This is exactly what summaries drop.' },
           { text: 'Sign it', why: 'Check first; then decide with an expert if unclear.' },
+          { text: 'Ask for the termination and renewal clauses quoted, with numbers, and read them herself' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -137,11 +137,11 @@ const lesson: OriginalLesson = {
         message: "Can your AI tell us whether to sign the agency contract?",
         prompt: 'Wednesday 3pm. Which answer?',
         options: [
-          { text: 'It can pull out key terms and anything unusual. The decision is ours, ideally after a legal review.' },
           { text: 'Yes, it decides.', why: 'It is not a lawyer.' },
+          { text: 'It can pull out key terms and anything unusual. The decision is ours, ideally after a legal review.' },
           { text: 'AI cannot help with contracts.', why: 'It helps a lot with finding clauses.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -213,11 +213,11 @@ const lesson: OriginalLesson = {
         message: 'The AI said 70 comments mention speed, but checking its list, only 38 do.',
         prompt: 'Friday 11am. Which number does Ada use?',
         options: [
-          { text: '38, the checked count, and she re-checks the other big themes.' },
           { text: '70, it is bigger.', why: 'The checked count is the real one.' },
+          { text: '38, the checked count, and she re-checks the other big themes.' },
           { text: 'Neither, counts do not matter.', why: 'Counts set priorities.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -261,11 +261,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the one idea behind all of Unit 3?',
         options: [
-          { text: 'Start from your purpose, keep proof and caveats, and check what you act on' },
           { text: 'Shorter is always better', why: 'Short and misleading is worse than useless.' },
           { text: 'Summaries are always accurate', why: 'Usually, which is why errors slip through.' },
+          { text: 'Start from your purpose, keep proof and caveats, and check what you act on' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

@@ -17,6 +17,8 @@ import { UserOnboardingModule } from './user-onboarding/user-onboarding.module';
 import { WhatsappModule } from './whatsapp/whatsapp.module';
 import { GamificationModule } from './gamification/gamification.module';
 import { SocialModule } from './social/social.module';
+import { NetworkModule } from './network/network.module';
+import { AvatarModule } from './avatar/avatar.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ShopModule } from './shop/shop.module';
 import { HomeModule } from './home/home.module';
@@ -28,6 +30,9 @@ import { ChestModule } from './chest/chest.module';
 import { SpinModule } from './spin/spin.module';
 import { StreakModule } from './streak/streak.module';
 import { ReferralModule } from './referral/referral.module';
+import { AmbassadorModule } from './ambassador/ambassador.module';
+import { ShareCardModule } from './share-card/share-card.module';
+import { CertificateModule } from './certificate/certificate.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { EarningsModule } from './earnings/earnings.module';
 import { SiteModule } from './site/site.module';
@@ -40,6 +45,8 @@ import { AdminModule } from './admin/admin.module';
 import { SupportModule } from './support/support.module';
 import { CouponsModule } from './coupons/coupons.module';
 import { EmailModule } from './email/email.module';
+import { ProModule } from './pro/pro.module';
+import { OnboardingFlowModule } from './onboarding-flow/onboarding-flow.module';
 
 @Module({
   imports: [
@@ -64,6 +71,8 @@ import { EmailModule } from './email/email.module';
     WhatsappModule,
     GamificationModule,
     SocialModule,
+    NetworkModule,
+    AvatarModule,
     ShopModule,
     HomeModule,
     MissionsModule,
@@ -74,6 +83,9 @@ import { EmailModule } from './email/email.module';
     SpinModule,
     StreakModule,
     ReferralModule,
+    AmbassadorModule,
+    ShareCardModule,
+    CertificateModule,
     AnalyticsModule,
     EarningsModule,
     SiteModule,
@@ -86,6 +98,8 @@ import { EmailModule } from './email/email.module';
     CouponsModule,
     SupportModule,
     EmailModule,
+    ProModule,
+    OnboardingFlowModule,
   ],
   controllers: [AppController],
   providers: [

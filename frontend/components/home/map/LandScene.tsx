@@ -71,6 +71,7 @@ function LandSceneImpl({
   keepouts,
   dim,
   viewHalf,
+  roadGoesOn = false,
 }: {
   unitKey: string;
   land: LandId;
@@ -88,6 +89,8 @@ function LandSceneImpl({
   dim: boolean;
   /** Half the visible column, px — landmarks stay inside it. */
   viewHalf: number;
+  /** The road carries on past the last chest, to the certificate below. */
+  roadGoesOn?: boolean;
 }) {
   const reducedMotion = useReducedMotion();
   const H = layout.height;
@@ -169,8 +172,9 @@ function LandSceneImpl({
   }, [unitKey, land, layout, isFirstUnit, isLastUnit, roadClear, keepouts, H, viewHalf]);
 
   const t = layout.trail;
-  // The course's last stretch ends at its chest, by the castle, not the edge.
-  const last = isLastUnit ? t.length - 2 : t.length - 1;
+  // The course's last stretch ends at its chest, by the castle, not the edge —
+  // unless the certificate waits further down the road.
+  const last = isLastUnit && !roadGoesOn ? t.length - 2 : t.length - 1;
   const reach = Math.min(walked, last);
   const walkedD = reach > 0 ? smoothPath(t, 0, paintLast ? reach - 1 : reach) : '';
   const lastD = reach > 0 && paintLast ? smoothPath(t, reach - 1, reach) : '';

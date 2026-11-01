@@ -11,38 +11,27 @@
  */
 
 import React from 'react';
-import {
-  Coins,
-  Gift,
-  Heart,
-  Package,
-  RotateCcw,
-  Shield,
-  Snowflake,
-  Sparkles,
-  User,
-  Vault,
-  Wrench,
-  Zap,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import { cosmeticArt, rarityStyle } from '@/lib/shop/cosmetics';
 import styles from './ShopItemArt.module.css';
 
-/** Power-ups and chests are glyph-based; cosmetics paint their own art. */
-const POWER_UP_GLYPHS: Record<string, LucideIcon> = {
-  heart: Heart,
-  freeze: Snowflake,
-  retry: RotateCcw,
-  'boost-xp': Zap,
-  'boost-xp2': Zap,
-  'boost-coin': Coins,
-  repair: Wrench,
-  shield: Shield,
-  vault: Vault,
-  'chest-bronze': Package,
-  'chest-silver': Package,
-  'chest-gold': Gift,
+/**
+ * Power-ups and chests fall back to a glyph if their illustration is missing;
+ * cosmetics paint their own art.
+ */
+const POWER_UP_GLYPHS: Record<string, GlyphName> = {
+  heart: 'heart',
+  freeze: 'snowflake',
+  retry: 'refresh',
+  'boost-xp': 'bolt',
+  'boost-xp2': 'bolt',
+  'boost-coin': 'coinDollar',
+  repair: 'wrench',
+  shield: 'shield',
+  vault: 'vault',
+  'chest-bronze': 'package',
+  'chest-silver': 'package',
+  'chest-gold': 'gift',
 };
 
 /** Items drawn in the Duolingo-style set (public/art/items/<art>.svg). */
@@ -83,7 +72,7 @@ export default function ShopItemArt({
 }: ShopItemArtProps) {
   const visual = cosmeticArt(art);
   const rarityTone = rarityStyle(rarity);
-  const Glyph = POWER_UP_GLYPHS[art];
+  const fallbackGlyph = POWER_UP_GLYPHS[art];
 
   const wrapperClass = [
     styles.wrap,
@@ -104,7 +93,7 @@ export default function ShopItemArt({
             <span className={styles.frameSheen} style={{ background: visual.innerGradient }} />
           )}
           <div className={styles.frameInner}>
-            <User className={styles.frameAvatar} strokeWidth={1.6} />
+            <Glyph name="user" className={styles.frameAvatar} strokeWidth={1.6} />
           </div>
         </div>
       </div>
@@ -131,7 +120,7 @@ export default function ShopItemArt({
     return (
       <div className={wrapperClass} aria-hidden>
         <div className={styles.fxOrb} style={{ background: visual.gradient }}>
-          <Sparkles className={styles.fxGlyph} strokeWidth={2} />
+          <Glyph name="sparkle" className={styles.fxGlyph} strokeWidth={2} />
           <span className={styles.fxSpark} style={{ background: rarityTone.color }} />
           <span
             className={`${styles.fxSpark} ${styles.fxSparkTwo}`}
@@ -153,11 +142,11 @@ export default function ShopItemArt({
     );
   }
 
-  // ── Anything without art yet: a gradient tile behind a lucide glyph ──────
+  // ── Anything without art yet: a gradient tile behind a glyph ─────────────
   return (
     <div className={wrapperClass} aria-hidden>
       <div className={styles.tile} style={{ background: visual.gradient }}>
-        {Glyph ? <Glyph className={styles.tileGlyph} strokeWidth={2.2} /> : null}
+        {fallbackGlyph ? <Glyph name={fallbackGlyph} className={styles.tileGlyph} strokeWidth={2.2} /> : null}
       </div>
     </div>
   );

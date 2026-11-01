@@ -31,7 +31,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, Check, ChevronRight, CircleEllipsis, Share, SquarePlus } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Image from 'next/image';
 import { celebrationHaptic, playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -251,9 +251,9 @@ function steps(browser: IosGuideBrowser): GuideStep[] {
 /** Every control the learner taps, as a trail of chips. */
 const TRAIL: Record<string, { label: string; icon?: React.ReactNode }> = {
   'Open the menu': { label: '•••' },
-  'Tap Share': { label: 'Share', icon: <Share size={14} strokeWidth={3} aria-hidden="true" /> },
-  'Tap More': { label: 'More', icon: <CircleEllipsis size={14} strokeWidth={3} aria-hidden="true" /> },
-  'Add to Home Screen': { label: 'Add to Home Screen', icon: <SquarePlus size={14} strokeWidth={3} aria-hidden="true" /> },
+  'Tap Share': { label: 'Share', icon: <Glyph name="shareUp" size={14} strokeWidth={3} /> },
+  'Tap More': { label: 'More', icon: <Glyph name="moreCircle" size={14} strokeWidth={3} /> },
+  'Add to Home Screen': { label: 'Add to Home Screen', icon: <Glyph name="plusSquare" size={14} strokeWidth={3} /> },
   'Tap Add': { label: 'Add' },
 };
 
@@ -342,7 +342,7 @@ export default function IosInstallGuide({
     <div className={startStyles.stack}>
       <div className={startStyles.guideTop}>
         <button type="button" className={startStyles.back} onClick={back} disabled={index === 0} aria-label="Back a step">
-          <ArrowLeft size={22} strokeWidth={3} />
+          <Glyph name="back" size={22} strokeWidth={3} />
         </button>
         <StepProgress total={all.length} current={index} label={`Step ${index + 1} of ${all.length}: ${step.name}`} />
       </div>
@@ -354,10 +354,10 @@ export default function IosInstallGuide({
           return (
             <React.Fragment key={s.name}>
               {i > 0 && (
-                <ChevronRight size={14} strokeWidth={3} className={startStyles.trailArrow} aria-hidden="true" />
+                <Glyph name="chevron" size={14} strokeWidth={3} className={startStyles.trailArrow} />
               )}
               <li className={`${startStyles.trailStep} ${state}`} aria-current={i === index ? 'step' : undefined}>
-                {i < index ? <Check size={14} strokeWidth={4} aria-hidden="true" /> : chip.icon}
+                {i < index ? <Glyph name="check" size={14} strokeWidth={4} /> : chip.icon}
                 {chip.label}
               </li>
             </React.Fragment>

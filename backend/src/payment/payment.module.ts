@@ -5,6 +5,7 @@ import { StripeProvider } from './providers/stripe.provider';
 import { MesombProvider } from './providers/mesomb.provider';
 import { EarningsModule } from '../earnings/earnings.module';
 import { CouponsModule } from '../coupons/coupons.module';
+import { ProAccessModule } from '../pro/pro-access.module';
 
 @Module({
   // EarningsService is injected so every grantCourseAccess / mintEnrollment
@@ -12,7 +13,8 @@ import { CouponsModule } from '../coupons/coupons.module';
   // CouponsService is injected for the quote()/finalizeRedemption() calls in
   // subscribeCourse()/grantCourseAccess() — CouponsModule must never import
   // PaymentModule back (DI cycle), same rule as EarningsModule.
-  imports: [EarningsModule, CouponsModule],
+  // ProAccessModule (leaf) receives prepaid Pro from the MeSomb webhook.
+  imports: [EarningsModule, CouponsModule, ProAccessModule],
   controllers: [PaymentController],
   // PrismaService deliberately NOT listed — PrismaModule is @Global, so
   // declaring it here would create a second client with its own pool.

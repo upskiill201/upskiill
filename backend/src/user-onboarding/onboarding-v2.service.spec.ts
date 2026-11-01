@@ -1,3 +1,4 @@
+import { OnboardingFlowService } from '../onboarding-flow/onboarding-flow.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserOnboardingService } from './user-onboarding.service';
@@ -160,6 +161,7 @@ describe('UserOnboardingService — v2 persistence', () => {
         UserOnboardingService,
         { provide: PrismaService, useValue: prisma },
         { provide: EventEmitter2, useValue: { emit: jest.fn() } },
+        { provide: OnboardingFlowService, useValue: { linkAnonymousEvents: jest.fn(), settleLessonClaim: jest.fn() } },
       ],
     }).compile();
 

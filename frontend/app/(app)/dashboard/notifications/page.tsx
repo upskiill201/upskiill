@@ -10,7 +10,7 @@ import React from 'react';
 import Image from 'next/image';
 import useSWR, { mutate as globalMutate } from 'swr';
 import { useRouter } from 'next/navigation';
-import { AlertCircle, CheckCheck } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Button from '@/components/ui/Button';
 import { NotificationRow } from '@/components/community/NotificationBell';
 import { getNotifications, markNotificationsRead, type AppNotification } from '@/lib/communityApi';
@@ -100,7 +100,7 @@ export default function NotificationsPage() {
           <p className={styles.subtitle}>Replies, mentions, likes, friends and announcements.</p>
         </div>
         <button className={styles.markAllBtn} onClick={() => void markAllRead()} disabled={unreadCount === 0} type="button">
-          <CheckCheck size={16} strokeWidth={2.75} /> Mark all read
+          <Glyph name="checkDouble" size={16} strokeWidth={2.75} /> Mark all read
         </button>
       </header>
 
@@ -115,7 +115,7 @@ export default function NotificationsPage() {
 
       {list.error && !list.data ? (
         <div className={shared.errorBanner}>
-          <AlertCircle size={26} />
+          <Glyph name="alert" size={26} />
           <span>Could not load notifications.</span>
           <Button variant="outline" onClick={() => void list.mutate()}>
             Try again

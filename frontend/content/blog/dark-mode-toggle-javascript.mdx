@@ -1,0 +1,81 @@
+---
+title: "How to Add a Dark Mode Toggle With CSS and JavaScript"
+description: "Add a dark mode toggle that respects the system setting and remembers the choice. Uses CSS variables, a data attribute and localStorage."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [dark mode toggle, javascript dark mode, css variables dark mode, prefers-color-scheme, theme switcher]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Interactive Web Pages with JavaScript turns this into short, playable lessons. Free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive Web Pages with JavaScript course"
+faq:
+  - question: "How do I add dark mode with JavaScript?"
+    answer: "Define colours as CSS variables, switch them with a data attribute on the html element and save the choice in localStorage."
+  - question: "How do I detect the user's system theme?"
+    answer: "Use the prefers-color-scheme media query or window.matchMedia."
+  - question: "Do I need JavaScript for dark mode?"
+    answer: "Not for system-based dark mode, but you need it for a manual toggle."
+---
+
+A small feature that people notice and appreciate.
+
+## Direct answer
+
+Define your colours as CSS variables, override them for dark mode, toggle a `data-theme` attribute on `<html>` with JavaScript and save the user's choice in `localStorage`. Use `prefers-color-scheme` as the default.
+
+## CSS
+
+```css
+:root {
+  --bg: #ffffff;
+  --text: #111111;
+}
+:root[data-theme="dark"] {
+  --bg: #111111;
+  --text: #f5f5f5;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+```
+
+## JavaScript
+
+```javascript
+const root = document.documentElement;
+const saved = localStorage.getItem("theme");
+const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+root.dataset.theme = saved || (prefersDark ? "dark" : "light");
+
+document.querySelector("#toggle").addEventListener("click", () => {
+  const next = root.dataset.theme === "dark" ? "light" : "dark";
+  root.dataset.theme = next;
+  localStorage.setItem("theme", next);
+});
+```
+
+## Tips
+
+- Check contrast in both themes.
+- Avoid a flash by setting the theme early in the page head.
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) course turns this into short lessons you can play in a few minutes a day. It has 37 lessons, and you can start free.
+
+## The bottom line
+
+Variables plus a data attribute plus localStorage makes a neat, small feature.
+
+## More guides
+
+- [JavaScript Animation Basics](/blog/javascript-animation-basics)
+- [Build a To-Do List App in JavaScript](/blog/to-do-list-app-javascript)
+- [Debounce in JavaScript](/blog/debounce-javascript)
+- [Javascript localstorage](/blog/javascript-localstorage)
+- [Interactive Web Pages with JavaScript course](/courses/interactive-web-pages-with-javascript)

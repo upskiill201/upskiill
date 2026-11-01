@@ -1,0 +1,74 @@
+---
+title: "Strings in C: char Arrays, the Null Terminator and string.h"
+description: "C strings are arrays of characters ending with a null byte. Learn how to declare, print, copy and compare strings safely with string.h."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [c strings, strings in c, c string functions, string.h, null terminator]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "C for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/c-for-beginners
+  label: "See the C for Beginners course"
+faq:
+  - question: "What is a string in C?"
+    answer: "An array of characters that ends with a null character, written as backslash zero."
+  - question: "How do I compare two strings in C?"
+    answer: "Use strcmp from string.h. Do not use == which compares addresses."
+  - question: "How do I copy a string safely?"
+    answer: "Make sure the destination is large enough and prefer functions that take a size limit."
+---
+
+C has no built-in string type. Strings are just arrays of characters with a special ending.
+
+## Direct answer
+
+A C string is a `char` array that ends with a null terminator (`'\0'`). Use `string.h` functions like `strlen`, `strcpy`, `strcat` and `strcmp`. Always make sure your buffer is large enough, including space for the terminator.
+
+## Examples
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main(void) {
+    char name[20] = "Ada";
+    printf("%s has %zu letters\n", name, strlen(name));
+
+    char copy[20];
+    strcpy(copy, name);
+
+    if (strcmp(name, copy) == 0) {
+        printf("Same\n");
+    }
+    return 0;
+}
+```
+
+## Safe habits
+
+- Size buffers for the longest text plus one.
+- Use `snprintf` for formatting into buffers.
+- Never use `gets`. Use `fgets` instead.
+
+```c
+char line[100];
+fgets(line, sizeof(line), stdin);
+```
+
+## Where Teyro fits
+
+Teyro's [C for Beginners](/courses/c-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 78 lessons, and you can start free.
+
+## The bottom line
+
+Remember the null terminator and watch your buffer sizes.
+
+## More guides
+
+- [malloc and free in C](/blog/malloc-and-free)
+- [Memory Management in C](/blog/c-memory-management)
+- [Structs in C](/blog/c-structs-guide)
+- [C arrays guide](/blog/c-arrays-guide)
+- [C for Beginners course](/courses/c-for-beginners)

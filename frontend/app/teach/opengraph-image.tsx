@@ -61,7 +61,7 @@ export default function OgImage() {
             <div style={{ fontSize: 58, fontWeight: 800, color: '#FFFFFF', lineHeight: 1.1 }}>they keep learning.</div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 36 }}>
-            {['You keep 70%', '2 free lessons', 'Bank or mobile money'].map((c) => (
+            {['50% creator pool', 'Split by minutes learned', 'Bank or mobile money'].map((c) => (
               <div
                 key={c}
                 style={{

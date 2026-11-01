@@ -10,7 +10,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, Eye, EyeOff, X, XCircle } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { Field, FieldGroup, FormError, PrimaryButton, authStyles as styles } from '@/components/auth/AuthUi';
 import AuthStatusScreen from '@/components/auth/AuthStatusScreen';
 import { extractErrorMessage } from '@/lib/apiError';
@@ -85,7 +85,7 @@ export default function CreatorResetPasswordPage() {
   if (status === 'invalid') {
     return (
       <AuthStatusScreen
-        Icon={XCircle}
+        art="linkBroken"
         tone="bad"
         title="This link has expired"
         closeHref="/creator/login"
@@ -107,7 +107,7 @@ export default function CreatorResetPasswordPage() {
         }}
         aria-label={show ? 'Hide passwords' : 'Show passwords'}
       >
-        {show ? <EyeOff size={20} /> : <Eye size={20} />}
+        <Glyph name={show ? 'eyeOff' : 'eye'} size={22} strokeWidth={2.4} />
       </button>
     </span>
   );
@@ -116,7 +116,7 @@ export default function CreatorResetPasswordPage() {
     <div className={styles.screen}>
       <header className={styles.topBar}>
         <Link href="/creator/login" className={styles.iconBtn} aria-label="Close" onClick={() => playSound('cardBack')}>
-          <X size={26} strokeWidth={3} />
+          <Glyph name="close" size={26} strokeWidth={3.2} />
         </Link>
       </header>
       <main className={styles.formPane}>
@@ -147,7 +147,7 @@ export default function CreatorResetPasswordPage() {
               />
             </FieldGroup>
             <p className={`${styles.hint} ${longEnough ? styles.hintOk : ''}`}>
-              {longEnough && <Check size={14} strokeWidth={4} aria-hidden="true" />}
+              {longEnough && <Glyph name="check" size={14} strokeWidth={3.6} />}
               At least {MIN_PASSWORD} characters
             </p>
             <FormError message={error} />

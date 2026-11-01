@@ -17,11 +17,10 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import useSWR from 'swr';
-import {
-  Sparkles, HelpCircle, Trophy, Megaphone, LayoutGrid, BookOpen, Flame, AlertCircle,
-  PencilLine, ChevronRight, Users, TrendingUp, UserPlus, Check,
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Glyph } from '@/components/art/Glyph';
+import { useRouter, useSearchParams } from 'next/navigation';
+import FriendsFeed from '@/components/network/FriendsFeed';
+import { useHydrated } from '@/components/studio/useHydrated';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -40,7 +39,7 @@ import { getFeed, type DiscoverPayload, type FeedItem, type MyCommunity } from '
 import { courseHomeHref } from '@/lib/homeCourse';
 
 const FILTERS = [
-  { value: 'all', label: 'All', icon: <LayoutGrid size={14} strokeWidth={2.75} /> },
+  { value: 'all', label: 'All', icon: <Glyph name="grid" size={14} strokeWidth={2.75} /> },
   { value: 'question', label: 'Questions', icon: <PostTypeArt postType="QUESTION" size={20} /> },
   { value: 'win', label: 'Wins', icon: <PostTypeArt postType="WIN" size={20} /> },
   { value: 'announcement', label: 'Announcements', icon: <PostTypeArt postType="ANNOUNCEMENT" size={20} /> },
@@ -48,12 +47,12 @@ const FILTERS = [
 
 /** Icon + tint class per structured reason — the floating tab on each card. */
 const REASON_STYLES: Record<string, { icon: React.ReactNode; tint: string }> = {
-  announcement: { icon: <Megaphone size={12} strokeWidth={2.75} />, tint: styles.tabAnnouncement },
-  unanswered: { icon: <HelpCircle size={12} strokeWidth={2.75} />, tint: styles.tabUnanswered },
-  win: { icon: <Trophy size={12} strokeWidth={2.75} />, tint: styles.tabWin },
-  active: { icon: <Flame size={12} strokeWidth={2.75} />, tint: styles.tabActive },
-  course: { icon: <BookOpen size={12} strokeWidth={2.75} />, tint: styles.tabCourse },
-  general: { icon: <Sparkles size={12} strokeWidth={2.75} />, tint: styles.tabGeneral },
+  announcement: { icon: <Glyph name="megaphone" size={12} strokeWidth={2.75} />, tint: styles.tabAnnouncement },
+  unanswered: { icon: <Glyph name="help" size={12} strokeWidth={2.75} />, tint: styles.tabUnanswered },
+  win: { icon: <Glyph name="trophy" size={12} strokeWidth={2.75} />, tint: styles.tabWin },
+  active: { icon: <Glyph name="flame" size={12} strokeWidth={2.75} />, tint: styles.tabActive },
+  course: { icon: <Glyph name="book" size={12} strokeWidth={2.75} />, tint: styles.tabCourse },
+  general: { icon: <Glyph name="sparkle" size={12} strokeWidth={2.75} />, tint: styles.tabGeneral },
 };
 
 interface Person {
@@ -68,19 +67,47 @@ interface Person {
 const feedKey = (type: string) => `/api/feed?${type !== 'all' ? `type=${type}&` : ''}page=1`;
 
 export default function FeedPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <FeedPageInner />
+    </React.Suspense>
+  );
+}
+
+const TABS = [
+  { value: 'friends', label: 'Friends', icon: <Glyph name="users" size={16} strokeWidth={2.75} /> },
+  { value: 'communities', label: 'Communities', icon: <Glyph name="bubble" size={16} strokeWidth={2.75} /> },
+] as const;
+
+function FeedPageInner() {
   const router = useRouter();
+  const params = useSearchParams();
+  // Friends is the network feed (docs/TEYRO_NETWORK_PLAN.md); Communities is
+  // the course-community feed this page always had.
+  const tab = params.get('tab') === 'communities' ? 'communities' : 'friends';
+  const pickTab = (value: string, i: number) => {
+    if (value === tab) return;
+    playSound('navTap', i);
+    playHaptic('selection', false);
+    router.replace(value === 'friends' ? '/dashboard/feed' : `/dashboard/feed?tab=${value}`, { scroll: false });
+  };
   const [typeFilter, setTypeFilter] = React.useState('all');
   // Pages after the first, for the current filter.
   const [more, setMore] = React.useState<{ type: string; items: FeedItem[]; page: number }>({ type: 'all', items: [], page: 1 });
   const [loadingMore, setLoadingMore] = React.useState(false);
 
-  const first = useSWR<{ items: FeedItem[] }>(feedKey(typeFilter), fetcher, { revalidateOnFocus: false, keepPreviousData: true });
+  // Only fetched on the Communities tab, so Friends loads with one request.
+  const first = useSWR<{ items: FeedItem[] }>(tab === 'communities' ? feedKey(typeFilter) : null, fetcher, { revalidateOnFocus: false, keepPreviousData: true });
   const mine = useSWR<{ communities: MyCommunity[] }>('/api/community/my', fetcher, { revalidateOnFocus: false });
   const discover = useSWR<DiscoverPayload>('/api/feed/discover', fetcher, { revalidateOnFocus: false });
 
+  // Everything below reads the persisted SWR cache: only after hydration, so
+  // the server render and the first client render agree.
+  const hydrated = useHydrated();
   const extra = more.type === typeFilter ? more.items : [];
-  const items = [...(first.data?.items ?? []), ...extra];
-  const communities = mine.data?.communities ?? [];
+  const items = [...((hydrated ? first.data?.items : undefined) ?? []), ...extra];
+  const communities = hydrated ? mine.data?.communities ?? [] : [];
+  const discovered = hydrated ? discover.data : undefined;
   const composerCourse = communities.find((c) => c.course)?.course ?? null;
   const me = React.useMemo(() => getCachedUser(), []);
 
@@ -132,9 +159,30 @@ export default function FeedPage() {
         <header className={styles.header}>
           <div>
             <h1 className={styles.pageTitle}>Community</h1>
-            <p className={styles.pageSub}>What your learning communities are talking about</p>
+            <p className={styles.pageSub}>
+              {tab === 'friends' ? 'What your people are learning this week' : 'What your learning communities are talking about'}
+            </p>
           </div>
         </header>
+
+        <div className={styles.tabSwitch} role="tablist" aria-label="Feed">
+          {TABS.map((t, i) => (
+            <button
+              key={t.value}
+              role="tab"
+              aria-selected={tab === t.value}
+              className={`${styles.tabBtn} ${tab === t.value ? styles.tabBtnActive : ''}`}
+              onClick={() => pickTab(t.value, i)}
+            >
+              {t.icon} {t.label}
+            </button>
+          ))}
+        </div>
+
+        {tab === 'friends' ? (
+          <FriendsFeed />
+        ) : (
+        <>
 
         {composerCourse && (
           <button
@@ -147,7 +195,7 @@ export default function FeedPage() {
             <Avatar size="md" name={me?.fullName ?? 'You'} src={me?.avatarUrl ?? undefined} />
             <span className={styles.composerPlaceholder}>What did you learn today?</span>
             <span className={styles.composerCta}>
-              <PencilLine size={16} strokeWidth={2.75} /> Post
+              <Glyph name="pencil" size={16} strokeWidth={2.75} /> Post
             </span>
           </button>
         )}
@@ -166,15 +214,15 @@ export default function FeedPage() {
           ))}
         </div>
 
-        {first.error && !first.data ? (
+        {first.error && !first.data && hydrated ? (
           <div className={shared.errorBanner}>
-            <AlertCircle size={28} />
+            <Glyph name="alert" size={28} />
             <span>{first.error instanceof Error ? first.error.message : 'Could not load your feed.'}</span>
             <Button variant="outline" onClick={() => void first.mutate()}>
               Try again
             </Button>
           </div>
-        ) : !first.data ? (
+        ) : !first.data || !hydrated ? (
           <>
             <PostCardSkeleton />
             <PostCardSkeleton />
@@ -201,6 +249,8 @@ export default function FeedPage() {
             </button>
           </div>
         )}
+        </>
+        )}
       </div>
 
       {/* ── Right rail ── */}
@@ -208,7 +258,7 @@ export default function FeedPage() {
         {communities.length > 0 && (
           <div className={styles.railCard}>
             <h3 className={styles.railTitle}>
-              <Users size={14} strokeWidth={2.75} /> My communities
+              <Glyph name="users" size={14} strokeWidth={2.75} /> My communities
             </h3>
             <div className={styles.communitiesList}>
               {communities.slice(0, 6).map((c) => (
@@ -229,7 +279,7 @@ export default function FeedPage() {
                       {c.memberCount} {c.memberCount === 1 ? 'member' : 'members'} · {c.totalPosts} posts
                     </div>
                   </div>
-                  <ChevronRight size={16} className={styles.railChevron} />
+                  <Glyph name="chevron" size={16} className={styles.railChevron} />
                 </Link>
               ))}
             </div>
@@ -238,12 +288,12 @@ export default function FeedPage() {
 
         <FriendsCard />
 
-        {discover.data && discover.data.questions.length > 0 && (
+        {discovered && discovered.questions.length > 0 && (
           <div className={styles.railCard}>
             <h3 className={styles.railTitle}>
-              <HelpCircle size={14} strokeWidth={2.75} /> Help your community
+              <Glyph name="help" size={14} strokeWidth={2.75} /> Help your community
             </h3>
-            {discover.data.questions.map((q) => (
+            {discovered.questions.map((q) => (
               <Link
                 key={q.postId}
                 href={q.courseId ? `/dashboard/community/${q.courseId}/p/${q.postId}` : '/dashboard/feed'}
@@ -251,7 +301,7 @@ export default function FeedPage() {
                 onClick={() => playSound('navTap', 3)}
               >
                 <span className={`${styles.railIconTile} ${styles.tileBlue}`}>
-                  <HelpCircle size={18} strokeWidth={2.5} />
+                  <Glyph name="help" size={18} strokeWidth={2.5} />
                 </span>
                 <div className={styles.railItemMain}>
                   <div className={styles.railItemTitle}>{q.title}</div>
@@ -263,12 +313,12 @@ export default function FeedPage() {
           </div>
         )}
 
-        {discover.data && discover.data.continueLearning.length > 0 && (
+        {discovered && discovered.continueLearning.length > 0 && (
           <div className={styles.railCard}>
             <h3 className={styles.railTitle}>
-              <TrendingUp size={14} strokeWidth={2.75} /> Continue learning
+              <Glyph name="trendUp" size={14} strokeWidth={2.75} /> Continue learning
             </h3>
-            {discover.data.continueLearning.map((card) => (
+            {discovered.continueLearning.map((card) => (
               <Link
                 key={card.courseId}
                 href={courseHomeHref(card.courseId)}
@@ -279,7 +329,7 @@ export default function FeedPage() {
                   <Image src={card.thumbnailUrl} alt="" width={40} height={40} className={styles.railThumb} />
                 ) : (
                   <span className={styles.railThumbFallback}>
-                    <BookOpen size={16} />
+                    <Glyph name="book" size={16} />
                   </span>
                 )}
                 <div className={styles.railItemMain}>
@@ -308,6 +358,8 @@ function FriendsCard() {
   const following = useSWR<Person[]>('/api/social/following', fetcher, { revalidateOnFocus: false });
   const classmates = useSWR<Person[]>('/api/social/classmates', fetcher, { revalidateOnFocus: false });
   const [followed, setFollowed] = React.useState<Record<string, boolean>>({});
+  // Cached on the client only: render after hydration so the server and client agree.
+  const hydrated = useHydrated();
 
   const friends = Array.isArray(following.data) ? [...following.data].sort((a, b) => (b.streak ?? 0) - (a.streak ?? 0)) : [];
   const suggestions = (Array.isArray(classmates.data) ? classmates.data : []).filter((p) => !p.isFollowing).slice(0, 3);
@@ -324,13 +376,13 @@ function FriendsCard() {
     }
   };
 
-  if (!following.data && !classmates.data) return null;
+  if (!hydrated || (!following.data && !classmates.data)) return null;
   if (friends.length === 0 && suggestions.length === 0) return null;
 
   return (
     <div className={styles.railCard}>
       <h3 className={styles.railTitle}>
-        <Flame size={14} strokeWidth={2.75} /> Friends
+        <Glyph name="flame" size={14} strokeWidth={2.75} /> Friends
       </h3>
       {friends.slice(0, 5).map((f) => (
         <Link key={f.id} href={`/dashboard/u/${encodeURIComponent(f.id)}`} className={styles.friendRow} onClick={() => playSound('navTap', 1)}>
@@ -357,7 +409,7 @@ function FriendsCard() {
                 onClick={() => !followed[p.id] && void follow(p)}
                 aria-label={followed[p.id] ? `Following ${p.name}` : `Follow ${p.name}`}
               >
-                {followed[p.id] ? <Check size={16} strokeWidth={3} /> : <UserPlus size={16} strokeWidth={2.75} />}
+                {followed[p.id] ? <Glyph name="check" size={16} strokeWidth={3} /> : <Glyph name="userPlus" size={16} strokeWidth={2.75} />}
               </button>
             </div>
           ))}

@@ -1,0 +1,230 @@
+=== learning-styles-myth
+title: Learning Styles Myth: Why "Visual Learner" Is Not the Whole Story
+desc: Research has not found good evidence that teaching to a learning style improves results. Learn what the evidence says and what to do instead.
+tags: learning styles myth, are learning styles real, visual auditory kinesthetic learner, vark learning styles, how to study effectively
+rel: how-to-study-with-ai
+q: Are learning styles real? | People have preferences, but research has not shown that matching teaching to a preferred style improves learning.
+q: What works better than learning styles? | Evidence-based methods such as retrieval practice, spaced repetition, worked examples and using different formats to suit the content.
+q: Can I still use my preferences? | Yes, for motivation and enjoyment, but do not limit yourself to one format.
+---
+"I am a visual learner" is one of the most repeated ideas in education, and one of the least supported.
+
+## Direct answer
+
+Many people prefer to learn in a certain way, but studies have not found good evidence that teaching to a preferred "learning style" improves outcomes. Better results come from methods like retrieval practice, spaced repetition and choosing the format that fits the content: diagrams for maps, practice for skills.
+
+## What does help
+
+1. **Retrieval practice:** testing yourself.
+2. **Spaced repetition:** reviewing over time.
+3. **Interleaving:** mixing related topics.
+4. **Worked examples:** studying solved problems.
+5. **Explaining ideas** in your own words.
+
+## Match the format to the content
+
+| Content | Useful format |
+| :--- | :--- |
+| Geography | maps and diagrams |
+| Music | listening and playing |
+| Maths | practice problems |
+| Language | speaking and listening |
+
+## Using AI
+
+Ask an AI to quiz you, explain a concept three ways or create practice questions, then check with reliable sources.
+
+## The bottom line
+
+Use many methods. Choose by content and evidence, not by label.
+
+=== note-taking-methods
+title: Note-Taking Methods Compared: Cornell, Outline, Mapping and More
+desc: Compare popular note-taking methods: Cornell, outline, mind map, charting and the Zettelkasten, with when to use each and how AI can help.
+tags: note taking methods, best way to take notes, outline method, mind map notes, study notes
+rel: cornell-notes-method
+q: What is the best note-taking method? | It depends on the subject and your goal. Cornell and outline methods suit lectures. Mind maps suit overviews.
+q: Should I take notes by hand or on a laptop? | Both can work. Choose the one that helps you process the material rather than copy it.
+q: Can AI help with notes? | It can summarise and organise, but you learn more if you process the material yourself first.
+---
+Notes are for learning, not for copying.
+
+## Direct answer
+
+The best note-taking method depends on the material. Cornell notes work for lectures and review. Outlines suit structured topics. Mind maps show relationships. Charts compare facts. Whatever you choose, process the ideas in your own words and review your notes soon after.
+
+## Methods
+
+| Method | Best for |
+| :--- | :--- |
+| Cornell | lectures and exam revision |
+| Outline | structured, hierarchical topics |
+| Mind map | brainstorming and overviews |
+| Charting | comparing facts or categories |
+| Zettelkasten | connecting ideas over time |
+
+## Habits that improve any method
+
+1. Write in your own words.
+2. Add questions as you go.
+3. Review within 24 hours.
+4. Turn notes into flashcards or practice questions.
+
+## The bottom line
+
+Pick a method, adapt it and test your notes by trying to recall them.
+
+=== cornell-notes-method
+title: Cornell Notes: How to Use the Cornell Method Step by Step
+desc: Learn the Cornell note-taking method with a page layout, how to write cues and summaries and how to turn the cue column into a quiz for revision.
+tags: cornell notes, cornell method, cornell note taking, how to take cornell notes, cornell notes template
+rel: note-taking-methods
+q: What are Cornell notes? | A note-taking system that divides the page into notes, cues and a summary to support review.
+q: How do I set up the page? | Draw a narrow left column for cues, a wide right column for notes and a box at the bottom for a summary.
+q: How do I review with them? | Cover the notes, read the cues and try to recall the answers.
+---
+A page layout that builds revision into the notes.
+
+## Direct answer
+
+Cornell notes divide a page into three parts: a main notes area on the right, a narrow cue column on the left and a summary at the bottom. During class you take notes, afterwards you write cues as questions and then a short summary. To revise, cover the notes and answer the cues.
+
+## Set up the page
+
+```text
++-----------+------------------------+
+| Cues      | Notes                  |
+| (questions|                        |
+| keywords) |                        |
++-----------+------------------------+
+| Summary                            |
++------------------------------------+
+```
+
+## Steps
+
+1. **Take notes** in the right column during the lesson.
+2. **Write cues** in the left column after class: questions or keywords.
+3. **Write a summary** in two or three sentences.
+4. **Review:** cover the notes and answer the cues from memory.
+5. **Repeat** at spaced intervals.
+
+## Use AI wisely
+
+Ask an AI to turn your cues into practice questions, then answer them without looking.
+
+## The bottom line
+
+The cue column turns your notes into a self-test.
+
+=== exam-revision-plan
+title: How to Plan Exam Revision: A Simple Weekly Schedule That Works
+desc: Build an exam revision plan: list topics, split time, schedule active recall and past papers, add breaks and use AI for practice questions without cheating.
+tags: exam revision, exam revision plan, how to revise for exams, revision timetable, study schedule
+rel: how-to-study-with-ai, chatgpt-for-studying
+q: When should I start revising? | As early as possible, giving yourself time for repeated review rather than cramming.
+q: How many hours should I revise a day? | It depends on your situation. Regular, focused sessions with breaks work better than marathon days.
+q: How can AI help me revise? | Create quizzes, explain tricky ideas and suggest practice questions, while you do the recall.
+---
+A plan turns panic into progress.
+
+## Direct answer
+
+For effective revision, list every topic, estimate how strong you are in each, schedule short focused sessions, use active recall and past papers instead of rereading, review old material at spaced intervals and rest properly. AI can help generate practice questions, but you must do the recall.
+
+## A simple weekly plan
+
+1. **List topics** and rate each red, amber or green.
+2. **Schedule sessions** of 25 to 50 minutes with breaks.
+3. **Start with red topics.**
+4. **Use active recall:** close the book and write what you remember.
+5. **Do past papers** under time conditions.
+6. **Review** earlier topics every few days.
+7. **Plan rest,** sleep and exercise.
+
+## Using AI responsibly
+
+- Ask for practice questions on a topic.
+- Ask it to explain an answer you got wrong.
+- Do not use it to complete assessed work.
+
+## The bottom line
+
+Start early, test yourself and review often.
+
+=== avoid-ai-cheating-in-school
+title: AI and Academic Integrity: How to Use AI for Study Without Cheating
+desc: Use AI as a study aid without breaking academic rules: know your school's policy, use it to learn, cite when required and avoid submitting AI work as your own.
+tags: avoid ai cheating, ai academic integrity, using chatgpt for homework, ai plagiarism, school ai policy
+rel: chatgpt-for-studying, how-to-study-with-ai
+q: Is using AI for homework cheating? | It depends on your school's rules and the task. Using AI to submit work as your own when it is not allowed is cheating.
+q: How can I use AI ethically? | Follow your policy, use it to explain and practise, do your own writing and acknowledge help when required.
+q: What if I am unsure? | Ask your teacher or check the course guidelines.
+---
+The line is not "AI or no AI". It is "what does your school allow".
+
+## Direct answer
+
+Using AI is acceptable only within your school or course rules. Use it to understand, practise and get feedback, write your own work, and acknowledge AI help when required. Do not submit AI-generated text as your own where that is not allowed.
+
+## Safer uses
+
+- Explain a concept in simpler words.
+- Create practice questions.
+- Give feedback on your own draft, if allowed.
+- Help plan a study schedule.
+
+## Risky uses
+
+- Writing the assignment.
+- Inventing sources.
+- Answering exam questions.
+
+## Habits
+
+1. **Read the policy** for each course.
+2. **Ask** when it is unclear.
+3. **Keep drafts** to show your process.
+4. **Cite** AI help as instructed.
+
+## The bottom line
+
+Use AI to learn more, not to avoid learning.
+
+=== summarising-textbooks-with-ai
+title: How to Summarise a Textbook Chapter With AI (and Actually Learn It)
+desc: Use AI to condense a chapter into key ideas, questions and flashcards while keeping your own thinking in the loop. Includes prompts and a check routine.
+tags: summarising textbooks, summarize textbook with ai, ai study summary, ai flashcards, notebooklm style study
+rel: how-to-study-with-ai, note-taking-methods
+q: Can AI summarise a textbook chapter? | Yes, if you provide the text, but check the summary against the original because it can omit or distort details.
+q: Is reading a summary enough to learn? | No. Active recall and practice are what build memory.
+q: What should I ask for? | Key ideas, definitions, examples and a set of practice questions.
+---
+A summary is a map. Learning is walking the route.
+
+## Direct answer
+
+To use AI with a textbook chapter, read the chapter first, then ask the AI for key ideas, definitions and examples based only on the text you provide, and ask for practice questions. Check the summary against the book and test yourself instead of only rereading the summary.
+
+## A workflow
+
+1. **Skim and read** the chapter.
+2. **Write your own summary** in five lines.
+3. **Ask AI** to summarise using only the text you provide.
+4. **Compare** the two and fix gaps.
+5. **Ask for ten practice questions.**
+6. **Answer from memory,** then check.
+7. **Make flashcards** for what you missed.
+
+## Prompt
+
+"Using only this text, list the five key ideas, define each term and give me eight questions that test understanding. Do not answer them yet."
+
+## Cautions
+
+- Check facts and figures.
+- Respect copyright and course rules about uploading material.
+
+## The bottom line
+
+Use the summary to organise, and practice to remember.

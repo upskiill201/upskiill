@@ -1,0 +1,109 @@
+/* Buddy button + timeline on a learner's profile. Tokens only. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.ask,
+.pending {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 100ms ease, filter 150ms ease;
+}
+
+.ask {
+  border: none;
+  border-bottom: 4px solid color-mix(in srgb, var(--success-green) 70%, var(--color-ink));
+  background: var(--success-green);
+  color: var(--bg-page);
+}
+
+.ask:hover {
+  filter: brightness(1.05);
+}
+
+.ask:active,
+.pending:active {
+  transform: scale(0.98) translateY(1px);
+}
+
+.pending {
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+}
+
+.buddies {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 16px;
+  min-height: 48px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--success-green) 12%, var(--bg-page));
+  border: 2px solid color-mix(in srgb, var(--success-green) 35%, var(--bg-page));
+}
+
+.buddiesLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--success-green);
+}
+
+.streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--warning) 68%, var(--error-red));
+}
+
+.error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--error-red);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.helped {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-brand);
+}

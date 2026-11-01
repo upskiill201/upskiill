@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the AI\'s right role with a contract?',
         options: [
-          { text: 'Help you find and understand key clauses, so you know what to ask an expert' },
           { text: 'Decide whether to sign', why: 'Never; it is not a lawyer.' },
+          { text: 'Help you find and understand key clauses, so you know what to ask an expert' },
           { text: 'Nothing', why: 'It is very useful for finding clauses.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -126,11 +126,11 @@ const lesson: OriginalLesson = {
         message: "The summary says the new flow boosts sign-ups. Roll it out on desktop?",
         prompt: 'What should Ada check first?',
         options: [
-          { text: 'Whether the source says it worked on desktop. Summaries drop conditions like "only on phones".' },
           { text: 'Roll it out now.', why: 'Check the conditions first.' },
+          { text: 'Whether the source says it worked on desktop. Summaries drop conditions like "only on phones".' },
           { text: 'Ignore the summary.', why: 'Check it instead.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -167,11 +167,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A report says "users prefer dark mode". What should Ada ask first?',
         options: [
-          { text: 'Who ran it, how many users, which users?' },
           { text: 'What colour is the report?', why: 'Not relevant.' },
           { text: 'Nothing, build it', why: 'Check the evidence first.' },
+          { text: 'Who ran it, how many users, which users?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -179,11 +179,11 @@ const lesson: OriginalLesson = {
         message: "Can your AI tell us if we should sign the new partnership contract?",
         prompt: "What's Ada's honest answer?",
         options: [
-          { text: "It can pull out the key terms and anything unusual, but signing is our decision, ideally after a legal review." },
           { text: 'Yes, it will decide.', why: 'It is not a lawyer.' },
+          { text: "It can pull out the key terms and anything unusual, but signing is our decision, ideally after a legal review." },
           { text: 'AI cannot read contracts.', why: 'It can help a lot with finding clauses.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -238,11 +238,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask "what does this document NOT say?"',
         options: [
-          { text: 'To catch what you are assuming it covers' },
           { text: 'To make it longer', why: 'It finds blind spots.' },
           { text: 'No reason', why: 'Missing rules matter.' },
+          { text: 'To catch what you are assuming it covers' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

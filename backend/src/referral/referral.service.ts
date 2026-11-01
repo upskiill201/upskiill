@@ -127,6 +127,8 @@ export class ReferralService {
     } catch {
       return { status: 'ALREADY_CLAIMED' as const };
     }
+    // The ambassador programme counts this friend toward the inviter's Pro.
+    this.events.emit('referral.claimed', { referrerId: owner.userId, referredId: userId });
 
     // Already finished a lesson before claiming (e.g. the claim ran late)?
     // Pay now rather than waiting for a lesson that already happened.

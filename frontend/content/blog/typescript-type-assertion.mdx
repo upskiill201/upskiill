@@ -1,0 +1,66 @@
+---
+title: "TypeScript Type Assertions: as, Non-Null ! and Safer Alternatives"
+description: "Type assertions tell TypeScript to treat a value as a specific type. Learn the as syntax, the non-null operator, the risks and safer alternatives."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [type assertion, typescript as, typescript non null assertion, as keyword typescript, type casting typescript]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "TypeScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript for Beginners course"
+faq:
+  - question: "What is a type assertion?"
+    answer: "A way to tell TypeScript you know a value's type better than it does, using the as keyword."
+  - question: "Is a type assertion the same as casting?"
+    answer: "Not exactly. It does not change the value at runtime; it only affects the compiler."
+  - question: "What does the exclamation mark do?"
+    answer: "The non-null assertion says a value is not null or undefined. If you are wrong, it will fail at runtime."
+---
+
+Assertions silence the compiler. They do not make you right.
+
+## Direct answer
+
+A type assertion uses `as Type` to tell TypeScript to treat a value as a different type. It has no runtime effect. If you are wrong, errors appear at runtime. Prefer type guards, which check the value for real.
+
+## Examples
+
+```typescript
+const input = document.querySelector("#name") as HTMLInputElement;
+console.log(input.value);
+
+const el = document.getElementById("app")!; // non-null assertion
+```
+
+## Safer pattern
+
+```typescript
+const input = document.querySelector("#name");
+if (input instanceof HTMLInputElement) {
+  console.log(input.value);
+}
+```
+
+## When assertions are reasonable
+
+- You know something the compiler cannot, such as a DOM element that definitely exists.
+- Working with untyped third-party data after validation.
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 20 lessons, and you can start free.
+
+## The bottom line
+
+Use assertions rarely and prefer checks.
+
+## More guides
+
+- [Optional Chaining and Nullish Coalescing in TypeScript](/blog/typescript-optional-chaining)
+- [TypeScript Functions](/blog/typescript-functions-guide)
+- [TypeScript Classes](/blog/typescript-classes-guide)
+- [Any vs unknown typescript](/blog/any-vs-unknown-typescript)
+- [TypeScript for Beginners course](/courses/typescript-for-beginners)

@@ -1,0 +1,71 @@
+---
+title: "CSS Transitions: Smooth Hover Effects and Animations"
+description: "Learn CSS transitions: transition properties, duration, easing and delay, which properties animate well and how to respect reduced-motion settings."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [css transitions, css transition example, hover transition, css animation, prefers-reduced-motion]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "HTML & CSS for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/html-and-css-for-beginners
+  label: "See the HTML & CSS for Beginners course"
+faq:
+  - question: "What is a CSS transition?"
+    answer: "A way to animate changes between property values smoothly over a set time."
+  - question: "Which properties should I animate?"
+    answer: "transform and opacity are smooth and efficient. Avoid animating layout properties like width and top where possible."
+  - question: "How do I respect reduced motion preferences?"
+    answer: "Use the prefers-reduced-motion media query to remove or shorten animations."
+---
+
+A tiny bit of motion makes an interface feel alive.
+
+## Direct answer
+
+A CSS transition animates a property from one value to another. Set `transition: property duration easing` on the element, then change the property on hover or with a class. Animate `transform` and `opacity` for smooth results and honour `prefers-reduced-motion`.
+
+## Example
+
+```css
+.button {
+  background: #3d5afe;
+  transform: translateY(0);
+  transition: transform 150ms ease, background 150ms ease;
+}
+.button:hover {
+  background: #2f46d1;
+  transform: translateY(-2px);
+}
+```
+
+## Respect reduced motion
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+```
+
+## Tips
+
+- Keep durations short, around 100 to 300 ms.
+- Use easing such as `ease-out` for entering elements.
+- Avoid transitions on everything with `transition: all`.
+
+## Where Teyro fits
+
+Teyro's [HTML & CSS for Beginners](/courses/html-and-css-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Small, quick, purposeful transitions improve the feel of a page.
+
+## More guides
+
+- [CSS Reset vs Normalize](/blog/css-reset-explained)
+- [HTML Attributes Explained](/blog/html-attributes-guide)
+- [Semantic HTML Explained](/blog/semantic-html-explained)
+- [Javascript animation basics](/blog/javascript-animation-basics)
+- [HTML & CSS for Beginners course](/courses/html-and-css-for-beginners)

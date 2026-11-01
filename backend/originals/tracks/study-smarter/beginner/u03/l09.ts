@@ -46,11 +46,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which is the best question for the heading "Causes of the 1948 Accra riots"?',
         options: [
-          { text: 'What caused the 1948 Accra riots, and which cause mattered most?' },
           { text: '1948', why: 'A year, not a question.' },
           { text: 'Were there riots?', why: 'Too easy. It does not guide the reading.' },
+          { text: 'What caused the 1948 Accra riots, and which cause mattered most?' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         message: "I just pasted the whole History chapter into the AI and got a one-page summary. Done in 2 minutes.",
         prompt: 'What should Kofi say?',
         options: [
-          { text: "You've got a summary, but you haven't read it. Use the AI for the questions and to check your notes, not instead of reading." },
           { text: 'Smart move.', why: 'He skipped the learning.' },
+          { text: "You've got a summary, but you haven't read it. Use the AI for the questions and to check your notes, not instead of reading." },
           { text: 'Summaries are banned.', why: 'Not banned. Just not a replacement for reading.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',

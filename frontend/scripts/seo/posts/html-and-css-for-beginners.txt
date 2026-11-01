@@ -1,0 +1,530 @@
+=== semantic-html-explained
+title: Semantic HTML Explained: Why header, nav, main and article Matter
+desc: Semantic HTML uses elements that describe meaning. Learn the key tags, how they help accessibility and SEO and how to restructure a div-heavy page.
+tags: semantic html, semantic html elements, html5 semantic tags, header nav main footer, accessible html
+rel: html-tutorial-for-beginners
+q: What is semantic HTML? | HTML that uses elements which describe their meaning, such as header, nav, main, article and footer, rather than generic div tags.
+q: Why does semantic HTML matter? | It improves accessibility for screen reader users, helps search engines understand your content and makes code easier to read.
+q: Is div bad? | No. Use div when no semantic element fits, but prefer meaningful elements first.
+---
+The right tag tells browsers, search engines and screen readers what something is.
+
+## Direct answer
+
+Semantic HTML uses elements that carry meaning: `header`, `nav`, `main`, `section`, `article`, `aside` and `footer`. They improve accessibility, help search engines understand your page and make your code easier to maintain compared with a page full of `div`s.
+
+## A semantic page skeleton
+
+```html
+<body>
+  <header>
+    <h1>My Site</h1>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+    </nav>
+  </header>
+
+  <main>
+    <article>
+      <h2>Post title</h2>
+      <p>Text...</p>
+    </article>
+    <aside>Related links</aside>
+  </main>
+
+  <footer>Contact and copyright</footer>
+</body>
+```
+
+## Key elements
+
+| Element | Meaning |
+| :--- | :--- |
+| `header` | introduction or top area |
+| `nav` | main navigation links |
+| `main` | the primary content (one per page) |
+| `article` | self-contained content |
+| `section` | a themed group of content with a heading |
+| `aside` | related, side content |
+| `footer` | closing information |
+
+## Other meaningful tags
+
+Use `button` for actions, `a` for links, `ul` for lists, `table` for data and `label` for form fields.
+
+## The bottom line
+
+Choose the element that describes the content. Your users and search engines will thank you.
+
+=== css-selectors-guide
+title: CSS Selectors Explained: Class, ID, Descendant and More
+desc: Learn the CSS selectors every beginner needs: element, class, ID, descendant, child, attribute and combined selectors, with clear examples.
+tags: css selectors, css selector types, css class vs id, descendant selector, css attribute selector
+rel: css-tutorial-for-beginners
+q: What is a CSS selector? | A pattern that chooses which HTML elements a style rule applies to.
+q: What is the difference between a class and an ID? | A class can be used on many elements. An ID should be unique on a page.
+q: What is a descendant selector? | A selector with a space, such as nav a, which selects links anywhere inside a nav.
+---
+Selectors are how CSS finds the elements to style.
+
+## Direct answer
+
+A CSS selector picks the elements a rule applies to. The most common are element (`p`), class (`.card`), ID (`#header`), descendant (`nav a`), child (`ul > li`) and attribute (`input[type="email"]`) selectors. You can combine them for precision.
+
+## Examples
+
+```css
+p { color: #333; }                 /* all paragraphs */
+.card { padding: 16px; }           /* class */
+#hero { margin-bottom: 32px; }     /* id */
+nav a { text-decoration: none; }   /* links inside nav */
+ul > li { list-style: square; }    /* direct children only */
+input[type="email"] { border: 1px solid #999; }
+h1, h2, h3 { font-family: sans-serif; }  /* group */
+```
+
+## Tips
+
+- Prefer classes for styling.
+- Keep selectors short.
+- Avoid IDs for styling, since they are hard to override.
+
+## The bottom line
+
+Learn these six and you can target almost anything. See [CSS specificity](/blog/css-specificity-explained) for what happens when rules collide.
+
+=== css-grid-explained
+title: CSS Grid Explained: Rows, Columns and Layouts for Beginners
+desc: Learn CSS Grid from scratch: grid-template-columns, gap, fr units, placing items and a simple responsive card layout you can copy.
+tags: css grid, css grid tutorial, grid template columns, fr unit, css grid layout
+rel: flexbox-vs-grid
+q: What is CSS Grid? | A layout system for arranging items in rows and columns at the same time.
+q: What does fr mean? | A fraction of the available space in the grid.
+q: When should I use Grid instead of Flexbox? | Use Grid for two-dimensional layouts and Flexbox for one-dimensional rows or columns.
+---
+Grid makes page layouts that used to need hacks into a few lines.
+
+## Direct answer
+
+CSS Grid lays out items in rows and columns. Set `display: grid`, define columns with `grid-template-columns`, add spacing with `gap` and let items flow in. The `fr` unit shares remaining space in proportions.
+
+## Basic grid
+
+```css
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+```
+
+```html
+<div class="grid">
+  <div>1</div><div>2</div><div>3</div>
+  <div>4</div><div>5</div><div>6</div>
+</div>
+```
+
+## Responsive cards without media queries
+
+```css
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+}
+```
+
+## Placing items
+
+```css
+.hero { grid-column: 1 / -1; }  /* span all columns */
+```
+
+## Page layout example
+
+```css
+.page {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  grid-template-areas:
+    "header header"
+    "sidebar main"
+    "footer footer";
+}
+```
+
+## The bottom line
+
+Grid for page and card layouts, Flexbox for rows of items. Learn both.
+
+=== css-specificity-explained
+title: CSS Specificity Explained: Why Your Style Is Not Applying
+desc: Specificity decides which CSS rule wins. Learn how the score works for elements, classes and IDs, the cascade and how to debug conflicting styles.
+tags: css specificity, css specificity explained, css cascade, why is my css not working, important css
+rel: css-selectors-guide
+q: What is CSS specificity? | The rules that decide which style wins when several selectors target the same element.
+q: Which has the highest specificity? | Inline styles, then IDs, then classes, attributes and pseudo-classes, then elements.
+q: Should I use !important? | Only as a last resort, because it makes styles hard to maintain.
+---
+When two rules disagree, specificity picks the winner.
+
+## Direct answer
+
+CSS specificity is a scoring system. Inline styles beat IDs, IDs beat classes, attributes and pseudo-classes, and those beat element selectors. If specificity is equal, the later rule wins. Keep selectors low in specificity and avoid `!important`.
+
+## The scoring
+
+| Selector type | Weight |
+| :--- | :--- |
+| Inline style | highest |
+| ID (`#nav`) | high |
+| Class, attribute, pseudo-class | medium |
+| Element (`p`) | low |
+
+## Example
+
+```css
+p { color: black; }          /* low */
+.note { color: blue; }       /* medium, wins over p */
+#intro { color: green; }     /* high, wins over .note */
+```
+
+## Debugging
+
+1. Open DevTools and inspect the element.
+2. Look at the Styles panel. Crossed-out rules lost.
+3. Check which selector is more specific, or which comes later.
+
+## Tips
+
+- Use classes for most styling.
+- Avoid chains like `div.container ul li a`.
+- Reorder rules or reduce specificity instead of adding `!important`.
+
+## The bottom line
+
+Understand the order and your CSS stops feeling random.
+
+=== css-variables-guide
+title: CSS Variables (Custom Properties): A Beginner's Guide
+desc: Learn how to define and use CSS variables with --name and var(), scope them, set fallbacks and use them for themes like dark mode.
+tags: css variables, css custom properties, var function css, css theme variables, css root
+rel: dark-mode-toggle-javascript
+q: What are CSS variables? | Named values defined with a double hyphen that you can reuse with the var function.
+q: Where should I define them? | Usually on :root so they apply across the whole page.
+q: Can JavaScript change them? | Yes, with element.style.setProperty.
+---
+Change a colour once, and it updates everywhere.
+
+## Direct answer
+
+CSS variables, officially custom properties, are defined with `--name: value` and used with `var(--name)`. Define them on `:root` for global use. They can be overridden in any element and are ideal for colours, spacing and themes.
+
+## Example
+
+```css
+:root {
+  --brand: #3d5afe;
+  --space: 16px;
+}
+
+.button {
+  background: var(--brand);
+  padding: var(--space);
+}
+
+.card {
+  --space: 24px;           /* overrides inside .card */
+  padding: var(--space);
+}
+```
+
+## Fallbacks
+
+```css
+color: var(--text-color, #222);
+```
+
+## Themes
+
+```css
+:root { --bg: #fff; --text: #111; }
+[data-theme="dark"] { --bg: #111; --text: #eee; }
+body { background: var(--bg); color: var(--text); }
+```
+
+## Change with JavaScript
+
+```javascript
+document.documentElement.style.setProperty("--brand", "#e91e63");
+```
+
+## The bottom line
+
+Variables make styles consistent and themes easy.
+
+=== css-positioning-explained
+title: CSS Position Explained: static, relative, absolute, fixed and sticky
+desc: Learn the five CSS position values with simple examples, how absolute relates to a positioned parent and when to use sticky and fixed.
+tags: css positioning, css position, position absolute relative, position sticky, css fixed
+rel: css-tutorial-for-beginners
+q: What is position relative? | The element stays in the flow but can be offset from its normal position, and it becomes a reference for absolutely positioned children.
+q: What is position absolute? | The element is removed from the flow and positioned relative to its nearest positioned ancestor.
+q: What does position sticky do? | The element scrolls normally until it reaches a set offset, then sticks in place.
+---
+Positioning is powerful and easy to misuse.
+
+## Direct answer
+
+CSS `position` has five values: `static` (default), `relative`, `absolute`, `fixed` and `sticky`. Use `relative` on a parent, `absolute` on a child you want to place inside it, `fixed` for items pinned to the screen and `sticky` for headers that stick when scrolling.
+
+## Examples
+
+```css
+.parent { position: relative; }
+.badge  { position: absolute; top: 8px; right: 8px; }
+
+.topbar { position: fixed; top: 0; left: 0; right: 0; }
+
+.section-title { position: sticky; top: 0; }
+```
+
+## Summary
+
+| Value | Behaviour |
+| :--- | :--- |
+| `static` | normal flow |
+| `relative` | normal flow, can be nudged |
+| `absolute` | out of flow, relative to positioned parent |
+| `fixed` | out of flow, relative to the viewport |
+| `sticky` | normal until a scroll threshold, then sticks |
+
+## Tips
+
+- Do not use absolute for page layout. Use Flexbox or Grid.
+- If an absolute child is in the wrong place, check the parent has `position: relative`.
+
+## The bottom line
+
+Use positioning for overlays and details, not whole layouts.
+
+=== css-units-rem-em-px
+title: CSS Units: px, em, rem, %, vw and vh Explained
+desc: Compare CSS units: px, em, rem, percent, vw, vh and ch. Learn which to use for font sizes, spacing and layout, and why rem is a good default.
+tags: css units rem em px, rem vs em, css px vs rem, viewport units, responsive units
+rel: rem-vs-em
+q: What is the difference between px and rem? | px is a fixed pixel size. rem is relative to the root font size, so it scales when users change their browser settings.
+q: What is em? | A unit relative to the font size of the current element.
+q: Which unit should I use for font size? | rem is a good default for accessibility and consistency.
+---
+Choosing units affects accessibility and layout flexibility.
+
+## Direct answer
+
+Use `rem` for font sizes and spacing, `%` or `fr` for flexible widths, `vw` and `vh` for viewport-based sizes and `px` for fine details like borders. `rem` respects the user's browser font setting, which helps accessibility.
+
+## Comparison
+
+| Unit | Relative to | Good for |
+| :--- | :--- | :--- |
+| `px` | fixed | borders, shadows |
+| `em` | current font size | component spacing |
+| `rem` | root font size | fonts, spacing |
+| `%` | parent | widths |
+| `vw` / `vh` | viewport | hero sections |
+| `ch` | width of "0" | text width |
+
+## Example
+
+```css
+html { font-size: 100%; }  /* usually 16px */
+body { font-size: 1rem; }
+h1 { font-size: 2rem; }
+.card { padding: 1.5rem; max-width: 60ch; }
+```
+
+## The bottom line
+
+Default to `rem`. Use `px` sparingly.
+
+=== css-pseudo-classes
+title: CSS Pseudo-Classes: hover, focus, first-child and nth-child
+desc: Learn CSS pseudo-classes like :hover, :focus, :first-child, :nth-child and :not with practical examples, plus the difference from pseudo-elements.
+tags: pseudo classes, css pseudo classes, css hover focus, nth-child, css pseudo elements
+rel: css-selectors-guide
+q: What is a pseudo-class? | A keyword added to a selector to style an element in a particular state, such as when hovered.
+q: What is the difference between a pseudo-class and pseudo-element? | A pseudo-class selects an element in a state. A pseudo-element selects part of an element, such as its first line or content before it.
+q: How do I style every second item? | Use :nth-child(2n) or :nth-child(even).
+---
+Pseudo-classes let CSS react to what is happening.
+
+## Direct answer
+
+A pseudo-class starts with a single colon and selects an element in a certain state or position. Common ones are `:hover`, `:focus`, `:active`, `:first-child`, `:last-child`, `:nth-child()` and `:not()`. Pseudo-elements like `::before` use two colons.
+
+## Examples
+
+```css
+a:hover { color: tomato; }
+input:focus { outline: 2px solid #3d5afe; }
+li:first-child { font-weight: bold; }
+tr:nth-child(even) { background: #f5f5f5; }
+button:not(:disabled):hover { background: #eee; }
+
+p::first-line { font-weight: bold; }
+.note::before { content: "Note: "; }
+```
+
+## Accessibility tip
+
+Never remove focus outlines without replacing them with a visible alternative. Keyboard users depend on them.
+
+## The bottom line
+
+Pseudo-classes add interactivity and structure to your styles without extra HTML.
+
+=== css-transitions-guide
+title: CSS Transitions: Smooth Hover Effects and Animations
+desc: Learn CSS transitions: transition properties, duration, easing and delay, which properties animate well and how to respect reduced-motion settings.
+tags: css transitions, css transition example, hover transition, css animation, prefers-reduced-motion
+rel: javascript-animation-basics
+q: What is a CSS transition? | A way to animate changes between property values smoothly over a set time.
+q: Which properties should I animate? | transform and opacity are smooth and efficient. Avoid animating layout properties like width and top where possible.
+q: How do I respect reduced motion preferences? | Use the prefers-reduced-motion media query to remove or shorten animations.
+---
+A tiny bit of motion makes an interface feel alive.
+
+## Direct answer
+
+A CSS transition animates a property from one value to another. Set `transition: property duration easing` on the element, then change the property on hover or with a class. Animate `transform` and `opacity` for smooth results and honour `prefers-reduced-motion`.
+
+## Example
+
+```css
+.button {
+  background: #3d5afe;
+  transform: translateY(0);
+  transition: transform 150ms ease, background 150ms ease;
+}
+.button:hover {
+  background: #2f46d1;
+  transform: translateY(-2px);
+}
+```
+
+## Respect reduced motion
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+```
+
+## Tips
+
+- Keep durations short, around 100 to 300 ms.
+- Use easing such as `ease-out` for entering elements.
+- Avoid transitions on everything with `transition: all`.
+
+## The bottom line
+
+Small, quick, purposeful transitions improve the feel of a page.
+
+=== css-reset-explained
+title: CSS Reset vs Normalize: What They Are and Do You Need One?
+desc: Learn what a CSS reset does, how it differs from normalize.css, a small modern reset you can copy and when you can skip it.
+tags: css reset, normalize css, modern css reset, box-sizing border-box, css default styles
+rel: html-tutorial-for-beginners
+q: What is a CSS reset? | A set of rules that removes or standardises browser default styles so your page starts from a consistent base.
+q: What is the difference between reset and normalize? | A reset removes default styling. Normalize keeps useful defaults and fixes inconsistencies between browsers.
+q: Do I need a reset? | A small modern reset is helpful. Heavy resets are less necessary today.
+---
+Browsers add their own margins, fonts and spacing. A reset gives you a predictable start.
+
+## Direct answer
+
+A CSS reset removes or standardises default browser styles. Normalize keeps useful defaults while smoothing differences. A short modern reset with `box-sizing: border-box` and no default margins is enough for most projects.
+
+## A small modern reset
+
+```css
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  line-height: 1.5;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+```
+
+## Reset vs normalize
+
+| | Reset | Normalize |
+| :--- | :--- | :--- |
+| Approach | remove everything | keep useful defaults |
+| Result | blank slate | consistent baseline |
+
+## The bottom line
+
+Add a small reset at the top of your stylesheet and move on.
+
+=== html-attributes-guide
+title: HTML Attributes Explained: href, src, alt, class, id and More
+desc: Learn the most useful HTML attributes: href, src, alt, class, id, type, placeholder and data attributes, with examples and best practices.
+tags: html attributes, html attributes list, href src alt, html class and id, data attributes
+rel: html-tutorial-for-beginners
+q: What is an HTML attribute? | Extra information added to an HTML tag, written as name="value".
+q: What is the alt attribute for? | It provides text for images so screen readers and search engines understand them, and it appears if the image fails to load.
+q: What is the difference between class and id? | A class can be used on many elements. An id must be unique.
+---
+Attributes tell elements how to behave.
+
+## Direct answer
+
+HTML attributes add information to elements, such as where a link goes (`href`), which image to show (`src`), a description of an image (`alt`) and names for styling or scripting (`class` and `id`). Write them inside the opening tag as `name="value"`.
+
+## Common attributes
+
+| Attribute | Used on | Purpose |
+| :--- | :--- | :--- |
+| `href` | `a` | link destination |
+| `src` | `img`, `script` | file source |
+| `alt` | `img` | text alternative |
+| `class` | any | group for styling |
+| `id` | any | unique identifier |
+| `type` | `input`, `button` | kind of control |
+| `placeholder` | `input` | hint text |
+| `required` | `input` | must be filled |
+| `target` | `a` | where to open the link |
+| `data-*` | any | store custom data |
+
+## Examples
+
+```html
+<a href="/about" target="_blank" rel="noopener">About</a>
+<img src="team.jpg" alt="Our team at the launch event" width="600" height="400">
+<input type="email" placeholder="you@example.com" required>
+<button data-action="save">Save</button>
+```
+
+## Good habits
+
+- Always write meaningful `alt` text, or `alt=""` for decorative images.
+- Add `rel="noopener"` with `target="_blank"`.
+- Use lowercase and quote values.
+
+## The bottom line
+
+Attributes are the settings of HTML. Learn the common ones and the rest is lookup.

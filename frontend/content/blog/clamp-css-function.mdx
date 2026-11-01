@@ -1,0 +1,68 @@
+---
+title: "CSS clamp(): Min, Preferred and Max Values Explained"
+description: "clamp() sets a value that stays between a minimum and a maximum. Learn how to use it for font sizes, spacing and widths with clear examples."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [clamp css, css clamp function, clamp font size, clamp min max, css min max functions]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Responsive Web Design with CSS turns this into short, playable lessons. Free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive Web Design with CSS course"
+faq:
+  - question: "What does clamp do in CSS?"
+    answer: "It returns a value that stays between a minimum and a maximum, using a preferred value in between."
+  - question: "What is the syntax?"
+    answer: "clamp(minimum, preferred, maximum)."
+  - question: "What can I use it for?"
+    answer: "Font sizes, padding, margins, widths and any length value."
+---
+
+One function that replaces many media queries.
+
+## Direct answer
+
+`clamp(min, preferred, max)` returns the preferred value, but never smaller than `min` or larger than `max`. Use it for fluid font sizes, padding and widths that adapt smoothly to the screen.
+
+## Examples
+
+```css
+.container {
+  width: clamp(320px, 90%, 1100px);
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+
+h1 {
+  font-size: clamp(1.75rem, 1rem + 3vw, 3rem);
+}
+```
+
+## Related functions
+
+```css
+width: min(100%, 600px);  /* the smaller of two */
+width: max(50%, 300px);   /* the larger of two */
+```
+
+## Tips
+
+- Combine units like `rem` and `vw`.
+- Test the extremes: narrow phones and wide monitors.
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+clamp() makes fluid design simple and readable.
+
+## More guides
+
+- [srcset and sizes Explained](/blog/srcset-and-sizes)
+- [CSS min(), max() and clamp()](/blog/css-min-max-functions)
+- [How to Build a Responsive Navigation Menu With CSS](/blog/responsive-navigation-menu)
+- [Fluid typography css](/blog/fluid-typography-css)
+- [Responsive Web Design with CSS course](/courses/responsive-web-design-with-css)

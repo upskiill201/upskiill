@@ -115,11 +115,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is a diagram you drew yourself easier to remember than a paragraph?',
         options: [
-          { text: 'You process it twice: as words and as a picture you made' },
           { text: 'It has fewer facts', why: 'It has the same facts, in a second form.' },
+          { text: 'You process it twice: as words and as a picture you made' },
           { text: 'Teachers prefer diagrams', why: 'Maybe, but that is not why it helps you.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',

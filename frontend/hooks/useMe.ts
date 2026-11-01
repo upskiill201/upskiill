@@ -68,13 +68,16 @@ export function resolveAvatarUrl(me: MeResponse | undefined): string | null {
 }
 
 export function useMe() {
-  const { data, error, isLoading, mutate } = useSWR<MeResponse>(ME_KEY, fetcher);
+  const { data, error, isLoading, isValidating, mutate } = useSWR<MeResponse>(ME_KEY, fetcher);
 
   return {
     me: data,
     avatarUrl: resolveAvatarUrl(data),
     error: error as (Error & { status?: number }) | undefined,
     isLoading,
+    /** True while a fetch is in flight. A cached `error` from before a sign-in
+     *  (anonymous onboarding) is stale until this settles. */
+    isValidating,
     mutate,
   };
 }

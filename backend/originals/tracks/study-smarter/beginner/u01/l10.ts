@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'After three different angles, Kofi still doesn\'t get it. Best next move?',
         options: [
-          { text: 'Ask a person: Efua, Mrs Asante, or Miracle on Thursday' },
           { text: 'Ask the same question again', why: 'Same angle, same result.' },
           { text: 'Skip the topic', why: 'It is in the test.' },
+          { text: 'Ask a person: Efua, Mrs Asante, or Miracle on Thursday' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',

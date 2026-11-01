@@ -82,11 +82,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why can one summary rarely serve a director and developers?',
         options: [
-          { text: 'They need different things: impact vs specifics' },
           { text: 'Directors cannot read bullet points', why: 'They can; they need different content.' },
           { text: 'Developers do not read summaries', why: 'They do, when they are specific.' },
+          { text: 'They need different things: impact vs specifics' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
@@ -159,11 +159,11 @@ const lesson: OriginalLesson = {
         message: "My CEO and my team both need the research summary today. Two different emails?",
         prompt: 'What should Ada suggest?',
         options: [
-          { text: 'Yes: ask the AI for two summaries in one go, one for the CEO (impact, recommendation) and one for the team (specifics).' },
           { text: 'One long summary for both.', why: 'Too long for the CEO, too vague for the team.' },
           { text: 'Only send it to the CEO.', why: 'The team needs it too.' },
+          { text: 'Yes: ask the AI for two summaries in one go, one for the CEO (impact, recommendation) and one for the team (specifics).' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -184,11 +184,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the fastest way to get summaries for three readers?',
         options: [
-          { text: 'Ask for all three in one request, each named' },
           { text: 'Write them yourself from scratch', why: 'The AI can do the first drafts in one go.' },
+          { text: 'Ask for all three in one request, each named' },
           { text: 'Send everyone the same one', why: 'Each reader needs different things.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

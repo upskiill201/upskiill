@@ -9,6 +9,7 @@ const defaults = {
   leagueUpdates: true,
   courseOffers: true,
   creatorActivity: true,
+  communityActivity: true,
   quietHoursStart: 1290,
   quietHoursEnd: 480,
 };

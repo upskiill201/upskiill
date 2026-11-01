@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What usually happens when you ask for a big task in one go?',
         options: [
-          { text: 'You get a little of everything and not enough of anything' },
           { text: 'You get a perfect document', why: 'Rarely. Each part gets less attention and fewer facts.' },
           { text: 'The AI refuses', why: 'It will try. The result is just shallow.' },
+          { text: 'You get a little of everything and not enough of anything' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -162,11 +162,11 @@ const lesson: OriginalLesson = {
         message: "The outline looks good but we don't need a Budget section, and we're missing who to tell internally.",
         prompt: 'Which follow-up should Ada send the AI?',
         options: [
-          { text: 'Remove Budget, add a "Who to tell" section after Timeline, keep everything else.' },
           { text: 'Write the whole plan now.', why: 'Fix the outline first, it is cheap now.' },
           { text: 'Start again from scratch.', why: 'The outline is nearly right. Steer it.' },
+          { text: 'Remove Budget, add a "Who to tell" section after Timeline, keep everything else.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -187,11 +187,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is the best final step for a big document?',
         options: [
-          { text: '"Read it as my manager would. What is unclear or missing?"' },
           { text: '"Is it perfect?"', why: 'It will probably just say yes.' },
+          { text: '"Read it as my manager would. What is unclear or missing?"' },
           { text: 'Skip the review to save time', why: 'The review is where problems show up.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

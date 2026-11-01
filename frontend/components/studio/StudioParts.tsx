@@ -8,13 +8,14 @@
 
 import Image from 'next/image';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ArrowDownRight, ArrowUpRight, Minus, RotateCw, X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { TEY_POSE_SRC, type TeyPose } from '@/components/lesson/TeySays';
 import { compact, type Face } from '@/lib/creator/studio';
 import { playSound } from '@/lib/audio/lessonSounds';
 import s from './studio.module.css';
 
+import { AvatarFill } from '@/components/ui/Avatar';
 export { s as studio };
 
 /* ── page head ────────────────────────────────────────────────────────── */
@@ -60,10 +61,10 @@ export function Section({
 
 export function Delta({ pct, upIsGood = true, vs }: { pct: number; upIsGood?: boolean; vs?: string }) {
   const cls = pct === 0 ? s.deltaFlat : (pct > 0) === upIsGood ? s.deltaUp : s.deltaDown;
-  const Icon = pct === 0 ? Minus : pct > 0 ? ArrowUpRight : ArrowDownRight;
+  const glyph = pct === 0 ? 'minus' : pct > 0 ? 'upRight' : 'downRight';
   return (
     <span className={cls}>
-      <Icon size={14} aria-hidden="true" />
+      <Glyph name={glyph} size={14} />
       {pct > 0 ? '+' : ''}
       {pct}%{vs && <span className={s.deltaFlat} style={{ fontWeight: 600 }}>&nbsp;{vs}</span>}
     </span>
@@ -108,23 +109,10 @@ export function StatTile({
 
 /* ── people ───────────────────────────────────────────────────────────── */
 
-const initials = (name: string) =>
-  name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase())
-    .join('');
-
 export function PersonAvatar({ face, size = 44 }: { face: Pick<Face, 'fullName' | 'avatarUrl'>; size?: number }) {
   return (
     <span className={s.avatar} style={{ '--size': `${size}px` } as CSSProperties} aria-hidden="true">
-      {face.avatarUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element -- user uploads on arbitrary hosts
-        <img src={face.avatarUrl} alt="" loading="lazy" />
-      ) : (
-        initials(face.fullName)
-      )}
+      <AvatarFill src={face.avatarUrl} name={face.fullName} />
     </span>
   );
 }
@@ -135,12 +123,7 @@ export function Faces({ faces, total }: { faces: Face[]; total?: number }) {
     <span className={s.faces} aria-label={`${total ?? faces.length} learners`}>
       {faces.map((f) => (
         <span key={f.id} className={s.face} title={f.fullName}>
-          {f.avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element -- user uploads on arbitrary hosts
-            <img src={f.avatarUrl} alt="" loading="lazy" />
-          ) : (
-            initials(f.fullName)
-          )}
+          <AvatarFill src={f.avatarUrl} seed={f.id} name={f.fullName} />
         </span>
       ))}
       {more > 0 && <span className={`${s.face} ${s.faceMore}`}>+{more > 99 ? 99 : more}</span>}
@@ -223,7 +206,7 @@ export function ErrorCard({ message, onRetry }: { message: string; onRetry: () =
     <div className={s.errorBox} role="alert">
       <span>{message}</span>
       <button type="button" className={`${s.btn} ${s.btnSm}`} onClick={onRetry}>
-        <RotateCw size={14} aria-hidden="true" /> Try again
+        <Glyph name="refresh" size={14} /> Try again
       </button>
     </div>
   );
@@ -283,7 +266,7 @@ export function Sheet({
                 {title}
               </h2>
               <button type="button" className={s.iconBtn} aria-label="Close" onClick={onClose}>
-                <X size={18} />
+                <Glyph name="close" size={18} />
               </button>
             </div>
             {children}

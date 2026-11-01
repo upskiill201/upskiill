@@ -1,0 +1,86 @@
+---
+title: "Python File Handling: Read and Write Files With open()"
+description: "Learn how to read and write text files in Python with open(), the with statement, file modes, and simple examples for common tasks."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [python file handling, python read file, python write file, python open, python with open]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Python for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/python-for-beginners
+  label: "See the Python for Beginners course"
+faq:
+  - question: "How do I read a file in Python?"
+    answer: "Use with open(\"file.txt\") as f: and then f.read() or loop over the lines."
+  - question: "What are the file modes?"
+    answer: "r reads, w writes and overwrites, a appends and r+ reads and writes."
+  - question: "Why use the with statement?"
+    answer: "It closes the file automatically, even if an error happens."
+---
+
+Files let your programs remember things.
+
+## Direct answer
+
+In Python, use `open()` inside a `with` block to read or write files. Use mode `"r"` to read, `"w"` to write and overwrite, and `"a"` to append. The `with` block closes the file automatically.
+
+## Read a file
+
+```python
+with open("notes.txt", "r") as f:
+    text = f.read()
+print(text)
+```
+
+Read line by line:
+
+```python
+with open("notes.txt") as f:
+    for line in f:
+        print(line.strip())
+```
+
+## Write a file
+
+```python
+with open("out.txt", "w") as f:
+    f.write("Hello\n")
+```
+
+Use `"a"` to add to the end instead of overwriting.
+
+## File modes
+
+| Mode | Meaning |
+| :--- | :--- |
+| `r` | read (default) |
+| `w` | write, overwrites |
+| `a` | append |
+| `r+` | read and write |
+
+## Handle missing files
+
+```python
+try:
+    with open("data.txt") as f:
+        print(f.read())
+except FileNotFoundError:
+    print("File not found")
+```
+
+## Where Teyro fits
+
+Teyro's [Python for Beginners](/courses/python-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 120 lessons, and you can start free.
+
+## The bottom line
+
+Use `with open(...)`, choose the right mode and handle the case where the file is missing.
+
+## More guides
+
+- [Python If Statements](/blog/if-statements-in-python)
+- [Python Virtual Environments](/blog/python-virtual-environments)
+- [What Is pip in Python? How to Install and Manage Packages](/blog/python-pip-explained)
+- [Python for Beginners course](/courses/python-for-beginners)

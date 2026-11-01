@@ -25,26 +25,7 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import {
-  ArrowDown,
-  ArrowUp,
-  BookOpen,
-  Check,
-  CodeXml,
-  Dumbbell,
-  Flag,
-  Headphones,
-  Lightbulb,
-  Lock,
-  Medal,
-  Mountain,
-  MountainSnow,
-  Sprout,
-  Star,
-  Trees,
-  Trophy,
-  type LucideIcon,
-} from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -52,7 +33,8 @@ import { playPathCue } from '@/lib/audio/pathAudio';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { clearFinishedLesson, peekFinishedLesson } from '@/lib/path/arrival';
 import { playHaptic } from '@/lib/haptics';
-import { buildPathModel, type PathNode, type PathUnit } from '@/lib/path/model';
+import { buildPathModel, certificateGoal, type PathNode, type PathUnit } from '@/lib/path/model';
+import { CertificateGoal } from './CertificateGoal';
 import { MILESTONE_LABEL } from '@/lib/originals';
 import { OriginalsTrail } from './OriginalsTrail';
 import {
@@ -75,6 +57,7 @@ import { useHydrated } from '@/components/studio/useHydrated';
 import { buildUnlockHref } from '@/lib/return-to';
 import { courseHomeHref } from '@/lib/homeCourse';
 import { prefetchLesson } from '@/lib/path/lessonPrefetch';
+import { jumpHref } from '@/lib/path/testOut';
 import { lessonHref, preloadCourse, type LearningPath as LearningPathData } from '@/hooks/useCourse';
 
 /** How far the road swings left/right, in px, at full amplitude. */
@@ -113,6 +96,7 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
   const router = useRouter();
   const reducedMotion = useReducedMotion();
   const model = useMemo(() => buildPathModel(path), [path]);
+  const goal = useMemo(() => certificateGoal(model), [model]);
   const courseId = path.course.id;
 
   const [open, setOpen] = useState<OpenTarget>(null);
@@ -401,6 +385,7 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
 
   return (
     <div ref={rootRef} className="relative w-full pb-10">
+      {/* "Already know some of this?" lives in home's Start here card (FirstLessonCard). */}
       <div className={styles.board}>
       {lands.map(({ unit, land, prevLand, layout, walked, tey, keepouts, reached }, unitIdx) => (
         <section
@@ -416,7 +401,22 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
               style={{ background: 'linear-gradient(180deg, var(--jm-ground), transparent)' }}
             />
           )}
-          <UnitBanner unit={unit} land={land} reached={reached} stickyTop={stickyTop} chapter={!!path.original} />
+          <UnitBanner
+            unit={unit}
+            land={land}
+            reached={reached}
+            stickyTop={stickyTop}
+            chapter={!!path.original}
+            // Originals: a chapter not reached yet can be unlocked by passing a test on the ones before it.
+            onJump={
+              path.original && !reached && unit.nodes.every((n) => n.state === 'locked')
+                ? () => {
+                    playHaptic('medium', false);
+                    router.push(jumpHref(courseId, unit.sectionId));
+                  }
+                : undefined
+            }
+          />
 
           <ol className="relative list-none" style={{ height: layout.height }}>
             <LandScene
@@ -431,6 +431,7 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
               keepouts={keepouts}
               dim={!reached}
               viewHalf={colW / 2}
+              roadGoesOn={!!goal}
             />
             {/* Lands not reached yet wait under a light fog. */}
             {!reached && <div aria-hidden="true" className={styles.fog} />}
@@ -477,6 +478,18 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
                       animate={{ scale: 1 }}
                       transition={{ type: 'spring', stiffness: 520, damping: 12 }}
                     >
+                      {pop && isCurrent && reveal === 'unlock' && (
+                        <motion.span
+                          aria-hidden="true"
+                          className="absolute left-1/2 -translate-x-1/2 -top-[64px] z-20 whitespace-nowrap rounded-full px-3 py-1 text-[13px] font-extrabold uppercase tracking-[0.08em] text-white pointer-events-none"
+                          style={{ backgroundColor: unit.color, boxShadow: `0 3px 0 ${shade(unit.color)}` }}
+                          initial={{ opacity: 0, y: 10, scale: 0.6 }}
+                          animate={reducedMotion ? { opacity: [0, 1, 1, 0] } : { opacity: [0, 1, 1, 0], y: [10, 0, -4, -14], scale: [0.6, 1.1, 1, 1] }}
+                          transition={{ duration: 1.8, times: [0, 0.18, 0.8, 1], ease: 'easeOut' }}
+                        >
+                          Unlocked!
+                        </motion.span>
+                      )}
                       {pop && !reducedMotion && (
                         <motion.span
                           aria-hidden="true"
@@ -530,6 +543,17 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
           </ol>
         </section>
       ))}
+      {/* The end of the road: the certificate the learner is walking towards. */}
+      {goal && (
+        <CertificateGoal
+          goal={goal}
+          courseId={courseId}
+          courseTitle={path.course.title}
+          land={lands[lands.length - 1].land}
+          fogged={!lands[lands.length - 1].reached}
+          enrolled={path.enrolled}
+        />
+      )}
       </div>
 
       {path.original && <OriginalsTrail original={path.original} levelDone={model.current === null} />}
@@ -555,10 +579,7 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
                 className="w-11 h-11 rounded-2xl flex items-center justify-center text-white"
                 style={{ backgroundColor: 'var(--success-green)', boxShadow: `0 3px 0 ${shade('var(--success-green)')}` }}
               >
-                {(() => {
-                  const Icon = LAND_ICON[enteredLand];
-                  return <Icon className="w-6 h-6 stroke-[2.5]" aria-hidden="true" />;
-                })()}
+                <Glyph name={LAND_ICON[enteredLand]} size={24} strokeWidth={2.5} />
               </span>
               <span className="text-left">
                 <span className="block text-[11.5px] font-extrabold uppercase tracking-[0.1em] text-[var(--text-secondary)]">
@@ -573,9 +594,10 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
         )}
       </AnimatePresence>
 
-      {/* Back to my lesson — a labelled pill, so it reads as "go on" rather
-          than a bare arrow. Sits above the floating bottom dock (~78px) and
-          clears the iOS home indicator. */}
+      {/* Back to my lesson — just Teyro's own round arrow (founder,
+          2026-10-29): no label, no 3D edge, pointing at the lesson. Sits
+          above the floating bottom dock (~78px) and clears the iOS home
+          indicator. */}
       <AnimatePresence>
         {jump && model.current && (
           <motion.button
@@ -584,18 +606,22 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
             initial={{ opacity: 0, scale: 0.6, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.6, y: 12 }}
-            whileTap={reducedMotion ? undefined : { y: 3, boxShadow: '0 1px 0 var(--color-brand-dark)' }}
+            whileHover={reducedMotion ? undefined : { scale: 1.06 }}
+            whileTap={reducedMotion ? undefined : { scale: 0.92 }}
             transition={{ type: 'spring', stiffness: 500, damping: 26 }}
             aria-label="Jump to your next lesson"
-            className="fixed z-30 right-4 md:right-[calc(50%-300px)] lg:right-auto lg:left-[calc(50%+40px)] h-12 pl-4 pr-5 rounded-2xl bg-brand text-white flex items-center gap-2 cursor-pointer text-[14px] font-extrabold uppercase tracking-wide"
-            style={{
-              bottom: 'calc(96px + env(safe-area-inset-bottom))',
-              boxShadow: '0 4px 0 var(--color-brand-dark)',
-              fontFamily: 'var(--font-jakarta)',
-            }}
+            title="Next lesson"
+            className="fixed z-30 right-4 md:right-[calc(50%-300px)] lg:right-auto lg:left-[calc(50%+40px)] w-14 h-14 p-0 border-0 bg-transparent cursor-pointer"
+            style={{ bottom: 'calc(96px + env(safe-area-inset-bottom))' }}
           >
-            {jump === 'up' ? <ArrowUp className="w-5 h-5 stroke-[3]" aria-hidden="true" /> : <ArrowDown className="w-5 h-5 stroke-[3]" aria-hidden="true" />}
-            Next lesson
+            <Image
+              src="/art/ui/next-lesson.svg"
+              alt=""
+              width={56}
+              height={56}
+              className="transition-transform duration-200"
+              style={{ transform: jump === 'down' ? 'rotate(180deg)' : undefined }}
+            />
           </motion.button>
         )}
       </AnimatePresence>
@@ -608,12 +634,12 @@ export default LearningPath;
 // ─── Pieces ────────────────────────────────────────────────────────────────
 
 
-const LAND_ICON: Record<LandId, LucideIcon> = {
-  meadow: Sprout,
-  forest: Trees,
-  canyon: Mountain,
-  snow: MountainSnow,
-  summit: Flag,
+const LAND_ICON: Record<LandId, GlyphName> = {
+  meadow: 'sprout',
+  forest: 'trees',
+  canyon: 'mountain',
+  snow: 'mountainSnow',
+  summit: 'flag',
 };
 
 function UnitBanner({
@@ -622,6 +648,7 @@ function UnitBanner({
   reached,
   stickyTop,
   chapter = false,
+  onJump,
 }: {
   unit: PathUnit;
   land: LandId;
@@ -629,9 +656,11 @@ function UnitBanner({
   stickyTop: string;
   /** Teyro Originals: each unit is a story chapter (playbook §8a) with a marker and a story line. */
   chapter?: boolean;
+  /** Jump ahead: shown on a chapter the learner hasn't reached. */
+  onJump?: () => void;
 }) {
   const complete = unit.doneCount === unit.nodes.length;
-  const LandIcon = reached ? LAND_ICON[land] : Lock;
+  const landGlyph: GlyphName = reached ? LAND_ICON[land] : 'lock';
   const pct = unit.nodes.length ? (unit.doneCount / unit.nodes.length) * 100 : 0;
   return (
     <div className="sticky z-20 pt-3 -mt-3 px-3" style={{ top: stickyTop }}>
@@ -641,7 +670,7 @@ function UnitBanner({
       >
         <div className="flex-1 min-w-0">
           <p className="flex items-center gap-1.5 text-[12px] md:text-[13px] font-extrabold uppercase tracking-wider opacity-90">
-            <LandIcon className="w-3.5 h-3.5 stroke-[2.75] shrink-0" aria-hidden="true" />
+            <Glyph name={landGlyph} size={14} strokeWidth={2.75} className="shrink-0" />
             <span className="truncate">
               {chapter ? 'Chapter' : 'Unit'} {unit.unitNumber} · {(chapter && unit.marker) || LAND_NAME[land]}
             </span>
@@ -655,12 +684,31 @@ function UnitBanner({
         <span aria-hidden="true" className="absolute left-0 right-0 bottom-0 h-[5px]" style={{ backgroundColor: shade(unit.color, 86) }}>
           <span className="block h-full bg-white/70 transition-[width] duration-700" style={{ width: `${pct}%` }} />
         </span>
+        {onJump && (
+          <button
+            type="button"
+            onClick={onJump}
+            className="relative shrink-0 rounded-xl px-3 py-1.5 text-[13px] md:text-[14px] font-extrabold uppercase tracking-wide flex items-center gap-1.5 text-white bg-white/20 border-2 border-white/70 hover:bg-white/30 transition-transform active:scale-[0.98]"
+            aria-label={`Jump to chapter ${unit.unitNumber}: take a test to unlock it`}
+          >
+            <Glyph name="chevronsUp" size={16} />
+            Jump here
+          </button>
+        )}
+        {unit.testedOutCount > 0 && unit.doneCount < unit.nodes.length && (
+          <span
+            className="shrink-0 rounded-xl px-2.5 py-1.5 text-[12px] md:text-[13px] font-extrabold uppercase tracking-wide"
+            style={{ backgroundColor: shade(unit.color, 88) }}
+          >
+            Tested out
+          </span>
+        )}
         <span
           className="shrink-0 rounded-xl px-3 py-1.5 text-[13px] md:text-[14px] font-extrabold flex items-center gap-1"
           style={{ backgroundColor: shade(unit.color, 88) }}
           aria-label={`${unit.doneCount} of ${unit.nodes.length} lessons done`}
         >
-          {complete ? <Check className="w-4 h-4 stroke-[3.5]" aria-hidden="true" /> : null}
+          {complete ? <Glyph name="check" size={16} strokeWidth={3.5} /> : null}
           {unit.doneCount}/{unit.nodes.length}
         </span>
       </div>
@@ -688,7 +736,7 @@ function NodeButton({
   const lit = node.state === 'done' || node.state === 'current';
   const face = lit ? unit.color : 'var(--border)';
   const lip = lit ? shade(unit.color) : 'var(--border-strong)';
-  const Icon = nodeIcon(node, unit);
+  const icon = nodeIcon(node, unit);
 
   const stateLabel =
     node.state === 'done'
@@ -718,6 +766,14 @@ function NodeButton({
               style={{ color: node.state === 'paywalled' ? 'var(--text-secondary)' : unit.color }}
             >
               {node.state === 'paywalled' ? 'Unlock' : 'Start'}
+              {node.state !== 'paywalled' && (node.lesson.xpReward ?? 0) > 0 && (
+                <span
+                  className="ml-1.5 inline-block rounded-full px-1.5 py-[1px] align-middle text-[11.5px] tracking-normal text-white"
+                  style={{ backgroundColor: 'var(--lesson-gold-dark)' }}
+                >
+                  +{node.lesson.xpReward} XP
+                </span>
+              )}
             </span>
             {nudge && (
               <span className="block mt-0.5 text-[12.5px] font-bold normal-case tracking-normal text-[var(--text-secondary)] leading-tight">
@@ -732,13 +788,41 @@ function NodeButton({
         </motion.div>
       )}
 
-      {/* Progress ring around the current node. */}
-      {isCurrent && (
-        <span
+      {/* The current node: a halo that breathes, and a ring that fills with
+          the chapter's progress, so the next lesson reads as a step toward it. */}
+      {isCurrent && node.state !== 'paywalled' && !reducedMotion && (
+        <motion.span
           aria-hidden="true"
-          className="absolute -inset-[9px] rounded-full border-[6px]"
-          style={{ borderColor: node.state === 'paywalled' ? 'var(--border)' : `color-mix(in srgb, ${unit.color} 28%, white)` }}
+          className="absolute -inset-[18px] rounded-full pointer-events-none"
+          style={{ backgroundColor: `color-mix(in srgb, ${unit.color} 30%, transparent)` }}
+          animate={{ scale: [0.85, 1.12, 0.85], opacity: [0.55, 0, 0.55] }}
+          transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
         />
+      )}
+      {isCurrent && (
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 100 100"
+          className="absolute -inset-[11px] -rotate-90 pointer-events-none"
+          style={{ width: 'calc(100% + 22px)', height: 'calc(100% + 22px)' }}
+        >
+          <circle cx="50" cy="50" r="46" fill="none" strokeWidth="6" style={{ stroke: node.state === 'paywalled' ? 'var(--border)' : `color-mix(in srgb, ${unit.color} 22%, white)` }} />
+          {node.state !== 'paywalled' && unit.nodes.length > 0 && (
+            <motion.circle
+              cx="50"
+              cy="50"
+              r="46"
+              fill="none"
+              strokeWidth="6"
+              strokeLinecap="round"
+              style={{ stroke: unit.color }}
+              strokeDasharray={2 * Math.PI * 46}
+              initial={{ strokeDashoffset: 2 * Math.PI * 46 }}
+              animate={{ strokeDashoffset: 2 * Math.PI * 46 * (1 - Math.max(0.04, unit.doneCount / unit.nodes.length)) }}
+              transition={{ duration: reducedMotion ? 0 : 1.1, ease: 'easeOut', delay: 0.3 }}
+            />
+          )}
+        </svg>
       )}
 
       <motion.button
@@ -756,6 +840,17 @@ function NodeButton({
           boxShadow: `0 7px 0 ${lip}`,
         }}
       >
+        {isCurrent && node.state === 'current' && !reducedMotion && (
+          <span aria-hidden="true" className="absolute inset-0 rounded-[50%] overflow-hidden pointer-events-none">
+            <motion.span
+              className="absolute top-0 bottom-0 w-[40%]"
+              style={{ background: 'linear-gradient(100deg, transparent, color-mix(in srgb, white 55%, transparent), transparent)' }}
+              initial={{ left: '-50%' }}
+              animate={{ left: ['-50%', '120%'] }}
+              transition={{ duration: 0.9, repeat: Infinity, repeatDelay: 2.6, ease: 'easeInOut' }}
+            />
+          </span>
+        )}
         {/* Gloss — what makes a flat circle read as a pressable game piece. */}
         {lit && (
           <span
@@ -764,13 +859,13 @@ function NodeButton({
           />
         )}
         {node.state === 'done' ? (
-          <Check className="w-9 h-9 text-white stroke-[3.5]" aria-hidden="true" />
+          <Glyph name="check" size={36} strokeWidth={3.6} className="text-white" />
         ) : node.state === 'current' ? (
-          <Icon className="w-9 h-9 text-white stroke-[2.75]" aria-hidden="true" />
+          <Glyph name={icon} size={36} strokeWidth={2.4} className="text-white" />
         ) : node.state === 'paywalled' ? (
-          <Lock className="w-8 h-8 stroke-[2.75] text-[var(--text-muted)]" aria-hidden="true" />
+          <Glyph name="lock" size={32} strokeWidth={2.75} className="text-[var(--text-muted)]" />
         ) : (
-          <Icon className="w-9 h-9 text-[var(--border-strong)] stroke-[2.75]" aria-hidden="true" />
+          <Glyph name={icon} size={36} strokeWidth={2.4} className="text-[var(--border-strong)]" />
         )}
       </motion.button>
     </div>
@@ -904,12 +999,31 @@ function NodePopover({
   }
 
   const done = node.state === 'done';
+  const toChest = unit.nodes.length - unit.doneCount;
   return (
     <PopoverShell arrowX={arrowX} color={unit.color}>
-      <p className="text-[17px] font-extrabold text-white leading-snug">{node.lesson.title}</p>
-      <p className="mt-1 text-[14.5px] font-bold text-white/85">
+      <p className="text-[12.5px] font-extrabold uppercase tracking-[0.1em] text-white/80">
         {done ? `${of} · Done! Review it anytime.` : of}
       </p>
+      <p className="mt-1 text-[18px] font-extrabold text-white leading-snug">{node.lesson.title}</p>
+      {!done && node.lesson.shortDescription && (
+        <p className="mt-1 text-[14px] font-semibold text-white/90 leading-snug line-clamp-3">{node.lesson.shortDescription}</p>
+      )}
+      {!done && (
+        <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+          {xp > 0 && (
+            <span className="rounded-full bg-white/20 px-2.5 py-1 text-[12.5px] font-extrabold text-white">+{xp} XP</span>
+          )}
+          {node.lesson.durationMinutes ? (
+            <span className="rounded-full bg-white/20 px-2.5 py-1 text-[12.5px] font-extrabold text-white">{node.lesson.durationMinutes} min</span>
+          ) : null}
+          {toChest > 0 && (
+            <span className="rounded-full bg-white/20 px-2.5 py-1 text-[12.5px] font-extrabold text-white">
+              {toChest === 1 ? 'Last one before the chest' : `${toChest} lessons to the chest`}
+            </span>
+          )}
+        </div>
+      )}
       <PopoverButton
         label={starting ? 'Starting…' : done ? 'Review' : xp > 0 ? `Start +${xp} XP` : 'Start'}
         color={unit.color}
@@ -976,23 +1090,23 @@ function ChestPopover({ unit, arrowX }: { unit: PathUnit; arrowX: number }) {
  * lesson is its trophy; ordinary lessons step through the lesson rhythm
  * (learn, read, practise, reflect) so neighbours never look the same.
  */
-const TYPE_ICONS: Record<string, LucideIcon> = {
-  text: BookOpen,
-  reading: BookOpen,
-  audio: Headphones,
-  quiz: Dumbbell,
-  project: CodeXml,
-  assignment: CodeXml,
-  reflection: Lightbulb,
+const TYPE_ICONS: Record<string, GlyphName> = {
+  text: 'book',
+  reading: 'book',
+  audio: 'headphones',
+  quiz: 'dumbbell',
+  project: 'code',
+  assignment: 'code',
+  reflection: 'bulb',
 };
-const RHYTHM: LucideIcon[] = [Star, BookOpen, Dumbbell, Star, Lightbulb];
+const RHYTHM: GlyphName[] = ['star', 'book', 'dumbbell', 'star', 'bulb'];
 
-function nodeIcon(node: PathNode, unit: PathUnit): LucideIcon {
-  if (node.lesson.milestone === 'UNIT_CHALLENGE') return Trophy;
-  if (node.lesson.milestone === 'CHECKPOINT') return Medal;
+function nodeIcon(node: PathNode, unit: PathUnit): GlyphName {
+  if (node.lesson.milestone === 'UNIT_CHALLENGE') return 'trophy';
+  if (node.lesson.milestone === 'CHECKPOINT') return 'medal';
   const byType = node.lesson.lessonType ? TYPE_ICONS[node.lesson.lessonType] : undefined;
   if (byType) return byType;
-  if (unit.nodes.length > 1 && node.numberInUnit === unit.nodes.length) return Trophy;
+  if (unit.nodes.length > 1 && node.numberInUnit === unit.nodes.length) return 'trophy';
   return RHYTHM[(node.numberInUnit - 1) % RHYTHM.length];
 }
 

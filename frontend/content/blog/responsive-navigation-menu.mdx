@@ -1,0 +1,80 @@
+---
+title: "How to Build a Responsive Navigation Menu With CSS"
+description: "Build a mobile-friendly navigation: a simple wrapping nav, a hamburger toggle with a button, accessible markup and breakpoints. Code included."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [responsive navigation, responsive navbar css, hamburger menu, mobile menu, accessible navigation]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Responsive Web Design with CSS turns this into short, playable lessons. Free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive Web Design with CSS course"
+faq:
+  - question: "How do I make a navbar responsive?"
+    answer: "Use Flexbox for the layout, collapse links into a toggled menu on small screens and use a media query to show them inline on larger screens."
+  - question: "How do I make a hamburger menu accessible?"
+    answer: "Use a real button with an accessible name and aria-expanded that updates when the menu opens."
+  - question: "Can I do it without JavaScript?"
+    answer: "A simple wrapping nav needs no JavaScript. A toggle needs a little to track state and update aria-expanded."
+---
+
+Navigation is the first thing that needs to work on a phone.
+
+## Direct answer
+
+Build navigation with a `nav` element and a list of links. On small screens, hide the list and show a toggle button. On wider screens, show the links in a row. Use `aria-expanded` and a real button so the menu is accessible.
+
+## HTML
+
+```html
+<nav aria-label="Main">
+  <button class="menu-btn" aria-expanded="false" aria-controls="menu">Menu</button>
+  <ul id="menu" class="menu">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/contact">Contact</a></li>
+  </ul>
+</nav>
+```
+
+## CSS
+
+```css
+.menu { display: none; list-style: none; padding: 0; }
+.menu.open { display: block; }
+
+@media (min-width: 768px) {
+  .menu-btn { display: none; }
+  .menu { display: flex; gap: 24px; }
+}
+```
+
+## JavaScript
+
+```javascript
+const btn = document.querySelector(".menu-btn");
+const menu = document.querySelector("#menu");
+
+btn.addEventListener("click", () => {
+  const open = menu.classList.toggle("open");
+  btn.setAttribute("aria-expanded", String(open));
+});
+```
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+A button, a list and one media query cover most sites.
+
+## More guides
+
+- [rem vs em in CSS](/blog/rem-vs-em)
+- [Responsive Tables](/blog/responsive-tables-css)
+- [CSS aspect-ratio](/blog/css-aspect-ratio)
+- [Css media queries explained](/blog/css-media-queries-explained)
+- [Responsive Web Design with CSS course](/courses/responsive-web-design-with-css)

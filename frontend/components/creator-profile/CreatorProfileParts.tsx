@@ -20,6 +20,7 @@ import { creatorIcon } from '@/components/creator-onboarding/creatorIcons';
 import type { CreatorCourse, CreatorPublicProfile, CreatorSocials } from './types';
 import styles from './CreatorProfile.module.css';
 
+import { AvatarFill } from '@/components/ui/Avatar';
 function compact(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
   if (n >= 10_000) return `${Math.round(n / 1000)}K`;
@@ -111,12 +112,9 @@ export function CreatorHeader({
 export function CreatorAvatar({ name, url }: { name: string; url: string | null }) {
   return (
     <div className={styles.avatarWrap}>
-      {url ? (
-        // eslint-disable-next-line @next/next/no-img-element -- user-uploaded, any host
-        <img src={url} alt={name} className={styles.avatarImg} />
-      ) : (
-        <span className={styles.avatarInitial}>{name.charAt(0).toUpperCase()}</span>
-      )}
+      <span className={styles.avatarImg} style={{ display: 'block', overflow: 'hidden' }}>
+        <AvatarFill src={url} name={name} />
+      </span>
     </div>
   );
 }

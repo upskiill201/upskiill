@@ -85,11 +85,11 @@ const lesson: OriginalLesson = {
         message: 'In Physics I always mix up speed and velocity. They mean the same thing, right?',
         prompt: 'What should Kofi suggest?',
         options: [
-          { text: "Not quite. Ask the AI to compare them in a table: meaning, example, and the common mix-up. Then add them to a do-not-confuse list." },
           { text: 'Yes, same thing.', why: 'In Physics, velocity includes direction. Speed does not.' },
           { text: 'Just memorise both definitions separately.', why: 'Side by side is what fixes a mix-up.' },
+          { text: "Not quite. Ask the AI to compare them in a table: meaning, example, and the common mix-up. Then add them to a do-not-confuse list." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -110,11 +110,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why learn two similar ideas side by side instead of one at a time?',
         options: [
-          { text: 'Seeing the differences together is what stops you mixing them up' },
           { text: 'It is quicker to read', why: 'Maybe, but the real gain is telling them apart.' },
+          { text: 'Seeing the differences together is what stops you mixing them up' },
           { text: 'They are always tested together', why: 'Not always. They are confused together.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',

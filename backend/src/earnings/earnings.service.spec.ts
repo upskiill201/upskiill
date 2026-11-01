@@ -454,7 +454,7 @@ describe('EarningsService — refunds', () => {
 });
 
 describe('EarningsService — balances', () => {
-  it('computes available = lifetime − pendingClearing − reserved', async () => {
+  it('computes available = lifetime − pendingClearing − reserved − paid out', async () => {
     const prisma = {
       earningsTransaction: {
         aggregate: jest.fn().mockImplementation(({ where }: any) => {
@@ -479,7 +479,8 @@ describe('EarningsService — balances', () => {
     expect(b.lifetimeEarned).toBe(12000);
     expect(b.pendingClearing).toBe(3000);
     expect(b.reservedForPayout).toBe(2500);
-    expect(b.available).toBe(6500);
+    // 12000 − 3000 − 2500 − 4000: money already paid can't be requested again
+    expect(b.available).toBe(2500);
     expect(b.totalPaidOut).toBe(4000);
   });
 });

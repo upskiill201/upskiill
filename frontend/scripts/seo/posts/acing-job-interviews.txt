@@ -1,0 +1,315 @@
+=== star-method-explained
+title: STAR Method Explained: Answer Behavioural Interview Questions
+desc: The STAR method structures answers with Situation, Task, Action and Result. Learn the steps, examples and tips to prepare strong stories.
+tags: star method, star interview method, star method examples, behavioral interview answers, interview preparation
+rel: how-to-ace-a-job-interview, common-interview-questions-and-answers
+q: What does STAR stand for? | Situation, Task, Action and Result.
+q: How long should a STAR answer be? | Around one to two minutes.
+q: How many stories should I prepare? | Five to seven versatile stories covering teamwork, challenges, leadership, mistakes and achievements.
+---
+A simple structure for answering "Tell me about a time when...".
+
+## Direct answer
+
+The STAR method answers behavioural questions by describing the Situation, the Task you faced, the Action you took and the Result. Focus most of your answer on your actions and the measurable result. Prepare several stories in advance.
+
+## Example
+
+**Question:** Tell me about a time you handled a difficult customer.
+- **Situation:** A customer was angry about a late delivery.
+- **Task:** I needed to resolve it and keep them.
+- **Action:** I listened, apologised, found the delay and arranged expedited shipping with a discount.
+- **Result:** The customer stayed and left a positive review.
+
+## Tips
+
+1. Use "I", not "we", for your actions.
+2. Include numbers where you can.
+3. Keep it concise.
+4. End with what you learned.
+
+## The bottom line
+
+Prepare stories, not scripts.
+
+=== salary-expectations-interview
+title: How to Answer "What Are Your Salary Expectations?" in an Interview
+desc: How to handle the salary question: research the range, answer with a researched figure, defer politely when needed and avoid underselling yourself.
+tags: salary expectations, what are your salary expectations, salary expectations answer, interview salary question, how to answer salary question
+rel: how-to-negotiate-salary, negotiate-salary-guide
+q: How do I answer salary expectations? | Give a researched range based on market data and your experience, and say you are open to discussing the overall package.
+q: Can I ask for their budget first? | Yes. Asking for the range of the role is reasonable.
+q: Should I give my current salary? | In many places you are not required to, and some regions restrict employers from asking. Check local rules.
+---
+The first number you say can shape the offer.
+
+## Direct answer
+
+Answer with a researched range and stay open to discussion. For example: "Based on my research and experience, I am looking for X to Y. I am open to discussing the total package." If you lack information, ask about the budget for the role.
+
+## Prepare
+
+1. Research typical pay for the role and location.
+2. Know your minimum.
+3. Consider benefits.
+
+## Scripts
+
+- "What is the budgeted range for this role?"
+- "Based on market data, I am looking at X to Y."
+
+## The bottom line
+
+Do not guess. Research and answer with confidence.
+
+=== questions-to-ask-the-interviewer
+title: 20 Questions to Ask the Interviewer (and Ones to Avoid)
+desc: Smart questions to ask at the end of an interview about the role, team, success and growth, plus questions to avoid early on.
+tags: questions to ask the interviewer, questions to ask at the end of an interview, do you have any questions for us, interview questions to ask, interview tips
+rel: how-to-ace-a-job-interview, how-to-prepare-for-an-interview
+q: Should I ask questions at the end? | Yes. It shows interest and helps you decide if the job fits.
+q: How many should I ask? | Two to four good ones.
+q: What should I avoid asking? | Questions easily answered online and ones about pay and leave too early.
+---
+Interviews go both ways.
+
+## Direct answer
+
+Ask thoughtful questions about the role, team, success measures and growth. Prepare several, pick two to four and listen carefully. Avoid questions about things you could easily find online.
+
+## Good questions
+
+1. What does success look like in the first 90 days?
+2. What are the biggest challenges in this role?
+3. How would you describe the team culture?
+4. How is performance measured?
+5. What opportunities are there to learn and grow?
+6. What are the next steps in the process?
+7. What do you enjoy most about working here?
+
+## Avoid
+
+- "What does your company do?"
+- Pay and leave questions in a first interview, unless they raise it.
+
+## The bottom line
+
+Good questions show you are serious.
+
+=== panel-interview-tips
+title: Panel Interview Tips: How to Handle Several Interviewers
+desc: Panel interviews involve multiple interviewers. Learn how to prepare, share eye contact, address each person and handle follow-up.
+tags: panel interview, panel interview tips, how to prepare for a panel interview, group interview, interview with multiple people
+rel: how-to-ace-a-job-interview, star-method-explained
+q: What is a panel interview? | An interview with two or more interviewers at the same time.
+q: How do I handle eye contact? | Look at the person asking, then share eye contact with others as you answer.
+q: How do I prepare? | Research each panellist and prepare answers to a range of questions.
+---
+More faces, same goal: show how you can help.
+
+## Direct answer
+
+For a panel interview, research each interviewer, prepare varied answers, direct your response mainly to the questioner while including the others, take notes and thank everyone. Ask each person a question if the format allows.
+
+## Tips
+
+1. Learn names and roles.
+2. Greet each panellist.
+3. Make eye contact with all.
+4. Pause before answering.
+5. Bring copies of your resume.
+6. Send thank-you notes.
+
+## The bottom line
+
+Treat each person as an individual and the panel as one audience.
+
+=== video-interview-guide
+title: Video Interview Guide: Setup, Camera, Lighting and Etiquette
+desc: Prepare for a video interview: test technology, set up lighting and background, dress well, look at the camera and handle technical problems.
+tags: video interview, video interview tips, zoom interview tips, online job interview, remote interview setup
+rel: phone-and-video-interview-tips, how-to-ace-a-job-interview
+q: How do I prepare for a video interview? | Test your tech, choose a quiet place with good lighting, dress as for in person and have notes ready.
+q: Where should I look? | At the camera when speaking and at the screen when listening.
+q: What if my connection fails? | Have a backup plan such as phone data and the interviewer's number.
+---
+The interview is the same. The setting is different.
+
+## Direct answer
+
+For a video interview, test your camera, microphone and internet, set up good lighting, choose a tidy background, dress professionally, look at the camera and keep notes nearby. Have a backup plan if your connection fails.
+
+## Checklist
+
+- [ ] Test the link and software.
+- [ ] Light your face from the front.
+- [ ] Use a plain background.
+- [ ] Wear headphones if helpful.
+- [ ] Close other apps.
+- [ ] Have your resume and notes.
+- [ ] Join five minutes early.
+
+## During
+
+Speak clearly, smile, avoid distractions and nod while listening.
+
+## The bottom line
+
+Prepare the tech so you can focus on the conversation.
+
+=== interview-anxiety
+title: Interview Anxiety: 10 Ways to Calm Nerves Before and During
+desc: Calm interview nerves with preparation, breathing, reframing, practice and a simple pre-interview routine, plus what to do if your mind goes blank.
+tags: interview anxiety, interview nerves, how to calm nerves before interview, nervous in interview, interview confidence
+rel: how-to-ace-a-job-interview, how-to-speak-confidently
+q: Is it normal to be nervous in an interview? | Yes. A little adrenaline can help you stay alert.
+q: What if my mind goes blank? | Pause, take a breath, ask to repeat the question or say you need a moment to think.
+q: What helps most? | Preparation and practising answers aloud.
+---
+Nerves mean you care. Channel them.
+
+## Direct answer
+
+To calm interview anxiety, prepare thoroughly, practise answers out loud, use slow breathing, arrive early and reframe nerves as energy. If your mind goes blank, pause, breathe and ask for a moment.
+
+## 10 ways
+
+1. Practise aloud with a friend.
+2. Research the company.
+3. Prepare your stories.
+4. Plan your route or setup.
+5. Sleep and eat well.
+6. Breathe slowly: in for four, out for six.
+7. Reframe: "I am excited."
+8. Arrive early.
+9. Remember they want you to do well.
+10. Debrief and learn afterwards.
+
+## If it goes wrong
+
+"Could I take a moment to think about that?" is fine.
+
+## The bottom line
+
+Preparation is the best remedy for nerves.
+
+=== case-interview-basics
+title: Case Interview Basics: How to Approach Business Case Questions
+desc: Case interviews test problem solving. Learn the structure: clarify, structure, analyse, recommend, with tips and practice ideas.
+tags: case interview, case interview basics, case interview tips, consulting interview, business case questions
+rel: how-to-ace-a-job-interview
+q: What is a case interview? | An interview where you work through a business problem aloud, showing structured thinking.
+q: How do I structure my answer? | Clarify the question, outline a framework, analyse each part and give a recommendation.
+q: How do I practise? | Do practice cases aloud with a partner and review your structure.
+---
+They are testing how you think, not what you know.
+
+## Direct answer
+
+In a case interview, clarify the problem, structure your approach, analyse each part with the data given and finish with a clear recommendation. Think aloud, ask good questions and summarise regularly.
+
+## Steps
+
+1. **Clarify:** objective, context, constraints.
+2. **Structure:** outline how you will analyse.
+3. **Analyse:** calculations and insights.
+4. **Recommend:** a clear answer with reasons and risks.
+
+## Practice
+
+- Read case examples.
+- Practise mental maths.
+- Rehearse out loud.
+
+## The bottom line
+
+Structured thinking, spoken clearly.
+
+=== interview-red-flags
+title: Interview Red Flags: Warning Signs a Job May Not Be Right
+desc: Spot red flags in interviews: vague role descriptions, high turnover, disrespect, unrealistic expectations and pressure to decide. What to ask and do next.
+tags: interview red flags, job red flags, red flags in a job interview, bad employer warning signs, how to spot a bad job
+rel: how-to-ace-a-job-interview, questions-to-ask-the-interviewer
+q: What are red flags in an interview? | Warning signs about the employer, such as vague answers, disrespect, constant turnover or pressure to accept quickly.
+q: Should I walk away at the first red flag? | Not always. Ask questions and look for patterns.
+q: How do I check turnover? | Ask how long people stay and why the role is open.
+---
+You are interviewing them too.
+
+## Direct answer
+
+Common red flags are vague role descriptions, interviewers who are late or disrespectful, high turnover, unrealistic expectations and pressure to decide quickly. Ask direct questions, look for patterns and trust your judgement.
+
+## Signs
+
+- The role changes as you talk.
+- Nobody can say how success is measured.
+- Negative talk about former employees.
+- Pay or terms are unclear.
+- Pressure to accept immediately.
+
+## Questions to ask
+
+- Why is this role open?
+- How long have people in this team stayed?
+- What would a typical week look like?
+
+## The bottom line
+
+A job is a two-way decision.
+
+=== gaps-in-resume
+title: How to Explain Gaps in Your Resume Honestly and Confidently
+desc: Employment gaps are common. Learn how to explain them in a resume and interview, what to include and how to focus on skills and readiness.
+tags: gaps in resume, employment gap, how to explain resume gap, career break interview, resume gap tips
+rel: how-to-write-a-cv-with-no-experience, how-to-ace-a-job-interview
+q: Should I explain a resume gap? | Yes, briefly and honestly, then move on to your skills and readiness.
+q: What reasons are acceptable? | Caring, health, study, travel, redundancy and many other valid reasons.
+q: Should I include details? | Share what you are comfortable with. You do not need to give private details.
+---
+A gap is a fact, not a flaw.
+
+## Direct answer
+
+Explain a gap honestly and briefly, then pivot to what you learned, what you did and why you are ready now. Do not apologise. Add relevant activities such as courses, volunteering or projects.
+
+## Script
+
+"I took time out to care for a family member. During that time I completed a project management course, and I am now ready to return to full-time work."
+
+## Resume tips
+
+1. Use years rather than months if it helps.
+2. Include courses, freelance work or volunteering.
+3. Keep it honest.
+
+## The bottom line
+
+Be matter-of-fact and focus on the future.
+
+=== why-should-we-hire-you
+title: "Why Should We Hire You?": How to Answer With Examples
+desc: How to answer "Why should we hire you?": match their needs, show proof, highlight what is different about you and finish with enthusiasm.
+tags: why should we hire you, why should we hire you answer, interview answer examples, sell yourself in interview, strengths
+rel: common-interview-questions-and-answers, star-method-explained
+q: How do I answer "Why should we hire you?" | Link your skills and results to what the role needs, give a proof point and show enthusiasm.
+q: How long should the answer be? | About 60 to 90 seconds.
+q: Should I compare myself with others? | No. Focus on your strengths and fit.
+---
+It is the invitation to make your case.
+
+## Direct answer
+
+Answer by connecting your strongest skills to the employer's needs, backing them with a specific result and showing your motivation. Use a simple structure: need, proof, enthusiasm.
+
+## Template
+
+"You need someone who can [key requirement]. In my last role I [result]. I am excited about this role because [reason]."
+
+## Example
+
+"You need someone who can improve customer retention. In my last role I redesigned our onboarding emails and increased retention by 12 percent in six months. I would love to bring that approach to your team."
+
+## The bottom line
+
+Be specific, evidence-based and enthusiastic.

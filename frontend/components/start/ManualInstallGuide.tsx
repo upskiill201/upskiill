@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { MoreVertical, Menu, MonitorDown } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { browserLabel, type PwaBrowser, type PwaPlatform } from '@/lib/pwa/platform';
 import { StartButton, StartCard, StartGhostButton, StartHeadline, TeySays, startStyles } from './StartUi';
 import { HomeScreenMock } from './HomeScreenMock';
@@ -28,22 +28,22 @@ function recipeFor(platform: PwaPlatform, browser: PwaBrowser): MenuRecipe {
     switch (browser) {
       case 'samsung':
         return {
-          icon: <Menu size={18} strokeWidth={3} aria-hidden="true" />,
+          icon: <Glyph name="menu" size={18} strokeWidth={3} />,
           path: ['Open the menu (☰) in the bottom bar', 'Tap "Add page to"', 'Choose "Home screen"'],
         };
       case 'firefox':
         return {
-          icon: <MoreVertical size={18} strokeWidth={3} aria-hidden="true" />,
+          icon: <Glyph name="moreVertical" size={18} strokeWidth={3} />,
           path: ['Open the menu (⋮) in the toolbar', 'Tap "Install"', 'Confirm to add Teyro'],
         };
       case 'edge':
         return {
-          icon: <MoreVertical size={18} strokeWidth={3} aria-hidden="true" />,
+          icon: <Glyph name="moreVertical" size={18} strokeWidth={3} />,
           path: ['Open the menu (⋯) at the bottom', 'Tap "Add to phone"', 'Confirm to add Teyro'],
         };
       default:
         return {
-          icon: <MoreVertical size={18} strokeWidth={3} aria-hidden="true" />,
+          icon: <Glyph name="moreVertical" size={18} strokeWidth={3} />,
           path: ['Open the menu (⋮) in the top right', 'Tap "Install app" or "Add to Home screen"', 'Confirm to add Teyro'],
         };
     }
@@ -51,7 +51,7 @@ function recipeFor(platform: PwaPlatform, browser: PwaBrowser): MenuRecipe {
 
   // Desktop Chromium.
   return {
-    icon: <MonitorDown size={18} strokeWidth={3} aria-hidden="true" />,
+    icon: <Glyph name="install" size={18} strokeWidth={3} />,
     path: [
       'Look for the install icon at the right of the address bar',
       'Or open the browser menu and choose "Install Teyro"',

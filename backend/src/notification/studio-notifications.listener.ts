@@ -16,6 +16,7 @@ import { PostCreatedEvent } from '../community/events/community.events';
  *   STUDIO_COURSE_FINISHED a learner finished the whole course
  *   STUDIO_QUESTION       a learner asked in the course community
  *   STUDIO_PAYOUT         a payout moved (processing / paid / failed)
+ *   STUDIO_POOL           their monthly Teyro Pro pool share was posted
  *
  * Handlers never throw: a failed notice must not fail the action behind it.
  */
@@ -353,6 +354,53 @@ export class StudioNotificationsListener {
       );
     } catch (err) {
       this.logger.warn(`payout notice failed: ${(err as Error).message}`);
+    }
+  }
+
+  /**
+   * The month's Teyro Pro pool was posted. A first post says what they
+   * earned; a revision that moved their share (a late refund, a fix) says
+   * so plainly, up or down.
+   */
+  @OnEvent('pro.pool.posted', { async: true })
+  async onPoolPosted(payload: {
+    month: string;
+    revision: number;
+    creators: { creatorId: string; amountMinor: number; deltaMinor: number }[];
+  }) {
+    const [y, m] = payload.month.split('-').map(Number);
+    const monthName = new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString('en-US', { month: 'long', timeZone: 'UTC' });
+    const usd = (minor: number) => `$${(Math.abs(minor) / 100).toFixed(2)}`;
+    for (const c of payload.creators) {
+      if (c.deltaMinor === 0) continue;
+      try {
+        const first = c.deltaMinor === c.amountMinor;
+        const copy = first
+          ? {
+              title: `${usd(c.amountMinor)} from the Teyro Pro pool`,
+              body: `Your share of ${monthName}, for the minutes Pro learners spent in your courses. It's in your earnings.`,
+            }
+          : c.deltaMinor > 0
+            ? { title: `${monthName}'s pool share went up ${usd(c.deltaMinor)}`, body: 'Open Earnings for the details.' }
+            : {
+                title: `${monthName}'s pool share was corrected`,
+                body: `A refund or fix lowered it by ${usd(c.deltaMinor)}. Open Earnings for the details.`,
+              };
+        await this.notifications.createMany([
+          {
+            userId: c.creatorId,
+            type: 'STUDIO_POOL',
+            entityType: 'ProPoolRun',
+            entityId: `${payload.month}:r${payload.revision}`,
+            title: copy.title,
+            body: copy.body,
+            deepLink: '/creator/earnings',
+          },
+        ]);
+        this.relay(c.creatorId, 'STUDIO_POOL', copy.title, copy.body, '/creator/earnings', `STUDIO_POOL:${payload.month}:r${payload.revision}`);
+      } catch (err) {
+        this.logger.warn(`pool notice failed: ${(err as Error).message}`);
+      }
     }
   }
 }

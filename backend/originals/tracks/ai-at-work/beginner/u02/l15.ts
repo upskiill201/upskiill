@@ -41,11 +41,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What should the first line to a director be?',
         options: [
-          { text: 'Your recommendation or the decision needed' },
           { text: 'How the project started', why: 'Story order buries the point.' },
+          { text: 'Your recommendation or the decision needed' },
           { text: 'A long greeting', why: 'They read the first lines and decide.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -69,11 +69,11 @@ const lesson: OriginalLesson = {
         message: 'Could you send a Spanish version of the summary for our directors? First time writing to them.',
         prompt: 'Which request should Ada give the AI?',
         options: [
-          { text: 'Natural Mexican Spanish, formal "usted" for directors, keep product names in English, then back-translate to English.' },
           { text: 'Translate this to Spanish.', why: 'No formality, no check.' },
           { text: 'Make it casual Spanish with slang.', why: 'Directors, first contact: formal.' },
+          { text: 'Natural Mexican Spanish, formal "usted" for directors, keep product names in English, then back-translate to English.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -171,11 +171,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why write "6 May" instead of "05/06"?',
         options: [
-          { text: '05/06 means different dates in different countries' },
           { text: 'It looks nicer', why: 'It prevents a real misunderstanding.' },
           { text: 'Numbers cannot be translated', why: 'They can, but the order differs.' },
+          { text: '05/06 means different dates in different countries' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'chatReply',
@@ -183,11 +183,11 @@ const lesson: OriginalLesson = {
         message: 'The AI proofread your proposal and found nothing. Good to send?',
         prompt: "What's Ada's answer?",
         options: [
-          { text: 'Almost: I still check names, numbers, dates, links, attachments and recipients myself.' },
           { text: 'Yes, the AI checked it.', why: 'It checks spelling, not facts.' },
+          { text: 'Almost: I still check names, numbers, dates, links, attachments and recipients myself.' },
           { text: 'Proofreading is not needed.', why: 'It is, every important send.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',

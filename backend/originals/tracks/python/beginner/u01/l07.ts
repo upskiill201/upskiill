@@ -60,11 +60,11 @@ const lesson: OriginalLesson = {
         code: 'print("Members:", 10)',
         language: 'python',
         options: [
-          { text: 'Members: 10' },
           { text: 'Members:10', why: 'Commas add one space between items.' },
           { text: '"Members:", 10', why: 'Python prints the values, not the code.' },
+          { text: 'Members: 10' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',

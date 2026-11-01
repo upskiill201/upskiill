@@ -1,13 +1,12 @@
 'use client';
 
-import { CheckCircle2 } from 'lucide-react';
 import AuthStatusScreen from '@/components/auth/AuthStatusScreen';
 
 /** A new creator password is set. */
 export default function ResetSuccessPage() {
   return (
     <AuthStatusScreen
-      Icon={CheckCircle2}
+      art="seal"
       tone="good"
       title="Password updated"
       closeHref="/creator/login"

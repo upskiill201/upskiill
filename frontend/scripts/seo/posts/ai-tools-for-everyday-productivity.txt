@@ -1,0 +1,227 @@
+=== ai-note-taking-tools
+title: AI Note-Taking: How It Works, Benefits and Privacy Tips
+desc: AI note-taking tools transcribe, summarise and organise your notes. Learn what they can do, how to get good results and what to check about privacy.
+tags: ai note taking, ai note taker, ai notes app, transcribe and summarise notes, ai note taking privacy
+rel: best-ai-tools-for-productivity
+q: What can AI note-taking tools do? | Transcribe speech, summarise long notes, pull out action items and make notes searchable.
+q: Are AI note takers accurate? | Often good, but they can mishear names and numbers. Review before sharing.
+q: Is it safe to use them for meetings? | Tell participants, check your workplace policy and read the tool's data and retention policies.
+---
+Notes you do not have to type are notes you are more likely to keep.
+
+## Direct answer
+
+AI note-taking tools can transcribe spoken words, summarise long text, extract action items and make notes searchable. Review the output for accuracy, ask permission before recording others and check where your data is stored and who can access it.
+
+## What they do well
+
+- Turn voice notes into text.
+- Summarise long articles or lecture notes.
+- Pull out tasks and deadlines.
+- Search across notes by meaning.
+
+## Tips for better notes
+
+1. Give a short instruction: "Summarise in five bullet points with action items."
+2. Check names, numbers and dates.
+3. Keep a human edit step before sharing.
+4. Store important notes in a place you control.
+
+## Privacy checklist
+
+- Do you have consent to record?
+- Does your organisation allow the tool?
+- Where is the data stored and for how long?
+- Is your data used to train models?
+
+## The bottom line
+
+Great for saving time. Always check accuracy and privacy.
+
+=== ai-meeting-summaries
+title: AI Meeting Summaries: How to Get Useful Notes From Every Meeting
+desc: Use AI to summarise meetings into decisions, actions and owners. Learn the workflow, a prompt that works, accuracy checks and consent basics.
+tags: ai meeting summaries, ai meeting notes, summarize meeting with ai, meeting action items ai, ai for meetings
+rel: ai-note-taking-tools, ai-for-meetings
+q: Can AI summarise a meeting? | Yes, from a transcript or recording it can produce a summary, decisions and action items.
+q: What should I check? | Names, numbers, dates and whether decisions were captured correctly.
+q: Do I need consent? | Often yes. Tell participants and follow your organisation's rules and local laws.
+---
+The value of a meeting is what happens after it.
+
+## Direct answer
+
+To get a useful AI meeting summary, start with a transcript or recording, ask for decisions, action items with owners and deadlines and open questions, then check the result before sending it. Get consent to record and follow your workplace policy.
+
+## A prompt that works
+
+"Summarise this meeting transcript. List: 1) decisions made, 2) action items with owner and deadline, 3) open questions, 4) a three-sentence summary. Do not add information that is not in the transcript."
+
+## Workflow
+
+1. Get consent and record or transcribe.
+2. Paste or upload the transcript.
+3. Use the prompt above.
+4. Review for accuracy.
+5. Send within a few hours.
+
+## Common issues
+
+- Misattributed speakers.
+- Missing context.
+- Invented details, so check anything important.
+
+## The bottom line
+
+Short, accurate, owner-assigned notes make meetings worthwhile.
+
+=== ai-calendar-assistants
+title: AI Calendar Assistants: Can They Really Manage Your Schedule?
+desc: AI calendar tools can schedule, protect focus time and suggest meeting slots. Learn what they do well, where they fall short and how to use them wisely.
+tags: ai calendar, ai scheduling assistant, ai calendar app, automatic scheduling, time blocking with ai
+rel: best-ai-tools-for-productivity
+q: What do AI calendar tools do? | They find meeting times, block focus time, reschedule around conflicts and sometimes suggest priorities.
+q: Do I still need to plan my day? | Yes. They help execute a plan, but you decide priorities.
+q: Are they safe for private calendars? | Check permissions, data policies and what the tool can read or share.
+---
+Scheduling is a task AI is well suited for, with limits.
+
+## Direct answer
+
+AI calendar assistants can find meeting times, protect time for focused work, reschedule when plans change and send reminders. They save effort on logistics, but you still decide priorities and should review what they book. Check permissions and data policies before connecting your calendar.
+
+## What they do
+
+- Suggest meeting times across calendars.
+- Reserve focus time.
+- Move tasks when meetings overrun.
+- Summarise your day or week.
+
+## Where to be careful
+
+- Over-automation can clutter your calendar.
+- Access to sensitive meetings and contacts.
+- Time zone and holiday mistakes.
+
+## A simple routine
+
+1. Decide your top three priorities.
+2. Let the tool schedule them.
+3. Review each morning.
+
+## The bottom line
+
+Let AI handle the logistics and keep control of the priorities.
+
+=== notion-ai-overview
+title: Notion AI: What It Can Do and How to Use It Well
+desc: An overview of Notion AI for writing, summarising, brainstorming and organising notes and projects, with prompt tips and privacy cautions.
+tags: notion ai, notion ai features, notion ai tutorial, ai in notion, ai workspace tools
+rel: ai-note-taking-tools
+q: What is Notion AI? | AI features inside the Notion workspace that can help write, summarise, translate and organise content.
+q: Is it free? | Pricing and plans change, so check Notion's current information.
+q: Does it replace my own thinking? | No. It speeds up drafts and organisation, but you should review and edit the output.
+---
+AI built into the place where your notes already live.
+
+## Direct answer
+
+Notion AI adds writing, summarising, brainstorming and organising features inside Notion pages and databases. It can draft text, summarise long pages, pull out action items and help answer questions about your workspace. Review its output and check Notion's current plans and data policies.
+
+## Good uses
+
+- Summarise a long document.
+- Turn rough notes into a clear outline.
+- Extract tasks from meeting notes.
+- Rewrite for tone or length.
+- Search and ask questions across a workspace, where available.
+
+## Prompt tips
+
+- State the audience and format: "Write a friendly update for the team, under 100 words."
+- Paste the source text you want it to use.
+- Ask for options, then edit.
+
+## Cautions
+
+- Check facts and figures.
+- Be mindful of sensitive information.
+- Follow your organisation's policies.
+
+## The bottom line
+
+Useful when your work already lives in Notion. Keep a human in the loop.
+
+=== ai-image-tools-guide
+title: AI Image Tools: What They Can Do and How to Use Them Responsibly
+desc: A guide to AI image tools for creating and editing pictures: common uses, prompt tips, copyright and ethics questions and how to disclose AI-made images.
+tags: ai image tools, ai image generator, how to write image prompts, ai generated images copyright, ai art tools
+rel: best-ai-tools-for-productivity
+q: What can AI image tools do? | Generate images from text, edit or extend existing pictures, remove backgrounds and create variations.
+q: Can I use AI images commercially? | It depends on the tool's terms and local law. Read the licence and consider risks.
+q: How do I write a good image prompt? | Describe the subject, style, lighting, composition and mood, and iterate.
+---
+Images in seconds, with questions to think about.
+
+## Direct answer
+
+AI image tools generate or edit pictures from text descriptions. Describe the subject, style, lighting and composition, then refine. Check each tool's licence and terms for commercial use, avoid imitating living artists' work or private individuals, and be clear when an image is AI-generated where it matters.
+
+## Prompt recipe
+
+"A cosy home office at golden hour, wide shot, soft natural light, watercolour style, no text."
+
+## Uses
+
+- Mock-ups and concept art.
+- Social graphics.
+- Presentation visuals.
+- Removing backgrounds and clean-ups.
+
+## Things to consider
+
+- **Licence:** read the terms.
+- **Accuracy:** AI images can contain odd details and wrong text.
+- **Ethics:** avoid misleading images of real people or events.
+- **Disclosure:** label AI-generated content where appropriate.
+
+## The bottom line
+
+Powerful and quick, with rules to follow.
+
+=== custom-gpts-guide
+title: Custom GPTs and Custom Assistants: How to Build One for Your Work
+desc: Custom assistants let you save instructions and knowledge for repeated tasks. Learn what to include, how to test them and privacy points to check.
+tags: custom gpts, custom gpt, build a custom assistant, ai assistant instructions, reusable ai prompts
+rel: chatgpt-prompts-for-beginners
+q: What is a custom GPT or assistant? | A version of an AI chatbot configured with your own instructions, and sometimes files, for a specific task.
+q: Do I need to code? | Generally not. You write instructions in plain language.
+q: How do I make a good one? | Define its role, audience, steps, format and rules, then test with real examples.
+---
+If you keep pasting the same instructions, you need a saved assistant.
+
+## Direct answer
+
+A custom assistant stores your instructions, and sometimes reference files, so you can reuse them for a repeated task, such as drafting customer replies in your tone. Write clear instructions covering role, audience, steps, output format and rules, test with real examples and keep sensitive data out unless your policy allows it.
+
+## What to put in the instructions
+
+1. **Role:** "You help draft replies to customer emails."
+2. **Audience and tone:** friendly, concise, plain language.
+3. **Steps:** read the message, identify the question, draft a reply.
+4. **Format:** greeting, answer, next step.
+5. **Rules:** do not promise refunds, ask if information is missing.
+
+## Test it
+
+Try five real examples, note failures and refine the instructions.
+
+## Keep it safe
+
+- Do not include confidential information unless allowed.
+- Check sharing settings.
+- Update it when your process changes.
+
+## The bottom line
+
+A well-written instruction is a reusable shortcut. Test it before you trust it.

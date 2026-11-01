@@ -1,0 +1,78 @@
+---
+title: "TypeScript Interface vs Type: Differences and When to Use Each"
+description: "Interface or type alias? Learn how they differ in TypeScript, where each works best, declaration merging, unions and a simple rule for choosing."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [interfaces vs types, typescript interface vs type, interface or type, typescript type alias, declaration merging]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "TypeScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript for Beginners course"
+faq:
+  - question: "What is the difference between interface and type in TypeScript?"
+    answer: "Both describe shapes of data. Interfaces can be extended and merged. Type aliases can also describe unions, tuples and primitives."
+  - question: "Which should I use?"
+    answer: "Use interface for object shapes you may extend, and type for unions and more complex types. Consistency matters most."
+  - question: "Can they be used together?"
+    answer: "Yes. You can extend interfaces with types and vice versa in many cases."
+---
+
+Both describe the shape of data. The differences are small but real.
+
+## Direct answer
+
+Use `interface` to describe object shapes that may be extended, and `type` for unions, tuples and other complex types. For simple objects, either works. Pick one convention in your project and stick to it.
+
+## Side by side
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+}
+
+type UserType = {
+  id: number;
+  name: string;
+};
+
+type Status = "active" | "inactive"; // only a type can do this
+```
+
+## Extending
+
+```typescript
+interface Admin extends User {
+  permissions: string[];
+}
+
+type AdminType = UserType & { permissions: string[] };
+```
+
+## Key differences
+
+| | `interface` | `type` |
+| :--- | :--- | :--- |
+| Extend | `extends` | `&` intersection |
+| Union types | no | yes |
+| Declaration merging | yes | no |
+| Primitives and tuples | no | yes |
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 20 lessons, and you can start free.
+
+## The bottom line
+
+Choose one for objects, use `type` for unions, and be consistent.
+
+## More guides
+
+- [TypeScript Generics Explained With Simple Examples](/blog/typescript-generics)
+- [TypeScript Union Types](/blog/typescript-union-types)
+- [TypeScript Type Inference](/blog/typescript-type-inference)
+- [Typescript tutorial for beginners](/blog/typescript-tutorial-for-beginners)
+- [TypeScript for Beginners course](/courses/typescript-for-beginners)

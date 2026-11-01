@@ -19,20 +19,7 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite';
-import {
-  ArrowDownLeft,
-  ArrowUpRight,
-  Building2,
-  Crown,
-  FileDown,
-  Hourglass,
-  Landmark,
-  PencilLine,
-  RotateCcw,
-  Smartphone,
-  Sparkles,
-  Wallet,
-} from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { useStandaloneSound } from '@/lib/audio/useStandaloneSound';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { celebrationHaptic } from '@/lib/haptics';
@@ -78,7 +65,7 @@ interface CourseEarning {
   creatorEarningsMinor: number;
   purchases: number;
 }
-type TxType = 'SALE' | 'RENEWAL' | 'REFUND' | 'CHARGEBACK' | 'REVERSAL' | 'ADJUSTMENT';
+type TxType = 'SALE' | 'RENEWAL' | 'REFUND' | 'CHARGEBACK' | 'REVERSAL' | 'ADJUSTMENT' | 'POOL_SHARE';
 interface Tx {
   id: string;
   publicId: string;
@@ -127,6 +114,7 @@ const TX: Record<TxType, { label: string; incoming: boolean; tone: string }> = {
   CHARGEBACK: { label: 'Chargeback', incoming: false, tone: 'var(--error-red)' },
   REVERSAL: { label: 'Reversal', incoming: false, tone: 'var(--error-red)' },
   ADJUSTMENT: { label: 'Adjustment', incoming: true, tone: 'var(--color-brand)' },
+  POOL_SHARE: { label: 'Teyro Pro pool', incoming: true, tone: 'var(--brand-purple)' },
 };
 
 const PAYOUT: Record<Payout['status'], { label: string; tone: string }> = {
@@ -209,8 +197,8 @@ export function EarningsHub() {
           <span className={e.walletValue}>{money(Math.max(0, sum.available))}</span>
           <span className={e.walletChips}>
             <Pill tone={sum.agreement.isFounding ? 'var(--warning)' : 'var(--color-brand)'}>
-              {sum.agreement.isFounding ? <Crown size={11} aria-hidden="true" /> : <Sparkles size={11} aria-hidden="true" />}
-              You keep {sum.agreement.creatorSharePct}%{sum.agreement.isFounding ? ' · Founding creator' : ''}
+              <Glyph name={sum.agreement.isFounding ? 'crown' : 'sparkle'} size={11} strokeWidth={2.4} />
+              Paid from the Teyro Pro pool{sum.agreement.isFounding ? ' · Founding creator' : ''}
             </Pill>
           </span>
           <button
@@ -224,29 +212,30 @@ export function EarningsHub() {
               else setCashOut(true);
             }}
           >
-            <Wallet size={18} aria-hidden="true" /> Cash out
+            <Glyph name="wallet" size={18} strokeWidth={2.6} /> Cash out
           </button>
           {sum.available < sum.minPayoutMinor && (
             <span className={e.walletHint}>You can cash out from {money(sum.minPayoutMinor)}.</span>
           )}
         </div>
         <div className={e.walletSide}>
-          <WalletLine icon={<Hourglass size={16} />} label="Clearing" value={money(sum.pendingClearing)} hint={`Sales clear after ${sum.reserveDays} days`} />
+          <WalletLine icon={<Glyph name="hourglass" size={16} strokeWidth={2.4} />} label="Clearing" value={money(sum.pendingClearing)} hint={`Sales clear after ${sum.reserveDays} days`} />
           {sum.reservedForPayout > 0 && (
-            <WalletLine icon={<Landmark size={16} />} label="On its way to you" value={money(sum.reservedForPayout)} />
+            <WalletLine icon={<Glyph name="bank" size={16} strokeWidth={2.4} />} label="On its way to you" value={money(sum.reservedForPayout)} />
           )}
-          <WalletLine icon={<Sparkles size={16} />} label="Earned all time" value={money(sum.lifetimeEarned)} />
-          <WalletLine icon={<ArrowUpRight size={16} />} label="Paid out" value={money(sum.totalPaidOut)} />
+          <WalletLine icon={<Glyph name="sparkle" size={16} />} label="Earned all time" value={money(sum.lifetimeEarned)} />
+          <WalletLine icon={<Glyph name="upRight" size={16} strokeWidth={2.8} />} label="Paid out" value={money(sum.totalPaidOut)} />
         </div>
       </div>
 
       {sum.isEmpty ? (
-        <EmptyCard pose="tablet" title="Your first sale is on its way">
-          When learners unlock your course, every sale shows up here, with exactly what you keep ({sum.agreement.creatorSharePct}% of net).
+        <EmptyCard pose="tablet" title="Your first pool share is on its way">
+          When Teyro Pro learners spend time in your course, your monthly share of the pool shows up here, course by course.
         </EmptyCard>
       ) : (
         <>
           <Trend />
+          <ProPool />
           <div className={s.grid2}>
             <ByCourse />
             <PayoutsCard
@@ -381,17 +370,90 @@ function ByCourse() {
   );
 }
 
+/* ── the Teyro Pro pool ── */
+
+interface PoolMonths {
+  sharePct: number;
+  months: {
+    month: string;
+    postedAt: string | null;
+    amountMinor: number;
+    seconds: number;
+    courses: { courseId: string; title: string; seconds: number; learners: number; amountMinor: number }[];
+  }[];
+}
+
+const minutesOf = (seconds: number) => {
+  const m = Math.round(seconds / 60);
+  return m >= 120 ? `${Math.round(m / 6) / 10} hours` : `${m} min`;
+};
+
+/**
+ * Pro learners don't buy courses one by one: every month half of each Pro
+ * learner's payment is shared among the creators they learned with, by the
+ * minutes they spent in each course. One row per posted month.
+ */
+function ProPool() {
+  const { data, error, mutate } = useSWR<PoolMonths>('/api/earnings/pool', studioFetch);
+  if (!data && !error) return null;
+  return (
+    <Section
+      title="Teyro Pro pool"
+      note={
+        data
+          ? `Each month ${data.sharePct}% of every Pro learner's payment is shared among the creators they learned with, by minutes.`
+          : undefined
+      }
+    >
+      <div className={s.card}>
+        {error && !data ? (
+          <ErrorCard message="Didn’t load." onRetry={() => void mutate()} />
+        ) : !data || data.months.length === 0 ? (
+          <div className={s.empty}>Your first pool share lands after the first full month of Pro learners in your courses.</div>
+        ) : (
+          <div className={s.list}>
+            {data.months.map((m) => (
+              <div key={m.month} className={s.row}>
+                <span className={s.statIcon} style={{ '--tone': 'var(--brand-purple)', width: 40, height: 40 } as CSSProperties} aria-hidden="true">
+                  <Glyph name="crown" size={18} />
+                </span>
+                <span className={s.rowMain}>
+                  <span className={s.rowTitle}>
+                    {new Date(`${m.month}-01T00:00:00Z`).toLocaleDateString(undefined, { month: 'long', year: 'numeric', timeZone: 'UTC' })}
+                  </span>
+                  <span className={s.rowMeta}>
+                    <span>{minutesOf(m.seconds)} learned</span>
+                    {m.courses.slice(0, 3).map((c) => (
+                      <span key={c.courseId}>
+                        {c.title} {money(c.amountMinor)}
+                      </span>
+                    ))}
+                  </span>
+                </span>
+                <span className={s.rowTitle} style={{ color: 'var(--success-green)' }}>
+                  +{money(m.amountMinor)}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </Section>
+  );
+}
+
 /* ── activity ── */
 
-const TX_FILTERS: { value: '' | 'SALE' | 'RENEWAL' | 'REFUND'; label: string }[] = [
+const TX_FILTERS: { value: '' | 'SALE' | 'RENEWAL' | 'REFUND' | 'POOL_SHARE'; label: string }[] = [
   { value: '', label: 'All' },
+  { value: 'POOL_SHARE', label: 'Pro pool' },
   { value: 'SALE', label: 'Sales' },
   { value: 'RENEWAL', label: 'Renewals' },
   { value: 'REFUND', label: 'Refunds' },
 ];
 
 function Activity() {
-  const [type, setType] = useState<'' | 'SALE' | 'RENEWAL' | 'REFUND'>('');
+  const [type, setType] = useState<'' | 'SALE' | 'RENEWAL' | 'REFUND' | 'POOL_SHARE'>('');
   const pageSize = 20;
   const { data, error, size, setSize, isValidating, mutate } = useSWRInfinite<{ items: Tx[]; total: number }>(
     (i) => `/api/earnings/transactions?page=${i + 1}&pageSize=${pageSize}${type ? `&type=${type}` : ''}`,
@@ -446,10 +508,12 @@ function Activity() {
                 {g.rows.map((tx) => {
                   const t = TX[tx.type] ?? TX.ADJUSTMENT;
                   const amount = tx.creatorAmountMinor;
+                  const pool = tx.type === 'POOL_SHARE';
+                  const incoming = pool ? amount >= 0 : t.incoming;
                   return (
                     <div key={tx.id} className={s.row}>
                       <span className={s.statIcon} style={{ '--tone': t.tone, width: 40, height: 40 } as CSSProperties} aria-hidden="true">
-                        {t.incoming ? <ArrowDownLeft size={18} /> : <RotateCcw size={18} />}
+                        <Glyph name={incoming ? 'downLeft' : 'refresh'} size={18} strokeWidth={2.6} />
                       </span>
                       <span className={s.rowMain}>
                         <span className={s.rowTitle}>
@@ -462,9 +526,11 @@ function Activity() {
                               ? new Date(tx.occurredAt).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
                               : new Date(tx.occurredAt).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
                           </span>
-                          <span>
-                            {t.incoming ? 'Paid' : 'Refunded'} {money(Math.abs(tx.grossMinor))}
-                          </span>
+                          {!pool && (
+                            <span>
+                              {t.incoming ? 'Paid' : 'Refunded'} {money(Math.abs(tx.grossMinor))}
+                            </span>
+                          )}
                           {tx.discountMinor > 0 && <span>Coupon −{money(tx.discountMinor)}</span>}
                           {tx.feeMinor > 0 && <span>Fees −{money(tx.feeMinor)}</span>}
                           {tx.reason && <span>{tx.reason}</span>}
@@ -581,7 +647,7 @@ function MethodCard({ method, loading, onEdit }: { method: Method | null | undef
   return (
     <div className={s.card} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
       <span className={s.statIcon} style={{ width: 48, height: 48 }} aria-hidden="true">
-        {method.type === 'BANK' ? <Building2 size={22} /> : <Smartphone size={22} />}
+        <Glyph name={method.type === 'BANK' ? 'bank' : 'phone'} size={22} strokeWidth={2.4} />
       </span>
       <span className={s.rowMain}>
         <span className={s.rowTitle}>{method.maskedDisplay ?? (method.type === 'BANK' ? 'Bank account' : 'Mobile money')}</span>
@@ -592,7 +658,7 @@ function MethodCard({ method, loading, onEdit }: { method: Method | null | undef
         </span>
       </span>
       <button type="button" className={`${s.btn} ${s.btnSm}`} onClick={onEdit}>
-        <PencilLine size={14} aria-hidden="true" /> Edit
+        <Glyph name="pencil" size={14} strokeWidth={2.6} /> Edit
       </button>
     </div>
   );
@@ -611,10 +677,10 @@ function Reports({ toast }: { toast: (m: string) => void }) {
   return (
     <div className={s.card} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       <button type="button" className={s.btn} onClick={() => void get('/api/earnings/reports/transactions.csv')}>
-        <FileDown size={16} aria-hidden="true" /> Every transaction
+        <Glyph name="download" size={16} strokeWidth={2.6} /> Every transaction
       </button>
       <button type="button" className={s.btn} onClick={() => void get('/api/earnings/reports/earnings.csv?granularity=month')}>
-        <FileDown size={16} aria-hidden="true" /> Earnings by month
+        <Glyph name="download" size={16} strokeWidth={2.6} /> Earnings by month
       </button>
       <span style={{ display: 'flex', gap: 8 }}>
         <label style={{ flex: 1 }}>

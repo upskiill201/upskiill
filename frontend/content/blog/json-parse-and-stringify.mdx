@@ -1,0 +1,73 @@
+---
+title: "JSON.parse and JSON.stringify: How to Use Them (With Pitfalls)"
+description: "Learn what JSON.parse and JSON.stringify do, how to deep copy with them, how to catch errors and the values that do not survive the conversion."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [json parse, json stringify, json.parse example, json.stringify example, javascript json]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Interactive Web Pages with JavaScript turns this into short, playable lessons. Free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive Web Pages with JavaScript course"
+faq:
+  - question: "What does JSON.parse do?"
+    answer: "It converts a JSON string into a JavaScript value or object."
+  - question: "What does JSON.stringify do?"
+    answer: "It converts a JavaScript value into a JSON string."
+  - question: "Why does JSON.parse throw an error?"
+    answer: "The string is not valid JSON, for example single quotes or a trailing comma."
+---
+
+Two functions that move data in and out of text.
+
+## Direct answer
+
+`JSON.parse(text)` turns a JSON string into a JavaScript object. `JSON.stringify(value)` turns a value into a JSON string. Wrap `JSON.parse` in `try/catch`, because invalid JSON throws an error.
+
+## Examples
+
+```javascript
+const obj = JSON.parse('{"name":"Ada","age":28}');
+const text = JSON.stringify({ name: "Ada", skills: ["math", "code"] }, null, 2);
+```
+
+The `null, 2` makes the output indented and easier to read.
+
+## Safe parsing
+
+```javascript
+function safeParse(text, fallback = null) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return fallback;
+  }
+}
+```
+
+## What does not survive
+
+| Value | Result |
+| :--- | :--- |
+| `undefined` and functions | dropped |
+| `Date` | becomes a string |
+| `NaN` and `Infinity` | become `null` |
+| Circular references | throw an error |
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) course turns this into short lessons you can play in a few minutes a day. It has 37 lessons, and you can start free.
+
+## The bottom line
+
+Great for storage and APIs. Know what it drops.
+
+## More guides
+
+- [How to Build a Simple Image Carousel With JavaScript](/blog/javascript-carousel)
+- [JavaScript Event Listeners](/blog/javascript-event-listeners)
+- [querySelector and querySelectorAll in JavaScript Explained](/blog/queryselector-explained)
+- [What is json](/blog/what-is-json)
+- [Interactive Web Pages with JavaScript course](/courses/interactive-web-pages-with-javascript)

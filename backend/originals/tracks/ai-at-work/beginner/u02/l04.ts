@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Is plain language "dumbing down"?',
         options: [
-          { text: 'No. It respects the reader\'s time, and experts read it faster too' },
           { text: 'Yes, experts need complex writing', why: 'Experts are busy readers too.' },
+          { text: 'No. It respects the reader\'s time, and experts read it faster too' },
           { text: 'Only for children', why: 'It works for every adult reader.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'findBug',
@@ -130,11 +130,11 @@ const lesson: OriginalLesson = {
         message: 'Our legal team wrote this for customers: "Users are advised that modifications to account settings may be effectuated via the profile section." Can your AI make it human?',
         prompt: 'Which version should Ada send back?',
         options: [
-          { text: '"You can change your settings in your profile."' },
           { text: '"Users may effectuate modifications in the profile section."', why: 'Still passive and wordy.' },
           { text: '"Settings! Profile! Go!"', why: 'Short, but not clear or professional.' },
+          { text: '"You can change your settings in your profile."' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',
@@ -210,11 +210,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Which sentence is best?',
         options: [
-          { text: '"We need the colours approved by Wednesday so we can start building."' },
           { text: '"It would be appreciated if approval of the colours could be facilitated."', why: 'Passive, wordy, no date.' },
           { text: '"Colours?"', why: 'Short, but unclear.' },
+          { text: '"We need the colours approved by Wednesday so we can start building."' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

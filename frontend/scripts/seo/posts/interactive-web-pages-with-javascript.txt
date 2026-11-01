@@ -1,0 +1,787 @@
+=== javascript-event-listeners
+title: JavaScript Event Listeners: addEventListener Explained
+desc: Learn how addEventListener works in JavaScript, common events like click and input, the event object and how to remove listeners cleanly.
+tags: event listeners, javascript addeventlistener, javascript click event, javascript events, dom events
+rel: javascript-dom-tutorial-for-beginners
+q: What is an event listener? | A function that runs when a specific event, such as a click or key press, happens on an element.
+q: How do I add a click event in JavaScript? | Select the element and call element.addEventListener with "click" and a function.
+q: How do I remove an event listener? | Call removeEventListener with the same event type and the same function reference.
+---
+Events are how web pages react to people.
+
+## Direct answer
+
+Use `element.addEventListener(type, handler)` to run a function when an event happens. Common types are `click`, `input`, `submit`, `keydown` and `mouseover`. The handler receives an event object with details such as the target element.
+
+## Basic example
+
+```html
+<button id="btn">Click me</button>
+<script>
+  const btn = document.querySelector("#btn");
+  btn.addEventListener("click", () => {
+    alert("Clicked!");
+  });
+</script>
+```
+
+## The event object
+
+```javascript
+input.addEventListener("input", (event) => {
+  console.log(event.target.value);
+});
+```
+
+## Removing listeners
+
+```javascript
+function onClick() { console.log("hi"); }
+btn.addEventListener("click", onClick);
+btn.removeEventListener("click", onClick);
+```
+
+You must pass the same function reference, so avoid anonymous functions if you need to remove it.
+
+## Handy options
+
+```javascript
+btn.addEventListener("click", onClick, { once: true });
+```
+
+## The bottom line
+
+Select an element, listen for an event, run a function. That pattern powers nearly every interactive page.
+
+=== queryselector-explained
+title: querySelector and querySelectorAll in JavaScript Explained
+desc: Learn how to select elements with querySelector and querySelectorAll using CSS selectors, how they differ from getElementById and common mistakes.
+tags: queryselector, javascript queryselector, queryselectorall, select element javascript, document queryselector
+rel: javascript-dom-tutorial-for-beginners
+q: What does querySelector do? | It returns the first element that matches a CSS selector, or null if none match.
+q: What is the difference between querySelector and querySelectorAll? | querySelector returns one element. querySelectorAll returns a list of all matches.
+q: Why do I get null? | The element may not exist yet, or the selector may be wrong. Make sure your script runs after the page loads.
+---
+If you can select it in CSS, you can select it in JavaScript.
+
+## Direct answer
+
+`document.querySelector(selector)` returns the first element matching a CSS selector. `document.querySelectorAll(selector)` returns a list of all matches. Use `#id`, `.class` or tag names as in CSS.
+
+## Examples
+
+```javascript
+const title = document.querySelector("h1");
+const button = document.querySelector("#save");
+const items = document.querySelectorAll(".item");
+
+items.forEach((item) => {
+  item.classList.add("active");
+});
+```
+
+## getElementById vs querySelector
+
+| | `getElementById` | `querySelector` |
+| :--- | :--- | :--- |
+| Selector | id only | any CSS selector |
+| Returns | one element | first match |
+| Speed | very slightly faster | flexible |
+
+## Common mistakes
+
+- Selecting before the element exists. Put your script at the end of the body or use `defer`.
+- Forgetting `#` or `.`.
+- Treating `querySelectorAll` as an array. It is a list, but `forEach` works on it.
+
+## The bottom line
+
+Use `querySelector` for one element and `querySelectorAll` for many.
+
+=== javascript-localstorage
+title: localStorage in JavaScript: Save Data in the Browser
+desc: Learn how to save, read and remove data with localStorage in JavaScript, store objects with JSON, and the limits and privacy cautions to know.
+tags: localstorage, javascript localstorage, localstorage example, save data in browser, localstorage vs sessionstorage
+rel: javascript-dom-tutorial-for-beginners
+q: What is localStorage? | A browser feature that stores small amounts of text data that persists even after the browser is closed.
+q: How do I store an object in localStorage? | Convert it to a string with JSON.stringify, then parse it back with JSON.parse when reading.
+q: Is localStorage secure? | No. Do not store passwords, tokens or sensitive information in it.
+---
+localStorage lets your page remember things between visits.
+
+## Direct answer
+
+`localStorage` saves key-value pairs as text in the browser. Use `setItem`, `getItem` and `removeItem`. Store objects by converting them to JSON. Data stays until it is cleared, but it is not secure and should not hold sensitive information.
+
+## Basic use
+
+```javascript
+localStorage.setItem("theme", "dark");
+const theme = localStorage.getItem("theme"); // "dark"
+localStorage.removeItem("theme");
+localStorage.clear();
+```
+
+## Storing objects
+
+```javascript
+const todos = [{ text: "Learn JS", done: false }];
+localStorage.setItem("todos", JSON.stringify(todos));
+
+const saved = JSON.parse(localStorage.getItem("todos")) || [];
+```
+
+## localStorage vs sessionStorage
+
+| | `localStorage` | `sessionStorage` |
+| :--- | :--- | :--- |
+| Lasts | until cleared | until the tab closes |
+
+## Limits and cautions
+
+- Only strings are stored.
+- Storage space is small, roughly a few megabytes.
+- Never store passwords or private data.
+- Wrap calls in `try/catch`, since storage can be blocked.
+
+## The bottom line
+
+Great for preferences and small app state. See [web storage](/blog/web-storage-basics).
+
+=== javascript-fetch-api
+title: JavaScript fetch API: How to Get Data From a Server
+desc: Learn how to use the fetch API to request data, handle JSON, check for errors, send POST requests and show results on your page.
+tags: fetch api, javascript fetch, fetch json example, javascript api call, fetch post request
+rel: async-await-javascript
+q: What is the fetch API? | A built-in browser function for making network requests and receiving responses as promises.
+q: How do I get JSON with fetch? | Call fetch(url), then response.json() to parse the body.
+q: Does fetch reject on a 404? | No. Fetch only rejects on network failure. Check response.ok yourself.
+---
+`fetch` is how a web page talks to the outside world.
+
+## Direct answer
+
+`fetch(url)` makes a request and returns a promise for the response. Call `response.json()` to read JSON data. Always check `response.ok`, because fetch does not throw on HTTP errors like 404.
+
+## GET example
+
+```javascript
+async function loadUsers() {
+  try {
+    const response = await fetch("https://jsonplaceholder.typicode.com/users");
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    const users = await response.json();
+    console.log(users);
+  } catch (error) {
+    console.error("Request failed", error);
+  }
+}
+```
+
+## POST example
+
+```javascript
+await fetch("/api/messages", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ text: "Hello" }),
+});
+```
+
+## Show it on the page
+
+```javascript
+const list = document.querySelector("#list");
+users.forEach((u) => {
+  const li = document.createElement("li");
+  li.textContent = u.name;
+  list.append(li);
+});
+```
+
+## The bottom line
+
+Fetch, check `ok`, parse JSON, update the page.
+
+=== form-validation-javascript
+title: JavaScript Form Validation: Check Input Before Submit
+desc: Learn JavaScript form validation with the submit event, simple checks, error messages and HTML built-in validation, plus why you still validate on the server.
+tags: form validation, javascript form validation, validate form javascript, html5 form validation, client side validation
+rel: javascript-form-validation-example
+q: What is form validation? | Checking that user input is complete and correct before it is processed.
+q: Is client-side validation enough? | No. Users can bypass it, so always validate on the server too.
+q: How do I stop a form from submitting? | Call event.preventDefault() in the submit handler when validation fails.
+---
+Good validation catches mistakes early and tells people how to fix them.
+
+## Direct answer
+
+Add a `submit` event listener to the form, check the values, show a clear message for each problem and call `event.preventDefault()` if the form is invalid. Use HTML attributes like `required` and `type="email"` for simple checks. Always validate again on the server.
+
+## Example
+
+```html
+<form id="signup" novalidate>
+  <input id="email" type="email" required>
+  <p id="error" role="alert"></p>
+  <button>Sign up</button>
+</form>
+```
+
+```javascript
+const form = document.querySelector("#signup");
+const email = document.querySelector("#email");
+const error = document.querySelector("#error");
+
+form.addEventListener("submit", (event) => {
+  if (!email.value.includes("@")) {
+    event.preventDefault();
+    error.textContent = "Please enter a valid email.";
+  } else {
+    error.textContent = "";
+  }
+});
+```
+
+## Tips
+
+- Say what is wrong and how to fix it.
+- Do not clear what the user typed.
+- Use `aria-live` or `role="alert"` for accessibility.
+- Validate on the server too.
+
+## The bottom line
+
+Validate early for friendliness and again on the server for safety. See [a full example](/blog/javascript-form-validation-example).
+
+=== event-bubbling-javascript
+title: Event Bubbling and Delegation in JavaScript Explained
+desc: Events bubble up from the clicked element to its parents. Learn bubbling, capturing, stopPropagation and event delegation with practical examples.
+tags: event bubbling, event delegation, javascript event propagation, stoppropagation, event capturing
+rel: javascript-event-listeners
+q: What is event bubbling? | When an event happens on an element, it also triggers on its parent elements, moving up the DOM.
+q: What is event delegation? | Attaching one listener to a parent to handle events from many children, using event.target.
+q: How do I stop bubbling? | Call event.stopPropagation() in the handler.
+---
+Click a button inside a card inside a list, and all three can hear it.
+
+## Direct answer
+
+Event bubbling means an event travels from the element where it happened up through its parents. Event delegation uses that: you attach one listener to a parent and check `event.target` to see which child was clicked. It is efficient and works for elements added later.
+
+## Bubbling in action
+
+```html
+<ul id="list">
+  <li>One</li>
+  <li>Two</li>
+</ul>
+```
+
+```javascript
+document.querySelector("#list").addEventListener("click", (event) => {
+  if (event.target.tagName === "LI") {
+    console.log("Clicked", event.target.textContent);
+  }
+});
+```
+
+## Stopping propagation
+
+```javascript
+child.addEventListener("click", (event) => {
+  event.stopPropagation();
+});
+```
+
+Use it sparingly. It can make other code harder to understand.
+
+## Why delegation is useful
+
+- One listener instead of many.
+- Works for items added dynamically.
+- Less memory use.
+
+## The bottom line
+
+Understand bubbling and you can handle events cleanly for lists, menus and tables.
+
+=== javascript-modal-window
+title: How to Build a Modal Window With HTML, CSS and JavaScript
+desc: Build an accessible modal dialog with HTML, CSS and JavaScript: open and close buttons, a backdrop, closing with Escape and focus basics.
+tags: javascript modals, how to make a modal, modal popup javascript, html dialog, accessible modal
+rel: javascript-event-listeners
+q: How do I make a modal in JavaScript? | Create a hidden dialog element, show it on a button click and add a close button and Escape key handling.
+q: Can I use the HTML dialog element? | Yes. The dialog element has built-in methods showModal and close and handles focus and the backdrop.
+q: How do I make a modal accessible? | Use a real dialog, label it, keep focus inside it, return focus when closed and allow Escape to close.
+---
+Modals are common and easy to get wrong. The `dialog` element does most of the work for you.
+
+## Direct answer
+
+Use the HTML `<dialog>` element. Call `dialog.showModal()` to open it and `dialog.close()` to close it. The browser provides the backdrop, traps focus and closes on Escape.
+
+## Example
+
+```html
+<button id="open">Open</button>
+
+<dialog id="modal">
+  <h2>Hello</h2>
+  <p>This is a modal.</p>
+  <button id="close">Close</button>
+</dialog>
+```
+
+```javascript
+const modal = document.querySelector("#modal");
+document.querySelector("#open").addEventListener("click", () => modal.showModal());
+document.querySelector("#close").addEventListener("click", () => modal.close());
+```
+
+## Style the backdrop
+
+```css
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+```
+
+## Accessibility checklist
+
+- Give the dialog a heading.
+- Make sure the first focusable element is sensible.
+- Return focus to the opener after closing.
+- Do not rely on colour alone.
+
+## The bottom line
+
+Prefer the built-in dialog element before building your own.
+
+=== dark-mode-toggle-javascript
+title: How to Add a Dark Mode Toggle With CSS and JavaScript
+desc: Add a dark mode toggle that respects the system setting and remembers the choice. Uses CSS variables, a data attribute and localStorage.
+tags: dark mode toggle, javascript dark mode, css variables dark mode, prefers-color-scheme, theme switcher
+rel: javascript-localstorage
+q: How do I add dark mode with JavaScript? | Define colours as CSS variables, switch them with a data attribute on the html element and save the choice in localStorage.
+q: How do I detect the user's system theme? | Use the prefers-color-scheme media query or window.matchMedia.
+q: Do I need JavaScript for dark mode? | Not for system-based dark mode, but you need it for a manual toggle.
+---
+A small feature that people notice and appreciate.
+
+## Direct answer
+
+Define your colours as CSS variables, override them for dark mode, toggle a `data-theme` attribute on `<html>` with JavaScript and save the user's choice in `localStorage`. Use `prefers-color-scheme` as the default.
+
+## CSS
+
+```css
+:root {
+  --bg: #ffffff;
+  --text: #111111;
+}
+:root[data-theme="dark"] {
+  --bg: #111111;
+  --text: #f5f5f5;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+```
+
+## JavaScript
+
+```javascript
+const root = document.documentElement;
+const saved = localStorage.getItem("theme");
+const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+root.dataset.theme = saved || (prefersDark ? "dark" : "light");
+
+document.querySelector("#toggle").addEventListener("click", () => {
+  const next = root.dataset.theme === "dark" ? "light" : "dark";
+  root.dataset.theme = next;
+  localStorage.setItem("theme", next);
+});
+```
+
+## Tips
+
+- Check contrast in both themes.
+- Avoid a flash by setting the theme early in the page head.
+
+## The bottom line
+
+Variables plus a data attribute plus localStorage makes a neat, small feature.
+
+=== javascript-animation-basics
+title: JavaScript Animation Basics: Transitions and requestAnimationFrame
+desc: Learn the ways to animate on the web: CSS transitions, keyframes, the Web Animations API and requestAnimationFrame, and which to use for each job.
+tags: javascript animation, requestanimationframe, css transitions javascript, web animations api, animate with javascript
+rel: javascript-dom-tutorial-for-beginners
+q: How do I animate with JavaScript? | Often by toggling classes that use CSS transitions, or using the Web Animations API or requestAnimationFrame for custom motion.
+q: What is requestAnimationFrame? | A browser method that runs your function before the next repaint, ideal for smooth animations.
+q: Which is better, CSS or JavaScript animation? | Use CSS for simple effects and JavaScript when you need dynamic control.
+---
+The best animation is usually the simplest one that works.
+
+## Direct answer
+
+For most effects, add or remove a CSS class with JavaScript and let a CSS transition do the animation. For more control, use the Web Animations API (`element.animate`) or `requestAnimationFrame`. Animate `transform` and `opacity` for smooth results.
+
+## CSS plus a class
+
+```css
+.box { transition: transform 0.3s ease; }
+.box.moved { transform: translateX(100px); }
+```
+
+```javascript
+box.classList.toggle("moved");
+```
+
+## Web Animations API
+
+```javascript
+box.animate(
+  [{ opacity: 0 }, { opacity: 1 }],
+  { duration: 400, easing: "ease-out", fill: "forwards" }
+);
+```
+
+## requestAnimationFrame
+
+```javascript
+let x = 0;
+function step() {
+  x += 2;
+  box.style.transform = `translateX(${x}px)`;
+  if (x < 300) requestAnimationFrame(step);
+}
+requestAnimationFrame(step);
+```
+
+## Tips
+
+- Animate `transform` and `opacity` rather than layout properties.
+- Respect `prefers-reduced-motion`.
+- Keep animations short.
+
+## The bottom line
+
+Start with CSS transitions and reach for JavaScript only when you need it.
+
+=== to-do-list-app-javascript
+title: Build a To-Do List App in JavaScript: Step by Step
+desc: Build a to-do list app with HTML, CSS and JavaScript: add, complete and delete tasks, and save them in localStorage. Full code included.
+tags: to do list app javascript, javascript to do list, javascript project for beginners, build todo app, vanilla javascript project
+rel: javascript-localstorage
+q: Is a to-do list a good first JavaScript project? | Yes. It covers the DOM, events, arrays and storage in one small app.
+q: How do I save tasks? | Store the tasks array in localStorage using JSON.stringify and load it with JSON.parse.
+q: What can I add next? | Editing, filters, due dates, drag and drop and a clear completed button.
+---
+A to-do list is the classic first project for a reason.
+
+## Direct answer
+
+A to-do list app needs an input, a button, a list and a few functions: add a task, toggle done, delete and save. Keep tasks in an array, render the array to the page and save it to `localStorage` after every change.
+
+## HTML
+
+```html
+<form id="form">
+  <input id="text" placeholder="Add a task" required>
+  <button>Add</button>
+</form>
+<ul id="list"></ul>
+```
+
+## JavaScript
+
+```javascript
+const form = document.querySelector("#form");
+const text = document.querySelector("#text");
+const list = document.querySelector("#list");
+
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+function save() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function render() {
+  list.innerHTML = "";
+  tasks.forEach((task, index) => {
+    const li = document.createElement("li");
+    li.textContent = task.text;
+    if (task.done) li.style.textDecoration = "line-through";
+    li.addEventListener("click", () => {
+      task.done = !task.done;
+      save();
+      render();
+    });
+    const del = document.createElement("button");
+    del.textContent = "Delete";
+    del.addEventListener("click", (e) => {
+      e.stopPropagation();
+      tasks.splice(index, 1);
+      save();
+      render();
+    });
+    li.append(del);
+    list.append(li);
+  });
+}
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  tasks.push({ text: text.value, done: false });
+  text.value = "";
+  save();
+  render();
+});
+
+render();
+```
+
+## Ideas to extend it
+
+- Edit a task.
+- Filter all, active and done.
+- Add due dates.
+
+## The bottom line
+
+Small app, big lessons. Build it, then change it.
+
+=== debounce-javascript
+title: Debounce in JavaScript: What It Is and How to Write One
+desc: Debounce delays a function until the user stops triggering it. Learn why it matters for search boxes and resize events, with a simple implementation.
+tags: debounce, javascript debounce, debounce function, debounce vs throttle, search input debounce
+rel: javascript-event-listeners
+q: What is debounce? | A technique that delays running a function until a set time has passed since it was last called.
+q: What is the difference between debounce and throttle? | Debounce waits until activity stops. Throttle runs at most once per interval while activity continues.
+q: When should I use debounce? | Search-as-you-type, window resize handlers and auto-save.
+---
+Without debounce, typing "hello" can fire five network requests.
+
+## Direct answer
+
+Debounce wraps a function so it only runs after the user has stopped triggering it for a set delay. It reduces unnecessary work, such as sending a search request on every keystroke.
+
+## Implementation
+
+```javascript
+function debounce(fn, delay) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
+const search = debounce((query) => {
+  console.log("Searching for", query);
+}, 300);
+
+input.addEventListener("input", (e) => search(e.target.value));
+```
+
+## Debounce vs throttle
+
+| | Debounce | Throttle |
+| :--- | :--- | :--- |
+| Runs | after activity stops | at regular intervals |
+| Good for | search, auto-save | scroll, resize |
+
+## The bottom line
+
+Debounce is a closure plus `setTimeout`. A small function with a big impact.
+
+=== javascript-api-calls
+title: How to Call an API in JavaScript: GET, POST and Error Handling
+desc: Learn how to call an API in JavaScript with fetch, send query parameters and JSON, handle errors and avoid common mistakes like CORS and missing keys.
+tags: javascript api calls, how to call an api in javascript, rest api javascript, fetch api example, api request javascript
+rel: javascript-fetch-api
+q: What is an API? | An application programming interface, a way for programs to request data or actions from each other, often over HTTP.
+q: What is CORS? | A browser security rule that controls which websites can request data from another origin.
+q: Should I put API keys in browser code? | No. Anything in front-end code is visible. Use a server to keep secrets safe.
+---
+APIs let your page use data from other services: weather, maps, quotes, your own backend.
+
+## Direct answer
+
+Call an API from JavaScript with `fetch`. Build the URL with query parameters, send JSON for POST requests, check `response.ok` and handle errors with `try/catch`. Never put private API keys in front-end code.
+
+## GET with parameters
+
+```javascript
+const params = new URLSearchParams({ q: "london", units: "metric" });
+const response = await fetch(`https://api.example.com/weather?${params}`);
+const data = await response.json();
+```
+
+## POST with JSON
+
+```javascript
+const res = await fetch("/api/notes", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ title: "Hello" }),
+});
+```
+
+## Handle problems
+
+- **Network errors:** caught by `try/catch`.
+- **HTTP errors:** check `response.ok`.
+- **CORS errors:** the server must allow your origin.
+- **Rate limits:** read the API's documentation.
+
+## The bottom line
+
+See [the fetch API guide](/blog/javascript-fetch-api) for the basics, then practise with a free public API.
+
+=== web-storage-basics
+title: Web Storage: localStorage, sessionStorage and Cookies Compared
+desc: Compare localStorage, sessionStorage, cookies and IndexedDB: what each stores, how long data lasts, size limits and which to choose.
+tags: web storage, localstorage vs sessionstorage, cookies vs localstorage, indexeddb, browser storage
+rel: javascript-localstorage
+q: What is web storage? | A set of browser features for saving data on the user's device, including localStorage and sessionStorage.
+q: What is the difference between cookies and localStorage? | Cookies are sent to the server with each request and have small limits. localStorage stays in the browser and holds more.
+q: Which should I use? | localStorage for preferences, sessionStorage for temporary data and cookies for server-side sessions with secure flags.
+---
+Browsers offer several ways to remember data.
+
+## Direct answer
+
+localStorage keeps data until cleared. sessionStorage keeps it until the tab closes. Cookies are small pieces of data sent to the server with requests. IndexedDB stores larger structured data. Choose based on how long you need the data, how much, and whether the server needs it.
+
+## Comparison
+
+| | localStorage | sessionStorage | Cookies | IndexedDB |
+| :--- | :--- | :--- | :--- | :--- |
+| Lasts | until cleared | until tab closes | set by expiry | until cleared |
+| Sent to server | no | no | yes | no |
+| Size | a few MB | a few MB | very small | much larger |
+| Data type | strings | strings | strings | structured |
+
+## Safety
+
+Do not store passwords or sensitive tokens in localStorage or sessionStorage. Use secure, HTTP-only cookies for authentication where appropriate.
+
+## The bottom line
+
+Pick the simplest tool that fits the job.
+
+=== json-parse-and-stringify
+title: JSON.parse and JSON.stringify: How to Use Them (With Pitfalls)
+desc: Learn what JSON.parse and JSON.stringify do, how to deep copy with them, how to catch errors and the values that do not survive the conversion.
+tags: json parse, json stringify, json.parse example, json.stringify example, javascript json
+rel: what-is-json
+q: What does JSON.parse do? | It converts a JSON string into a JavaScript value or object.
+q: What does JSON.stringify do? | It converts a JavaScript value into a JSON string.
+q: Why does JSON.parse throw an error? | The string is not valid JSON, for example single quotes or a trailing comma.
+---
+Two functions that move data in and out of text.
+
+## Direct answer
+
+`JSON.parse(text)` turns a JSON string into a JavaScript object. `JSON.stringify(value)` turns a value into a JSON string. Wrap `JSON.parse` in `try/catch`, because invalid JSON throws an error.
+
+## Examples
+
+```javascript
+const obj = JSON.parse('{"name":"Ada","age":28}');
+const text = JSON.stringify({ name: "Ada", skills: ["math", "code"] }, null, 2);
+```
+
+The `null, 2` makes the output indented and easier to read.
+
+## Safe parsing
+
+```javascript
+function safeParse(text, fallback = null) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return fallback;
+  }
+}
+```
+
+## What does not survive
+
+| Value | Result |
+| :--- | :--- |
+| `undefined` and functions | dropped |
+| `Date` | becomes a string |
+| `NaN` and `Infinity` | become `null` |
+| Circular references | throw an error |
+
+## The bottom line
+
+Great for storage and APIs. Know what it drops.
+
+=== javascript-carousel
+title: How to Build a Simple Image Carousel With JavaScript
+desc: Build an image carousel with HTML, CSS and JavaScript: previous and next buttons, dots, keyboard support and accessibility tips.
+tags: javascript carousel, image slider javascript, how to make a carousel, simple slider, javascript project
+rel: javascript-event-listeners
+q: How do I make an image slider in JavaScript? | Keep an index of the current slide, show that slide and update the index when the buttons are clicked.
+q: Should I use a library? | A small custom carousel is a good learning project. For complex needs, a well-maintained library can save time.
+q: How do I make a carousel accessible? | Use buttons with labels, support keyboard navigation and avoid autoplay that cannot be paused.
+---
+A carousel is a good way to practise state and the DOM.
+
+## Direct answer
+
+Keep an array of slides and a current index. Show the active slide, hide the others and change the index with next and previous buttons. Wrap around at the ends and give controls clear labels.
+
+## HTML
+
+```html
+<div class="carousel">
+  <button id="prev" aria-label="Previous slide">Prev</button>
+  <img id="slide" src="img1.jpg" alt="Slide 1">
+  <button id="next" aria-label="Next slide">Next</button>
+</div>
+```
+
+## JavaScript
+
+```javascript
+const slides = [
+  { src: "img1.jpg", alt: "Slide 1" },
+  { src: "img2.jpg", alt: "Slide 2" },
+  { src: "img3.jpg", alt: "Slide 3" },
+];
+let index = 0;
+const img = document.querySelector("#slide");
+
+function show() {
+  img.src = slides[index].src;
+  img.alt = slides[index].alt;
+}
+
+document.querySelector("#next").addEventListener("click", () => {
+  index = (index + 1) % slides.length;
+  show();
+});
+document.querySelector("#prev").addEventListener("click", () => {
+  index = (index - 1 + slides.length) % slides.length;
+  show();
+});
+```
+
+## Improve it
+
+- Add dots to jump to a slide.
+- Support arrow keys.
+- Add swipe on touch devices.
+- Avoid autoplay, or let users pause it.
+
+## The bottom line
+
+State plus render is a pattern you will use everywhere.

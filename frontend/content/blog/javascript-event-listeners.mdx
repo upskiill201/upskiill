@@ -1,0 +1,79 @@
+---
+title: "JavaScript Event Listeners: addEventListener Explained"
+description: "Learn how addEventListener works in JavaScript, common events like click and input, the event object and how to remove listeners cleanly."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [event listeners, javascript addeventlistener, javascript click event, javascript events, dom events]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Interactive Web Pages with JavaScript turns this into short, playable lessons. Free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive Web Pages with JavaScript course"
+faq:
+  - question: "What is an event listener?"
+    answer: "A function that runs when a specific event, such as a click or key press, happens on an element."
+  - question: "How do I add a click event in JavaScript?"
+    answer: "Select the element and call element.addEventListener with \"click\" and a function."
+  - question: "How do I remove an event listener?"
+    answer: "Call removeEventListener with the same event type and the same function reference."
+---
+
+Events are how web pages react to people.
+
+## Direct answer
+
+Use `element.addEventListener(type, handler)` to run a function when an event happens. Common types are `click`, `input`, `submit`, `keydown` and `mouseover`. The handler receives an event object with details such as the target element.
+
+## Basic example
+
+```html
+<button id="btn">Click me</button>
+<script>
+  const btn = document.querySelector("#btn");
+  btn.addEventListener("click", () => {
+    alert("Clicked!");
+  });
+</script>
+```
+
+## The event object
+
+```javascript
+input.addEventListener("input", (event) => {
+  console.log(event.target.value);
+});
+```
+
+## Removing listeners
+
+```javascript
+function onClick() { console.log("hi"); }
+btn.addEventListener("click", onClick);
+btn.removeEventListener("click", onClick);
+```
+
+You must pass the same function reference, so avoid anonymous functions if you need to remove it.
+
+## Handy options
+
+```javascript
+btn.addEventListener("click", onClick, { once: true });
+```
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) course turns this into short lessons you can play in a few minutes a day. It has 37 lessons, and you can start free.
+
+## The bottom line
+
+Select an element, listen for an event, run a function. That pattern powers nearly every interactive page.
+
+## More guides
+
+- [querySelector and querySelectorAll in JavaScript Explained](/blog/queryselector-explained)
+- [localStorage in JavaScript](/blog/javascript-localstorage)
+- [JavaScript fetch API](/blog/javascript-fetch-api)
+- [Javascript dom tutorial for beginners](/blog/javascript-dom-tutorial-for-beginners)
+- [Interactive Web Pages with JavaScript course](/courses/interactive-web-pages-with-javascript)

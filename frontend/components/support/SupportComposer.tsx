@@ -9,7 +9,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Angry, Frown, Laugh, Meh, Send, Smile, type LucideIcon } from 'lucide-react';
+import { Glyph, type GlyphName } from '@/components/art/Glyph';
 import { Sheet } from '@/components/studio/StudioParts';
 import { playSound } from '@/lib/audio/lessonSounds';
 import {
@@ -24,12 +24,12 @@ import u from './support.module.css';
 
 export type ComposerIntent = 'FEEDBACK' | 'IDEA' | 'BUG' | 'HELP';
 
-const MOODS: { value: number; label: string; icon: LucideIcon }[] = [
-  { value: 1, label: 'Frustrating', icon: Angry },
-  { value: 2, label: 'Not great', icon: Frown },
-  { value: 3, label: 'Okay', icon: Meh },
-  { value: 4, label: 'Good', icon: Smile },
-  { value: 5, label: 'Love it', icon: Laugh },
+const MOODS: { value: number; label: string; icon: GlyphName }[] = [
+  { value: 1, label: 'Frustrating', icon: 'faceAngry' },
+  { value: 2, label: 'Not great', icon: 'faceFrown' },
+  { value: 3, label: 'Okay', icon: 'faceMeh' },
+  { value: 4, label: 'Good', icon: 'faceSmile' },
+  { value: 5, label: 'Love it', icon: 'faceLaugh' },
 ];
 
 const COPY: Record<ComposerIntent, { title: string; prompt: string; placeholder: string; subject: boolean }> = {
@@ -162,7 +162,7 @@ export function SupportComposer({
               <legend className={u.label}>How does Teyro feel right now?</legend>
               <div className={u.moods}>
                 {MOODS.map((m, i) => {
-                  const Icon = m.icon;
+                  const glyph = m.icon;
                   return (
                     <button
                       key={m.value}
@@ -175,7 +175,7 @@ export function SupportComposer({
                         playSound('select', i);
                       }}
                     >
-                      <Icon size={28} strokeWidth={2.2} aria-hidden="true" />
+                      <Glyph name={glyph} size={28} strokeWidth={2.2} />
                       <span>{m.label}</span>
                     </button>
                   );
@@ -241,7 +241,7 @@ export function SupportComposer({
           )}
 
           <button type="submit" className={u.btnPrimary} disabled={tooShort || sending}>
-            <Send size={18} aria-hidden="true" /> {sending ? 'Sending…' : 'Send'}
+            <Glyph name="send" size={18} /> {sending ? 'Sending…' : 'Send'}
           </button>
         </form>
       )}

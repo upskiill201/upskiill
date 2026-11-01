@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why quote the before and after wording for each change?',
         options: [
-          { text: 'So you can see exactly what changed and check it' },
           { text: 'To make the list longer', why: 'It is about precision.' },
+          { text: 'So you can see exactly what changed and check it' },
           { text: 'Lawyers require it', why: 'It just makes checking easy.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -158,11 +158,11 @@ const lesson: OriginalLesson = {
         message: "Proposal B doesn't mention cancellation at all. Does that matter?",
         prompt: "What's Ada's answer?",
         options: [
-          { text: "Yes: 'not stated' is a red flag. Ask them about it before deciding." },
           { text: 'No, silence means it is free.', why: 'It may mean the opposite.' },
+          { text: "Yes: 'not stated' is a red flag. Ask them about it before deciding." },
           { text: 'Ignore it, focus on price.', why: 'Cancellation terms can cost more than the price difference.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -183,11 +183,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a better question than "which one should I choose?"',
         options: [
-          { text: '"What would I give up by choosing A?"' },
           { text: '"Which one is the best ever?"', why: 'Still asks it to decide for you.' },
           { text: 'No question; just pick', why: 'Trade-offs help you decide well.' },
+          { text: '"What would I give up by choosing A?"' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

@@ -83,11 +83,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does a role mostly change in the answer?',
         options: [
-          { text: 'The expertise and the voice' },
           { text: 'The facts', why: 'Facts come from you. A role changes how it is said.' },
           { text: 'Nothing, it is just decoration', why: 'A role changes the level and tone a lot.' },
+          { text: 'The expertise and the voice' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',

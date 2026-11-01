@@ -1,0 +1,274 @@
+=== data-privacy-and-ai-at-work
+title: Data Privacy and AI at Work: What You Should Never Paste Into AI
+desc: Know what not to share with AI tools at work: customer data, secrets, confidential documents. Learn the simple rules and what to check in your tool's policy.
+tags: data privacy ai, ai data privacy at work, what not to paste into chatgpt, confidential data ai, ai policy
+rel: ai-at-work-roadmap-for-beginners, how-is-ai-used-in-the-workplace
+q: What should I never paste into an AI tool at work? | Customer personal data, passwords and keys, confidential contracts, unreleased financials and anything your policy forbids.
+q: Do AI tools store my data? | It depends on the tool and plan. Read the privacy policy and ask your IT team about approved tools.
+q: Can I use my personal account for work? | Check your company policy. Approved business tools often have stronger controls.
+---
+The easiest way to cause a data incident is to paste it into a chatbot.
+
+## Direct answer
+
+Do not paste personal data about customers or colleagues, passwords and keys, confidential contracts, unreleased results or anything your organisation classes as confidential into AI tools unless they are approved for that use. Learn your policy, use approved tools and anonymise what you can.
+
+## A quick traffic light
+
+| | Examples |
+| :--- | :--- |
+| **Green** | public information, your own draft text with no names |
+| **Amber** | internal documents: only in approved tools |
+| **Red** | personal data, secrets, contracts, health or financial records |
+
+## How to reduce risk
+
+1. **Check the policy** and ask which tools are approved.
+2. **Remove names and identifiers** before pasting.
+3. **Use enterprise or business plans** with data controls when provided.
+4. **Turn off training on your data** where the setting exists.
+5. **Never paste credentials.**
+6. **Ask when unsure.**
+
+## The bottom line
+
+If you would not email it to a stranger, do not paste it into an unapproved tool.
+
+=== ai-for-meetings-at-work
+title: How to Use AI Before, During and After Meetings
+desc: Use AI to prepare agendas, take notes, draft follow-ups and track actions. A practical workflow with prompts, plus consent and accuracy cautions.
+tags: ai for meetings, ai meeting assistant, ai meeting prep, ai follow up email, meeting agenda ai
+rel: ai-meeting-summaries
+q: How can AI help with meetings? | By drafting agendas, taking notes, summarising decisions and writing follow-up emails.
+q: Should I tell people I use AI to record? | Yes. Get consent where required and follow your workplace policy.
+q: What is the biggest mistake? | Sending summaries without checking them.
+---
+AI can reduce the admin around a meeting, not replace the thinking.
+
+## Direct answer
+
+Use AI before a meeting to draft an agenda and brief, during it to transcribe (with consent), and after it to summarise decisions, list action items and draft follow-up emails. Always check the output and follow your organisation's rules on recording and data.
+
+## Before
+
+"Draft a 30-minute agenda for a project check-in covering progress, risks and decisions needed. Keep it to four items."
+
+## During
+
+Use an approved transcription tool and tell participants.
+
+## After
+
+"From this transcript, list decisions, action items with owners and deadlines, and write a short follow-up email."
+
+## Checklist
+
+1. Consent and policy.
+2. Accurate names and numbers.
+3. Send within a day.
+4. Track actions in your task tool.
+
+## The bottom line
+
+Better prep and faster follow-up. Same responsibility.
+
+=== ai-for-reports-at-work
+title: How to Use AI to Write Reports Faster Without Losing Accuracy
+desc: Use AI to outline, draft and edit reports while keeping the facts yours: a step-by-step workflow, prompts and a checking routine for numbers and claims.
+tags: ai for reports, write report with ai, ai business writing, ai report outline, ai summarise data
+rel: ai-at-work-roadmap-for-beginners
+q: Can AI write a work report? | It can draft structure and text from your inputs, but you must provide accurate data and check every fact and figure.
+q: What is the best workflow? | Outline first, supply facts, draft in sections, then edit in your own voice.
+q: How do I avoid errors? | Give the model your numbers, ask it not to invent data and verify every claim.
+---
+AI is a fast first-draft partner. The facts are still your job.
+
+## Direct answer
+
+To write reports faster with AI, start with the purpose and audience, ask for an outline, supply your own facts and numbers, draft section by section, then edit for accuracy, tone and clarity. Never let AI invent data, and check every figure.
+
+## Workflow
+
+1. **Define:** purpose, audience, length, decision needed.
+2. **Outline:** "Suggest an outline for a one-page progress report."
+3. **Supply facts:** paste your numbers and notes.
+4. **Draft:** one section at a time.
+5. **Edit:** simplify, cut and add your voice.
+6. **Check:** numbers, names, dates and claims.
+
+## Prompt example
+
+"Using only the facts below, write a 150-word summary for senior managers. If something is missing, say so. Facts: ..."
+
+## The bottom line
+
+Let AI draft, let you decide what is true.
+
+=== responsible-ai-use-at-work
+title: Responsible AI Use at Work: Principles and Habits That Keep You Safe
+desc: Use AI at work responsibly: be transparent, protect data, check outputs, avoid bias and keep a human accountable. A simple set of habits you can adopt today.
+tags: responsible ai use, responsible ai at work, ai ethics at work, ai accountability, ai guidelines for employees
+rel: data-privacy-and-ai-at-work, ai-bias-explained
+q: What does responsible AI use mean? | Using AI in ways that are safe, fair, transparent and accountable, with human oversight.
+q: Who is responsible for AI-generated work? | You are. Whatever you submit under your name is yours to check.
+q: Should I tell people I used AI? | Follow your organisation's guidance. Being open builds trust, especially for important work.
+---
+AI is a tool. You are accountable for how you use it.
+
+## Direct answer
+
+Responsible AI use means protecting data, checking outputs, watching for bias, being open about when AI helped and keeping a human accountable for decisions. Follow your organisation's policy, use approved tools and never let AI make high-stakes decisions about people alone.
+
+## Seven habits
+
+1. **Know the policy.**
+2. **Protect data.**
+3. **Check facts and sources.**
+4. **Watch for bias,** especially in decisions about people.
+5. **Be transparent** about AI's role where it matters.
+6. **Keep a human in charge** of important decisions.
+7. **Keep learning,** since tools and rules change.
+
+## High-stakes uses
+
+Hiring, performance reviews, medical, legal and financial decisions need extra care, human review and often specific rules.
+
+## The bottom line
+
+Use AI to help you do better work, not to avoid responsibility.
+
+=== ai-note-taker-at-work
+title: AI Note Taker at Work: Setup, Etiquette and What to Check
+desc: Using an AI note taker in work meetings: choose an approved tool, ask consent, share notes, avoid sensitive topics and verify the summary before it circulates.
+tags: ai note taker, ai note taker at work, meeting recorder, otter style note taker, ai transcription etiquette
+rel: ai-meeting-summaries, data-privacy-and-ai-at-work
+q: Are AI note takers allowed at work? | It depends on your organisation. Check policy and use approved tools.
+q: Do I need permission to record? | Often yes. Ask participants and follow local laws and company rules.
+q: What if the topic is sensitive? | Skip recording or use a human note-taker for confidential topics.
+---
+A bot in the meeting changes the room. Handle it well.
+
+## Direct answer
+
+Use an approved AI note taker, tell participants at the start, turn it off for sensitive topics and verify the summary before sharing. Be aware of where recordings and transcripts are stored and who can access them.
+
+## Etiquette
+
+1. Announce it at the start.
+2. Allow people to opt out where possible.
+3. Do not record confidential items.
+4. Share the notes with attendees.
+5. Correct errors.
+
+## Setup checklist
+
+- Approved by your IT or security team.
+- Data storage and retention understood.
+- Access limited to attendees.
+- Language and accent accuracy tested.
+
+## The bottom line
+
+Be open, be careful and check the summary.
+
+=== ai-bias-explained
+title: AI Bias Explained: Where It Comes From and Why It Matters at Work
+desc: AI can reflect and amplify bias in its training data. Learn how bias appears, examples in hiring and customer service, and how to test and reduce it.
+tags: ai bias, what is ai bias, bias in ai hiring, algorithmic bias examples, fairness in ai
+rel: responsible-ai-use-at-work
+q: What is AI bias? | Systematic unfairness in AI outputs that arises from biased data, design choices or how a system is used.
+q: Where does it come from? | Historical data that reflects past inequalities, unrepresentative samples and flawed assumptions.
+q: How can I reduce it? | Test with diverse examples, keep humans in decisions about people and follow fairness guidance.
+---
+AI learns from human data. Human data contains human bias.
+
+## Direct answer
+
+AI bias is unfair or skewed output caused by biased training data, design choices or use. It matters at work when AI influences decisions about people, such as hiring or performance. Test with diverse examples, keep human oversight and follow your organisation's and local legal guidance.
+
+## Examples
+
+- A résumé screener that favours patterns from past hires.
+- A voice tool that works worse for some accents.
+- Image tools that reinforce stereotypes.
+
+## What to do
+
+1. **Do not use AI alone** for decisions about people.
+2. **Test it** with varied inputs.
+3. **Check results by group** where appropriate and lawful.
+4. **Document** how it is used.
+5. **Report issues.**
+
+## The bottom line
+
+Bias is a design and oversight problem, not just a technical one.
+
+=== copilot-at-work
+title: Microsoft Copilot at Work: What It Does and How to Start
+desc: An overview of Microsoft Copilot in Word, Excel, Outlook and Teams: common tasks, prompt tips, access and data considerations for work use.
+tags: copilot at work, microsoft copilot, copilot for microsoft 365, copilot word excel outlook, ai office assistant
+rel: ai-at-work-roadmap-for-beginners
+q: What is Microsoft Copilot? | AI assistance built into Microsoft products, helping with writing, summarising, data analysis and meetings.
+q: How do I get access? | It depends on your organisation's licences and settings. Ask your IT administrator.
+q: Is my data safe? | Business versions have enterprise data controls, but check your organisation's configuration and policy.
+---
+AI inside the tools you already use all day.
+
+## Direct answer
+
+Microsoft Copilot adds AI assistance to tools such as Word, Excel, Outlook and Teams, helping with drafting, summarising emails and meetings and analysing data. Availability depends on your organisation's plan and settings, so check with your IT team and follow your data policies.
+
+## Common tasks
+
+- **Word:** draft and rewrite.
+- **Outlook:** summarise long threads and draft replies.
+- **Teams:** summarise meetings and list actions.
+- **Excel:** explain formulas and spot trends.
+- **PowerPoint:** create a first draft deck from a document.
+
+## Prompt tips
+
+- "Summarise this thread in three bullets and list any decisions."
+- "Rewrite this paragraph in plain English, under 80 words."
+- Provide context and the format you want.
+
+## Cautions
+
+- Review all output.
+- Mind sensitive data.
+- Features and names change, so check Microsoft's current information.
+
+## The bottom line
+
+Start with low-risk tasks like summaries and drafts, then expand.
+
+=== ai-summarise-documents
+title: How to Summarise Long Documents With AI Accurately
+desc: Summarise reports, articles and contracts with AI: prompts that work, chunking long text, checking for missing points and why legal and medical text need care.
+tags: ai summarise documents, summarize pdf with ai, ai document summary, summarise long text, ai reading assistant
+rel: ai-for-reports-at-work
+q: Can AI summarise a long document? | Yes, but long documents may need to be split, and summaries can omit or distort details.
+q: How do I check a summary? | Compare it with the original for key points, numbers and caveats.
+q: Should I use AI for contracts? | Only as a helper. Have a qualified person review legal and medical documents.
+---
+Summaries save time when they are faithful.
+
+## Direct answer
+
+To summarise a long document with AI, say who the summary is for and what length you need, ask for key points, numbers and risks, split very long documents into sections and check the summary against the original. Do not rely on AI alone for legal, medical or financial documents.
+
+## A prompt that works
+
+"Summarise this document for a busy manager in five bullets, then list any numbers, deadlines and risks. Quote the sentence each bullet comes from."
+
+## Tips
+
+- Ask for quotes so you can verify.
+- Chunk long text and combine the summaries.
+- Ask "what is missing?" and "what is uncertain?"
+- Keep confidential documents out of unapproved tools.
+
+## The bottom line
+
+Faster reading, with a final check by a human.

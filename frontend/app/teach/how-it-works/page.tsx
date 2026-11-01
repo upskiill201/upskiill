@@ -28,7 +28,7 @@ import s from '@/components/homepage/v3/Home.module.css';
 
 const TITLE = 'How Teaching on Teyro Works: From First Lesson to Monthly Income';
 const DESCRIPTION =
-  'Every step of teaching coding or AI on Teyro: plan with Tey, build hands-on lessons in Studio, get reviewed, launch to your audience and keep 70% of every payment.';
+  'Every step of teaching coding or AI on Teyro: plan with Tey, build hands-on lessons in Studio, get reviewed, launch to your audience and earn from Teyro Pro every month, by the minutes learners spend in your course.';
 
 export const metadata: Metadata = {
   title: TITLE,

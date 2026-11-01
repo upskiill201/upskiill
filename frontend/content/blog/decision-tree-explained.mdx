@@ -1,0 +1,66 @@
+---
+title: "Decision Trees Explained: How They Make Predictions"
+description: "A decision tree asks a series of yes or no questions to reach a prediction. Learn how splits are chosen, strengths, limits and a short example."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [decision tree, decision tree machine learning, decision tree explained, random forest, scikit-learn decision tree]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Machine Learning for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/machine-learning-for-beginners
+  label: "See the Machine Learning for Beginners course"
+faq:
+  - question: "What is a decision tree?"
+    answer: "A model that splits data using a sequence of questions about features until it reaches a prediction."
+  - question: "How does it choose splits?"
+    answer: "It picks the split that best separates the data, using measures such as Gini impurity or information gain."
+  - question: "What is the weakness of decision trees?"
+    answer: "They can overfit easily, which is why ensembles like random forests are popular."
+---
+
+Twenty questions, but for data.
+
+## Direct answer
+
+A decision tree predicts by asking a chain of questions about a data point's features, such as "is income above X?", moving down branches until it reaches a leaf with a prediction. Trees are easy to interpret, but deep trees overfit. Random forests combine many trees to improve accuracy.
+
+## Example
+
+```python
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_iris
+
+X, y = load_iris(return_X_y=True)
+model = DecisionTreeClassifier(max_depth=3).fit(X, y)
+print(model.predict([[5.1, 3.5, 1.4, 0.2]]))
+```
+
+## Strengths and limits
+
+| Strengths | Limits |
+| :--- | :--- |
+| easy to explain | overfit easily |
+| handles mixed data | unstable to small changes |
+| little preparation needed | less accurate than ensembles |
+
+## Control complexity
+
+Limit `max_depth` or require a minimum number of samples per leaf.
+
+## Where Teyro fits
+
+Teyro's [Machine Learning for Beginners](/courses/machine-learning-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 200 lessons, and you can start free.
+
+## The bottom line
+
+Great for understanding your data. Use ensembles for accuracy.
+
+## More guides
+
+- [Neural Networks Explained in Simple Terms](/blog/neural-network-explained)
+- [Accuracy, Precision and Recall](/blog/accuracy-precision-recall)
+- [Feature Engineering](/blog/feature-engineering-explained)
+- [Overfitting explained](/blog/overfitting-explained)
+- [Machine Learning for Beginners course](/courses/machine-learning-for-beginners)

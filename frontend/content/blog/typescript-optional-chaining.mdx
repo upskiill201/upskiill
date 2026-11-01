@@ -1,0 +1,63 @@
+---
+title: "Optional Chaining and Nullish Coalescing in TypeScript"
+description: "Use the ?. and ?? operators to handle undefined and null safely. Learn the syntax, the difference between ?? and ||, and common patterns."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [optional chaining, nullish coalescing, typescript optional chaining, double question mark operator, handle undefined]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "TypeScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript for Beginners course"
+faq:
+  - question: "What is optional chaining?"
+    answer: "The ?. operator, which stops and returns undefined if the value before it is null or undefined."
+  - question: "What is nullish coalescing?"
+    answer: "The ?? operator, which returns the right side only when the left side is null or undefined."
+  - question: "How is ?? different from"
+    answer: "|? | || treats 0, empty string and false as missing. ?? only treats null and undefined as missing."
+---
+
+Two small operators that remove a lot of defensive code.
+
+## Direct answer
+
+Optional chaining (`?.`) safely reads a property or calls a function when a value may be `null` or `undefined`. Nullish coalescing (`??`) supplies a default only when the value is `null` or `undefined`. Together they handle missing data cleanly.
+
+## Examples
+
+```typescript
+const city = user?.address?.city;
+const length = items?.length ?? 0;
+user?.sendMessage?.("Hello");
+
+const count = 0;
+console.log(count || 10); // 10, because 0 is falsy
+console.log(count ?? 10); // 0, because 0 is not null
+```
+
+## When to use which
+
+| Situation | Use |
+| :--- | :--- |
+| Might be missing | `?.` |
+| Default only for null or undefined | `??` |
+| Default for any falsy value | the or operator |
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 20 lessons, and you can start free.
+
+## The bottom line
+
+`?.` to read safely, `??` to default safely.
+
+## More guides
+
+- [TypeScript Functions](/blog/typescript-functions-guide)
+- [TypeScript Classes](/blog/typescript-classes-guide)
+- [Common TypeScript Errors Explained and How to Fix Them](/blog/typescript-errors-explained)
+- [Typescript strict mode](/blog/typescript-strict-mode)
+- [TypeScript for Beginners course](/courses/typescript-for-beginners)

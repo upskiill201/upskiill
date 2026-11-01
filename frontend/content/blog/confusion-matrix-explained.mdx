@@ -1,0 +1,64 @@
+---
+title: "Confusion Matrix Explained: Read True and False Positives Easily"
+description: "A confusion matrix shows correct and incorrect predictions by class. Learn true positives, false positives, true negatives and false negatives with an example."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [confusion matrix, confusion matrix explained, true positive false positive, classification metrics, how to read a confusion matrix]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Machine Learning for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/machine-learning-for-beginners
+  label: "See the Machine Learning for Beginners course"
+faq:
+  - question: "What is a confusion matrix?"
+    answer: "A table that compares predicted classes with actual classes to show the types of mistakes a model makes."
+  - question: "What is a false negative?"
+    answer: "The model predicted negative but the true answer was positive, a missed case."
+  - question: "How do I get precision and recall from it?"
+    answer: "Precision is TP divided by TP plus FP. Recall is TP divided by TP plus FN."
+---
+
+It shows not just how often a model is wrong, but how.
+
+## Direct answer
+
+A confusion matrix is a table of actual versus predicted classes. For two classes it has four cells: true positives (TP), false positives (FP), true negatives (TN) and false negatives (FN). From it you calculate accuracy, precision and recall.
+
+## Layout
+
+| | Predicted positive | Predicted negative |
+| :--- | :--- | :--- |
+| **Actually positive** | TP | FN |
+| **Actually negative** | FP | TN |
+
+## Example
+
+A disease test on 100 people:
+- TP = 8, FN = 2, FP = 5, TN = 85.
+- Precision = 8 ÷ 13 ≈ 62 percent.
+- Recall = 8 ÷ 10 = 80 percent.
+
+## In scikit-learn
+
+```python
+from sklearn.metrics import confusion_matrix
+print(confusion_matrix(y_true, y_pred))
+```
+
+## Where Teyro fits
+
+Teyro's [Machine Learning for Beginners](/courses/machine-learning-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 200 lessons, and you can start free.
+
+## The bottom line
+
+Look at the types of errors, not just the total.
+
+## More guides
+
+- [10 Machine Learning Projects for Beginners (With Free Datasets)](/blog/ml-projects-for-beginners)
+- [Supervised vs Unsupervised Learning](/blog/supervised-vs-unsupervised-learning)
+- [Overfitting in Machine Learning](/blog/overfitting-explained)
+- [Accuracy precision recall](/blog/accuracy-precision-recall)
+- [Machine Learning for Beginners course](/courses/machine-learning-for-beginners)

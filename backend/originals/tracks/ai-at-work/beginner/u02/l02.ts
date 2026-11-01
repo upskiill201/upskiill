@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why use 3 samples instead of 1?',
         options: [
-          { text: 'One message can be a one-off; three show the habits you repeat' },
           { text: 'The AI needs exactly 3', why: 'There is no magic number; more than one shows a pattern.' },
           { text: 'To make the request longer', why: 'It is about the pattern, not the length.' },
+          { text: 'One message can be a one-off; three show the habits you repeat' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',
@@ -178,11 +178,11 @@ const lesson: OriginalLesson = {
         message: 'My boss says my AI emails "don\'t sound like me anymore". Is that bad?',
         prompt: "What's Ada's honest answer?",
         options: [
-          { text: 'It matters: people trust messages that sound like you. A voice note fixes most of it, and always edit the final line yourself.' },
           { text: "Not at all, nobody cares.", why: 'People notice. Trust is built on sounding like yourself.' },
           { text: 'Tell your boss it is an AI.', why: 'Honesty is fine, but the fix is getting your voice back.' },
+          { text: 'It matters: people trust messages that sound like you. A voice note fixes most of it, and always edit the final line yourself.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -203,11 +203,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Where should Ada put her voice note?',
         options: [
-          { text: 'At the start of writing requests (or her tool\'s saved instructions, if it has them)' },
           { text: 'At the very end, after sending', why: 'Too late to help.' },
+          { text: 'At the start of writing requests (or her tool\'s saved instructions, if it has them)' },
           { text: 'Nowhere, she will remember', why: 'Saving it is the point.' },
         ],
-        answer: 0,
+        answer: 1,
       },
     ],
   },

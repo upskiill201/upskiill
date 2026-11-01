@@ -262,7 +262,6 @@
 /* ── Duolingo pass: chunky cards, creator row ── */
 .card {
   border-width: 2px;
-  border-bottom-width: 4px;
   border-radius: 20px;
   padding: 16px;
 }

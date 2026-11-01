@@ -13,6 +13,7 @@ import dynamic from 'next/dynamic';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCelebration, CelebrationScene } from '@/context/CelebrationContext';
+import { isShareableLeague, isStreakMilestone, type ShareCardRequest } from '@/lib/share/types';
 
 // Every scene (and the Framer Motion it pulls in) used to be a static import
 // here, which put all 11 in the shared/global chunk on every route —
@@ -38,6 +39,22 @@ const CommunityWelcomeScene = dynamic(() => import('./scenes/CommunityWelcomeSce
 const WelcomeBackScene = dynamic(() => import('./scenes/WelcomeBackScene'), { ssr: false });
 const DailyRewardScene = dynamic(() => import('./scenes/DailyRewardScene'), { ssr: false });
 const RemindersScene = dynamic(() => import('./scenes/RemindersScene'), { ssr: false });
+
+const ShareMilestoneButton = dynamic(() => import('../share/ShareMilestoneButton'), { ssr: false });
+
+/** Scenes worth a Share pill: streak milestones, league podiums/promotions, achievements. */
+function shareFor(scene: CelebrationScene): ShareCardRequest | null {
+  switch (scene.kind) {
+    case 'STREAK':
+      return scene.mode === 'EXTENDED' && isStreakMilestone(scene.days) ? { kind: 'STREAK' } : null;
+    case 'LEAGUE':
+      return isShareableLeague(scene.rank, scene.outcome) ? { kind: 'LEAGUE', weekStart: scene.weekStart } : null;
+    case 'ACHIEVEMENT':
+      return { kind: 'ACHIEVEMENT', badgeId: scene.badgeId, tier: scene.tier };
+    default:
+      return null;
+  }
+}
 
 let sceneCounter = 0;
 
@@ -126,6 +143,14 @@ export default function CelebrationEngine() {
           style={{ position: 'fixed', inset: 0, zIndex: 100200 }}
         >
           {renderScene(activeScene)}
+          {(() => {
+            const share = shareFor(activeScene);
+            return share ? (
+              <div style={{ position: 'fixed', top: 'max(16px, env(safe-area-inset-top))', right: 16, zIndex: 100210 }}>
+                <ShareMilestoneButton request={share} />
+              </div>
+            ) : null;
+          })()}
         </motion.div>
       )}
     </AnimatePresence>,

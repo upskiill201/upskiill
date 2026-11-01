@@ -278,27 +278,50 @@ self.addEventListener('push', (event) => {
   if (!data.title) return;
 
   event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body || '',
-      icon: '/Icons/icon-192.png',
-      badge: '/Icons/icon-192.png',
-      // Same reason replaces rather than stacks, so a retry cannot pile up
-      // three copies of the same nudge on the lock screen.
-      tag: data.tag || 'tey',
-      renotify: true,
-      // The only genuinely controllable "alert" lever Web Push has — there is
-      // no cross-browser way to attach a custom sound file to a notification,
-      // on any browser, today. Default OS/browser sound already plays unless
-      // something external (Do Not Disturb, a silenced site permission) is
-      // suppressing it. Deliberately NOT setting `silent` here — leaving it
-      // unset is what lets that default sound through.
-      vibrate: [200, 100, 200],
-      data: {
-        url: data.url || '/dashboard',
-        deliveryId: data.deliveryId,
-        reason: data.reason,
-      },
-    }),
+    (async () => {
+      // Teyro is open and in front: don't throw an OS banner over it. Hand the
+      // push to the page, which shows Tey's notice card with its chime and
+      // refreshes the bell (components/push/PushSoundListener). Skipping the OS
+      // notification is allowed precisely because a window is visible.
+      const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+      const front = windows.filter(
+        (c) => c.visibilityState === 'visible' && c.focused && new URL(c.url).origin === self.location.origin,
+      );
+      if (front.length > 0) {
+        for (const c of front) {
+          c.postMessage({
+            type: 'TEY_PUSH',
+            title: data.title,
+            body: data.body || '',
+            url: data.url || '/dashboard',
+            deliveryId: data.deliveryId,
+            tag: data.tag,
+          });
+        }
+        return;
+      }
+      return self.registration.showNotification(data.title, {
+        body: data.body || '',
+        icon: '/Icons/icon-192.png',
+        badge: '/Icons/icon-192.png',
+        // Same tag replaces rather than stacks, so a retry cannot pile up
+        // three copies of the same nudge on the lock screen.
+        tag: data.tag || 'tey',
+        renotify: true,
+        // The only genuinely controllable "alert" lever Web Push has — there is
+        // no cross-browser way to attach a custom sound file to a notification,
+        // on any browser, today. Default OS/browser sound already plays unless
+        // something external (Do Not Disturb, a silenced site permission) is
+        // suppressing it. Deliberately NOT setting `silent` here — leaving it
+        // unset is what lets that default sound through.
+        vibrate: [200, 100, 200],
+        data: {
+          url: data.url || '/dashboard',
+          deliveryId: data.deliveryId,
+          reason: data.reason,
+        },
+      });
+    })(),
   );
 });
 

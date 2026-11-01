@@ -55,11 +55,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What does saying who it is for change in the answer?',
         options: [
-          { text: 'Tone, length and which words it uses' },
           { text: 'Only the greeting', why: 'It changes far more: words, length, what comes first.' },
+          { text: 'Tone, length and which words it uses' },
           { text: 'Nothing, the facts are the same', why: 'Same facts, very different message.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',
@@ -84,11 +84,11 @@ const lesson: OriginalLesson = {
         message: 'Sorry, what does "regression run" mean? Is something wrong?',
         prompt: 'Ada sent a developer-style update. Which follow-up is best?',
         options: [
-          { text: "Nothing's wrong! It just means final testing. Sign-up is on track for Friday." },
           { text: 'It is a standard QA process for verifying builds.', why: 'Still jargon. She asked because she does not know the terms.' },
           { text: 'Please ask your technical team.', why: 'She is the client. Make it easy for her.' },
+          { text: "Nothing's wrong! It just means final testing. Sign-up is on track for Friday." },
         ],
-        answer: 0,
+        answer: 2,
         explanation: 'Next time, say the reader in the request: "Lucía does not know technical terms".',
       },
       {

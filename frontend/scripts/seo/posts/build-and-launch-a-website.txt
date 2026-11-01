@@ -1,0 +1,624 @@
+=== what-is-a-domain-name
+title: What Is a Domain Name? How to Choose and Buy One
+desc: A domain name is your website's address. Learn how domains work, how to choose a good one, what the extensions mean and how to register it safely.
+tags: domain name, what is a domain name, how to choose a domain name, buy a domain, domain registrar
+rel: how-to-make-a-website-for-beginners, how-to-launch-a-website
+q: What is a domain name? | The human-readable address of a website, such as example.com, that people type to reach it.
+q: How do I choose a good domain? | Keep it short, easy to spell and say aloud, avoid hyphens and numbers and check that the name is not trademarked.
+q: Does a domain include hosting? | No. A domain is the address. Hosting is where your website files live.
+---
+A domain is the address, hosting is the house.
+
+## Direct answer
+
+A domain name is your website's address, like `example.com`. You register it through a domain registrar, usually for a yearly fee, and point it to your hosting. Choose a short, memorable name with a common extension such as `.com`, and avoid hyphens and tricky spellings.
+
+## How to choose
+
+1. **Keep it short** and easy to say.
+2. **Avoid hyphens and numbers.**
+3. **Check spelling** by saying it to a friend.
+4. **Check the name** is not a trademark and the social handles are free.
+5. **Choose the right extension.** `.com` is familiar. Country and new extensions can also work.
+
+## How to register
+
+1. Search for the name at a registrar.
+2. Check the yearly price and renewal price.
+3. Turn on privacy protection if offered.
+4. Enable auto-renew so you do not lose it.
+5. Point it to your host using DNS records.
+
+## Domain vs hosting
+
+| | Domain | Hosting |
+| :--- | :--- | :--- |
+| What it is | the address | where files live |
+| Paid | yearly | monthly or yearly, or free tiers |
+
+## The bottom line
+
+Pick something short, register it with a reputable provider and keep it renewed.
+
+=== web-hosting-explained
+title: Web Hosting Explained: Types, Costs and How to Choose
+desc: Web hosting stores your website and serves it to visitors. Compare static hosting, shared, VPS and managed options, and how to pick for a beginner site.
+tags: web hosting, what is web hosting, types of web hosting, shared hosting vs vps, static site hosting
+rel: what-is-a-domain-name
+q: What is web hosting? | A service that stores your website's files on a server connected to the internet so people can visit it.
+q: Which hosting is best for beginners? | For simple HTML sites, static hosting is easy and often has free tiers. For WordPress or apps, managed or shared hosting can be simpler.
+q: Do I need to pay for hosting? | Not always. Several services offer free plans for small static sites, with limits.
+---
+Your site has to live somewhere.
+
+## Direct answer
+
+Web hosting stores your site's files on a server and delivers them to visitors. Beginners can choose static hosting for HTML, CSS and JavaScript sites, shared or managed hosting for WordPress and a VPS when they need more control. Compare price, speed, support and limits.
+
+## Types of hosting
+
+| Type | Good for | Notes |
+| :--- | :--- | :--- |
+| Static hosting | HTML, CSS, JS sites | simple, often free tiers |
+| Shared hosting | small WordPress sites | cheap, shared resources |
+| Managed hosting | WordPress and apps | support included |
+| VPS | custom setups | needs technical skills |
+| Cloud platforms | apps with backends | flexible, more to learn |
+
+## What to compare
+
+- Price now and at renewal.
+- Speed and uptime history.
+- Backups and security.
+- Support and documentation.
+- Limits on traffic and storage.
+
+## For a first site
+
+Start with static hosting, such as GitHub Pages, Netlify or Vercel. You can always move later.
+
+## The bottom line
+
+Match hosting to what you are building, not what is most expensive.
+
+=== what-is-dns
+title: What Is DNS? How Domain Names Reach Your Website
+desc: DNS translates domain names into IP addresses. Learn how it works, the main record types (A, CNAME, MX, TXT) and how to fix common propagation delays.
+tags: dns, what is dns, dns records explained, a record cname, dns propagation
+rel: custom-domain-setup, what-is-a-domain-name
+q: What is DNS? | The Domain Name System, which translates names like example.com into the IP addresses computers use.
+q: What are DNS records? | Settings that tell the internet where to send traffic for your domain, such as to your website or email provider.
+q: How long does DNS propagation take? | Changes can appear within minutes, but sometimes take up to a day or more depending on caching.
+---
+DNS is the internet's phone book.
+
+## Direct answer
+
+DNS (Domain Name System) translates domain names into IP addresses. You manage it with DNS records at your domain registrar or DNS provider. The main records are A (to an IP address), CNAME (alias to another name), MX (email) and TXT (verification and email security).
+
+## Common record types
+
+| Record | Purpose | Example |
+| :--- | :--- | :--- |
+| A | points a name to an IPv4 address | `example.com → 203.0.113.10` |
+| AAAA | points to an IPv6 address | |
+| CNAME | alias to another name | `www → example.com` |
+| MX | where email goes | |
+| TXT | verification, SPF, DKIM | |
+
+## How a visit works
+
+1. You type a domain in your browser.
+2. Your device asks a DNS resolver for the address.
+3. The resolver finds the records.
+4. Your browser connects to that address.
+
+## Propagation
+
+DNS answers are cached. After a change, some people see the old answer until the cache expires, set by the TTL value.
+
+## The bottom line
+
+DNS connects your domain to your host and email. Change one record at a time and check results.
+
+=== ssl-certificate-explained
+title: SSL Certificates and HTTPS: What They Are and How to Get One
+desc: SSL and TLS certificates enable HTTPS, encrypting traffic between visitors and your website. Learn how they work and how to get a free one.
+tags: ssl certificate, what is https, ssl vs tls, free ssl certificate, lets encrypt
+rel: how-to-launch-a-website
+q: What is an SSL certificate? | A digital certificate that lets a website use HTTPS, so data between the browser and the site is encrypted and the site's identity is verified.
+q: Is HTTPS required? | Browsers warn about non-HTTPS sites, and many features require it. It is the standard for all sites.
+q: Can I get a certificate for free? | Yes. Many hosts and services issue free certificates automatically, for example through Let's Encrypt.
+---
+The padlock in the address bar is not decoration. It means traffic is encrypted.
+
+## Direct answer
+
+An SSL/TLS certificate enables HTTPS, which encrypts data between your visitors and your site and confirms the site is who it claims to be. Most modern hosts include free certificates that renew automatically. Check that your site loads over `https://` and redirects from `http://`.
+
+## Why you need it
+
+- Protects passwords and form data.
+- Browsers mark non-HTTPS sites as not secure.
+- Required for many browser features.
+- Builds trust and is a small ranking signal.
+
+## How to get one
+
+1. Choose a host that offers automatic HTTPS.
+2. Add your domain and verify it.
+3. Enable HTTPS and force redirects from HTTP.
+4. Check the certificate renews automatically.
+
+## Test it
+
+Visit your site and check the padlock. Fix "mixed content" warnings by making all images and scripts load over HTTPS.
+
+## The bottom line
+
+Turn on HTTPS from day one. It is free and expected.
+
+=== github-pages-tutorial
+title: GitHub Pages Tutorial: Host a Website for Free
+desc: Step-by-step guide to hosting a static website with GitHub Pages: create a repository, upload files, turn on Pages and add a custom domain.
+tags: github pages, github pages tutorial, host website for free, deploy static site, github pages custom domain
+rel: how-to-launch-a-website
+q: What is GitHub Pages? | A free service that hosts static websites directly from a GitHub repository.
+q: Can I use a custom domain? | Yes. Add the domain in the Pages settings and set the DNS records at your registrar.
+q: What can GitHub Pages host? | Static sites made with HTML, CSS and JavaScript, or generated by static site tools. It does not run server-side code.
+---
+A free, simple way to put your first site online.
+
+## Direct answer
+
+To host a site on GitHub Pages, create a repository, add an `index.html` file, go to **Settings → Pages**, choose the branch to publish and save. GitHub gives you a public address. You can add a custom domain later.
+
+## Steps
+
+1. **Create a GitHub account** and a new public repository.
+2. **Add `index.html`** and your CSS and images.
+3. **Open Settings → Pages.**
+4. **Choose the branch** (often `main`) and the root folder.
+5. **Save.** Wait a minute, then visit the address shown.
+
+## Minimal file
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My first site</title>
+</head>
+<body>
+  <h1>Hello, world</h1>
+</body>
+</html>
+```
+
+## Update the site
+
+Commit changes and push. Pages rebuilds automatically.
+
+## Limits
+
+Static files only, and public repositories for free plans. Check GitHub's current policies for size and traffic limits.
+
+## The bottom line
+
+A great free starting point for portfolios and projects.
+
+=== netlify-deploy-tutorial
+title: Deploy a Website on Netlify: A Beginner's Walkthrough
+desc: Learn how to deploy a static site on Netlify: drag and drop, connecting a Git repository, build settings, forms and custom domains.
+tags: netlify, netlify tutorial, deploy website netlify, netlify drag and drop, continuous deployment
+rel: github-pages-tutorial
+q: What is Netlify? | A hosting platform for static sites and front-end apps, with deployment from Git and extras such as forms and functions.
+q: Is Netlify free? | It offers a free plan with limits. Check the current plans on its website.
+q: How do I deploy? | Drag a build folder into Netlify, or connect a Git repository so each push deploys automatically.
+---
+Netlify makes deploying feel like magic: push code, get a live site.
+
+## Direct answer
+
+You can deploy to Netlify by dragging a folder of site files into its dashboard, or by connecting a Git repository so every push triggers a new deploy. Set the build command and publish directory if your site needs a build step.
+
+## Two ways to deploy
+
+**Drag and drop:** sign in, choose Add new site, then drag your site's folder (with `index.html`) into the page.
+
+**From Git:**
+1. Push your project to GitHub.
+2. Choose **Import from Git**.
+3. Select the repository.
+4. Set the build command and publish directory, such as `npm run build` and `dist`.
+5. Deploy.
+
+## Handy features
+
+- Automatic HTTPS.
+- Deploy previews for branches.
+- Form handling for simple contact forms.
+- Custom domains.
+
+## The bottom line
+
+Great for portfolios and small sites. Compare with other options to find your fit. Plans and limits change, so check current details.
+
+=== vercel-deploy-tutorial
+title: How to Deploy a Website on Vercel Step by Step
+desc: Deploy a website on Vercel: import from Git, framework detection, environment variables, preview deployments and adding a domain.
+tags: vercel, vercel tutorial, deploy to vercel, vercel preview deployments, host nextjs
+rel: netlify-deploy-tutorial
+q: What is Vercel? | A cloud platform for deploying websites and front-end frameworks such as Next.js, with automatic builds from Git.
+q: How do I deploy to Vercel? | Import your Git repository, check the detected framework settings and click deploy.
+q: What are preview deployments? | Unique URLs created for each branch or pull request so you can review changes before they go live.
+---
+Connect a repository, click deploy, share a link.
+
+## Direct answer
+
+To deploy on Vercel, sign in, import your Git repository, confirm the framework and build settings, add any environment variables and deploy. Each push creates a new deployment, and pull requests get preview URLs.
+
+## Steps
+
+1. **Push your project** to GitHub, GitLab or Bitbucket.
+2. **Import it** on Vercel.
+3. **Check settings:** framework, build command and output folder.
+4. **Add environment variables,** such as API URLs. Never commit secrets to the repository.
+5. **Deploy** and open the generated address.
+6. **Add a domain** in Project settings.
+
+## Useful habits
+
+- Use preview deployments to review changes.
+- Keep production on the main branch.
+- Read build logs when something fails.
+
+## The bottom line
+
+Fast, simple and well suited to modern front-end projects. Check the current plans and limits on Vercel's website.
+
+=== website-seo-basics
+title: Website SEO Basics: 12 Things to Do Before You Launch
+desc: Twelve SEO basics for a new website: titles, descriptions, headings, speed, mobile friendliness, sitemaps and Search Console, in plain English.
+tags: website seo basics, seo for beginners, on page seo checklist, seo before launch, search console setup
+rel: how-to-launch-a-website
+q: What is SEO? | Search engine optimisation: improving your site so it can be found in search results for the right queries.
+q: How long does SEO take? | Often months. New sites take time to be discovered and trusted.
+q: Do I need to pay for SEO tools? | Free tools such as Google Search Console cover the basics.
+---
+SEO is a set of habits, not a trick.
+
+## Direct answer
+
+For basic SEO, give every page a unique title and description, use headings in order, write helpful content, make the site fast and mobile friendly, add descriptive alt text, create a sitemap, and submit your site to Google Search Console and Bing Webmaster Tools.
+
+## 12 basics
+
+1. **Unique title** for each page, around 60 characters.
+2. **Meta description** that earns the click.
+3. **One H1** and clear subheadings.
+4. **Helpful content** that answers real questions.
+5. **Mobile-friendly design.**
+6. **Fast loading** pages.
+7. **Descriptive URLs.**
+8. **Alt text** on images.
+9. **Internal links** between related pages.
+10. **A sitemap** at `/sitemap.xml`.
+11. **HTTPS.**
+12. **Search Console** set up and monitored.
+
+## What not to do
+
+- Copy content from other sites.
+- Stuff keywords.
+- Buy links.
+
+## The bottom line
+
+Do the basics well, publish useful pages and be patient.
+
+=== website-speed-basics
+title: Website Speed: 10 Simple Ways to Make Your Site Load Faster
+desc: Ten practical ways to speed up a website: compress images, lazy-load, minimise scripts, use caching and a CDN, and measure with Lighthouse.
+tags: site speed, website speed, how to speed up a website, core web vitals, lighthouse
+rel: responsive-images-guide, how-to-launch-a-website
+q: Why does site speed matter? | Faster pages keep visitors, improve user experience and can help search performance.
+q: How do I test my site speed? | Use tools such as Lighthouse in Chrome DevTools or PageSpeed Insights.
+q: What slows websites down most? | Large images, too much JavaScript, slow servers and many third-party scripts.
+---
+People leave slow sites.
+
+## Direct answer
+
+To make a site load faster, compress and resize images, lazy-load those below the fold, reduce and defer JavaScript, minimise third-party scripts, use browser caching and a CDN and choose fast hosting. Measure with Lighthouse before and after.
+
+## 10 ways
+
+1. Resize and compress images.
+2. Use modern formats like WebP or AVIF.
+3. Lazy-load below-the-fold images.
+4. Defer or remove unused JavaScript.
+5. Minimise third-party scripts.
+6. Use a CDN.
+7. Enable caching.
+8. Use fewer fonts and load them efficiently.
+9. Reserve space for images to avoid layout shift.
+10. Choose reliable hosting.
+
+## Measure it
+
+Run Lighthouse in Chrome DevTools or use PageSpeed Insights. Focus on the largest improvements first.
+
+## The bottom line
+
+Images and JavaScript are usually the biggest wins.
+
+=== favicon-guide
+title: How to Add a Favicon to Your Website
+desc: Add a favicon in minutes: sizes, formats (ICO, PNG, SVG), the HTML link tags and how to test it in different browsers.
+tags: favicon, how to add a favicon, favicon sizes, favicon html, website icon
+rel: how-to-launch-a-website
+q: What is a favicon? | The small icon shown in browser tabs, bookmarks and search results next to your site's name.
+q: What size should a favicon be? | Provide an SVG or a PNG of at least 48 by 48 pixels, plus a 180 by 180 Apple touch icon.
+q: Why is my favicon not showing? | Browsers cache favicons heavily. Clear the cache or check the file path and format.
+---
+A tiny file that makes your site look finished.
+
+## Direct answer
+
+Add a favicon by placing an icon file in your site and linking it in the `<head>`. Use an SVG or PNG, and add an Apple touch icon for phones. Test by hard-refreshing, since browsers cache favicons.
+
+## HTML
+
+```html
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+```
+
+## Sizes to prepare
+
+| File | Size |
+| :--- | :--- |
+| `favicon.ico` | 48 × 48 |
+| `icon.svg` | scalable |
+| `apple-touch-icon.png` | 180 × 180 |
+
+## Design tips
+
+- Keep it simple, since it is tiny.
+- Use high contrast.
+- Check it on light and dark browser themes.
+
+## The bottom line
+
+Add it before you launch and test it in a fresh tab.
+
+=== contact-form-for-website
+title: How to Add a Contact Form to Your Website (With and Without Code)
+desc: Add a contact form to your site: HTML form basics, form services, spam protection, accessibility and what to do on a static site.
+tags: contact form, add contact form to website, html contact form, static site form, form spam protection
+rel: form-validation-javascript
+q: How do I add a contact form to a static site? | Use a form service or your host's built-in form handling, because static pages cannot process submissions on their own.
+q: How do I stop spam? | Use a honeypot field, rate limits or a privacy-friendly CAPTCHA, and validate on the server.
+q: Do I need to validate the form? | Yes, in the browser for friendliness and on the server for safety.
+---
+A form needs two parts: the page people see and something that receives the data.
+
+## Direct answer
+
+An HTML form collects the information, but you need a backend or a form service to receive it. Static sites can use a form service or the hosting platform's form handling. Add labels, validation and spam protection.
+
+## Basic HTML
+
+```html
+<form action="https://your-form-service.example/submit" method="POST">
+  <label for="name">Name</label>
+  <input id="name" name="name" required>
+
+  <label for="email">Email</label>
+  <input id="email" name="email" type="email" required>
+
+  <label for="message">Message</label>
+  <textarea id="message" name="message" required></textarea>
+
+  <button type="submit">Send</button>
+</form>
+```
+
+## Options for receiving it
+
+- A form service that emails you submissions.
+- Your host's built-in forms.
+- Your own server endpoint.
+
+## Good practice
+
+1. Label every field.
+2. Explain what you do with the data.
+3. Add spam protection.
+4. Show a clear success message.
+5. Do not log sensitive data.
+
+## The bottom line
+
+Keep it short, label it well and protect it from spam.
+
+=== website-analytics-basics
+title: Website Analytics for Beginners: What to Track and Which Tools to Use
+desc: Learn the basics of website analytics: key metrics, privacy-friendly options, how to set up tracking and what to do with the numbers.
+tags: website analytics, google analytics alternatives, what to track website, analytics for beginners, privacy friendly analytics
+rel: website-seo-basics
+q: What is website analytics? | Tools and data that show how people find and use your site.
+q: Which metrics matter for a beginner? | Visitors, traffic sources, popular pages, bounce or engagement and conversions such as sign-ups.
+q: Do I need cookie consent? | It depends on the tool and where your visitors live. Some privacy-friendly tools avoid cookies. Check local rules.
+---
+You cannot improve what you cannot see.
+
+## Direct answer
+
+Website analytics tools show visitors, where they came from, which pages they view and what they do. Install one tracking script, define one or two goals, such as sign-ups, and check the data weekly. Choose a tool that fits your privacy needs.
+
+## Metrics to start with
+
+| Metric | What it tells you |
+| :--- | :--- |
+| Visitors | how many people come |
+| Sources | where they come from |
+| Top pages | what is useful |
+| Engagement | whether they stay and read |
+| Conversions | whether they take action |
+
+## Setting it up
+
+1. Choose a tool.
+2. Add its script to your site's head.
+3. Define one goal.
+4. Check data after a few days.
+5. Review weekly and act on one insight.
+
+## Privacy
+
+Be transparent, follow laws where you operate and avoid collecting personal data you do not need.
+
+## The bottom line
+
+Start simple. Track a few numbers and use them to decide what to improve.
+
+=== wordpress-vs-custom-code
+title: WordPress vs Custom Code: Which Should You Choose for a Website?
+desc: Compare WordPress and hand-coded websites on cost, speed, flexibility, maintenance and learning curve, with advice on which fits your project.
+tags: wordpress vs custom code, wordpress vs html, should i use wordpress, build website with code, cms vs static site
+rel: how-to-make-a-website-for-beginners
+q: Should I use WordPress or code my site? | WordPress suits content-heavy sites managed by non-developers. Custom code suits small, fast, tailored sites and learning.
+q: Is WordPress hard to maintain? | It needs updates for core, themes and plugins and good security habits.
+q: Which is faster? | A hand-coded static site is usually faster by default. A well-built WordPress site can be fast too.
+---
+Neither is better. It depends on the job.
+
+## Direct answer
+
+Choose WordPress when you need a content management system with plugins and non-technical editors. Choose custom code for small, fast, unique sites, portfolios and when you want to learn. Many teams use static sites with a headless CMS as a middle path.
+
+## Comparison
+
+| | WordPress | Custom code |
+| :--- | :--- | :--- |
+| Setup | quick with themes | needs coding skills |
+| Content editing | easy for non-developers | depends on setup |
+| Maintenance | updates and security | fewer moving parts |
+| Flexibility | huge plugin ecosystem | complete control |
+| Speed | depends on theme and plugins | fast by default |
+
+## When to pick each
+
+**WordPress:** blogs, small business sites with frequent updates, shops using plugins.
+**Custom code:** portfolios, landing pages, learning projects, apps.
+
+## The bottom line
+
+Pick the tool that matches your skills and how often content changes.
+
+=== custom-domain-setup
+title: How to Connect a Custom Domain to Your Website
+desc: Connect a domain to your host: add the domain, set A and CNAME records, wait for DNS, enable HTTPS and fix the most common problems.
+tags: custom domain setup, connect domain to website, point domain to hosting, dns records for domain, www redirect
+rel: what-is-dns
+q: How do I connect a domain to my website? | Add the domain in your host's settings, then create the DNS records it tells you at your registrar.
+q: What is the difference between the apex domain and www? | The apex is the root such as example.com. www is a subdomain. Most sites redirect one to the other.
+q: Why is my domain not working yet? | DNS may not have propagated, or the records may be wrong. Check them and wait.
+---
+Your site works on a temporary address. Now give it your own.
+
+## Direct answer
+
+To use your own domain, add it in your hosting dashboard, then create the DNS records it asks for at your domain registrar, usually an A record for the root domain and a CNAME for `www`. Wait for DNS to update, then enable HTTPS.
+
+## Steps
+
+1. **Add the domain** in your host's dashboard.
+2. **Copy the DNS values** it shows.
+3. **Log in to your registrar** and open DNS settings.
+4. **Add the records** exactly as shown.
+5. **Wait,** from a few minutes to a day.
+6. **Enable HTTPS** and set one version as the main one.
+
+## Typical records
+
+| Type | Name | Value |
+| :--- | :--- | :--- |
+| A | `@` | host's IP address |
+| CNAME | `www` | host's domain |
+
+## Troubleshooting
+
+- Remove old conflicting records.
+- Check for typos.
+- Use a DNS checker to see what the world sees.
+
+## The bottom line
+
+Copy the records carefully and give DNS time to settle.
+
+=== website-launch-checklist
+title: Website Launch Checklist: 25 Things to Check Before Going Live
+desc: A practical website launch checklist covering content, links, mobile, speed, SEO, security, analytics, backups and what to do after launch.
+tags: website launch checklist, launch a website checklist, pre launch website checklist, go live checklist, website qa
+rel: how-to-launch-a-website, website-seo-basics
+q: What should I check before launching a website? | Content, links, forms, mobile layout, speed, SEO basics, HTTPS, analytics and backups.
+q: What should I do after launch? | Submit your sitemap, monitor errors and analytics, and fix issues quickly.
+q: Do I need to test on real devices? | Yes when possible. Emulators help but real phones reveal problems.
+---
+A few careful minutes before launch save hours of embarrassment after.
+
+## Direct answer
+
+Before launching, test your content, links, forms, mobile layout and speed, check titles and descriptions, enable HTTPS, set up analytics and backups, add a sitemap and test on real devices. After launch, submit the site to search engines and monitor for problems.
+
+## Checklist
+
+**Content**
+1. Spelling and grammar checked.
+2. Contact details correct.
+3. Placeholder text removed.
+
+**Function**
+4. All links work.
+5. Forms send and confirm.
+6. 404 page exists.
+
+**Design**
+7. Mobile layout checked on a real phone.
+8. Works in major browsers.
+9. Text is readable and has good contrast.
+
+**Technical**
+10. HTTPS on and redirects set.
+11. Favicon added.
+12. Images compressed.
+13. Speed tested.
+
+**SEO**
+14. Unique titles and descriptions.
+15. Headings in order.
+16. Alt text added.
+17. Sitemap created.
+18. Robots settings allow indexing.
+
+**Tracking and safety**
+19. Analytics installed.
+20. Cookie notice if needed.
+21. Backups set up.
+22. Privacy policy added if you collect data.
+
+**After launch**
+23. Submit to Search Console.
+24. Share it.
+25. Monitor and fix.
+
+## The bottom line
+
+Launching is the start. Check, publish and keep improving.

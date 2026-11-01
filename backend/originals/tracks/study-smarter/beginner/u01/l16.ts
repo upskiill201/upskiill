@@ -32,8 +32,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Kofi photographs his notes. What should he check first?',
-      options: ['That the AI read the numbers and words correctly', 'That the photo looks nice', 'Nothing, photos are always read perfectly'],
-      answer: 0,
+      options: ['That the photo looks nice', 'Nothing, photos are always read perfectly', 'That the AI read the numbers and words correctly'],
+      answer: 2,
     },
   ],
   apply: {
@@ -107,11 +107,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is explaining a topic aloud useful?',
         options: [
-          { text: 'It shows you what you actually know, and the AI can spot the gaps' },
           { text: 'It is louder than reading', why: 'Volume is not the point.' },
           { text: 'It saves your phone battery', why: 'Not really, and not the point.' },
+          { text: 'It shows you what you actually know, and the AI can spot the gaps' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

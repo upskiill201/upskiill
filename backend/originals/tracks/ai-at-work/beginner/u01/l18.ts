@@ -114,11 +114,11 @@ const lesson: OriginalLesson = {
         message: "I'm sending you our 12-page brand guide. Could you tell me the 3 things your designers must know?",
         prompt: 'Which request should Ada give the AI (with the guide attached or pasted)?',
         options: [
-          { text: 'Summarise this brand guide for our designers in 3 bullets: the rules they must follow. Only use what is in the guide.' },
           { text: 'Summarise this.', why: 'For whom? How many points? What matters?' },
+          { text: 'Summarise this brand guide for our designers in 3 bullets: the rules they must follow. Only use what is in the guide.' },
           { text: 'Write a new brand guide.', why: 'She asked for a summary of hers.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -178,11 +178,11 @@ const lesson: OriginalLesson = {
         message: 'Before you send the launch plan to my boss, can you make sure nothing obvious is missing?',
         prompt: 'Which request should Ada use?',
         options: [
-          { text: "Read this plan as a busy marketing director would. What is unclear or missing? Up to 3 things." },
           { text: 'Is this plan good?', why: 'It will probably just say yes.' },
           { text: 'Rewrite the whole plan.', why: 'She asked for a check, not a rewrite.' },
+          { text: "Read this plan as a busy marketing director would. What is unclear or missing? Up to 3 things." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

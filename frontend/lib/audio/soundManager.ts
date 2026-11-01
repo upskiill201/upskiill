@@ -249,6 +249,39 @@ class SoundManager {
     return this.isMusicEnabled;
   }
 
+  /**
+   * The music category's output (lib/audio/lessonMusic.ts), or null when
+   * audio is unavailable, muted, or music is switched off in settings.
+   */
+  getMusicBus(): { ctx: AudioContext; output: GainNode } | null {
+    if (typeof window === 'undefined') return null;
+    if (this.isMuted || !this.isMusicEnabled) return null;
+    const ctx = this.initContext();
+    if (!ctx) return null;
+    const musicGain = this.categoryGainNodes.music || this.masterGainNode;
+    if (!musicGain) return null;
+    if (!this.musicBoost || this.musicBoostCtx !== ctx) {
+      // The synthesised loops are written quiet (peaks of 0.02-0.12) and phone
+      // speakers cut the low end, so lift them here and let a limiter catch peaks.
+      const boost = ctx.createGain();
+      boost.gain.value = 3.2;
+      const limiter = ctx.createDynamicsCompressor();
+      limiter.threshold.value = -10;
+      limiter.knee.value = 6;
+      limiter.ratio.value = 12;
+      limiter.attack.value = 0.003;
+      limiter.release.value = 0.2;
+      boost.connect(limiter);
+      limiter.connect(musicGain);
+      this.musicBoost = boost;
+      this.musicBoostCtx = ctx;
+    }
+    return { ctx, output: this.musicBoost };
+  }
+
+  private musicBoost: GainNode | null = null;
+  private musicBoostCtx: AudioContext | null = null;
+
   // ─── Sound Registry Customization ──────────────────────────────────────────
 
   getRegistry(): Record<SoundId, SoundConfig> {

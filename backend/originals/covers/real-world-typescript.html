@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@600;700&display=block" rel="stylesheet" />
+<style>
+  /* Teyro Originals cover: real-world-typescript. Built from the HTML & CSS cover's styles (mkcovers). No Tey, no logos. */
+  :root {
+    --brand: #0172FD;
+    --brand-dark: #0060D9;
+    --brand-deep: #0050B3;
+    --ink: #071233;
+    --ink-2: #0E1B45;
+    --purple: #9333EA;
+    --indigo: #6352FF;
+    --green: #22C55E;
+    --green-dark: #16A34A;
+    --amber: #F59E0B;
+    --amber-dark: #B45309;
+    --orange: #FF9600;
+    --yellow: #FFD43B;
+    --pink: #EC4899;
+    --pink-dark: #9D174D;
+    --red: #E8250C;
+    --white: #FFFFFF;
+    --mist: #E8F1FF;
+    --code-fg: #E6ECF8;
+    --code-muted: #6B7A9C;
+    --code-tag: #7FB6FF;
+    --code-attr: #C4A6FF;
+    --code-str: #7EE2A0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 1000px; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--brand); overflow: hidden; position: relative; }
+
+  .blob { position: absolute; border-radius: 50%; background: var(--brand-dark); }
+  .speed { position: absolute; height: 10px; border-radius: 999px; background: var(--white); transform: rotate(-18deg); transform-origin: left center; }
+  .ring { position: absolute; border-radius: 50%; border: 6px solid var(--white); }
+
+  .copy { position: absolute; left: 100px; top: 150px; width: 640px; z-index: 5; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--white); color: var(--purple);
+    font-weight: 800; font-size: 26px; letter-spacing: .08em; text-transform: uppercase;
+    padding: 14px 26px; border-radius: 999px; box-shadow: 0 6px 0 var(--brand-deep);
+  }
+  .pill i { width: 14px; height: 14px; border-radius: 50%; background: var(--purple); display: inline-block; }
+  h1 { margin-top: 40px; color: var(--white); font-weight: 800; font-size: 132px; line-height: .95; letter-spacing: -0.035em; }
+  h1 em { font-style: normal; display: inline-block; margin-top: 16px; font-size: 76px; letter-spacing: -0.02em; color: var(--ink); background: var(--yellow); padding: 6px 22px 12px; border-radius: 24px; box-shadow: 0 8px 0 var(--amber-dark); }
+  .sub { margin-top: 40px; color: var(--mist); font-weight: 700; font-size: 34px; line-height: 1.3; width: 600px; }
+
+  .stage { position: absolute; left: 760px; top: 60px; width: 800px; height: 880px; transform: rotate(-4deg); }
+
+  /* Editor */
+  .editor {
+    position: absolute; left: 0; top: 120px; width: 470px; height: 420px;
+    background: var(--ink); border-radius: 30px; box-shadow: 0 12px 0 #030a1f; overflow: hidden;
+  }
+  .bar { height: 58px; display: flex; align-items: center; gap: 10px; padding: 0 24px; background: var(--ink-2); }
+  .dot { width: 14px; height: 14px; border-radius: 50%; }
+  .file { margin-left: 12px; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 20px; color: var(--code-muted); }
+  .code { padding: 24px 24px; font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 24px; line-height: 1.8; color: var(--code-fg); white-space: pre; }
+  .ln { color: #34446B; margin-right: 18px; }
+  .t { color: var(--code-tag); } .a { color: var(--code-attr); } .s { color: var(--code-str); }
+  .caret { display: inline-block; width: 4px; height: 30px; background: var(--white); vertical-align: -6px; margin-left: 2px; border-radius: 2px; }
+
+  /* Flow arrow from code to page */
+  .flow { position: absolute; left: 440px; top: 300px; z-index: 6; }
+
+  /* Phone with the live page */
+  .phone {
+    position: absolute; left: 470px; top: 20px; width: 320px; height: 640px;
+    background: var(--ink); border-radius: 48px; box-shadow: 0 14px 0 #030a1f; padding: 16px;
+  }
+  .screen { width: 100%; height: 100%; background: var(--white); border-radius: 34px; overflow: hidden; position: relative; }
+  .notch { position: absolute; left: 50%; top: 10px; width: 90px; height: 22px; margin-left: -45px; background: var(--ink); border-radius: 999px; }
+  .page { padding: 52px 22px 0; }
+  .pageH1 { font-weight: 800; font-size: 34px; letter-spacing: -0.02em; color: var(--ink); line-height: 1.05; }
+  .pageP { margin-top: 10px; font-weight: 600; font-size: 16px; line-height: 1.4; color: #3B4A6B; }
+  .cover { margin-top: 18px; height: 190px; border-radius: 18px; background: linear-gradient(#ffb224, #f0438a); position: relative; overflow: hidden; }
+  .cover .sun { position: absolute; left: 50%; top: 70px; width: 120px; height: 120px; margin-left: -60px; border-radius: 50%; background: #fff3c4; }
+  .cover .wave { position: absolute; left: -20px; right: -20px; height: 60px; border-radius: 50% 50% 0 0; background: var(--ink); }
+  .cover b { position: absolute; left: 16px; top: 14px; font-weight: 800; font-size: 20px; line-height: 1.05; color: var(--ink); }
+  .player { margin-top: 16px; display: flex; align-items: center; gap: 12px; background: var(--mist); border-radius: 999px; padding: 10px 14px; }
+  .play { width: 46px; height: 46px; border-radius: 50%; background: var(--brand); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 0 var(--brand-deep); flex: none; }
+  .track { flex: 1; height: 8px; border-radius: 999px; background: #C9DBF7; position: relative; }
+  .track i { position: absolute; left: 0; top: 0; bottom: 0; width: 42%; border-radius: 999px; background: var(--brand); }
+  .gig { margin-top: 16px; display: inline-block; background: var(--yellow); color: var(--ink); font-weight: 800; font-size: 15px; padding: 8px 14px; border-radius: 12px; }
+
+  .live { position: absolute; left: 640px; top: -20px; background: var(--red); color: var(--white); font-weight: 800; font-size: 26px; letter-spacing: .1em; padding: 12px 22px; border-radius: 18px; box-shadow: 0 6px 0 #9A1A08; transform: rotate(8deg); z-index: 8; display: flex; align-items: center; gap: 10px; }
+  .live i { width: 14px; height: 14px; border-radius: 50%; background: var(--white); display: inline-block; }
+
+  /* Page checks going green */
+  .checks { position: absolute; left: 40px; top: 600px; width: 420px; background: var(--white); border-radius: 28px; box-shadow: 0 12px 0 var(--brand-deep); padding: 22px 26px; }
+  .chk { display: flex; align-items: center; gap: 14px; font-weight: 800; font-size: 24px; color: var(--ink); }
+  .chk + .chk { margin-top: 14px; }
+  .tick { width: 36px; height: 36px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 0 var(--green-dark); flex: none; }
+
+  /* Flying tags with motion trails */
+  .chip { position: absolute; padding: 14px 22px; border-radius: 18px; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 26px; color: var(--white); white-space: nowrap; }
+  .ghost { opacity: .25; color: transparent !important; box-shadow: none !important; }
+  .ghost2 { opacity: .12; color: transparent !important; box-shadow: none !important; }
+  .c-p { background: var(--purple); box-shadow: 0 6px 0 #6B21A8; }
+  .c-css { background: var(--pink); box-shadow: 0 6px 0 var(--pink-dark); }
+  .c-a { background: var(--amber); box-shadow: 0 6px 0 var(--amber-dark); color: var(--ink); }
+  .c-img { background: var(--indigo); box-shadow: 0 6px 0 #3F33B8; }
+
+  .xp { position: absolute; left: 600px; top: 690px; background: var(--white); color: var(--brand); font-weight: 800; font-size: 32px; padding: 14px 24px; border-radius: 22px; box-shadow: 0 7px 0 var(--brand-deep); transform: rotate(8deg); }
+  .spark { position: absolute; }
+</style>
+<style>
+  .bk { margin-top: 14px; background: var(--mist); border-radius: 18px; padding: 14px 16px; }
+  .bk b { display: block; font-weight: 800; font-size: 18px; color: var(--ink); }
+  .bk span { display: block; margin-top: 4px; font-weight: 600; font-size: 14px; color: #3B4A6B; }
+  .tag { display: inline-block; margin-top: 8px; font-weight: 800; font-size: 13px; padding: 5px 10px; border-radius: 10px; }
+  .tag.ok { background: #DCFCE7; color: var(--green-dark); }
+  .tag.no { background: #FEE2E2; color: #B91C1C; }
+  .row { display: flex; gap: 10px; margin-top: 14px; }
+  .row .card { flex: 1; height: 90px; border-radius: 14px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .grid3 div { height: 74px; border-radius: 14px; }
+  .field { margin-top: 10px; height: 40px; border-radius: 12px; border: 3px solid #C9DBF7; background: var(--white); padding: 0 12px; display: flex; align-items: center; font-weight: 700; font-size: 14px; color: #6B7A9C; }
+  .btn { margin-top: 14px; height: 46px; border-radius: 14px; background: var(--brand); box-shadow: 0 4px 0 var(--brand-deep); color: var(--white); font-weight: 800; font-size: 17px; display: flex; align-items: center; justify-content: center; }
+  .squig { text-decoration: underline wavy #FF6B6B; text-underline-offset: 6px; }
+  .code, .chip { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+  .k { color: #FF9EC4; } .ty { color: #FFD43B; }
+</style>
+</head>
+<body>
+  <div class="blob" style="width:820px;height:820px;right:-220px;top:-300px;opacity:.55"></div>
+  <div class="blob" style="width:540px;height:540px;left:-220px;bottom:-280px;opacity:.45"></div>
+
+  <div class="speed" style="left:-40px;top:930px;width:420px;opacity:.10"></div>
+  <div class="speed" style="left:300px;top:965px;width:260px;opacity:.16"></div>
+  <div class="speed" style="left:690px;top:110px;width:160px;opacity:.14"></div>
+  <div class="speed" style="left:740px;top:150px;width:100px;opacity:.20"></div>
+  <div class="speed" style="left:1380px;top:915px;width:260px;opacity:.12"></div>
+  <div class="ring" style="width:150px;height:150px;left:660px;top:760px;opacity:.12"></div>
+  <div class="ring" style="width:60px;height:60px;left:1520px;top:60px;opacity:.25"></div>
+
+  
+  <div class="blob" style="width:820px;height:820px;right:-220px;top:-300px;opacity:.55"></div>
+  <div class="blob" style="width:540px;height:540px;left:-220px;bottom:-280px;opacity:.45"></div>
+  <div class="speed" style="left:-40px;top:930px;width:420px;opacity:.10"></div>
+  <div class="speed" style="left:300px;top:965px;width:260px;opacity:.16"></div>
+  <div class="speed" style="left:690px;top:110px;width:160px;opacity:.14"></div>
+  <div class="speed" style="left:1380px;top:915px;width:260px;opacity:.12"></div>
+  <div class="ring" style="width:150px;height:150px;left:660px;top:760px;opacity:.12"></div>
+  <div class="ring" style="width:60px;height:60px;left:1520px;top:60px;opacity:.25"></div>
+  <div class="copy">
+    <span class="pill"><i></i>Teyro Original · Advanced</span>
+    <h1 style="font-size:104px">Real-World<br/><em>TypeScript</em></h1>
+    <p class="sub">Ship a real tool: unions, async, untrusted data and Node.</p>
+  </div>
+  <div class="stage">
+    <div class="editor">
+      <div class="bar"><span class="dot" style="background:#FF6B6B"></span><span class="dot" style="background:#FFC94D"></span><span class="dot" style="background:#4ADE80"></span><span class="file">api.ts</span></div>
+      <div class="code" style="font-size:21px"><span class="ln">1</span><span class="k">type</span> <span class="ty">Result</span> =
+<span class="ln">2</span>  <span class="ty">| { ok: true; data: Booking }</span>
+<span class="ln">3</span>  <span class="ty">| { ok: false; error: string }</span>
+<span class="ln">4</span><span class="k">const</span> res = <span class="k">await</span> fetch(url)
+<span class="ln">5</span>name ?? <span class="s">"unknown"</span><span class="caret"></span></div>
+    </div>
+    <svg class="flow" width="70" height="60" viewBox="0 0 70 60"><path d="M4 30h48" stroke="#fff" stroke-width="10" stroke-linecap="round"/><path d="M40 10l22 20-22 20" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="phone"><div class="screen"><div class="notch"></div><div class="page"><div class="pageH1">Session Booker 1.0</div><div class="pageP">Used by the whole UX team</div>
+      <div class="bk"><b>12 sessions this week</b><span>0 double bookings</span><span class="tag ok">all reminders sent</span></div>
+      <div class="btn">Book a session</div></div></div></div>
+    <div class="live"><i></i>v1.0</div>
+    <div class="checks"><div class="chk"><span class="tick"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>Untrusted data checked</div><div class="chk"><span class="tick"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>No any in sight</div></div>
+    
+    <div class="chip c-p ghost2" style="left:-102px;top:24px">unknown</div>
+    <div class="chip c-p ghost" style="left:-66px;top:32px">unknown</div>
+    <div class="chip c-p" style="left:-30px;top:40px;transform:rotate(-8deg)">unknown</div>
+    <div class="chip c-css ghost2" style="left:-146px;top:528px">async</div>
+    <div class="chip c-css ghost" style="left:-110px;top:536px">async</div>
+    <div class="chip c-css" style="left:-74px;top:544px;transform:rotate(6deg)">async</div>
+    <div class="chip c-a ghost2" style="left:190px;top:-26px">??</div>
+    <div class="chip c-a ghost" style="left:226px;top:-18px">??</div>
+    <div class="chip c-a" style="left:262px;top:-10px;transform:rotate(-7deg)">??</div>
+    <div class="xp">+20 XP</div>
+    <svg class="spark" style="left:770px;top:600px" width="54" height="54" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#fff"/></svg>
+    <svg class="spark" style="left:10px;top:830px" width="40" height="40" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#FFD43B"/></svg>
+    <svg class="spark" style="left:440px;top:80px" width="34" height="34" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#fff" opacity=".8"/></svg>
+  </div>
+</body>
+</html>

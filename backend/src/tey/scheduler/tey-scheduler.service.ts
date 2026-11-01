@@ -12,6 +12,7 @@ import { jitterSeconds, localTimeToday } from '../decision/rules';
 import { FINAL_RUNG } from '../decision/rules/inactive-return.rule';
 import { COURSE_UNLOCK, CourseUnlockJourney } from '../notify/course-unlock.journey';
 import { FIRST_LESSON_JOURNEY, FirstLessonJourney } from '../notify/first-lesson.journey';
+import { PRO_BILLING, ProBillingJourney } from '../notify/pro-billing.journey';
 import {
   TeyActionRepository,
   ScheduledActionRow,
@@ -69,6 +70,7 @@ export class TeySchedulerService {
     private readonly delivery: TeyDeliveryService,
     private readonly unlockJourney: CourseUnlockJourney,
     private readonly firstLessonJourney: FirstLessonJourney,
+    private readonly proBilling: ProBillingJourney,
   ) {}
 
   /**
@@ -177,6 +179,9 @@ export class TeySchedulerService {
     }
     if (action.ruleId === FIRST_LESSON_JOURNEY) {
       return this.firstLessonJourney.process(action);
+    }
+    if (action.ruleId === PRO_BILLING) {
+      return this.proBilling.process(action);
     }
 
     // A planner wake-up sends nothing: it re-projects the learner at the start

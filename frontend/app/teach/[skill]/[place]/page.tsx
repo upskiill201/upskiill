@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Crown, Database } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import {
   APPLY_HREF,
   APPLY_LABEL,
   CLEARING_DAYS,
-  CREATOR_SHARE_PCT,
+  CREATOR_POOL_PCT,
   EXAMPLE_KEEP_USD,
-  EXAMPLE_MONTHLY_USD,
-  EXAMPLE_PRICE_USD,
+  EXAMPLE_PRO_MONTH_USD,
+  PRO_YEARLY_USD,
   MIN_PAYOUT_USD,
   SKILL_COPY,
   TEACH_SOURCES,
@@ -33,7 +33,7 @@ import JsonLd from '@/components/features/blog/JsonLd';
 import FaqAccordion from '@/components/features/blog/FaqAccordion';
 import CtaBlock from '@/components/features/blog/CtaBlock';
 import { AnswerCard, Callout, LinkCards, ListCard, SectionHead, SeoHeader } from '@/components/seo/Blocks';
-import { APP_LAUNCHES, FOUNDING_SHARE_PCT, STANDARD_SHARE_PCT, STUDIO_OPENS } from '@/lib/launch';
+import { APP_LAUNCHES, STUDIO_OPENS } from '@/lib/launch';
 import s from '@/components/seo/Seo.module.css';
 
 export const revalidate = 86400;
@@ -55,7 +55,7 @@ function titleFor(skill: TeachSkill, p: TeachPlace) {
 
 function descriptionFor(skill: TeachSkill, p: TeachPlace) {
   const noun = SKILL_COPY[skill].noun;
-  return `Teach ${noun} online from ${p.name}: build a course once, keep ${CREATOR_SHARE_PCT}% of every monthly payment, paid in USD. Local data, payouts and Founding Creator status.`;
+  return `Teach ${noun} online from ${p.name}: build a course once and earn from Teyro Pro every month, by the minutes learners spend in it. Paid in USD. Local data, payouts and Founding Creator status.`;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -94,20 +94,20 @@ export default async function TeachPlacePage({ params }: Props) {
   const keep = EXAMPLE_KEEP_USD;
   const rails = payoutRails(p);
   const otherSkill: TeachSkill = skill === 'coding' ? 'ai' : 'coding';
-  const example = `an example $${EXAMPLE_PRICE_USD} course (${cents(EXAMPLE_MONTHLY_USD)} a month)`;
+  const example = `a yearly Teyro Pro learner (${cents(EXAMPLE_PRO_MONTH_USD)} a month) who spends all their learning time in your course`;
 
   const answer = us
-    ? `Looking for ${copy.jobsQuery} in ${p.name}? Teyro works differently: instead of tutoring by the hour, you build a ${copy.noun} course once in Teyro Studio and keep ${CREATOR_SHARE_PCT}% of every payment, every month a learner stays subscribed. ${p.kind === 'metro' ? capitalise(p.inSentence) : p.name} has ${num(us.jobs)} ${copy.occupation} earning a median ${usd(us.median)} a year, so this is income alongside your work — not instead of it.`
-    : `Looking for ${copy.jobsQuery} in ${p.name}? On Teyro you build a ${copy.noun} course once and keep ${CREATOR_SHARE_PCT}% of every payment, paid in US dollars to ${rails}. On ${example}, each subscribed learner earns you ${cents(keep)} every month — about ${money(intl!.keepLocal, intl!.currency)} at today’s rate. No hourly schedule to keep.`;
+    ? `Looking for ${copy.jobsQuery} in ${p.name}? Teyro works differently: instead of tutoring by the hour, you build a ${copy.noun} course once in Teyro Studio and earn from Teyro Pro every month learners keep learning with you: ${CREATOR_POOL_PCT}% of every Pro learner's payment is shared among the creators they learn with, by minutes. ${p.kind === 'metro' ? capitalise(p.inSentence) : p.name} has ${num(us.jobs)} ${copy.occupation} earning a median ${usd(us.median)} a year, so this is income alongside your work — not instead of it.`
+    : `Looking for ${copy.jobsQuery} in ${p.name}? On Teyro you build a ${copy.noun} course once and earn from Teyro Pro: ${CREATOR_POOL_PCT}% of every Pro learner's payment is shared among the creators they learn with, by minutes, paid in US dollars to ${rails}. For ${example}, that's about ${cents(keep)} a month — about ${money(intl!.keepLocal, intl!.currency)} at today’s rate. No hourly schedule to keep.`;
 
   const faq = [
     {
       question: `Is this an online ${copy.noun} teaching job in ${p.name}?`,
-      answer: `Not a salaried job. Teyro is a course platform: you create a ${copy.noun} course, learners take two lessons free and then subscribe, and you keep ${CREATOR_SHARE_PCT}% of every payment. You choose your hours, work from ${p.name}, and keep your current job if you have one.`,
+      answer: `Not a salaried job. Teyro is a course platform: you create a ${copy.noun} course, learners start free and then subscribe to Teyro Pro, which opens every course, and you earn a share of the Pro pool for the minutes they spend in yours. You choose your hours, work from ${p.name}, and keep your current job if you have one.`,
     },
     {
       question: `How much can I earn teaching ${copy.noun} online from ${p.name}?`,
-      answer: `It depends on your price and how many learners stay subscribed — there is no fixed rate. As an example, on ${example} you keep ${cents(keep)} per learner per month${intl ? ` (about ${money(intl.keepLocal, intl.currency)})` : ''}, so 100 subscribed learners would be about ${usd(keep * 100)} a month. Free courses are allowed too, and help you build an audience.`,
+      answer: `It depends on how many Pro learners take your course and how much of their learning time they spend in it — there is no fixed rate. Each month ${CREATOR_POOL_PCT}% of every Pro learner's payment is shared among the creators they learned with, by minutes. As an example, ${example} earns you about ${cents(keep)} a month${intl ? ` (about ${money(intl.keepLocal, intl.currency)})` : ''}, so 100 such learners would be about ${usd(keep * 100)} a month, before card fees and tax. Free courses are allowed too, and help you build an audience.`,
     },
     {
       question: `How do Teyro creators in ${p.name} get paid?`,
@@ -149,17 +149,17 @@ export default async function TeachPlacePage({ params }: Props) {
         crumbs={crumbs}
         chip={`Teach ${copy.label} · ${p.name}`}
         title={`Teach ${copy.noun} online from ${p.name}`}
-        dek={`Build a ${copy.noun} course once, keep ${CREATOR_SHARE_PCT}% of every payment for as long as learners stay subscribed, and get paid in US dollars — from anywhere in ${p.inSentence}.`}
+        dek={`Build a ${copy.noun} course once, earn from Teyro Pro for every minute learners spend in it, and get paid in US dollars — from anywhere in ${p.inSentence}.`}
       />
 
       <div className={s.container}>
         <AnswerCard
           answer={answer}
-          why={`Early creators become Founding Creators: keep ${FOUNDING_SHARE_PCT}% of every payment (standard is ${STANDARD_SHARE_PCT}%), with a Founding badge and founding benefits in Teyro Studio.`}
+          why={`Every creator is paid the same way: ${CREATOR_POOL_PCT}% of every Pro learner's payment, shared by the minutes they spend in each course. Early creators also become Founding Creators, with a Founding badge and founding benefits in Teyro Studio.`}
           visualNode={<EarningsCard place={p} keep={keep} rails={rails} />}
           caption="A worked example, not a promise of earnings"
           cta={{ href: APPLY_HREF, label: APPLY_LABEL }}
-          fineprint={`Free to join · Founding Creators keep ${FOUNDING_SHARE_PCT}% · Paid in USD`}
+          fineprint={`Free to join · ${CREATOR_POOL_PCT}% creator pool · Paid in USD`}
         />
 
         {/* ── The local data that makes this page this place's page ── */}
@@ -195,7 +195,7 @@ export default async function TeachPlacePage({ params }: Props) {
                   : `It is a smaller market, and that is fine: Teyro is online, so a course you build from ${p.name} reaches learners everywhere, not just nearby.`}
               </p>
               <p className={s.source}>
-                <Database size={12} aria-hidden="true" /> Source: {TEACH_SOURCES.bls} ({copy.occupation}, SOC{' '}
+                <Glyph name="database" size={12} strokeWidth={2.4} /> Source: {TEACH_SOURCES.bls} ({copy.occupation}, SOC{' '}
                 {skill === 'coding' ? '15-1252' : '15-2051'}). Ranks compare the places on this site.
               </p>
             </>
@@ -204,14 +204,14 @@ export default async function TeachPlacePage({ params }: Props) {
               <div className={s.stats}>
                 <Stat
                   value={money(intl!.keepLocal, intl!.currency)}
-                  label={`Your ${cents(keep)} a month from one learner on an example $${EXAMPLE_PRICE_USD} course`}
+                  label={`Your ${cents(keep)} a month from one yearly Pro learner who learns only in your course (example)`}
                 />
                 <Stat value={bigNum(intl!.population)} label="People" />
                 {intl!.internetPct != null && <Stat value={pct(intl!.internetPct)} label="Use the internet" />}
                 {intl!.gdpMonthly != null && <Stat value={usd(intl!.gdpMonthly)} label="GDP per person, per month" />}
               </div>
               <p className={s.source}>
-                <Database size={12} aria-hidden="true" /> Sources: {TEACH_SOURCES.worldBank} ({intl!.year}); exchange
+                <Glyph name="database" size={12} strokeWidth={2.4} /> Sources: {TEACH_SOURCES.worldBank} ({intl!.year}); exchange
                 rate {TEACH_SOURCES.fx}. Earnings are paid in USD; the local figure moves with the exchange rate.
               </p>
             </>
@@ -240,7 +240,7 @@ export default async function TeachPlacePage({ params }: Props) {
               </thead>
               <tbody>
                 {[
-                  ['Income', 'One payment per hour taught', `${CREATOR_SHARE_PCT}% of every monthly payment, from lessons you made once`],
+                  ['Income', 'One payment per hour taught', `A monthly share of the Teyro Pro pool, for lessons you made once`],
                   ['Schedule', 'Booked sessions across time zones', 'None — learners take lessons any time'],
                   ['Learners', 'One at a time', 'As many as enrol'],
                   ['Motivation', 'Up to you and the student', 'Streaks, leagues and quests keep learners going'],
@@ -297,8 +297,8 @@ export default async function TeachPlacePage({ params }: Props) {
             <SectionHead id="founding" eyebrow="Founding creators" title="Get in early" />
             <Callout>
               Teyro Studio opens in {STUDIO_OPENS} and the learner app launches in {APP_LAUNCHES}. Early creators become
-              Founding Creators: they keep {FOUNDING_SHARE_PCT}% of every payment instead of {STANDARD_SHARE_PCT}%, and get a
-              Founding badge and founding benefits in Studio. If you already have a following, your audience can follow
+              Founding Creators: a Founding badge and founding benefits in Studio. They’re paid from the Teyro Pro pool like
+              every creator. If you already have a following, your audience can follow
               you straight into your course and its community.
             </Callout>
           </section>
@@ -307,7 +307,7 @@ export default async function TeachPlacePage({ params }: Props) {
           <CtaBlock
             cta={{
               title: `Teach ${copy.noun} from ${p.name}`,
-              text: `Keep ${CREATOR_SHARE_PCT}% of every payment, get paid in USD, and join as a Founding Creator.`,
+              text: `Earn from Teyro Pro for every minute learners spend in your course, get paid in USD, and join as a Founding Creator.`,
               href: APPLY_HREF,
               label: APPLY_LABEL,
             }}
@@ -363,21 +363,21 @@ function EarningsCard({ place, keep, rails }: { place: TeachPlace; keep: number;
       <div className={s.earnHead}>
         <span>Example learner</span>
         <span className={s.earnBadge}>
-          <Crown size={12} strokeWidth={2.75} aria-hidden="true" /> Founding
+          <Glyph name="crown" size={12} strokeWidth={2.2} /> Founding
         </span>
       </div>
       <span className={s.earnBig}>{cents(keep)}</span>
-      <span className={s.earnSub}>you keep every month they stay subscribed</span>
+      <span className={s.earnSub}>your share each month they learn only in your course</span>
       <ul className={s.earnRows}>
         <li>
-          <span>Course price</span>
+          <span>Teyro Pro</span>
           <span>
-            ${EXAMPLE_PRICE_USD} → {cents(EXAMPLE_MONTHLY_USD)}/mo
+            ${PRO_YEARLY_USD}/yr → {cents(EXAMPLE_PRO_MONTH_USD)}/mo
           </span>
         </li>
         <li>
-          <span>Your share</span>
-          <span>{CREATOR_SHARE_PCT}%</span>
+          <span>Creator pool</span>
+          <span>{CREATOR_POOL_PCT}%, by minutes</span>
         </li>
         {intl && intl.currency !== 'USD' && (
           <li>

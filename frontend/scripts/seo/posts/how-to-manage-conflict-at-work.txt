@@ -1,0 +1,361 @@
+=== conflict-resolution-styles
+title: 5 Conflict Resolution Styles and When to Use Each
+desc: Five conflict styles: avoiding, accommodating, competing, compromising and collaborating. Learn when each works and how to choose.
+tags: conflict resolution styles, conflict management styles, thomas kilmann, conflict styles at work, collaborating vs compromising
+rel: how-to-handle-conflict-at-work, thomas-kilmann-conflict-model
+q: What are the five conflict resolution styles? | Avoiding, accommodating, competing, compromising and collaborating.
+q: Which style is best? | None always. Collaborating is great for important issues, while avoiding or accommodating can suit minor ones.
+q: How do I know my style? | Reflect on how you act in disagreements, or use a validated assessment.
+---
+Different conflicts need different responses.
+
+## Direct answer
+
+The five common conflict styles are avoiding (stepping back), accommodating (giving way), competing (pushing your view), compromising (meeting in the middle) and collaborating (solving it together). Choose by how important the issue and the relationship are.
+
+## When to use each
+
+| Style | Good when |
+| :--- | :--- |
+| Avoiding | the issue is minor or emotions are high |
+| Accommodating | you are wrong or the relationship matters more |
+| Competing | quick decisions or safety matter |
+| Compromising | both sides need a fair, fast solution |
+| Collaborating | the issue is important and time allows |
+
+## How to choose
+
+1. How important is the issue?
+2. How important is the relationship?
+3. How much time is there?
+
+## The bottom line
+
+Flex your style to fit the situation.
+
+=== thomas-kilmann-conflict-model
+title: Thomas-Kilmann Conflict Model: Assertiveness vs Cooperativeness
+desc: The Thomas-Kilmann model maps conflict styles on assertiveness and cooperativeness. Learn the grid, the five modes and how to use it with your team.
+tags: thomas kilmann, thomas kilmann conflict mode instrument, conflict grid, tki, conflict management model
+rel: conflict-resolution-styles
+q: What is the Thomas-Kilmann model? | A framework that describes five conflict-handling modes based on assertiveness and cooperativeness.
+q: What are the two dimensions? | Assertiveness (pursuing your own concerns) and cooperativeness (satisfying others' concerns).
+q: Do I need the official test? | Using the model as a thinking tool is useful. An official assessment gives a personal profile.
+---
+A map for how we behave when we disagree.
+
+## Direct answer
+
+The Thomas-Kilmann model places five conflict styles on two axes: assertiveness and cooperativeness. Competing is high assertiveness and low cooperativeness. Accommodating is the reverse. Avoiding is low on both. Collaborating is high on both. Compromising sits in the middle.
+
+## The grid
+
+| | Low cooperative | High cooperative |
+| :--- | :--- | :--- |
+| **High assertive** | competing | collaborating |
+| **Low assertive** | avoiding | accommodating |
+
+Compromising is in the middle.
+
+## How to use it
+
+1. Notice your default style.
+2. Consider the situation.
+3. Choose a style on purpose.
+
+## The bottom line
+
+Your default is a habit, not a rule.
+
+=== nonviolent-communication-basics
+title: Nonviolent Communication: A Beginner's Guide to the Four Steps
+desc: Nonviolent Communication uses observation, feeling, need and request. Learn the four steps with workplace examples and how to practise.
+tags: nonviolent communication, nvc, nvc four steps, compassionate communication, conflict communication
+rel: i-statements-guide, how-to-handle-conflict-at-work
+q: What is nonviolent communication? | A communication method developed by Marshall Rosenberg that focuses on honest expression and empathic listening.
+q: What are the four steps? | Observations, feelings, needs and requests.
+q: Does it work at work? | It can, if used sincerely and adapted to the setting.
+---
+Say what is going on without blame.
+
+## Direct answer
+
+Nonviolent Communication has four parts: describe what you observe without judgement, say how you feel, state the need behind the feeling and make a clear request. It helps reduce blame and defensiveness.
+
+## Example
+
+"When the report arrives after the deadline (observation), I feel anxious (feeling), because I need to review it before the client call (need). Could you send it by Wednesday noon? (request)"
+
+## Tips
+
+1. Separate facts from interpretations.
+2. Name feelings, not accusations.
+3. Make requests, not demands.
+4. Listen for the other person's needs.
+
+## The bottom line
+
+Be honest and kind at the same time.
+
+=== workplace-mediation
+title: Workplace Mediation: What It Is and How It Works
+desc: Mediation uses a neutral person to help colleagues resolve a dispute. Learn when to use it, what happens, the benefits and its limits.
+tags: mediation, workplace mediation, how does mediation work, mediation at work, resolving disputes
+rel: how-to-handle-conflict-at-work, how-to-deal-with-difficult-coworkers
+q: What is workplace mediation? | A voluntary process where a neutral person helps colleagues discuss a dispute and agree a way forward.
+q: Is it binding? | Typically agreements are voluntary, but parties can agree to follow them.
+q: When is mediation not suitable? | For serious misconduct such as harassment, which needs formal procedures.
+---
+Sometimes a neutral third person helps people hear each other.
+
+## Direct answer
+
+Workplace mediation is a confidential process where a trained neutral mediator helps two parties talk through a dispute and reach their own agreement. It suits communication breakdowns and personality clashes, not serious misconduct.
+
+## What happens
+
+1. Separate conversations with each person.
+2. A joint meeting with ground rules.
+3. Each person speaks and listens.
+4. The group explores solutions.
+5. They agree a written plan.
+
+## Benefits
+
+- Faster than formal procedures.
+- Preserves relationships.
+- Gives people control.
+
+## The bottom line
+
+A way to talk when talking alone has stopped working.
+
+=== passive-aggressive-behaviour
+title: Passive-Aggressive Behaviour at Work: Signs and How to Respond
+desc: Passive-aggressive behaviour expresses anger indirectly. Learn common examples, why it happens and how to address it calmly and directly.
+tags: passive aggressive, passive aggressive behavior at work, passive aggressive examples, deal with passive aggressive coworker, indirect communication
+rel: how-to-deal-with-difficult-coworkers, assertive-communication
+q: What is passive-aggressive behaviour? | Indirect expressions of hostility, such as sarcasm, procrastination or silent resentment.
+q: How do I respond? | Stay calm, name the behaviour and impact factually and invite direct communication.
+q: Can I be passive-aggressive without meaning to? | Yes, when we avoid saying what is bothering us.
+---
+Hints and sighs instead of words.
+
+## Direct answer
+
+Passive-aggressive behaviour expresses frustration indirectly through sarcasm, deliberate delays, backhanded compliments or the silent treatment. Respond by staying calm, describing the behaviour and its impact, and asking what is going on. Model direct communication.
+
+## Examples
+
+- "Fine, whatever you want."
+- Late work with no explanation.
+- A pointed "reply all".
+
+## How to respond
+
+1. Do not respond in kind.
+2. Name what you observe: "I noticed the file arrived after the deadline."
+3. Ask: "Is something getting in the way?"
+4. Agree what will happen next.
+
+## If you do it
+
+Say what is bothering you directly and kindly.
+
+## The bottom line
+
+Replace hints with clear words.
+
+=== workplace-harassment-basics
+title: Workplace Harassment: What It Is and What to Do
+desc: Workplace harassment is unwanted conduct that violates dignity. Learn the types, how to document and report and where to find support.
+tags: workplace harassment, what is workplace harassment, harassment at work, report harassment, harassment policy
+rel: how-to-handle-conflict-at-work, hr-complaint-guide
+q: What is workplace harassment? | Unwanted behaviour that creates an intimidating, hostile or offensive environment, or violates someone's dignity.
+q: What should I do if it happens? | Keep records, report it using your organisation's process and seek support.
+q: Is it just conflict? | No. Conflict is disagreement. Harassment is targeted, unwelcome conduct, and laws may apply.
+---
+This is not ordinary conflict. It needs a formal response.
+
+## Direct answer
+
+Harassment is unwanted conduct, such as bullying, discrimination or sexual harassment, that violates dignity or creates a hostile environment. If it happens, document what occurred, report through your organisation's process and seek support. Laws vary, so check local rules.
+
+## What to do
+
+1. **Keep notes:** dates, what happened, witnesses.
+2. **Save evidence:** messages and emails.
+3. **Report** to a manager, HR or the designated channel.
+4. **Seek support** from trusted colleagues, unions or advice services.
+5. **Know your rights** in your country.
+
+## For managers
+
+Take every report seriously, follow policy and do not retaliate.
+
+## The bottom line
+
+Your safety and dignity come first. This is general information, not legal advice.
+
+=== hr-complaint-guide
+title: How to Make an HR Complaint: Steps and Tips
+desc: A practical guide to raising a complaint with HR: gather facts, check the policy, write it clearly, ask for the process and protect yourself.
+tags: hr complaint, how to file an hr complaint, report to hr, workplace complaint, grievance procedure
+rel: workplace-harassment-basics, how-to-handle-conflict-at-work
+q: How do I file a complaint with HR? | Check your policy, gather facts and evidence and submit a clear, factual complaint through the proper channel.
+q: Should I talk to the person first? | For minor issues, a direct conversation may help. For serious issues, go to HR.
+q: Can I be punished for complaining? | Many places prohibit retaliation. Check your local laws and policies.
+---
+A clear, factual complaint is easier to act on.
+
+## Direct answer
+
+To raise an HR complaint, read your organisation's policy, gather dates, facts and evidence, write a clear factual summary, submit it through the correct channel and ask about next steps and timelines. Keep copies of everything.
+
+## Steps
+
+1. **Check the policy.**
+2. **Write the facts:** who, what, when, where.
+3. **Collect evidence.**
+4. **Submit** and request an acknowledgment.
+5. **Ask about the process** and timeline.
+6. **Keep notes** of conversations.
+
+## Tips
+
+- Stay factual and calm.
+- Say what outcome you are seeking.
+- Seek advice if you are unsure of your rights.
+
+## The bottom line
+
+Facts, clarity and a record.
+
+=== de-escalation-techniques
+title: De-Escalation Techniques: How to Calm a Tense Conversation
+desc: De-escalation lowers tension in heated discussions. Learn practical steps: stay calm, listen, validate, lower your voice, offer a pause and find the next step.
+tags: de-escalation, de escalation techniques, calm an angry person, defuse conflict, handle angry customers
+rel: how-to-handle-conflict-at-work, active-listening-skills
+q: What is de-escalation? | Reducing the intensity of a conflict or heated conversation.
+q: What is the first step? | Stay calm yourself, then listen.
+q: When should I step away? | When the situation feels unsafe or no progress is possible. Suggest a break and return later.
+---
+Calm is contagious, and so is anger.
+
+## Direct answer
+
+To de-escalate, keep your voice low and slow, listen without interrupting, acknowledge feelings, avoid blame, offer options and suggest a break if needed. Focus on what you can do next.
+
+## Steps
+
+1. **Breathe** and keep a steady tone.
+2. **Let them speak.**
+3. **Acknowledge:** "I can see this is frustrating."
+4. **Do not argue** about details yet.
+5. **Ask what would help.**
+6. **Offer a next step** or a pause.
+
+## Safety
+
+If you feel unsafe, leave and get help.
+
+## The bottom line
+
+Lower the temperature before you solve the problem.
+
+=== i-statements-guide
+title: I Statements: How to Express Feelings Without Blame
+desc: I statements describe how something affects you without accusing. Learn the formula, workplace examples and common mistakes.
+tags: i statements, i statements examples, how to use i statements, communication without blame, conflict phrases
+rel: nonviolent-communication-basics, assertive-communication
+q: What is an I statement? | A way of speaking that focuses on your feelings and needs rather than blaming the other person.
+q: What is the formula? | When [situation], I feel [feeling], because [reason]. I would like [request].
+q: Why do they work? | They reduce defensiveness because they describe your experience, not the other person's character.
+---
+"You always..." starts fights. "I feel..." starts conversations.
+
+## Direct answer
+
+An I statement describes your experience without blame. Use the formula: "When [situation], I feel [feeling], because [reason]. I would like [request]." It lowers defensiveness and makes your request clear.
+
+## Examples
+
+| Blaming | I statement |
+| :--- | :--- |
+| You never listen to me. | When I am interrupted, I feel unheard. I would like to finish my point. |
+| You are always late. | When meetings start late, I feel stressed about the schedule. Could we start on time? |
+
+## Mistakes
+
+- Using "I feel that you...", which is blame in disguise.
+- Over-explaining.
+- Using it as a weapon.
+
+## The bottom line
+
+Describe your side, make a request and listen.
+
+=== office-politics-guide
+title: Office Politics: How to Handle It Without Playing Dirty
+desc: Office politics is about power and influence at work. Learn why it exists, how to navigate it ethically, build alliances and avoid gossip.
+tags: office politics, how to handle office politics, workplace politics, navigate office politics, ethical networking
+rel: how-to-get-ahead-at-work, how-to-handle-conflict-at-work
+q: What are office politics? | The ways people gain influence and compete for resources in an organisation.
+q: Is it always negative? | No. Building relationships and understanding how decisions are made is a normal and useful skill.
+q: How do I avoid the bad side? | Stay honest, avoid gossip and build relationships openly.
+---
+Every organisation has politics. The question is how you play.
+
+## Direct answer
+
+Office politics is how influence and decisions work in practice. Handle it by understanding who decides what, building relationships across the organisation, being transparent, avoiding gossip and focusing on shared goals. You can be ethical and effective.
+
+## Habits
+
+1. **Learn how decisions are made.**
+2. **Build relationships early.**
+3. **Be reliable.**
+4. **Avoid gossip.**
+5. **Share credit.**
+6. **Stay professional under pressure.**
+
+## Warning signs
+
+- Credit stealing.
+- Triangulation: complaining about someone to others.
+- Withholding information.
+
+## The bottom line
+
+Be visible, honest and helpful.
+
+=== compromise-vs-collaboration
+title: Compromise vs Collaboration: What's the Difference?
+desc: Compromise splits the difference, collaboration seeks a solution that satisfies both. Learn how they differ, examples and when to choose each.
+tags: compromise vs collaboration, compromise, collaboration, win win solutions, conflict resolution
+rel: conflict-resolution-styles
+q: What is the difference between compromise and collaboration? | In compromise each side gives something up. In collaboration both explore needs to find a solution that satisfies both.
+q: Which is better? | Collaboration often gives better outcomes but takes time. Compromise is faster.
+q: Can I start with collaboration and fall back to compromise? | Yes. Explore needs first, then compromise if needed.
+---
+Split the orange, or find out who needs the peel.
+
+## Direct answer
+
+Compromise means both sides give up something to reach a middle ground. Collaboration means working together to find a solution that meets both sides' underlying needs. Use compromise when time is short and collaboration for important issues.
+
+## Example
+
+Two people want the same room. Compromise: share it half the time. Collaboration: one needs quiet and the other needs light, so they find a different arrangement that gives both.
+
+## When to use
+
+| Situation | Choose |
+| :--- | :--- |
+| Quick decision needed | compromise |
+| Important issue, good relationship | collaboration |
+| Hard to reconcile | compromise as fallback |
+
+## The bottom line
+
+Explore needs before positions.

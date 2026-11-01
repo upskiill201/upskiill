@@ -1,0 +1,77 @@
+---
+title: "What Is JSON? A Beginner's Guide With Examples"
+description: "JSON is a text format for storing and sending data. Learn the syntax, how to parse and stringify it in JavaScript and common mistakes beginners make."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [json, what is json, json example, json parse stringify, json format]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "JavaScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/javascript-for-beginners
+  label: "See the JavaScript for Beginners course"
+faq:
+  - question: "What is JSON?"
+    answer: "JavaScript Object Notation, a lightweight text format for representing data as key-value pairs and lists."
+  - question: "How do I convert JSON to a JavaScript object?"
+    answer: "Use JSON.parse(text)."
+  - question: "How do I convert an object to JSON?"
+    answer: "Use JSON.stringify(object)."
+---
+
+JSON is how most websites and apps send data to each other.
+
+## Direct answer
+
+JSON (JavaScript Object Notation) is a text format for data made of key-value pairs, lists, strings, numbers, booleans and null. In JavaScript, `JSON.parse()` turns JSON text into an object and `JSON.stringify()` turns an object into JSON text.
+
+## Example
+
+```json
+{
+  "name": "Ada",
+  "age": 28,
+  "skills": ["math", "code"],
+  "active": true
+}
+```
+
+## Rules
+
+- Keys must be in double quotes.
+- Strings use double quotes, not single.
+- No trailing commas.
+- No comments.
+
+## In JavaScript
+
+```javascript
+const text = '{"name":"Ada","age":28}';
+const obj = JSON.parse(text);
+console.log(obj.name); // Ada
+
+const back = JSON.stringify(obj);
+```
+
+## Common mistakes
+
+- Using single quotes.
+- Leaving a trailing comma.
+- Trying to parse something that is already an object.
+
+## Where Teyro fits
+
+Teyro's [JavaScript for Beginners](/courses/javascript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+JSON is simple, readable and everywhere. Learn the rules once and you can read most APIs.
+
+## More guides
+
+- [The this Keyword in JavaScript](/blog/javascript-this-keyword)
+- [How to Debug JavaScript](/blog/debugging-javascript)
+- [ES6 Features Every JavaScript Beginner Should Know](/blog/es6-features-javascript)
+- [Javascript for beginners guide](/blog/javascript-for-beginners-guide)
+- [JavaScript for Beginners course](/courses/javascript-for-beginners)

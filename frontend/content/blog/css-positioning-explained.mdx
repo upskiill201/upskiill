@@ -1,0 +1,69 @@
+---
+title: "CSS Position Explained: static, relative, absolute, fixed and sticky"
+description: "Learn the five CSS position values with simple examples, how absolute relates to a positioned parent and when to use sticky and fixed."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [css positioning, css position, position absolute relative, position sticky, css fixed]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "HTML & CSS for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/html-and-css-for-beginners
+  label: "See the HTML & CSS for Beginners course"
+faq:
+  - question: "What is position relative?"
+    answer: "The element stays in the flow but can be offset from its normal position, and it becomes a reference for absolutely positioned children."
+  - question: "What is position absolute?"
+    answer: "The element is removed from the flow and positioned relative to its nearest positioned ancestor."
+  - question: "What does position sticky do?"
+    answer: "The element scrolls normally until it reaches a set offset, then sticks in place."
+---
+
+Positioning is powerful and easy to misuse.
+
+## Direct answer
+
+CSS `position` has five values: `static` (default), `relative`, `absolute`, `fixed` and `sticky`. Use `relative` on a parent, `absolute` on a child you want to place inside it, `fixed` for items pinned to the screen and `sticky` for headers that stick when scrolling.
+
+## Examples
+
+```css
+.parent { position: relative; }
+.badge  { position: absolute; top: 8px; right: 8px; }
+
+.topbar { position: fixed; top: 0; left: 0; right: 0; }
+
+.section-title { position: sticky; top: 0; }
+```
+
+## Summary
+
+| Value | Behaviour |
+| :--- | :--- |
+| `static` | normal flow |
+| `relative` | normal flow, can be nudged |
+| `absolute` | out of flow, relative to positioned parent |
+| `fixed` | out of flow, relative to the viewport |
+| `sticky` | normal until a scroll threshold, then sticks |
+
+## Tips
+
+- Do not use absolute for page layout. Use Flexbox or Grid.
+- If an absolute child is in the wrong place, check the parent has `position: relative`.
+
+## Where Teyro fits
+
+Teyro's [HTML & CSS for Beginners](/courses/html-and-css-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Use positioning for overlays and details, not whole layouts.
+
+## More guides
+
+- [CSS Units](/blog/css-units-rem-em-px)
+- [CSS Pseudo-Classes](/blog/css-pseudo-classes)
+- [CSS Transitions](/blog/css-transitions-guide)
+- [Css tutorial for beginners](/blog/css-tutorial-for-beginners)
+- [HTML & CSS for Beginners course](/courses/html-and-css-for-beginners)

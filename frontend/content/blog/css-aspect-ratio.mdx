@@ -1,0 +1,73 @@
+---
+title: "CSS aspect-ratio: Keep Images and Videos in Proportion"
+description: "Learn the aspect-ratio property to keep boxes, images and video embeds in proportion, replace the old padding hack and avoid layout shift."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [aspect ratio css, css aspect-ratio property, responsive video embed, 16 9 aspect ratio, prevent layout shift]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Responsive Web Design with CSS turns this into short, playable lessons. Free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive Web Design with CSS course"
+faq:
+  - question: "What is the aspect-ratio property?"
+    answer: "A CSS property that sets the preferred width to height ratio of an element."
+  - question: "How do I embed a responsive video?"
+    answer: "Set aspect-ratio 16 / 9 on the container or iframe and width to 100 percent."
+  - question: "Does aspect-ratio replace the padding hack?"
+    answer: "Yes, in modern browsers it is simpler and clearer."
+---
+
+Layouts jump when images load late. `aspect-ratio` reserves the space.
+
+## Direct answer
+
+The `aspect-ratio` property sets the ratio of an element's width to its height, such as `16 / 9`. It keeps boxes proportional as they scale and reserves space for images and embeds so the layout does not shift.
+
+## Examples
+
+```css
+.video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.avatar {
+  width: 64px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+```
+
+```html
+<iframe class="video" src="https://www.youtube.com/embed/xyz" title="Video"></iframe>
+```
+
+## Tips
+
+- Combine with `object-fit: cover` for photos.
+- Also set `width` and `height` attributes on images.
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+One line replaces an old hack and prevents jumpy pages.
+
+## More guides
+
+- [5 CSS Grid Layout Patterns Every Beginner Should Know](/blog/css-grid-layout-patterns)
+- [CSS Media Queries Explained](/blog/css-media-queries-explained)
+- [The Viewport Meta Tag](/blog/viewport-meta-tag)
+- [Responsive images guide](/blog/responsive-images-guide)
+- [Responsive Web Design with CSS course](/courses/responsive-web-design-with-css)

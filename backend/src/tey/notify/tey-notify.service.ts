@@ -7,7 +7,9 @@ import { TeyPolicyService } from '../delivery/tey-policy.service';
 import { localTimeToday } from '../decision/rules';
 import { resolveLocalNow } from '../state/local-time.util';
 import {
+  BACKOFF,
   DAILY_EVENT_PUSH_CAP,
+  backedOff,
   kindsFor,
   NOTIFY_KINDS,
   type NotifyKind,
@@ -34,6 +36,11 @@ export interface NotifyInput {
     | { type: string; entityType?: string; entityId?: string; collapseDaily?: boolean };
   /** Set false to write the inbox row only. */
   push?: boolean;
+  /**
+   * Overrides the kind's device tag, so two different conversations do not
+   * replace each other on the lock screen (the kind's tag collapses by kind).
+   */
+  tag?: string;
 }
 
 export type NotifyOutcome =
@@ -142,7 +149,7 @@ export class TeyNotifyService {
         title: input.title,
         body: input.body,
         url,
-        tag: spec.tag,
+        tag: input.tag ?? spec.tag,
         reason: input.kind,
         deliveryId: delivery.id,
         teyState: spec.teyState,
@@ -173,11 +180,12 @@ export class TeyNotifyService {
     ]);
     if (!user) return { allow: false, reason: 'NO_USER' };
     if (!prefs.pushEnabled) return { allow: false, reason: 'PUSH_OPTED_OUT' };
-    if (!prefs[spec.pref]) return { allow: false, reason: `CATEGORY_OPTED_OUT:${spec.pref}` };
+    const transactional = 'transactional' in spec && spec.transactional === true;
+    if (!transactional && !prefs[spec.pref]) return { allow: false, reason: `CATEGORY_OPTED_OUT:${spec.pref}` };
     if (this.policy.isQuietNow(user, prefs)) return { allow: false, reason: 'QUIET_HOURS' };
 
     const sent = { userId: input.userId, channel: 'PUSH', status: 'SENT' };
-    if (spec.throttleMinutes > 0) {
+    if (!transactional && spec.throttleMinutes > 0) {
       const recent = await this.prisma.teyDelivery.findFirst({
         where: {
           ...sent,
@@ -189,11 +197,24 @@ export class TeyNotifyService {
       if (recent) return { allow: false, reason: 'KIND_THROTTLED' };
     }
 
-    const midnight = localTimeToday(resolveLocalNow(user), 0, 0);
-    const today = await this.prisma.teyDelivery.count({
-      where: { ...sent, ruleId: { in: kindsFor(spec.audience) }, sentAt: { gte: midnight } },
-    });
-    if (today >= DAILY_EVENT_PUSH_CAP[spec.audience]) return { allow: false, reason: 'DAILY_CAP' };
+    if (!transactional) {
+      const midnight = localTimeToday(resolveLocalNow(user), 0, 0);
+      const today = await this.prisma.teyDelivery.count({
+        where: { ...sent, ruleId: { in: kindsFor(spec.audience) }, sentAt: { gte: midnight } },
+      });
+      if (today >= DAILY_EVENT_PUSH_CAP[spec.audience]) return { allow: false, reason: 'DAILY_CAP' };
+    }
+
+    // Ignored the last few of this kind? Bell only for a week (BACKOFF).
+    if (!transactional && BACKOFF.audiences.includes(spec.audience)) {
+      const recent = await this.prisma.teyDelivery.findMany({
+        where: { ...sent, ruleId: input.kind },
+        orderBy: { sentAt: 'desc' },
+        take: BACKOFF.ignored,
+        select: { sentAt: true, openedAt: true },
+      });
+      if (backedOff(recent)) return { allow: false, reason: 'BACKOFF_IGNORED' };
+    }
 
     const devices = await this.prisma.pushSubscription.count({
       where: { userId: input.userId, isActive: true },

@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@600;700&display=block" rel="stylesheet" />
+<style>
+  /* Teyro Originals cover: The AI Stack. A still frame of Ask Rao: the six
+     layers as stacked slabs, the chat reply grounded in the shop's help page
+     on top, and the real practice cost from teyro_ai ("about $0.04 per 1,000
+     chats" with retrieval). No Tey, no vendor logos. */
+  :root {
+    --brand: #0172FD;
+    --brand-dark: #0060D9;
+    --brand-deep: #0050B3;
+    --ink: #071233;
+    --code-bg: #0B1736;
+    --amber: #F59E0B;
+    --amber-dark: #B45309;
+    --green: #22C55E;
+    --green-dark: #15803D;
+    --pink: #EC4899;
+    --violet: #8B5CF6;
+    --teal: #14B8A6;
+    --white: #FFFFFF;
+    --mist: #E8F1FF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 1000px; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--brand); overflow: hidden; position: relative; }
+
+  .blob { position: absolute; border-radius: 50%; background: var(--brand-dark); }
+  .ring { position: absolute; border-radius: 50%; border: 6px solid var(--white); }
+
+  .copy { position: absolute; left: 100px; top: 140px; width: 740px; z-index: 5; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--white); color: var(--brand);
+    font-weight: 800; font-size: 26px; letter-spacing: .08em; text-transform: uppercase;
+    padding: 14px 26px; border-radius: 999px; box-shadow: 0 6px 0 var(--brand-deep);
+  }
+  .pill i { width: 14px; height: 14px; border-radius: 50%; background: var(--green); display: inline-block; }
+  h1 { margin-top: 38px; color: var(--white); font-weight: 800; font-size: 120px; line-height: 1.0; letter-spacing: -0.04em; }
+  h1 em { font-style: normal; color: var(--ink); background: var(--amber); padding: 0 24px 10px; border-radius: 28px; box-shadow: 0 8px 0 var(--amber-dark); display: inline-block; margin-top: 14px; }
+  .sub { margin-top: 40px; color: var(--mist); font-weight: 700; font-size: 32px; line-height: 1.3; width: 640px; }
+
+  .stage { position: absolute; left: 860px; top: 70px; width: 700px; height: 880px; }
+
+  /* The stack: six slabs, bottom first */
+  .slab { position: absolute; left: 70px; width: 560px; height: 74px; border-radius: 22px; display: flex; align-items: center; padding: 0 30px; font-weight: 800; font-size: 26px; color: var(--white); letter-spacing: -0.01em; }
+  .slab b { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 20px; opacity: .8; margin-right: 18px; }
+
+  /* Chat card on top */
+  .chat { position: absolute; left: 30px; top: 20px; width: 620px; padding: 26px 30px 28px; background: var(--white); border-radius: 34px; box-shadow: 0 12px 0 var(--brand-deep); transform: rotate(-2deg); z-index: 4; }
+  .chat .label { font-weight: 800; font-size: 20px; letter-spacing: .12em; text-transform: uppercase; color: var(--brand); }
+  .bubble { margin-top: 16px; padding: 16px 22px; border-radius: 22px; font-weight: 700; font-size: 25px; line-height: 1.3; }
+  .bubble.q { background: var(--mist); color: var(--ink); margin-left: 120px; border-bottom-right-radius: 6px; }
+  .bubble.a { background: var(--ink); color: var(--white); margin-right: 80px; border-bottom-left-radius: 6px; }
+  .bubble.a span { display: block; margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 17px; color: #93C5FD; }
+
+  .chip { position: absolute; padding: 12px 22px; border-radius: 18px; font-weight: 800; font-size: 24px; color: var(--ink); white-space: nowrap; background: var(--white); box-shadow: 0 6px 0 var(--brand-deep); font-family: 'JetBrains Mono', monospace; z-index: 6; }
+</style>
+</head>
+<body>
+  <div class="blob" style="width:820px;height:820px;right:-260px;top:-330px;opacity:.55"></div>
+  <div class="blob" style="width:560px;height:560px;left:-240px;bottom:-290px;opacity:.45"></div>
+  <div class="ring" style="width:150px;height:150px;left:740px;top:830px;opacity:.12"></div>
+  <div class="ring" style="width:60px;height:60px;left:1520px;top:34px;opacity:.25"></div>
+
+  <div class="copy">
+    <span class="pill"><i></i>Teyro Original · AI</span>
+    <h1>The AI<br/><em>Stack</em></h1>
+    <p class="sub">How AI apps really work, layer by layer. Build a shop assistant in your browser.</p>
+  </div>
+
+  <div class="stage">
+    <div class="chat">
+      <div class="label">Ask Rao</div>
+      <div class="bubble q">Is delivery free?</div>
+      <div class="bubble a">Delivery is free on orders over ₹999.<span>source: help page · 44 tokens in</span></div>
+    </div>
+
+    <!-- top slab first in the markup so lower slabs sit visually beneath -->
+    <div class="slab" style="top:342px;background:#0B1736;transform:translateX(-10px)"><b>06</b>Evaluation &amp; governance</div>
+    <div class="slab" style="top:426px;background:#EC4899;transform:translateX(14px)"><b>05</b>Application</div>
+    <div class="slab" style="top:510px;background:#8B5CF6;transform:translateX(-6px)"><b>04</b>Orchestration &amp; agents</div>
+    <div class="slab" style="top:594px;background:#14B8A6;transform:translateX(18px)"><b>03</b>Data &amp; retrieval</div>
+    <div class="slab" style="top:678px;background:#F59E0B;color:#071233;transform:translateX(-2px)"><b>02</b>Model</div>
+    <div class="slab" style="top:762px;background:#0050B3;transform:translateX(10px)"><b>01</b>Chips &amp; compute</div>
+
+    <div class="chip" style="left:300px;top:282px;transform:rotate(4deg)">$0.04 / 1,000 chats</div>
+  </div>
+</body>
+</html>

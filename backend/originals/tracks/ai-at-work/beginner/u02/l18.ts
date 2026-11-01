@@ -63,8 +63,8 @@ const lesson: OriginalLesson = {
     {
       kind: 'check',
       question: 'Why ask for the ONE most important change?',
-      options: ['To stop a long list of nitpicks hiding what matters', 'Because AI can only give one', 'To save electricity'],
-      answer: 0,
+      options: ['Because AI can only give one', 'To stop a long list of nitpicks hiding what matters', 'To save electricity'],
+      answer: 1,
     },
   ],
   apply: {
@@ -74,11 +74,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What usually happens when you ask an AI tool "Is this good?"',
         options: [
-          { text: 'It tends to be encouraging, which is not very useful' },
           { text: 'It gives a harsh, detailed critique', why: 'Usually the opposite, unless you ask for one.' },
           { text: 'It refuses to answer', why: 'It will answer, just not usefully.' },
+          { text: 'It tends to be encouraging, which is not very useful' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -109,11 +109,11 @@ const lesson: OriginalLesson = {
         message: "Before we send our press release, could your AI give it a critical read? Be tough.",
         prompt: 'Which request should Ada use?',
         options: [
-          { text: "Read this as a busy journalist who gets 100 press releases a day. Would you stop reading? Where? What's missing? Top 3 changes, most important first." },
           { text: 'Is this press release good?', why: 'Will get encouragement, not critique.' },
+          { text: "Read this as a busy journalist who gets 100 press releases a day. Would you stop reading? Where? What's missing? Top 3 changes, most important first." },
           { text: 'Make it perfect.', why: 'A rewrite, not feedback.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -172,11 +172,11 @@ const lesson: OriginalLesson = {
         message: "The AI gave me 25 suggestions on my one-page plan. I'm drowning.",
         prompt: 'What should Ada suggest?',
         options: [
-          { text: 'Ask for the top 3, most important first, and what already works.' },
           { text: 'Do all 25.', why: 'Most will be nitpicks; it may get worse.' },
           { text: 'Do none of them.', why: 'Some may matter. Ask for priorities.' },
+          { text: 'Ask for the top 3, most important first, and what already works.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

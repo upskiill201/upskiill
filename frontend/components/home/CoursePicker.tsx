@@ -9,19 +9,17 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { BookOpen, BrainCircuit, Check, ChevronDown, CodeXml, Plus } from 'lucide-react';
+import { Art, topicArt } from '@/components/art/Art';
+import { Glyph } from '@/components/art/Glyph';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { playPathCue } from '@/lib/audio/pathAudio';
 import { playHaptic } from '@/lib/haptics';
 import { EXPLORE_HREF, type Enrollment } from '@/hooks/useCourse';
 
-/** A category icon, so each course is recognisable at a glance. */
-export function CourseIcon({ category, className }: { category: string | null; className?: string }) {
-  const c = (category ?? '').toLowerCase();
-  if (/\b(ai|artificial|machine|data)\b/.test(c)) return <BrainCircuit className={className} aria-hidden="true" />;
-  if (/develop|software|code|coding|programming|\bit\b/.test(c)) return <CodeXml className={className} aria-hidden="true" />;
-  return <BookOpen className={className} aria-hidden="true" />;
+/** The course's topic drawing, so each course is recognisable at a glance. */
+export function CourseIcon({ category, size = 24 }: { category: string | null; size?: number }) {
+  return <Art name={topicArt(category ?? '')} size={size} />;
 }
 
 export interface CoursePickerProps {
@@ -70,14 +68,14 @@ export function CoursePicker({ enrollments, current, onSelect, withTitle = false
           className="w-9 h-9 rounded-[10px] flex items-center justify-center text-brand border-2 border-[var(--border)] bg-white"
           style={{ boxShadow: '0 2px 0 var(--border)' }}
         >
-          <CourseIcon category={current.course.category} className="w-5 h-5 stroke-[2.4]" />
+          <CourseIcon category={current.course.category} />
         </span>
         {withTitle && (
           <span className="text-[14px] font-extrabold text-ink max-w-[180px] truncate">{current.course.title}</span>
         )}
         {/* The chevron costs width the phone HUD doesn't have; the icon alone
             reads as tappable there, like Duolingo's flag. */}
-        <ChevronDown className="hidden md:block w-4 h-4 text-[var(--text-muted)] stroke-[3]" aria-hidden="true" />
+        <Glyph name="chevronDown" size={16} className="hidden md:block text-[var(--text-muted)]" />
       </button>
 
       <AnimatePresence>
@@ -116,7 +114,7 @@ export function CoursePicker({ enrollments, current, onSelect, withTitle = false
                   ].join(' ')}
                 >
                   <span className="w-9 h-9 shrink-0 rounded-[10px] flex items-center justify-center bg-band text-brand">
-                    <CourseIcon category={e.course.category} className="w-5 h-5 stroke-[2.4]" />
+                    <CourseIcon category={e.course.category} />
                   </span>
                   <span className="flex-1 min-w-0">
                     <span className="block text-[14.5px] font-extrabold text-ink truncate">{e.course.title}</span>
@@ -124,7 +122,7 @@ export function CoursePicker({ enrollments, current, onSelect, withTitle = false
                       {total > 0 ? `${Math.min(e.completedCount, total)} / ${total} lessons` : 'Lessons coming soon'}
                     </span>
                   </span>
-                  {active && <Check className="w-5 h-5 text-brand stroke-[3]" aria-hidden="true" />}
+                  {active && <Glyph name="check" size={20} className="text-brand" />}
                 </button>
               );
             })}
@@ -139,7 +137,7 @@ export function CoursePicker({ enrollments, current, onSelect, withTitle = false
               className="mt-1 w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-left cursor-pointer hover:bg-slate-50 border-t-2 border-[var(--border)]"
             >
               <span className="w-9 h-9 shrink-0 rounded-[10px] flex items-center justify-center border-2 border-dashed border-[var(--border-strong)] text-[var(--text-muted)]">
-                <Plus className="w-5 h-5 stroke-[3]" aria-hidden="true" />
+                <Glyph name="plus" size={20} />
               </span>
               <span className="text-[14.5px] font-extrabold text-ink-soft">Add a course</span>
             </button>

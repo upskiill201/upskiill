@@ -1,4 +1,4 @@
-import { Dna } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { getLearningDnaCopy } from '@/lib/tey/analyticsVoice';
 import type { DashboardResponse } from '../types';
 
@@ -16,7 +16,7 @@ export function LearningDNA({ dna }: { dna: DashboardResponse['learningDna'] }) 
   return (
     <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
       <div className="flex items-center gap-2 mb-3">
-        <Dna size={18} color="#9333EA" />
+        <Glyph name="dna" size={18} color="var(--brand-purple)" />
         <h2 className="text-sm font-extrabold text-[#1F2A44]">Your Learning DNA</h2>
       </div>
 

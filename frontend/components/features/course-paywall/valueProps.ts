@@ -1,14 +1,4 @@
-import {
-  Gamepad2,
-  Puzzle,
-  Flame,
-  Bell,
-  Trophy,
-  Brain,
-  Bot,
-  Rocket,
-  type LucideIcon,
-} from 'lucide-react';
+import type { GlyphName } from '@/components/art/Glyph';
 
 /**
  * The paywall's value-proposition content — "Why Teyro works".
@@ -27,7 +17,7 @@ import {
 export interface ValuePropSlide {
   id: number;
   tag: string;
-  icon: LucideIcon;
+  icon: GlyphName;
   iconColor: string;
   iconBg: string;
   headline: string;
@@ -41,7 +31,7 @@ export const VALUE_PROPS: ValuePropSlide[] = [
   {
     id: 1,
     tag: 'LEARN + PLAY',
-    icon: Gamepad2,
+    icon: 'gamepad',
     iconColor: '#0172FD',
     iconBg: '#EFF6FF',
     headline: "I don't do boring lessons",
@@ -53,7 +43,7 @@ export const VALUE_PROPS: ValuePropSlide[] = [
   {
     id: 2,
     tag: 'BITE-SIZED PROGRESS',
-    icon: Puzzle,
+    icon: 'puzzle',
     iconColor: '#0284C7',
     iconBg: '#F0F9FF',
     headline: "I won't make this feel like a mountain",
@@ -65,7 +55,7 @@ export const VALUE_PROPS: ValuePropSlide[] = [
   {
     id: 3,
     tag: 'HABIT BUILDING',
-    icon: Flame,
+    icon: 'flame',
     iconColor: '#EA580C',
     iconBg: '#FFF7ED',
     headline: "Starting's easy. I'll help you stay.",
@@ -77,7 +67,7 @@ export const VALUE_PROPS: ValuePropSlide[] = [
   {
     id: 4,
     tag: 'ACCOUNTABILITY COMPANION',
-    icon: Bell,
+    icon: 'bell',
     iconColor: '#F59E0B',
     iconBg: '#FEFCE8',
     headline: "You don't have to remember. I will.",
@@ -89,7 +79,7 @@ export const VALUE_PROPS: ValuePropSlide[] = [
   {
     id: 5,
     tag: 'SOCIAL & COMMUNITY',
-    icon: Trophy,
+    icon: 'trophy',
     iconColor: '#D97706',
     iconBg: '#FEF9C3',
     headline: "You're not doing this alone",
@@ -101,7 +91,7 @@ export const VALUE_PROPS: ValuePropSlide[] = [
   {
     id: 6,
     tag: 'ACTIVE RECALL & MASTERY',
-    icon: Brain,
+    icon: 'brain',
     iconColor: '#8B5CF6',
     iconBg: '#FAF5FF',
     headline: "Watching isn't learning. I know the difference.",
@@ -113,7 +103,7 @@ export const VALUE_PROPS: ValuePropSlide[] = [
   {
     id: 7,
     tag: 'ADAPTIVE AI GUIDANCE',
-    icon: Bot,
+    icon: 'bot',
     iconColor: '#0EA5E9',
     iconBg: '#F0F9FF',
     headline: 'I pay attention to how you learn',
@@ -125,7 +115,7 @@ export const VALUE_PROPS: ValuePropSlide[] = [
   {
     id: 8,
     tag: 'THE TEYRO PROMISE',
-    icon: Rocket,
+    icon: 'rocket',
     iconColor: '#16A34A',
     iconBg: '#F0FDF4',
     headline: 'This is how I do learning',

@@ -1,0 +1,438 @@
+=== how-to-review-ai-generated-code
+title: How to Review AI-Generated Code: A Practical Checklist
+desc: AI code can look right and be wrong. Use this review checklist for correctness, security, tests, edge cases and maintainability before you merge.
+tags: code review ai generated, review ai code, ai generated code checklist, ai code quality, reviewing copilot code
+rel: ai-generated-code-quality, how-to-learn-ai-coding
+q: Should I review AI-generated code? | Yes. Treat it like code from a new teammate: read it, run it, test it and question it before it ships.
+q: What should I check first? | Does it do what you asked, does it run, and does it handle errors and edge cases?
+q: How do I catch security problems? | Look for hard-coded secrets, unvalidated input, unsafe queries and unnecessary dependencies, and run a scanner where you can.
+---
+AI writes confident code. Confidence is not correctness.
+
+## Direct answer
+
+Review AI-generated code the way you would review a new colleague's pull request: read every change, run it, test it, check edge cases and security, and make sure it fits your project's style. Ask the AI to explain anything you do not understand, and do not merge code you cannot explain.
+
+## A checklist
+
+1. **Does it solve the actual problem?** Compare with your request.
+2. **Run it.** Do not trust code that has not run.
+3. **Read the diff** line by line.
+4. **Look for hidden changes:** extra files, removed code, changed config.
+5. **Check edge cases:** empty input, null, very large input.
+6. **Check errors:** are failures handled sensibly?
+7. **Check security:** secrets, input validation, authentication, queries.
+8. **Check dependencies:** are new packages needed and real?
+9. **Write or run tests** that would fail if the code were wrong.
+10. **Check style and naming** against your project.
+
+## Common AI mistakes
+
+- Calling functions or packages that do not exist.
+- Out-of-date API usage.
+- Over-engineered solutions.
+- Passing tests by weakening them.
+
+## The bottom line
+
+You are responsible for the code you ship, whoever wrote it.
+
+=== what-is-a-context-window
+title: What Is a Context Window? Why It Matters for AI Coding
+desc: A context window is how much text an AI model can consider at once. Learn what fills it, why long sessions degrade and how to manage context in coding tools.
+tags: context window, what is a context window, llm context window, ai coding context, token limit
+rel: how-do-large-language-models-work
+q: What is a context window? | The maximum amount of text, measured in tokens, that a model can read and consider in one go, including your prompt and its replies.
+q: What happens when it fills up? | Older information may be dropped or summarised, and the model can forget earlier instructions or details.
+q: How do I manage context? | Keep tasks small, give relevant files only, restart long conversations with a summary and write project notes the AI can reread.
+---
+An AI model does not remember like you do. It reads what is in front of it.
+
+## Direct answer
+
+The context window is the amount of text a model can consider at once: your instructions, the files it has read, the conversation and its own answers. When it fills up, earlier details may be lost or summarised. For coding, keep tasks focused, provide only relevant files and restart with a brief summary when sessions get long.
+
+## What fills the context
+
+- Your prompt and instructions.
+- Files and tool results the agent reads.
+- The whole conversation history.
+- The model's own replies.
+
+## Symptoms of a crowded context
+
+- It forgets earlier decisions.
+- It repeats mistakes you corrected.
+- It contradicts itself.
+
+## How to manage it
+
+1. **One task per session** where possible.
+2. **Point to specific files** instead of dumping the whole project.
+3. **Keep a notes file** with decisions and conventions.
+4. **Summarise and restart** when the conversation drifts.
+
+## The bottom line
+
+Good context beats a bigger prompt. Give the model what it needs and nothing more.
+
+=== ai-hallucinations-in-code
+title: AI Hallucinations in Code: Fake Functions and Packages
+desc: AI sometimes invents functions, libraries or options that do not exist. Learn why it happens, how to spot it and how to protect your project.
+tags: ai hallucinations in code, ai makes up code, hallucinated packages, ai fake api, verify ai code
+rel: how-to-review-ai-generated-code
+q: What is an AI hallucination in code? | When an AI produces code, function names, packages or settings that look plausible but do not exist or do not work that way.
+q: Why do hallucinations happen? | Models predict likely text rather than checking facts, so they can generate convincing but wrong details.
+q: How do I avoid them? | Run the code, check official documentation, pin package versions and verify any new dependency before installing.
+---
+It uses a function that sounds perfect. The function does not exist.
+
+## Direct answer
+
+AI hallucinations in code are invented functions, parameters, packages or settings that look real. They happen because models generate likely-looking text rather than verifying facts. Protect yourself by running code, checking the official docs and verifying every new package before you install it.
+
+## Typical forms
+
+- A method that is not in the library.
+- A configuration option that was removed or never existed.
+- A package name that does not exist, which attackers can register to catch people out.
+- Confident but wrong explanations.
+
+## How to catch them
+
+1. **Run it.** Errors reveal many hallucinations immediately.
+2. **Check documentation** for any unfamiliar function.
+3. **Verify packages** on the official registry: age, maintainers, downloads.
+4. **Ask for sources** and then check them yourself.
+5. **Give the AI the real docs** or the actual file to work from.
+
+## The bottom line
+
+Trust, then verify. Especially before installing anything new.
+
+=== model-context-protocol-explained
+title: Model Context Protocol (MCP) Explained for Beginners
+desc: MCP is an open standard that lets AI tools connect to apps, data and services. Learn what it is, how servers and clients work and what to watch for.
+tags: model context protocol, what is mcp, mcp servers, mcp ai tools, connect ai to tools
+rel: what-is-an-ai-agent
+q: What is the Model Context Protocol? | An open standard for connecting AI applications to external tools, data sources and services in a consistent way.
+q: What is an MCP server? | A program that exposes tools or data, such as a database or a file system, to an AI application using the protocol.
+q: Is MCP safe? | It can be, but connected tools can read or change real data. Only use trusted servers, limit permissions and review actions.
+---
+Think of MCP as a common plug for AI tools.
+
+## Direct answer
+
+The Model Context Protocol (MCP) is an open standard that lets AI applications connect to external tools and data through a consistent interface. An AI client such as a coding assistant talks to MCP servers that expose things like files, databases or issue trackers. It reduces custom integrations, but you must manage permissions carefully.
+
+## How it fits together
+
+| Part | Role |
+| :--- | :--- |
+| Client | the AI application that wants to use tools |
+| Server | exposes tools or data |
+| Tools and resources | actions and information the server offers |
+
+## Example uses
+
+- Let an assistant search your project's documentation.
+- Query a database in read-only mode.
+- Create tickets in a project tracker.
+
+## Safety habits
+
+1. Use servers from sources you trust.
+2. Give the least access that works, such as read-only.
+3. Review what an agent plans to do before approving.
+4. Keep secrets out of prompts and logs.
+
+## The bottom line
+
+MCP makes AI tools more useful and raises the importance of permissions.
+
+=== test-driven-development-with-ai
+title: Test-Driven Development With AI: Let Tests Keep the Agent Honest
+desc: Use tests to guide AI coding. Write or review tests first, let the agent make them pass and protect against weakened or fake tests.
+tags: test driven development ai, tdd with ai, ai write tests, ai coding tests, testing ai generated code
+rel: how-to-review-ai-generated-code
+q: Can AI do test-driven development? | Yes. You can write or approve tests first, then ask the AI to implement code until they pass.
+q: Should I let the AI write the tests too? | It can help, but review them. Tests that mirror the implementation can hide bugs.
+q: What if the AI changes the tests to make them pass? | Watch for that. Review test changes carefully and keep tests in a separate commit when possible.
+---
+Tests are the clearest instructions you can give an agent.
+
+## Direct answer
+
+With AI-assisted test-driven development, you define behaviour as tests, ask the agent to make them pass and review the result. Tests give the agent a clear target and give you a safety net. Always review test changes, because agents can weaken tests to make them pass.
+
+## A workflow
+
+1. **Describe the behaviour** in plain words.
+2. **Write failing tests** yourself or ask the AI to draft them, then review them.
+3. **Run the tests** and confirm they fail for the right reason.
+4. **Ask the agent to implement** until the tests pass.
+5. **Check the diff** for changed tests or special cases that cheat.
+6. **Refactor** with the tests as protection.
+
+## Good prompts
+
+"Here are the tests. Make them pass without changing the test files. Explain your approach."
+
+## Watch for
+
+- Hard-coded values that satisfy only the examples.
+- Deleted or skipped tests.
+- Over-mocked tests that prove nothing.
+
+## The bottom line
+
+Tests make AI coding safer and faster to review.
+
+=== ai-pair-programming
+title: AI Pair Programming: How to Work With an AI Like a Teammate
+desc: Learn how to pair program with an AI assistant: roles, prompts, when to lead, when to follow and habits that keep you learning instead of just copying.
+tags: ai pair programming, pair programming with ai, ai coding assistant workflow, copilot pair programmer, working with ai coding tools
+rel: how-to-learn-ai-coding
+q: What is AI pair programming? | Working with an AI assistant as you code, discussing designs, generating code and reviewing it together.
+q: Will AI pair programming make me a worse developer? | It can if you copy without understanding. Use it to explain, challenge and review, not just to produce code.
+q: How do I get better results? | Be specific, give context, break tasks down and review each step.
+---
+The best way to use an AI assistant is as a partner, not a vending machine.
+
+## Direct answer
+
+AI pair programming means working alongside an assistant that suggests, explains and writes code while you steer. You set the goals, give context and review the results. Use it to explore options, learn unfamiliar code and speed up routine work, while keeping responsibility for decisions.
+
+## Habits that work
+
+1. **State the goal and constraints** before asking for code.
+2. **Work in small steps** and check each.
+3. **Ask why,** not only what: "Explain this function".
+4. **Ask for alternatives** and trade-offs.
+5. **Read the code** before running it.
+6. **Write some code yourself** to keep skills sharp.
+
+## Good uses
+
+- Explaining unfamiliar code.
+- Generating boilerplate.
+- Writing tests.
+- Suggesting refactors.
+- Rubber-duck debugging.
+
+## Risks
+
+- Accepting plausible but wrong code.
+- Losing understanding of your own project.
+
+## The bottom line
+
+You are the lead developer. The AI is a fast but fallible partner.
+
+=== vibe-coding-vs-agentic-coding
+title: Vibe Coding vs Agentic Coding: What's the Difference?
+desc: Vibe coding means prompting and accepting results by feel. Agentic coding means directing an AI agent with plans, tests and review. See how they differ.
+tags: vibe coding vs agentic coding, agentic coding, what is agentic coding, vibe coding meaning, ai coding approaches
+rel: what-is-vibe-coding, what-are-ai-coding-agents
+q: What is vibe coding? | Building software by describing what you want to an AI and accepting its output with little review of the code itself.
+q: What is agentic coding? | Directing an AI agent that can read files, run commands and make multi-step changes, with you setting goals, constraints and checks.
+q: Which is better? | It depends on stakes. Vibe coding suits prototypes. Agentic workflows with review suit production code.
+---
+Same tools, different discipline.
+
+## Direct answer
+
+Vibe coding is prompting an AI and going with whatever works, often without reading the code. Agentic coding is directing an AI agent that plans, edits files and runs tests while you set clear goals, constraints and review the results. Vibe coding suits prototypes. Agentic coding with review suits real products.
+
+## Comparison
+
+| | Vibe coding | Agentic coding |
+| :--- | :--- | :--- |
+| Mindset | "does it look right?" | "does it meet the spec and tests?" |
+| Review | light | thorough |
+| Tests | rare | central |
+| Best for | prototypes, experiments | production work |
+| Risk | hidden bugs and security gaps | slower, needs skill |
+
+## A middle path
+
+Start by vibe coding a prototype. Then switch to agentic habits: write tests, review changes, and understand what ships.
+
+## The bottom line
+
+Speed is great. Understanding what ships is better.
+
+=== agents-md-file
+title: What Is an AGENTS.md File? Give Your AI Coding Agent Project Rules
+desc: AGENTS.md and similar files give coding agents your project's commands, conventions and rules. Learn what to include and how to keep it useful.
+tags: agents md, agents.md, claude md, ai coding project rules, ai agent instructions file
+rel: what-are-ai-coding-agents
+q: What is AGENTS.md? | A plain text or markdown file in your repository that tells AI coding agents how your project works.
+q: What should I put in it? | Build and test commands, folder structure, coding conventions, things to avoid and how to run checks.
+q: How long should it be? | Short and specific. Long files waste context and are often ignored.
+---
+New teammates read the README. AI agents read instruction files.
+
+## Direct answer
+
+An agent instruction file, such as `AGENTS.md` or a tool-specific equivalent, lives in your repository and tells AI coding agents how to work on your project. Include setup, build and test commands, conventions and rules, keep it concise and update it when practices change.
+
+## What to include
+
+- **Commands:** install, run, test, lint.
+- **Structure:** where code and tests live.
+- **Conventions:** naming, formatting, patterns to follow.
+- **Do not:** files not to edit, risky operations.
+- **Definition of done:** tests pass, lint clean.
+
+## Example
+
+```markdown
+# Project notes
+
+## Commands
+- Install: `npm install`
+- Test: `npm test`
+- Lint: `npm run lint`
+
+## Conventions
+- TypeScript strict mode.
+- Components live in `src/components`.
+
+## Rules
+- Never edit `generated/`.
+- Add a test for every bug fix.
+```
+
+## Tips
+
+- Be specific and short.
+- Review it like code.
+- Keep secrets out of it.
+
+## The bottom line
+
+A small file that saves a lot of repeated instructions.
+
+=== ai-coding-security-risks
+title: AI Coding Security Risks: What to Watch For and How to Reduce Them
+desc: AI-generated code and agents bring security risks: insecure code, leaked secrets, fake packages, prompt injection and excessive permissions. Here is what to do.
+tags: ai coding security risks, ai generated code security, prompt injection, secrets in prompts, ai agent permissions
+rel: how-to-review-ai-generated-code, ai-hallucinations-in-code
+q: Is AI-generated code secure? | Not automatically. It can include vulnerabilities, outdated patterns or unsafe defaults, so it needs the same security review as human code.
+q: What is prompt injection? | When untrusted text, such as a web page or file, contains instructions that trick an AI agent into doing something unintended.
+q: How can I limit the risk? | Use least privilege, keep secrets out of prompts, review commands and changes and run in a sandbox where possible.
+---
+AI tools speed up good work and mistakes.
+
+## Direct answer
+
+The main risks are insecure generated code, secrets pasted into prompts or committed to repositories, invented or malicious packages, prompt injection from untrusted content and agents with more permissions than they need. Reduce them with review, scanning, least-privilege access and a sandbox.
+
+## Risks and responses
+
+| Risk | What to do |
+| :--- | :--- |
+| Insecure code | review, test, run security scanners |
+| Leaked secrets | use environment variables, secret scanning |
+| Fake or risky packages | verify dependencies before installing |
+| Prompt injection | treat fetched content as untrusted, review actions |
+| Over-permissioned agents | limit access, use read-only where possible |
+| Data exposure | check your tool's data policy |
+
+## Good habits
+
+1. Never paste real secrets into prompts.
+2. Require approval for commands that delete, deploy or send data.
+3. Work on a branch, not directly on production.
+4. Keep dependencies reviewed and pinned.
+5. Follow your organisation's policies.
+
+## The bottom line
+
+Assume the AI can make mistakes and design your workflow so mistakes are caught.
+
+=== git-worktrees-for-ai-agents
+title: Git Worktrees for AI Agents: Run Several Tasks in Parallel Safely
+desc: Git worktrees give each task its own folder and branch. Learn how to use them to run AI agents in parallel without conflicts, with commands and tips.
+tags: git worktrees, git worktree add, parallel ai agents, git branches workflow, ai agents git
+rel: what-are-ai-coding-agents
+q: What is a git worktree? | An additional working folder attached to the same repository, checked out on its own branch.
+q: Why use worktrees with AI agents? | Each agent can work in its own folder and branch, so their changes do not collide.
+q: How do I remove one? | Use git worktree remove with the folder path after merging or abandoning the branch.
+---
+Two agents editing the same folder is a recipe for confusion.
+
+## Direct answer
+
+A Git worktree is an extra folder linked to your repository, checked out on its own branch. Give each AI agent or task its own worktree, so changes stay separate, you can review them independently and you can merge only what you want.
+
+## Commands
+
+```bash
+git worktree add ../feature-login -b feature/login
+cd ../feature-login
+# run the agent here
+
+git worktree list
+git worktree remove ../feature-login
+```
+
+## Workflow
+
+1. Create a worktree per task.
+2. Run the agent in that folder.
+3. Review the diff and run tests.
+4. Merge or discard.
+5. Remove the worktree.
+
+## Tips
+
+- Install dependencies per worktree if needed.
+- Name branches clearly.
+- Keep tasks independent to avoid merge conflicts.
+
+## The bottom line
+
+Separate folders mean separate experiments.
+
+=== ai-refactoring-guide
+title: Refactoring With AI: How to Improve Code Without Breaking It
+desc: Use AI to refactor safely: add tests first, change small pieces, review diffs, keep behaviour the same and know when not to refactor.
+tags: ai refactoring, refactor with ai, ai code cleanup, safe refactoring, refactoring with copilot
+rel: test-driven-development-with-ai
+q: Can AI refactor my code? | Yes, it can suggest and make refactors, but you need tests and review to make sure behaviour does not change.
+q: What should I do before refactoring? | Make sure tests exist and pass, and commit your current state.
+q: How big should the changes be? | Small and focused, one idea at a time.
+---
+Refactoring means changing structure without changing behaviour. AI is fast at the first part and careless about the second.
+
+## Direct answer
+
+To refactor with AI safely, start with passing tests, commit, ask for one small change at a time, run the tests after each step and review the diff. If you do not have tests, write them first or refactor by hand in tiny steps.
+
+## A safe workflow
+
+1. **Run tests** and commit the current state.
+2. **State the goal:** "Extract this logic into a function, no behaviour changes."
+3. **Limit scope:** one file or one function.
+4. **Review the diff.**
+5. **Run tests and lint.**
+6. **Commit** and repeat.
+
+## Good refactoring tasks
+
+- Renaming for clarity.
+- Extracting repeated code.
+- Splitting large functions.
+- Removing dead code.
+
+## When not to
+
+- Without tests.
+- Right before a release.
+- When the goal is unclear.
+
+## The bottom line
+
+Small steps, tests after each, diff reviews always.

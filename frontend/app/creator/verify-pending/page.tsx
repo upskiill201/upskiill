@@ -10,7 +10,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { X } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { hydrateSoundPreferences } from '@/lib/audio/soundManager';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { ACCOUNT_STEP, PROFILE_STEP } from '@/lib/creator-onboarding/steps';
@@ -40,7 +40,7 @@ export default function VerifyPendingPage() {
             router.push('/creator/login');
           }}
         >
-          <X size={26} strokeWidth={3} />
+          <Glyph name="close" size={26} strokeWidth={3.2} />
         </button>
       </header>
       <main className={styles.formPane}>

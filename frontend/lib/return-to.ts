@@ -36,9 +36,18 @@ export function sanitizeReturnTo(
 }
 
 /** Build the unlock route carrying the sanitized origin of the learner. */
-export function buildUnlockHref(courseId: string, returnTo?: string | null): string {
+/**
+ * The unlock page. With Teyro Pro on it opens the Pro paywall; `moment` picks
+ * its framing (a locked lesson, the daily free limit, or no hearts left).
+ */
+export function buildUnlockHref(
+  courseId: string,
+  returnTo?: string | null,
+  moment?: 'LOCKED_LESSON' | 'DAILY_LIMIT' | 'OUT_OF_HEARTS' | 'AFTER_SUCCESS',
+): string {
   const safe = sanitizeReturnTo(returnTo, courseId);
-  return `/learn/${courseId}/unlock?returnTo=${encodeURIComponent(safe)}`;
+  const m = moment && moment !== 'LOCKED_LESSON' ? `&m=${moment}` : '';
+  return `/learn/${courseId}/unlock?returnTo=${encodeURIComponent(safe)}${m}`;
 }
 
 /**
@@ -46,7 +55,10 @@ export function buildUnlockHref(courseId: string, returnTo?: string | null): str
  * the dashboard rather than being trusted.
  */
 // /courses: "sign in to start this course" comes back to the course page.
-const NEXT_ALLOWED_PREFIXES = ['/dashboard', '/learn', '/admin', '/courses'] as const;
+// /pro: billing emails and pushes (update your card, renew, the paywall) link
+// here, and an expired session must not drop the learner on the dashboard.
+// /onboarding: "Log in" from the save step comes back to finish it.
+const NEXT_ALLOWED_PREFIXES = ['/dashboard', '/learn', '/admin', '/courses', '/pro', '/onboarding'] as const;
 
 /**
  * Sanitizes the `next` param used by the login wall (proxy.ts).

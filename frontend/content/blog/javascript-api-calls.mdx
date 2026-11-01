@@ -1,0 +1,68 @@
+---
+title: "How to Call an API in JavaScript: GET, POST and Error Handling"
+description: "Learn how to call an API in JavaScript with fetch, send query parameters and JSON, handle errors and avoid common mistakes like CORS and missing keys."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [javascript api calls, how to call an api in javascript, rest api javascript, fetch api example, api request javascript]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Interactive Web Pages with JavaScript turns this into short, playable lessons. Free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive Web Pages with JavaScript course"
+faq:
+  - question: "What is an API?"
+    answer: "An application programming interface, a way for programs to request data or actions from each other, often over HTTP."
+  - question: "What is CORS?"
+    answer: "A browser security rule that controls which websites can request data from another origin."
+  - question: "Should I put API keys in browser code?"
+    answer: "No. Anything in front-end code is visible. Use a server to keep secrets safe."
+---
+
+APIs let your page use data from other services: weather, maps, quotes, your own backend.
+
+## Direct answer
+
+Call an API from JavaScript with `fetch`. Build the URL with query parameters, send JSON for POST requests, check `response.ok` and handle errors with `try/catch`. Never put private API keys in front-end code.
+
+## GET with parameters
+
+```javascript
+const params = new URLSearchParams({ q: "london", units: "metric" });
+const response = await fetch(`https://api.example.com/weather?${params}`);
+const data = await response.json();
+```
+
+## POST with JSON
+
+```javascript
+const res = await fetch("/api/notes", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ title: "Hello" }),
+});
+```
+
+## Handle problems
+
+- **Network errors:** caught by `try/catch`.
+- **HTTP errors:** check `response.ok`.
+- **CORS errors:** the server must allow your origin.
+- **Rate limits:** read the API's documentation.
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) course turns this into short lessons you can play in a few minutes a day. It has 37 lessons, and you can start free.
+
+## The bottom line
+
+See [the fetch API guide](/blog/javascript-fetch-api) for the basics, then practise with a free public API.
+
+## More guides
+
+- [Web Storage](/blog/web-storage-basics)
+- [JSON.parse and JSON.stringify](/blog/json-parse-and-stringify)
+- [How to Build a Simple Image Carousel With JavaScript](/blog/javascript-carousel)
+- [Javascript fetch api](/blog/javascript-fetch-api)
+- [Interactive Web Pages with JavaScript course](/courses/interactive-web-pages-with-javascript)

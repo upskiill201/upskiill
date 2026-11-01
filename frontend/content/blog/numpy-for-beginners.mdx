@@ -1,0 +1,76 @@
+---
+title: "NumPy for Beginners: Arrays, Math and Slicing Explained"
+description: "NumPy provides fast arrays for numerical work in Python. Learn how to create arrays, do maths on them, slice, reshape and use common functions."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [numpy, numpy for beginners, numpy arrays, numpy tutorial, python numerical computing]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Data Science for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/data-science-for-beginners
+  label: "See the Data Science for Beginners course"
+faq:
+  - question: "What is NumPy?"
+    answer: "A Python library for fast numerical computing built around the array object."
+  - question: "Why use NumPy instead of lists?"
+    answer: "Arrays are faster and support operations on whole arrays at once."
+  - question: "How do I install it?"
+    answer: "Run pip install numpy."
+---
+
+NumPy is the foundation of Python's data tools.
+
+## Direct answer
+
+NumPy provides the `ndarray`, a fast array that supports maths on whole arrays without loops. It underpins pandas, scikit-learn and many other data libraries. Learn how to create arrays, slice them and use functions like `mean` and `sum`.
+
+## Basics
+
+```python
+import numpy as np
+
+a = np.array([1, 2, 3, 4])
+print(a * 2)          # [2 4 6 8]
+print(a.mean())       # 2.5
+
+m = np.array([[1, 2, 3], [4, 5, 6]])
+print(m.shape)        # (2, 3)
+print(m[0, 1])        # 2
+print(m[:, 1])        # [2 5]
+print(m.reshape(3, 2))
+```
+
+## Handy functions
+
+| Function | Purpose |
+| :--- | :--- |
+| `np.arange(0, 10, 2)` | range of numbers |
+| `np.zeros((2, 3))` | array of zeros |
+| `np.random.rand(3)` | random numbers |
+| `a.sum()`, `a.max()` | summaries |
+
+## Boolean filtering
+
+```python
+a = np.array([5, 12, 7, 20])
+print(a[a > 6])       # [12  7 20]
+```
+
+## Where Teyro fits
+
+Teyro's [Data Science for Beginners](/courses/data-science-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 50 lessons, and you can start free.
+
+## The bottom line
+
+Think in arrays, not loops.
+
+## More guides
+
+- [Matplotlib for Beginners](/blog/matplotlib-for-beginners)
+- [Exploratory Data Analysis (EDA)](/blog/exploratory-data-analysis)
+- [Jupyter Notebook for Beginners](/blog/jupyter-notebook-guide)
+- [What is data science for beginners](/blog/what-is-data-science-for-beginners)
+- [Learn data science from scratch](/blog/learn-data-science-from-scratch)
+- [Data Science for Beginners course](/courses/data-science-for-beginners)

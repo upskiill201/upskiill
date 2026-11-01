@@ -1,0 +1,283 @@
+=== anchoring-effect-negotiation
+title: Anchoring Effect in Negotiation: How the First Number Shapes the Deal
+desc: Anchoring means the first number in a negotiation influences the outcome. Learn how it works, when to anchor and how to respond to another party's anchor.
+tags: anchoring effect, anchoring in negotiation, anchoring bias, first offer, negotiation psychology
+rel: negotiation-tactics-and-strategies, what-is-batna
+q: What is the anchoring effect? | A bias where people rely heavily on the first number or piece of information they hear.
+q: Should I make the first offer? | Often yes, if you have good information, since it can set the range.
+q: How do I respond to an extreme anchor? | Do not adjust from it. Re-anchor with your own research and criteria.
+---
+The first number casts a long shadow.
+
+## Direct answer
+
+Anchoring is the tendency to be influenced by the first number mentioned. In negotiation, a well-researched first offer can pull the final result in your favour. If the other side anchors first, resist by recalling your own research and proposing your own figure with reasons.
+
+## Using it
+
+1. Research a fair range.
+2. Open at the ambitious end, with a reason.
+3. Stay credible. Extreme numbers can backfire.
+
+## Responding to an anchor
+
+- "That is higher than I expected. Based on X, I was thinking Y."
+- Ask how they arrived at the number.
+
+## The bottom line
+
+Do your homework so the first number is yours.
+
+=== distributive-vs-integrative-negotiation
+title: Distributive vs Integrative Negotiation: Splitting vs Growing the Pie
+desc: Distributive negotiation divides a fixed pie and integrative negotiation looks for more value. Compare them with examples and learn when to use each.
+tags: distributive vs integrative negotiation, win lose vs win win, fixed pie, integrative bargaining, negotiation types
+rel: principled-negotiation, negotiation-skills-for-beginners-guide
+q: What is distributive negotiation? | A win-lose situation in which one side's gain is the other's loss, such as haggling over a single price.
+q: What is integrative negotiation? | A win-win approach that looks for solutions that create value for both sides.
+q: Which should I use? | Look for integrative opportunities first, but be ready for distributive bargaining on single issues.
+---
+Is the pie fixed, or can you grow it?
+
+## Direct answer
+
+Distributive negotiation divides a fixed amount, such as a price. Integrative negotiation adds issues and options so both sides gain, such as trading price for delivery time. Most negotiations include both: expand the pie, then divide it.
+
+## Comparison
+
+| | Distributive | Integrative |
+| :--- | :--- | :--- |
+| Aim | claim value | create value |
+| Issues | one, often price | many |
+| Approach | positions | interests |
+| Relationship | may be short-term | often ongoing |
+
+## Example
+
+A supplier wants faster payment and you want a lower price. Agree on quicker payment in exchange for a discount.
+
+## The bottom line
+
+Look for trades before you split.
+
+=== opening-offer-strategy
+title: How to Make an Opening Offer: Timing, Numbers and Phrasing
+desc: How to make a strong opening offer: do your research, choose an ambitious but credible number, explain your reasoning and leave room to negotiate.
+tags: opening offer, how to make an opening offer, first offer negotiation, negotiation strategy, make the first offer
+rel: anchoring-effect-negotiation, counteroffer-guide
+q: Should I make the first offer? | Often yes if you have researched the range. If you lack information, let the other side go first.
+q: How high or low should it be? | Ambitious but defensible, with a reason.
+q: How do I phrase it? | State the number clearly, give a reason and invite discussion.
+---
+A good opening sets the range and the tone.
+
+## Direct answer
+
+Make an opening offer after researching a fair range. Choose a number that is ambitious but defensible, explain why and invite discussion. Leave room to concede and be ready to justify it.
+
+## Script
+
+"Based on comparable offers and my experience, I am looking at X. I would love to hear your thoughts."
+
+## Tips
+
+1. Research before you speak.
+2. Round numbers can signal flexibility. Precise numbers can signal research.
+3. Never apologise for the number.
+4. Stay calm if they push back.
+
+## The bottom line
+
+Prepare, state it clearly and give your reason.
+
+=== negotiate-rent
+title: How to Negotiate Rent: Scripts and Strategies for Tenants
+desc: Negotiate your rent with research, timing and a clear offer. Includes scripts for new leases and renewals and what else you can ask for.
+tags: negotiate rent, how to negotiate rent, lower rent, negotiate lease renewal, rent negotiation script
+rel: negotiating-a-car-or-house-price, negotiation-skills-for-beginners-guide
+q: Can I negotiate my rent? | Often yes, especially at renewal, when a unit has been empty or if you are a good tenant.
+q: How do I make my case? | Show comparable rents, your reliability and offer something such as a longer lease.
+q: What else can I ask for? | Repairs, parking, included utilities or a rent freeze.
+---
+Landlords often prefer a good tenant to a vacancy.
+
+## Direct answer
+
+To negotiate rent, research comparable listings, highlight your track record as a tenant, ask early, propose a specific figure and offer something in return such as a longer lease. If they say no, ask for other benefits.
+
+## Script
+
+"I have enjoyed living here and always paid on time. I have seen similar places listed at X. Would you consider X for a 12-month renewal?"
+
+## Steps
+
+1. Research comparable rents.
+2. Time it well, before the renewal date.
+3. Make your offer in writing.
+4. Offer value: longer lease, on-time payment.
+5. Get agreements in writing.
+
+## The bottom line
+
+Be polite, prepared and specific. Rules vary by location.
+
+=== negotiate-salary-guide
+title: Salary Negotiation Scripts: What to Say at Each Stage
+desc: Ready-to-use salary negotiation scripts for the offer, counteroffer, benefits and when they say no. Includes mistakes to avoid and preparation steps.
+tags: negotiate salary, salary negotiation scripts, how to ask for higher salary, job offer negotiation, salary counteroffer
+rel: how-to-negotiate-salary, counteroffer-guide
+q: When should I negotiate salary? | After you have an offer, when your leverage is highest.
+q: What if they ask for my salary expectations early? | Give a researched range, or ask about the budgeted range.
+q: What can I negotiate besides pay? | Start date, flexibility, development budget, title and bonuses.
+---
+Many people leave money unclaimed because they do not ask.
+
+## Direct answer
+
+Negotiate salary after receiving an offer. Thank them, express enthusiasm, state a researched number with reasons and discuss other benefits if they cannot move on pay. Stay polite, calm and flexible.
+
+## Scripts
+
+**Responding to an offer:**
+"Thank you, I am excited about the role. Based on my research and experience, I was expecting X. Is there flexibility?"
+
+**If they cannot move on salary:**
+"Could we look at a sign-on bonus, extra leave or a six-month review?"
+
+**If they ask early:**
+"I would like to understand the role first. What range has been budgeted?"
+
+## Mistakes
+
+- Accepting immediately.
+- Giving an exact current salary where not required.
+- Making ultimatums.
+
+## The bottom line
+
+Prepare, ask politely and be ready to trade.
+
+=== silence-in-negotiation
+title: Silence in Negotiation: How Pausing Can Improve Your Outcome
+desc: Silence gives you time to think and invites the other side to fill the gap. Learn when and how to use it, with examples and cautions.
+tags: silence in negotiation, power of silence, negotiation pause, strategic silence, negotiation techniques
+rel: tactical-empathy, concessions-in-negotiation
+q: Why is silence powerful in negotiation? | It gives you time to think and pushes the other side to explain, add or improve their offer.
+q: How long should I wait? | A few seconds. Resist the urge to fill every gap.
+q: Can silence backfire? | Yes if it seems hostile. Stay relaxed and engaged.
+---
+After you state your number, stop talking.
+
+## Direct answer
+
+Silence is a negotiation tool. After making an offer or hearing one, pause for a few seconds. It shows confidence, gives you time to think and often leads the other side to clarify or improve their proposal.
+
+## When to use it
+
+- After stating your number.
+- After a surprising offer.
+- When you need time to think.
+
+## Tips
+
+1. Breathe and relax your face.
+2. Count to five.
+3. Keep eye contact.
+4. If needed, say "Let me think about that."
+
+## The bottom line
+
+Do not rush to fill the quiet.
+
+=== closing-a-deal
+title: How to Close a Deal: Signals, Summaries and Next Steps
+desc: How to close a negotiation or sale: recognise agreement signals, summarise terms, ask for commitment and put it in writing.
+tags: closing a deal, how to close a negotiation, closing techniques, summarise agreement, sales closing
+rel: negotiation-skills-for-beginners-guide, call-to-action-writing
+q: How do I know the other side is ready? | They talk about next steps, ask logistics questions or stop raising objections.
+q: What should I do to close? | Summarise the agreed terms, ask for confirmation and set next steps.
+q: Should I get it in writing? | Yes. Written confirmation prevents misunderstandings.
+---
+A good negotiation ends with clarity.
+
+## Direct answer
+
+To close, watch for signs of agreement, summarise the terms in plain words, ask for confirmation and agree on next steps. Put the agreement in writing and follow up promptly.
+
+## Steps
+
+1. **Spot the signals:** questions about delivery, dates, contracts.
+2. **Summarise:** "So we agreed price X, delivery on the 15th and payment in 30 days."
+3. **Ask:** "Shall we go ahead on that basis?"
+4. **Confirm in writing.**
+5. **Set deadlines.**
+
+## Avoid
+
+- Reopening settled points.
+- Pushing when objections remain.
+
+## The bottom line
+
+Summarise, confirm, write it down.
+
+=== bargaining-tips
+title: Bargaining Tips for Markets, Shops and Online Sales
+desc: Practical bargaining tips: be polite, know the value, start lower, bundle items, be willing to walk away and keep it friendly.
+tags: bargaining, bargaining tips, how to haggle, haggling tips, negotiate price in market
+rel: negotiating-a-car-or-house-price, anchoring-effect-negotiation
+q: How do I haggle politely? | Smile, show interest, ask if there is a better price and make a reasonable counter.
+q: Where can I haggle? | Markets, second-hand sales, some service providers and sometimes shops. Customs vary.
+q: What if they will not move? | Thank them and be willing to walk away. They may call you back.
+---
+Haggling is a friendly game with rules.
+
+## Direct answer
+
+To bargain well, know the typical price, start with a polite lower offer, bundle items, stay friendly and be ready to walk away. Respect local customs, as not every place welcomes haggling.
+
+## Tips
+
+1. Know the value.
+2. Ask "Is that the best price?"
+3. Offer a reasonable counter.
+4. Bundle purchases.
+5. Pay in cash where appropriate and safe.
+6. Be willing to walk away.
+7. Say thank you.
+
+## The bottom line
+
+Smile, stay curious and stay flexible.
+
+=== negotiation-mistakes
+title: 10 Common Negotiation Mistakes and How to Avoid Them
+desc: Ten negotiation mistakes: no preparation, weak first offers, talking too much, ignoring interests, rushing and more, with simple fixes.
+tags: negotiation mistakes, common negotiation mistakes, negotiation errors, negotiation tips for beginners, avoid negotiation mistakes
+rel: negotiation-skills-for-beginners-guide, what-is-batna
+q: What is the biggest negotiation mistake? | Going in unprepared, without knowing your goals, limits and alternatives.
+q: Should I accept the first offer? | Usually not without checking whether it is fair.
+q: How can I avoid emotional decisions? | Take breaks, stay curious and keep your goals in mind.
+---
+Most mistakes happen before the talking starts.
+
+## Direct answer
+
+Common negotiation mistakes include poor preparation, accepting the first offer, focusing only on price, talking too much, making threats, getting emotional and failing to get the deal in writing. Avoid them by preparing, listening and staying focused on interests.
+
+## 10 mistakes and fixes
+
+1. **No preparation:** know goals, limits and alternatives.
+2. **Accepting too fast:** check against your BATNA.
+3. **Only haggling on price:** explore other terms.
+4. **Talking too much:** ask and listen.
+5. **Ignoring their interests:** ask why.
+6. **Bluffing:** be honest.
+7. **Rushing:** take time.
+8. **Getting emotional:** pause.
+9. **Giving without getting:** trade.
+10. **No written agreement:** confirm it.
+
+## The bottom line
+
+Prepare, listen and trade.

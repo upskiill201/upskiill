@@ -1,0 +1,68 @@
+---
+title: "Feature Engineering: How to Turn Raw Data Into Model Inputs"
+description: "Feature engineering creates useful inputs for models. Learn encoding categories, scaling, dates, missing values and simple ideas that improve results."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [feature engineering, feature engineering machine learning, one hot encoding, feature scaling, data preprocessing]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Machine Learning for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/machine-learning-for-beginners
+  label: "See the Machine Learning for Beginners course"
+faq:
+  - question: "What is feature engineering?"
+    answer: "Creating and transforming input variables so a model can learn from them more effectively."
+  - question: "Why scale features?"
+    answer: "Some models are sensitive to the size of numbers, so scaling puts features on comparable ranges."
+  - question: "What is one-hot encoding?"
+    answer: "Converting a category into separate yes or no columns, one per category."
+---
+
+Good features often beat fancy models.
+
+## Direct answer
+
+Feature engineering means turning raw data into inputs a model can use well: encoding categories, scaling numbers, extracting parts of dates, handling missing values and creating new combinations. Apply the same transformations to training and test data, and fit them using the training data only.
+
+## Common techniques
+
+| Technique | Example |
+| :--- | :--- |
+| One-hot encoding | colour into red, blue, green columns |
+| Scaling | put values between 0 and 1 |
+| Date features | day of week, month |
+| Ratios | price per square metre |
+| Binning | age into groups |
+
+## Example
+
+```python
+import pandas as pd
+
+df = pd.DataFrame({"city": ["Lagos", "Accra", "Lagos"], "price": [100, 80, 120]})
+df = pd.get_dummies(df, columns=["city"])
+```
+
+## Tips
+
+- Think about what the model needs to know.
+- Avoid leaking the target into features.
+- Keep transformations in a pipeline.
+
+## Where Teyro fits
+
+Teyro's [Machine Learning for Beginners](/courses/machine-learning-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 200 lessons, and you can start free.
+
+## The bottom line
+
+Spend time on features before spending time on algorithms.
+
+## More guides
+
+- [Gradient Descent Explained](/blog/gradient-descent-explained)
+- [Classification vs Regression in Machine Learning](/blog/classification-vs-regression)
+- [Cross-Validation Explained](/blog/cross-validation-explained)
+- [Training and test data](/blog/training-and-test-data)
+- [Machine Learning for Beginners course](/courses/machine-learning-for-beginners)

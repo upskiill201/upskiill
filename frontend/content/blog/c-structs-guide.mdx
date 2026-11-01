@@ -1,0 +1,78 @@
+---
+title: "Structs in C: Group Related Data Into One Type"
+description: "Learn how to define and use structs in C: declaring members, initialising, pointers to structs, typedef and passing structs to functions."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [c structs, struct in c, c struct example, typedef struct, struct pointers]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "C for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/c-for-beginners
+  label: "See the C for Beginners course"
+faq:
+  - question: "What is a struct in C?"
+    answer: "A user-defined type that groups variables of different types under one name."
+  - question: "How do I access struct members?"
+    answer: "Use the dot operator for a struct and the arrow operator for a pointer to a struct."
+  - question: "What does typedef do?"
+    answer: "It creates a shorter name for a type, so you do not have to write struct each time."
+---
+
+Structs let you model things: a student, a point, a product.
+
+## Direct answer
+
+A `struct` groups related variables, called members, into a single type. Access members with `.` or, through a pointer, `->`. Use `typedef` to avoid repeating the `struct` keyword.
+
+## Example
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+typedef struct {
+    char name[30];
+    int age;
+} Person;
+
+void birthday(Person *p) {
+    p->age++;
+}
+
+int main(void) {
+    Person ada = {"Ada", 28};
+    birthday(&ada);
+    printf("%s is %d\n", ada.name, ada.age);
+    return 0;
+}
+```
+
+## Arrays of structs
+
+```c
+Person team[3] = {{"A", 20}, {"B", 25}, {"C", 30}};
+for (int i = 0; i < 3; i++) printf("%s\n", team[i].name);
+```
+
+## Tips
+
+- Pass large structs by pointer to avoid copying.
+- Initialise all members.
+
+## Where Teyro fits
+
+Teyro's [C for Beginners](/courses/c-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 78 lessons, and you can start free.
+
+## The bottom line
+
+Structs are the first step toward organised C programs.
+
+## More guides
+
+- [Header Files in C](/blog/c-header-files)
+- [How to Compile C Programs With GCC](/blog/gcc-compiler-basics)
+- [Segmentation Fault in C](/blog/segmentation-fault-c)
+- [Pointers in c](/blog/pointers-in-c)
+- [C for Beginners course](/courses/c-for-beginners)

@@ -737,7 +737,9 @@ export class EarningsService {
   /* ─── balances ───────────────────────────────────────────────────────── */
 
   /**
-   * Available = lifetime earned − still clearing − reserved by open payouts.
+   * Available = lifetime earned − still clearing − reserved by open payouts
+   * − already paid out. Paying out never writes a ledger row, so leaving the
+   * PAID total out let a creator request the same money again.
    * Negative results are possible (refund after payout) and are surfaced
    * honestly; the UI clamps display, payouts simply refuse.
    */
@@ -776,13 +778,15 @@ export class EarningsService {
     const lifetimeEarned = lifetime._sum.creatorAmountMinor ?? 0;
     const pendingClearing = pending._sum.creatorAmountMinor ?? 0;
     const reservedForPayout = reserved._sum.amountMinor ?? 0;
+    const totalPaidOut = paidOut._sum.amountMinor ?? 0;
 
     return {
       lifetimeEarned,
       pendingClearing,
       reservedForPayout,
-      available: lifetimeEarned - pendingClearing - reservedForPayout,
-      totalPaidOut: paidOut._sum.amountMinor ?? 0,
+      available:
+        lifetimeEarned - pendingClearing - reservedForPayout - totalPaidOut,
+      totalPaidOut,
       reserveDays: reserveDays(),
       minPayoutMinor: minPayoutMinor(),
       currency: 'USD',

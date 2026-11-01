@@ -14,6 +14,13 @@ describe('sanitizeNextPath', () => {
     expect(sanitizeNextPath('/admin')).toBe('/admin');
   });
 
+  it('keeps the Pro links billing emails send (update card, renew) and onboarding', () => {
+    expect(sanitizeNextPath('/pro/billing/update-card')).toBe('/pro/billing/update-card');
+    expect(sanitizeNextPath('/pro?renew=1')).toBe('/pro?renew=1');
+    expect(sanitizeNextPath('/onboarding')).toBe('/onboarding');
+    expect(sanitizeNextPath('/progress')).toBe('/dashboard');
+  });
+
   it('keeps the query string, which carries the deep link itself', () => {
     // Dropping this would strip ?lesson= and land the learner on the section
     // rather than the lesson Tey actually nudged them about.

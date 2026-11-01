@@ -64,11 +64,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why steer in the same conversation instead of starting over?',
         options: [
-          { text: 'The chat remembers what you asked, so you can fix just what is wrong' },
           { text: 'New chats cost money', why: 'Not the point. It is about keeping a good draft.' },
+          { text: 'The chat remembers what you asked, so you can fix just what is wrong' },
           { text: 'You can never start a new chat', why: 'You can, and sometimes should.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',

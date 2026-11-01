@@ -1,0 +1,76 @@
+---
+title: "TypeScript Union Types: Combine Types and Narrow Them Safely"
+description: "Union types let a value be one of several types. Learn the syntax, literal unions, narrowing with typeof and in, and discriminated unions."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [union types, typescript union types, typescript literal types, type narrowing, discriminated unions]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "TypeScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript for Beginners course"
+faq:
+  - question: "What is a union type?"
+    answer: "A type that can be one of several types, written with a vertical bar, such as string or number."
+  - question: "How do I use a union value safely?"
+    answer: "Narrow it with checks such as typeof, in or equality before using type-specific features."
+  - question: "What is a discriminated union?"
+    answer: "A union of object types that share a literal property, which TypeScript uses to tell them apart."
+---
+
+Real data is not always one type.
+
+## Direct answer
+
+A union type, written with `|`, says a value can be one of several types. Before using a type-specific feature, narrow the type with a check like `typeof`. Literal unions limit values to specific strings or numbers.
+
+## Examples
+
+```typescript
+let id: string | number;
+id = "abc";
+id = 123;
+
+type Direction = "up" | "down" | "left" | "right";
+
+function print(value: string | number) {
+  if (typeof value === "string") {
+    console.log(value.toUpperCase());
+  } else {
+    console.log(value.toFixed(2));
+  }
+}
+```
+
+## Discriminated unions
+
+```typescript
+type Shape =
+  | { kind: "circle"; radius: number }
+  | { kind: "square"; size: number };
+
+function area(s: Shape) {
+  switch (s.kind) {
+    case "circle": return Math.PI * s.radius ** 2;
+    case "square": return s.size ** 2;
+  }
+}
+```
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 20 lessons, and you can start free.
+
+## The bottom line
+
+Unions describe real-world variety. Narrowing keeps you safe.
+
+## More guides
+
+- [TypeScript Type Inference](/blog/typescript-type-inference)
+- [tsconfig.json Explained](/blog/tsconfig-explained)
+- [TypeScript Type Guards and Narrowing Explained](/blog/typescript-type-guards)
+- [Typescript type guards](/blog/typescript-type-guards)
+- [TypeScript for Beginners course](/courses/typescript-for-beginners)

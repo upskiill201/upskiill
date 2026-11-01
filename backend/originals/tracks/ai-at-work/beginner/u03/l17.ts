@@ -76,11 +76,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why ask for the comment numbers behind each theme?',
         options: [
-          { text: 'So you can check the counts, because AI can miscount long lists' },
           { text: 'To make the summary longer', why: 'It is for checking.' },
+          { text: 'So you can check the counts, because AI can miscount long lists' },
           { text: 'Numbers look scientific', why: 'They are for verification.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',
@@ -94,11 +94,11 @@ const lesson: OriginalLesson = {
         message: "Our CEO read three angry tweets about pricing and wants to change it. Is pricing our biggest issue?",
         prompt: 'What should Ada suggest?',
         options: [
-          { text: "Let's theme all the feedback with counts first. Three loud tweets may be a small slice of what people actually say." },
           { text: 'Yes, change pricing now.', why: 'Loud is not the same as many.' },
           { text: 'Ignore the tweets.', why: 'Count them alongside everything else.' },
+          { text: "Let's theme all the feedback with counts first. Three loud tweets may be a small slice of what people actually say." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'findBug',
@@ -159,11 +159,11 @@ const lesson: OriginalLesson = {
         message: "The AI says 70 comments mention speed, but when I checked the numbers it listed, only 38 do.",
         prompt: 'What should Ada say?',
         options: [
-          { text: "Good catch: AI can miscount long lists. Trust the checked number, 38, and re-check the other big themes." },
           { text: 'Use 70, it is bigger.', why: 'The checked number is the real one.' },
+          { text: "Good catch: AI can miscount long lists. Trust the checked number, 38, and re-check the other big themes." },
           { text: 'Counting does not matter.', why: 'Counts decide priorities.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -184,11 +184,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'What is a "representative" quote?',
         options: [
-          { text: 'One that says what many comments in the theme say' },
           { text: 'The angriest one', why: 'That is dramatic, not representative.' },
           { text: 'The longest one', why: 'Length does not make it typical.' },
+          { text: 'One that says what many comments in the theme say' },
         ],
-        answer: 0,
+        answer: 2,
       },
     ],
   },

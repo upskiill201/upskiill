@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Check, Flame, Medal, Sparkles } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { type MonthlyQuest, type QuestHistoryEntry } from '@/lib/monthlyQuest';
 import { monthBadge } from '@/lib/quests/monthBadges';
 import { MonthBadge } from '@/components/quests/MonthBadge';
@@ -10,7 +10,7 @@ import { MonthlyChallengeCard } from '@/components/quests/MonthlyChallengeCard';
 import { useMonthlyQuest } from '@/hooks/useMonthlyQuest';
 import { pickErrorHeadline } from '@/lib/tey/errorStateVoice';
 import DailyQuestsCard from '@/components/quests/DailyQuestsCard';
-import DailyChestCard from '@/components/quests/DailyChestCard';
+import StreakChestsCard from '@/components/quests/StreakChestsCard';
 import styles from './QuestsPage.module.css';
 
 /**
@@ -25,7 +25,7 @@ export default function QuestsPage() {
   return (
     <div className={styles.page}>
       <Link href="/dashboard" className={styles.backLink}>
-        <ArrowLeft size={15} strokeWidth={2.8} />
+        <Glyph name="back" size={15} strokeWidth={2.8} />
         Back to Dashboard
       </Link>
 
@@ -40,12 +40,12 @@ export default function QuestsPage() {
         <DailyQuestsCard variant="page" />
       </div>
 
-      {/* ── Chests ───────────────────────────────────────────────────────────
-          Today's chest and any streak chests. On desktop it also sits in the
-          home rail; on phones and tablets this is its only home (the Quests
-          tab's red dot counts it). */}
-      <div className="mb-6">
-        <DailyChestCard />
+      {/* ── Streak chests ────────────────────────────────────────────────────
+          Only when one is waiting. On desktop it also sits in the home rail;
+          on phones and tablets this is its only home (the Quests tab's red
+          dot counts it). The empty wrapper collapses via :empty. */}
+      <div className="mb-6 empty:hidden">
+        <StreakChestsCard />
       </div>
 
       {loading && !quest ? (
@@ -59,7 +59,7 @@ export default function QuestsPage() {
           {/* ── Goal-day calendar ──────────────────────────────────────────── */}
           <section className={styles.calendarSection} aria-label="Goal-day calendar">
             <h2 className={styles.sectionTitle}>
-              <Sparkles size={15} strokeWidth={2.6} />
+              <Glyph name="sparkle" size={15} />
               THIS MONTH&apos;S GOAL DAYS
             </h2>
             <GoalDayCalendar quest={quest} />
@@ -68,7 +68,7 @@ export default function QuestsPage() {
           {/* ── Badge shelf ────────────────────────────────────────────────── */}
           <section className={styles.historySection} aria-label="Your monthly badges">
             <h2 className={styles.sectionTitle}>
-              <Medal size={15} strokeWidth={2.6} />
+              <Glyph name="medal" size={15} strokeWidth={2.2} />
               YOUR BADGES
             </h2>
             <BadgeShelf history={history} />
@@ -163,7 +163,7 @@ function GoalDayCalendar({ quest }: { quest: MonthlyQuest }) {
                     .filter(Boolean)
                     .join(' ')}
                 >
-                  {c.state === 'goal' ? <Check size={13} strokeWidth={3.2} /> : c.day > 0 ? c.day : ''}
+                  {c.state === 'goal' ? <Glyph name="check" size={13} strokeWidth={3.2} /> : c.day > 0 ? c.day : ''}
                 </span>
               </div>
             );
@@ -183,7 +183,7 @@ function BadgeShelf({ history: raw }: { history: QuestHistoryEntry[] }) {
   if (history.length === 0) {
     return (
       <div className={styles.historyEmpty}>
-        <Flame size={18} className={styles.historyEmptyIcon} />
+        <Glyph name="flame" size={18} strokeWidth={2} className={styles.historyEmptyIcon} />
         <p className={styles.historyEmptyText}>
           Your first badge is this month&apos;s — finish the challenge above to put it here.
         </p>

@@ -113,11 +113,11 @@ const lesson: OriginalLesson = {
         message: 'The AI draft calls me "Dear Valued Client" and is about 400 words. Help!',
         prompt: 'Which follow-up should Ada send the AI?',
         options: [
-          { text: "Rewrite to Lucía by name, friendly, under 80 words, and end by asking her to approve the colours." },
           { text: 'Try again.', why: 'Adds none of the missing pieces.' },
+          { text: "Rewrite to Lucía by name, friendly, under 80 words, and end by asking her to approve the colours." },
           { text: 'Make it nicer.', why: 'Nicer how? And still no length.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'fillBlank',
@@ -139,11 +139,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'The AI asked Ada 15 questions for a 3-line email. What is the fix?',
         options: [
-          { text: 'Add a limit, like "up to 3 questions", or just give it the context' },
           { text: 'Answer all 15', why: 'Far too slow for 3 lines.' },
           { text: 'Never let it ask questions again', why: 'Useful for big tasks. Just add a limit.' },
+          { text: 'Add a limit, like "up to 3 questions", or just give it the context' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',
@@ -175,11 +175,11 @@ const lesson: OriginalLesson = {
         message: "Your proposal said dark mode takes '2 weeks'. Our developers say nobody estimated it yet.",
         prompt: 'What should Ada say?',
         options: [
-          { text: "You're right. That was a guess I should have marked as open. I'll update it to 'estimate pending'." },
           { text: 'The AI worked it out.', why: 'It guessed. Own it.' },
+          { text: "You're right. That was a guess I should have marked as open. I'll update it to 'estimate pending'." },
           { text: '2 weeks is normal for everyone.', why: 'Nobody said that.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'tapBuild',

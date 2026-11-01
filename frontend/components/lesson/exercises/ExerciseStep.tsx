@@ -18,12 +18,13 @@
  * so it all works one-handed on a phone.
  */
 
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Check, X } from 'lucide-react';
+import { Emblem } from '@/components/art/Emblem';
 import {
   BLANK_RE,
   fillBlankBank,
+  pairMatchIsRight,
   seededShuffle,
   type Exercise,
   type ExerciseResponse,
@@ -107,6 +108,12 @@ export interface ExerciseStepProps {
   onResponse: (r: ExerciseResponse) => void;
   answer: AnswerState;
   tey: { pose: TeyPose; line: string; key: string | number };
+  /** Skip and Hint (components/lesson/ApplyTools), above the question. */
+  tools?: ReactNode;
+  /** MCQ options a hint struck out. */
+  eliminated?: string[];
+  /** Find-the-bug lines a hint struck out. */
+  eliminatedLines?: number[];
 }
 
 const DEFAULT_LINE: Record<Exercise['kind'], string> = {
@@ -125,6 +132,7 @@ export function ExerciseStep(props: ExerciseStepProps) {
   const { exercise, eyebrow, scenario, tey } = props;
   return (
     <div className="flex flex-col gap-5 md:gap-6">
+      {props.tools}
       <StepHeading phase="apply" eyebrow={eyebrow} title={exercise.prompt} />
       <TeySays pose={tey.pose} lineKey={tey.key} size="sm">
         {tey.line || scenario || DEFAULT_LINE[exercise.kind]}
@@ -148,7 +156,7 @@ type ViewProps<E> = Omit<ExerciseStepProps, 'exercise'> & { exercise: E };
 
 // ─── Multiple choice ──────────────────────────────────────────────────────
 
-function McqView({ exercise, response, onResponse, answer }: ViewProps<McqExercise>) {
+function McqView({ exercise, response, onResponse, answer, eliminated = [] }: ViewProps<McqExercise>) {
   const locked = answer !== 'idle';
   const picked = response?.kind === 'mcq' ? response.optionId : null;
   const long = exercise.variant === 'pickPrompt';
@@ -160,8 +168,10 @@ function McqView({ exercise, response, onResponse, answer }: ViewProps<McqExerci
       <div className="flex flex-col gap-3" role="radiogroup" aria-label="Answers">
         {exercise.options.map((o, i) => {
           const isPicked = picked === o.id;
-          const tone: Tone =
-            isPicked && answer === 'correct'
+          const struck = eliminated.includes(o.id) && answer === 'idle';
+          const tone: Tone = struck
+            ? 'muted'
+            : isPicked && answer === 'correct'
               ? 'correct'
               : isPicked && answer === 'wrong'
                 ? 'wrong'
@@ -174,9 +184,9 @@ function McqView({ exercise, response, onResponse, answer }: ViewProps<McqExerci
             <Tile
               key={o.id}
               tone={tone}
-              disabled={locked}
+              disabled={locked || struck}
               mono={exercise.variant === 'predictOutput'}
-              className={`w-full ${long ? 'min-h-[72px] whitespace-pre-line' : 'min-h-[60px]'} flex items-start gap-3`}
+              className={`w-full ${long ? 'min-h-[72px] whitespace-pre-line' : 'min-h-[60px]'} flex items-start gap-3 ${struck ? 'opacity-50' : ''}`}
               onClick={() => {
                 tap(i);
                 onResponse({ kind: 'mcq', optionId: o.id });
@@ -189,7 +199,7 @@ function McqView({ exercise, response, onResponse, answer }: ViewProps<McqExerci
               >
                 {long ? String.fromCharCode(65 + i) : i + 1}
               </span>
-              <span className="pt-0.5">{o.text}</span>
+              <span className={`pt-0.5 ${struck ? 'line-through' : ''}`}>{o.text}</span>
             </Tile>
           );
         })}
@@ -305,7 +315,7 @@ function FillBlankView({ exercise, response, onResponse, answer }: ViewProps<Fil
 
 // ─── Find the bug ─────────────────────────────────────────────────────────
 
-function FindBugView({ exercise, response, onResponse, answer }: ViewProps<FindBugExercise>) {
+function FindBugView({ exercise, response, onResponse, answer, eliminatedLines = [] }: ViewProps<FindBugExercise>) {
   const locked = answer !== 'idle';
   const picked = response?.kind === 'findBug' ? response.line : null;
   const isCode = Boolean(exercise.language && exercise.language !== 'plaintext');
@@ -336,12 +346,12 @@ function FindBugView({ exercise, response, onResponse, answer }: ViewProps<FindB
               type="button"
               role="radio"
               aria-checked={picked === i}
-              disabled={locked}
+              disabled={locked || (answer === 'idle' && eliminatedLines.includes(i))}
               onClick={() => {
                 tap(i);
                 onResponse({ kind: 'findBug', line: i });
               }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 text-left border-l-4 transition-colors disabled:cursor-default disabled:opacity-100"
+              className={`w-full flex items-center gap-3 px-3 py-2.5 text-left border-l-4 transition-colors disabled:cursor-default ${answer === 'idle' && eliminatedLines.includes(i) ? 'opacity-35 line-through' : 'disabled:opacity-100'}`}
               style={{
                 borderLeftColor: active ? COLORS[tone].border : 'transparent',
                 backgroundColor: active
@@ -500,7 +510,7 @@ function MatchPairsView({ exercise, response, onResponse, answer }: ViewProps<Ma
     emit({ ...matches, [pending]: id }, null);
   };
 
-  const resultTone = (leftId: string): Tone => (matches[leftId] === leftId ? 'correct' : 'wrong');
+  const resultTone = (leftId: string): Tone => (pairMatchIsRight(exercise, leftId, matches[leftId]) ? 'correct' : 'wrong');
 
   return (
     <>
@@ -536,7 +546,7 @@ function MatchPairsView({ exercise, response, onResponse, answer }: ViewProps<Ma
         <ul className="flex flex-col gap-1.5 text-[15px] font-bold text-[var(--lesson-correct-ink)]">
           {exercise.pairs.map((p) => (
             <li key={p.id} className="flex items-center gap-2">
-              <Check className="w-4 h-4 shrink-0 stroke-[3]" aria-hidden="true" />
+              <Emblem name="right" size={18} />
               {p.left} <span aria-hidden="true">→</span> {p.right}
             </li>
           ))}
@@ -722,9 +732,9 @@ function SortGroupsView({ exercise, response, onResponse, answer }: ViewProps<So
 /** Tick or cross for results summaries elsewhere. */
 export function ResultMark({ ok }: { ok: boolean }) {
   return ok ? (
-    <Check className="w-5 h-5 stroke-[3] text-[var(--lesson-correct)]" aria-label="Right" />
+    <Emblem name="right" size={22} label="Right" />
   ) : (
-    <X className="w-5 h-5 stroke-[3] text-[var(--lesson-wrong)]" aria-label="Wrong" />
+    <Emblem name="wrong" size={22} label="Wrong" />
   );
 }
 

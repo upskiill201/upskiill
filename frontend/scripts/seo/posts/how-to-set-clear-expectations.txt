@@ -1,0 +1,345 @@
+=== smart-goals-explained
+title: SMART Goals Explained: Meaning, Examples and a Template
+desc: SMART goals are specific, measurable, achievable, relevant and time-bound. See examples for work, learning and career, plus a template and common mistakes.
+tags: smart goals, smart goals examples, what are smart goals, smart goal template, goal setting at work
+rel: how-to-set-clear-expectations-at-work, goal-setting-with-okrs
+q: What does SMART stand for? | Specific, Measurable, Achievable, Relevant and Time-bound.
+q: Can you give an example of a SMART goal? | "Complete the customer service course and score at least 85 percent by 30 June."
+q: Are SMART goals always the best method? | They are a simple, widely used start. Some goals benefit from other approaches, such as OKRs.
+---
+A goal you cannot check is a wish.
+
+## Direct answer
+
+A SMART goal is Specific, Measurable, Achievable, Relevant and Time-bound. It states exactly what will be done, how success is measured, why it matters and by when. Turn "get better at sales" into "increase my monthly closed deals from 5 to 8 by the end of the quarter".
+
+## The five parts
+
+| Letter | Question |
+| :--- | :--- |
+| Specific | what exactly will I do? |
+| Measurable | how will I know it worked? |
+| Achievable | is it realistic with my resources? |
+| Relevant | does it matter to my role or aims? |
+| Time-bound | by when? |
+
+## Examples
+
+- **Work:** "Reduce average response time to customer emails from 24 to 12 hours within three months."
+- **Learning:** "Complete 40 lessons of a SQL course by 31 March."
+- **Career:** "Have coffee with five people in the data team by the end of June."
+
+## Template
+
+"I will [action] so that [reason], measured by [metric], by [date]."
+
+## Common mistakes
+
+- Vague words like "improve" with no number.
+- Too many goals at once.
+- No review date.
+
+## The bottom line
+
+Make goals clear enough that anyone could check them.
+
+=== okrs-vs-kpis
+title: OKRs vs KPIs: What's the Difference and When to Use Each?
+desc: KPIs track ongoing performance and OKRs drive specific change. Compare them with examples and learn how they can work together.
+tags: okrs vs kpis, okr vs kpi, difference between okr and kpi, performance metrics, goal setting frameworks
+rel: goal-setting-with-okrs, kpis-explained
+q: What is the difference between OKRs and KPIs? | KPIs measure the ongoing health of a process. OKRs set ambitious goals for change over a period.
+q: Can I use both? | Yes. KPIs show where you are, OKRs show where you want to improve.
+q: Which should a small team start with? | Start with a few KPIs, then add OKRs for priority improvements.
+---
+Dashboard versus destination.
+
+## Direct answer
+
+KPIs (key performance indicators) track how well something is performing day to day. OKRs (objectives and key results) set a goal to change something over a set period. Use KPIs to keep watch on essentials and OKRs to drive improvement.
+
+## Comparison
+
+| | KPIs | OKRs |
+| :--- | :--- | :--- |
+| Purpose | monitor health | drive change |
+| Time | ongoing | quarterly or yearly |
+| Example | monthly churn rate | cut churn from 5 percent to 3 percent |
+| Review | regularly | regularly, scored at the end |
+
+## Working together
+
+If a KPI is off target, make improving it an OKR for the next quarter.
+
+## The bottom line
+
+Watch with KPIs, change with OKRs.
+
+=== raci-matrix-explained
+title: RACI Matrix Explained: Who Does What on a Project
+desc: A RACI matrix clarifies who is Responsible, Accountable, Consulted and Informed. Learn each role, build one step by step and avoid common pitfalls.
+tags: raci matrix, raci chart, raci explained, raci example, project roles and responsibilities
+rel: how-to-set-clear-expectations-at-work
+q: What does RACI stand for? | Responsible, Accountable, Consulted and Informed.
+q: What is the difference between responsible and accountable? | Responsible people do the work. The accountable person owns the outcome and has final say, with one per task.
+q: When should I use one? | When roles are unclear, there are many stakeholders or tasks keep falling between the cracks.
+---
+When everyone owns it, nobody owns it.
+
+## Direct answer
+
+A RACI matrix lists tasks and assigns each person a role: Responsible (does the work), Accountable (owns the result, only one per task), Consulted (gives input) and Informed (kept up to date). It removes confusion about who does what.
+
+## Example
+
+| Task | Ada | Ben | Chi | Dee |
+| :--- | :--- | :--- | :--- | :--- |
+| Write brief | R | A | C | I |
+| Design | C | A | R | I |
+| Launch | R | A | C | C |
+
+## How to build one
+
+1. List tasks or deliverables.
+2. List people or teams.
+3. Assign R, A, C and I.
+4. Check: exactly one A per task.
+5. Share and agree.
+
+## Pitfalls
+
+- Too many C and I roles slow things down.
+- No clear A.
+- Not updating it.
+
+## The bottom line
+
+One owner per task. Everyone else knows their part.
+
+=== definition-of-done
+title: Definition of Done: What It Is and How to Write One
+desc: A definition of done lists what must be true before work counts as finished. Learn why teams use it, examples and how to write one for any team.
+tags: definition of done, what is definition of done, definition of done checklist, agile definition of done, quality standards
+rel: how-to-set-clear-expectations-at-work
+q: What is a definition of done? | A shared checklist of criteria that work must meet before it is considered complete.
+q: Is it only for software teams? | No. Any team can use one for reports, designs, campaigns or deliveries.
+q: Who writes it? | The team, together, so everyone agrees and understands it.
+---
+"Done" means different things to different people. Write it down.
+
+## Direct answer
+
+A definition of done is a checklist that says what must be true before work is finished, such as reviewed, tested, documented and approved. It removes arguments about quality and avoids hidden unfinished work.
+
+## Examples
+
+**Report:** proofread, figures checked, reviewed by a colleague, sent in the agreed format.
+
+**Software feature:** code reviewed, tests passing, documentation updated, deployed to staging.
+
+**Marketing campaign:** copy approved, links tested, tracking set up, scheduled.
+
+## How to write one
+
+1. Ask what mistakes have slipped through before.
+2. List the checks that would have caught them.
+3. Keep it short, ten items at most.
+4. Agree as a team.
+5. Review it regularly.
+
+## The bottom line
+
+Clear finish lines make it easier to finish well.
+
+=== 30-60-90-day-plan
+title: 30-60-90 Day Plan: Template and Examples for New Hires and Managers
+desc: A 30-60-90 day plan sets goals for your first three months in a role. Get a template, examples for new hires and managers and interview tips.
+tags: 30 60 90 day plan, 30-60-90 day plan template, 30 60 90 plan for new employees, onboarding plan, first 90 days
+rel: onboarding-new-hires, how-to-set-clear-expectations-at-work
+q: What is a 30-60-90 day plan? | A plan that sets goals for the first 30, 60 and 90 days in a new role.
+q: What goes in each stage? | Learning in the first 30 days, contributing in the next 30 and owning results by day 90.
+q: Can I use it in an interview? | Yes. Presenting a short plan can show preparation and initiative.
+---
+A simple structure for starting well.
+
+## Direct answer
+
+A 30-60-90 day plan sets goals for the first three months of a role: learn in the first 30 days, start contributing in the next 30 and take ownership by day 90. It helps new employees and managers agree expectations.
+
+## Template
+
+**Days 1 to 30: Learn**
+- Meet the team and key stakeholders.
+- Learn tools, processes and goals.
+- Complete training.
+
+**Days 31 to 60: Contribute**
+- Take on small projects.
+- Suggest improvements.
+- Get feedback.
+
+**Days 61 to 90: Own**
+- Lead a project or area.
+- Hit agreed targets.
+- Plan the next quarter.
+
+## Tips for managers
+
+1. Agree the plan in week one.
+2. Meet weekly.
+3. Adjust as you learn.
+
+## The bottom line
+
+A shared plan removes guesswork for new starters.
+
+=== performance-improvement-plan
+title: Performance Improvement Plan (PIP): What It Is and How to Handle One
+desc: A PIP sets out expectations and support for an underperforming employee. Learn what it includes, how to run one fairly and how to respond to one.
+tags: performance improvement plan, pip at work, what is a pip, how to write a pip, how to respond to a pip
+rel: how-to-set-clear-expectations-at-work
+q: What is a performance improvement plan? | A formal document that describes performance gaps, expectations, support and a timeline for improvement.
+q: Does a PIP mean I will be fired? | Not necessarily, but it is serious. Some end in improvement, others in exit. Take it seriously and ask for clarity.
+q: What should a manager include? | Specific issues with examples, clear measurable goals, support offered and review dates.
+---
+A PIP should be a fair chance to improve, not a paper trail.
+
+## Direct answer
+
+A performance improvement plan lists specific performance problems, what success looks like, the support the employee will receive and a timeline with review dates. Managers should be clear, fair and supportive. Employees should ask questions, document progress and seek advice if needed.
+
+## For managers
+
+1. **Check expectations were clear** before this point.
+2. **Give specific examples** and measurable goals.
+3. **Offer support:** training, coaching, resources.
+4. **Set review dates** and meet regularly.
+5. **Document fairly** and follow your HR process.
+
+## For employees
+
+- Ask for specifics and what success means.
+- Request the support offered.
+- Keep notes and evidence of progress.
+- Consider speaking to HR or a trusted adviser, and know your rights where you live.
+
+## The bottom line
+
+Clarity and support make a PIP fair and effective.
+
+=== kpis-explained
+title: KPIs Explained: What They Are and How to Choose Good Ones
+desc: KPIs are key performance indicators. Learn what makes a good KPI, examples for different teams and how to avoid vanity metrics and gaming.
+tags: kpis, what is a kpi, kpi examples, how to choose kpis, key performance indicators
+rel: okrs-vs-kpis, how-to-set-clear-expectations-at-work
+q: What is a KPI? | A key performance indicator: a measurable value that shows how well a person, team or business is achieving an important goal.
+q: How many KPIs should I track? | A few that matter, often fewer than ten.
+q: What is a vanity metric? | A number that looks good but does not reflect real success, such as page views without conversions.
+---
+What gets measured gets managed, so measure carefully.
+
+## Direct answer
+
+A KPI is a measurable value that shows progress toward an important goal. Good KPIs are clear, tied to outcomes, owned by someone and reviewed regularly. Choose a few that matter and avoid vanity metrics.
+
+## Examples
+
+| Team | KPI examples |
+| :--- | :--- |
+| Sales | win rate, average deal size |
+| Support | first response time, satisfaction score |
+| Marketing | cost per lead, conversion rate |
+| Finance | cash runway, days sales outstanding |
+
+## Choosing good ones
+
+1. Link each to a goal.
+2. Make it measurable and available.
+3. Assign an owner.
+4. Set a target and a review rhythm.
+5. Watch for unintended effects, such as gaming.
+
+## The bottom line
+
+Measure what drives your goals, not what is easy to count.
+
+=== onboarding-new-hires
+title: Onboarding New Hires: A Practical Checklist for the First Week
+desc: A good onboarding sets new employees up to succeed. Use this checklist for before day one, the first week and the first month, with expectations and support.
+tags: onboarding new hires, new employee onboarding checklist, first week at work, how to onboard an employee, employee onboarding
+rel: 30-60-90-day-plan
+q: What should be in an onboarding checklist? | Accounts and equipment, introductions, role expectations, training, a buddy and regular check-ins.
+q: How long should onboarding last? | Many companies treat the first 90 days as the onboarding period.
+q: Who should be involved? | The manager, a buddy, HR and key teammates.
+---
+First impressions shape how quickly people become productive.
+
+## Direct answer
+
+Good onboarding covers logistics before day one, a welcoming first week with clear expectations, introductions and a buddy, and regular check-ins through the first 90 days. Share goals, tools and how success is measured.
+
+## Checklist
+
+**Before day one**
+- Accounts, equipment and access ready.
+- Welcome message and schedule.
+
+**Day one**
+- Welcome, tour and introductions.
+- Assign a buddy.
+- Explain the team's goals.
+
+**First week**
+- Role expectations and first small tasks.
+- Training and tools.
+- A short check-in each day.
+
+**First month**
+- A 30-60-90 plan.
+- Feedback conversation.
+- Meet key stakeholders.
+
+## The bottom line
+
+Make new people feel welcome and clear about what success looks like.
+
+=== project-status-updates
+title: How to Write a Project Status Update That People Actually Read
+desc: A clear status update shows progress, risks and needs at a glance. Learn a simple format, examples and tips for keeping updates short and useful.
+tags: status updates, project status update, how to write a status update, weekly update template, progress report
+rel: how-to-set-clear-expectations-at-work, plain-language-writing-guide
+q: What should a status update include? | Overall status, progress since last time, next steps, risks or blockers and any decisions needed.
+q: How long should it be? | As short as possible. Many updates fit in five to eight lines.
+q: How often should I send one? | At a regular rhythm that matches the project, often weekly.
+---
+A good update saves meetings.
+
+## Direct answer
+
+A good status update gives the overall status, what was done, what is next, risks or blockers and any decisions needed from the reader. Put the most important information first and keep it short.
+
+## Template
+
+**Status:** Green, amber or red, with one line why.
+**Done:** two or three bullets.
+**Next:** two or three bullets.
+**Risks and blockers:** and what you need.
+**Decisions needed:** from whom and by when.
+
+## Example
+
+> **Status: Amber.** Launch is on track, but legal review is late.
+> **Done:** finished testing, trained support team.
+> **Next:** fix three bugs, submit for approval.
+> **Blocker:** need legal sign-off by Friday.
+> **Decision needed:** approve copy changes by Thursday (Sam).
+
+## Tips
+
+- Lead with the point.
+- Be honest about risks early.
+- Use the same format every time.
+
+## The bottom line
+
+Short, honest and regular wins.

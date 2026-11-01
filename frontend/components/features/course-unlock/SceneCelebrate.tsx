@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { motion, type Variants } from 'framer-motion';
-import { ArrowRight, Check, Lock } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import confetti from 'canvas-confetti';
 import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -180,7 +180,7 @@ export default function SceneCelebrate({
                 <div key={`done-${id}-${i}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
                   {i > 0 && <span className={styles.nodeLink} />}
                   <motion.span variants={popVariants} className={`${styles.timelineNode} ${styles.nodeDone}`}>
-                    <Check size={18} strokeWidth={3.25} className={styles.nodeCheck} />
+                    <Glyph name="check" size={18} strokeWidth={3.25} className={styles.nodeCheck} />
                   </motion.span>
                 </div>
               ))}
@@ -195,13 +195,13 @@ export default function SceneCelebrate({
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
                 <span className={styles.nodeLink} />
                 <motion.span variants={popVariants} className={`${styles.timelineNode} ${styles.nodeFrontier}`}>
-                  <Lock size={16} strokeWidth={2.75} />
+                  <Glyph name="lock" size={16} strokeWidth={2.75} />
                 </motion.span>
               </div>
             </>
           ) : (
             <motion.span variants={popVariants} className={`${styles.timelineNode} ${styles.nodeFrontier}`}>
-              <Lock size={16} strokeWidth={2.75} />
+              <Glyph name="lock" size={16} strokeWidth={2.75} />
             </motion.span>
           )}
         </motion.div>
@@ -210,7 +210,7 @@ export default function SceneCelebrate({
       <div className={styles.sceneDock}>
         <button type="button" className={styles.cta3D} onClick={handleContinue}>
           <span>{rows.hasProgress ? 'Keep going' : "Let's go"}</span>
-          <ArrowRight size={17} strokeWidth={2.75} />
+          <Glyph name="arrow" size={17} strokeWidth={2.75} />
         </button>
       </div>
     </>

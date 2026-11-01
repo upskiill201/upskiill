@@ -1,0 +1,79 @@
+---
+title: "useState in React Native: Add State to Your Components"
+description: "Learn how useState works in React Native with a counter and a text input, why you must not mutate state, and updating objects and arrays."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [usestate, react native usestate, react state, state management basics, hooks for beginners]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "React Native for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/react-native-for-beginners
+  label: "See the React Native for Beginners course"
+faq:
+  - question: "What does useState do?"
+    answer: "It adds a state variable to a component and gives you a function to update it, re-rendering when it changes."
+  - question: "Why does my UI not update?"
+    answer: "You may be mutating state directly instead of using the setter, or using the old value in a closure."
+  - question: "How do I update an object or array in state?"
+    answer: "Create a new copy, for example with the spread operator, instead of changing the existing one."
+---
+
+State is how a screen remembers things.
+
+## Direct answer
+
+`useState` returns a value and a setter. Calling the setter updates the value and re-renders the component. Never change state directly. Create new objects and arrays instead.
+
+## Example
+
+```jsx
+import { useState } from "react";
+import { View, Text, Button, TextInput } from "react-native";
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+  const [name, setName] = useState("");
+
+  return (
+    <View style={{ padding: 16 }}>
+      <TextInput value={name} onChangeText={setName} placeholder="Your name" />
+      <Text>Hello {name}, count is {count}</Text>
+      <Button title="Add" onPress={() => setCount(count + 1)} />
+    </View>
+  );
+}
+```
+
+## Updating objects and arrays
+
+```jsx
+const [todos, setTodos] = useState([]);
+
+setTodos([...todos, { id: Date.now(), text: "New" }]);       // add
+setTodos(todos.filter((t) => t.id !== id));                  // remove
+setUser({ ...user, name: "Ada" });                           // update field
+```
+
+## Use the functional form when it depends on the previous value
+
+```jsx
+setCount((c) => c + 1);
+```
+
+## Where Teyro fits
+
+Teyro's [React Native for Beginners](/courses/react-native-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 80 lessons, and you can start free.
+
+## The bottom line
+
+State changes cause re-renders. Treat it as read-only.
+
+## More guides
+
+- [useEffect in React Native](/blog/useeffect-in-react-native)
+- [React Native vs Flutter](/blog/react-native-vs-flutter)
+- [React Native vs Native Development](/blog/react-native-vs-native)
+- [Props and state react native](/blog/props-and-state-react-native)
+- [React Native for Beginners course](/courses/react-native-for-beginners)

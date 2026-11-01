@@ -1,0 +1,22 @@
+{
+  "slug": "c12-council",
+  "account": "teyro",
+  "title": "18 great minds argue about your idea",
+  "voice": "cgSgspJ2msm6clMCkdW9",
+  "model": "eleven_multilingual_v2",
+  "fps": 30,
+  "lines": [
+    { "id": "h1", "text": "Claude says *yes* to every idea you have. | So someone built *eighteen great minds* | to tear it *apart.*" },
+    { "id": "i1a", "text": "It's an *open-source* plugin | called *Council of High Intelligence,* | with over *four thousand* stars on GitHub." },
+    { "id": "i1b", "text": "Type *slash council* and your question, | and it goes to a panel like *Socrates,* | *Feynman,* and *Charlie Munger.*" },
+    { "id": "i2", "text": "Each one makes up their mind *blind* first, | so nobody just copies the *loudest* voice." },
+    { "id": "i3", "text": "Then they *cross-examine* each other. | Socrates attacks your *assumptions.* | Munger asks what would make it *fail.* | Kahneman hunts for the *bias* you can't see." },
+    { "id": "i4", "text": "Then you get a *verdict:* | what's still *unresolved,* | where they *split,* | the *kill criteria,* | and one *next step.*" },
+    { "id": "s1", "text": "One AI will always say *yes.* | *Eighteen* won't." },
+    { "id": "c1", "text": "Comment *COUNCIL,* | and I'll send you where to learn *AI tools* like this." }
+  ],
+  "sources": [
+    "github.com/0xNyk/council-of-high-intelligence (read 2026-10-09): MIT licence, ~4.6k stars, 18 personas incl. Socrates (assumption destruction), Feynman, Charlie Munger (inversion), Daniel Kahneman (cognitive bias); /council <question>; members 'analyze blind' and the council 'keeps their first positions independent', then cross-examine; verdict leads with unresolved questions, preserves dissent, gives kill criteria and one concrete next step; works in Claude Code, Codex, Gemini CLI, OpenCode",
+    "teyro.app (read 2026-10-09): AI track = Use AI tools · Build AI agents · Create automations. No Claude Code-specific claim is made in the video."
+  ]
+}

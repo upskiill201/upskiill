@@ -11,6 +11,9 @@
  *    but haven't paid for is paywalled (tap → unlock page); a lesson you
  *    haven't reached yet is simply locked, paid or not.
  *  - A unit's chest opens only when every lesson in the unit is done.
+ *  - Tested-out lessons (Jump ahead / placement) are passed for the line:
+ *    drawn as done with a testedOut flag, so they open for review, but they
+ *    never count in doneCount and never open a chest.
  *  - Nothing here is invented: no filler "challenge" nodes. The old section
  *    map inserted one after every two lessons that only said "coming soon".
  *
@@ -29,6 +32,8 @@ export interface PathNode {
   numberInUnit: number;
   /** Position across the course, 1-based. */
   number: number;
+  /** Skipped by passing a test: drawn open, not counted as done. */
+  testedOut?: boolean;
 }
 
 export interface PathUnit {
@@ -45,6 +50,8 @@ export interface PathUnit {
   color: string;
   nodes: PathNode[];
   doneCount: number;
+  /** Lessons in the unit skipped by passing a test. */
+  testedOutCount: number;
   chest: 'open' | 'locked';
 }
 
@@ -67,6 +74,7 @@ export const UNIT_COLORS = [
 
 export function buildPathModel(path: LearningPath): PathModel {
   const done = new Set(path.completedLessons);
+  const testedOut = new Set(path.testedOutLessons ?? []);
   const { hasAccess, freePreviewLessonIds } = path.access;
   const free = new Set(freePreviewLessonIds);
 
@@ -87,6 +95,8 @@ export function buildPathModel(path: LearningPath): PathModel {
       if (done.has(lesson.id)) {
         state = 'done';
         doneTotal += 1;
+      } else if (testedOut.has(lesson.id)) {
+        return { lesson, state: 'done' as const, numberInUnit: i + 1, number, testedOut: true };
       } else if (!current) {
         // The first unfinished lesson is where the learner is — unless it's
         // behind the paywall, in which case it's where they'd be.
@@ -98,7 +108,7 @@ export function buildPathModel(path: LearningPath): PathModel {
       return { lesson, state, numberInUnit: i + 1, number };
     });
 
-    const unitDone = nodes.filter((n) => n.state === 'done').length;
+    const unitDone = nodes.filter((n) => n.state === 'done' && !n.testedOut).length;
     units.push({
       sectionId: section.id,
       sectionIndex,
@@ -109,6 +119,7 @@ export function buildPathModel(path: LearningPath): PathModel {
       color: UNIT_COLORS[(unitNumber - 1) % UNIT_COLORS.length],
       nodes,
       doneCount: unitDone,
+      testedOutCount: nodes.filter((n) => n.testedOut).length,
       chest: unitDone === nodes.length ? 'open' : 'locked',
     });
   });
@@ -125,4 +136,34 @@ const WAVE = [0, 0.55, 0.9, 0.55, 0, -0.55, -0.9, -0.55];
 
 export function nodeOffset(indexInUnit: number): number {
   return WAVE[indexInUnit % WAVE.length];
+}
+
+/**
+ * The certificate at the end of the road (backend/src/certificate). Every
+ * course with published lessons issues one, and only for lessons really
+ * done: tested-out lessons never count, so they stay "to go" here too.
+ *
+ *  - far:    still before the final unit;
+ *  - close:  the next lesson is in the final unit, or only tested-out
+ *            lessons are left;
+ *  - earned: every lesson done — the server issues it on first ask.
+ */
+export type CertificateGoalState = 'far' | 'close' | 'earned';
+
+export interface CertificateGoal {
+  state: CertificateGoalState;
+  /** Lessons still to finish for the certificate. */
+  left: number;
+  /** Of those, how many were tested out (open, but not done). */
+  testedOutLeft: number;
+}
+
+export function certificateGoal(model: PathModel): CertificateGoal | null {
+  if (model.totalLessons === 0) return null;
+  const left = model.totalLessons - model.doneCount;
+  const testedOutLeft = model.units.reduce((n, u) => n + u.testedOutCount, 0);
+  if (left === 0) return { state: 'earned', left: 0, testedOutLeft: 0 };
+  const lastUnit = model.units[model.units.length - 1]?.unitNumber;
+  const close = !model.current || model.current.unitNumber === lastUnit;
+  return { state: close ? 'close' : 'far', left, testedOutLeft };
 }

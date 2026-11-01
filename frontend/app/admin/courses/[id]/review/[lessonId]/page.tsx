@@ -2,10 +2,10 @@
 
 import { useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { CelebrationProvider } from '@/context/CelebrationContext';
 import { GamificationProvider } from '@/context/GamificationContext';
-import { ComingSoonProvider } from '@/components/layout/StudentShell';
+import { ComingSoonProvider } from '@/components/layout/ComingSoon';
 import { LessonHost } from '@/components/lesson/LessonHost';
 import { ErrorState, Loading, useAdminData } from '@/components/admin/AdminUI';
 import styles from '@/components/admin/AdminUI.module.css';
@@ -100,7 +100,7 @@ export default function AdminLessonReviewPage() {
               padding: 0,
             }}
           >
-            <ArrowLeft size={14} /> Back to course
+            <Glyph name="back" size={14} strokeWidth={2.8} /> Back to course
           </button>
         </div>
       </div>
@@ -138,7 +138,7 @@ export default function AdminLessonReviewPage() {
             padding: 0,
           }}
         >
-          <ArrowLeft size={14} /> Back to {data.course?.title ?? 'course'}
+          <Glyph name="back" size={14} strokeWidth={2.8} /> Back to {data.course?.title ?? 'course'}
         </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -149,7 +149,7 @@ export default function AdminLessonReviewPage() {
             className={styles.pageButton}
             style={{ display: 'flex', alignItems: 'center', gap: 4 }}
           >
-            <ChevronLeft size={14} /> Previous lesson
+            <Glyph name="chevronLeft" size={14} strokeWidth={2.8} /> Previous lesson
           </button>
           <button
             type="button"
@@ -158,7 +158,7 @@ export default function AdminLessonReviewPage() {
             className={styles.pageButton}
             style={{ display: 'flex', alignItems: 'center', gap: 4 }}
           >
-            Next lesson <ChevronRight size={14} />
+            Next lesson <Glyph name="chevron" size={14} strokeWidth={2.8} />
           </button>
         </div>
       </div>

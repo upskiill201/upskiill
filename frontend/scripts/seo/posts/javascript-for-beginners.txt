@@ -1,0 +1,559 @@
+=== let-const-var-javascript
+title: let vs const vs var in JavaScript: Differences and When to Use Each
+desc: Understand the difference between let, const and var in JavaScript: scope, hoisting, reassignment and a simple rule for choosing which to use.
+tags: javascript variables let const var, let vs const vs var, javascript let, javascript const, javascript var
+rel: javascript-for-beginners-guide
+q: What is the difference between let and const? | let lets you reassign the variable. const does not, though objects and arrays stored in const can still be changed.
+q: Should I use var? | Modern code rarely uses var because its function scope and hoisting cause surprises. Prefer let and const.
+q: What is scope? | Scope is where a variable can be used. let and const are block-scoped, while var is function-scoped.
+---
+Three keywords declare variables, but only two belong in modern code.
+
+## Direct answer
+
+Use `const` by default, `let` when you need to reassign, and avoid `var`. `let` and `const` are block-scoped and safer. `var` is function-scoped and hoisted in confusing ways.
+
+## Comparison
+
+| | `var` | `let` | `const` |
+| :--- | :--- | :--- | :--- |
+| Scope | function | block | block |
+| Reassign | yes | yes | no |
+| Redeclare | yes | no | no |
+| Hoisting | yes, value is undefined | yes, but unusable before declaration | same as let |
+
+## Examples
+
+```javascript
+const name = "Ada";
+let count = 0;
+count = count + 1;
+
+if (true) {
+  let inside = "block only";
+}
+// inside is not available here
+```
+
+## const does not mean frozen
+
+```javascript
+const list = [1, 2];
+list.push(3);   // allowed
+list = [];      // error
+```
+
+## A simple rule
+
+1. Start with `const`.
+2. Switch to `let` if you need to reassign.
+3. Do not use `var`.
+
+## The bottom line
+
+Prefer `const`, use `let` when needed and leave `var` to older code.
+
+=== javascript-arrow-functions
+title: JavaScript Arrow Functions: Syntax, Examples and When to Use Them
+desc: Arrow functions are a shorter way to write functions in JavaScript. Learn the syntax, implicit returns, how this differs and when not to use them.
+tags: arrow functions, javascript arrow functions, arrow function syntax, arrow function vs regular function, es6 arrow functions
+rel: javascript-for-beginners-guide
+q: What is an arrow function? | A shorter syntax for writing functions using =>, introduced in ES6.
+q: What is the difference between arrow and regular functions? | Arrow functions do not have their own this, arguments or the ability to be used as constructors.
+q: When should I not use an arrow function? | As object methods that need this, and as constructors.
+---
+Arrow functions make small functions neat.
+
+## Direct answer
+
+An arrow function is a compact way to write a function using `=>`. If the body is a single expression, the result is returned automatically. Arrow functions do not have their own `this`, which is useful in callbacks but wrong for object methods that rely on `this`.
+
+## Syntax
+
+```javascript
+// regular
+function add(a, b) {
+  return a + b;
+}
+
+// arrow
+const add = (a, b) => a + b;
+
+// one parameter
+const double = n => n * 2;
+
+// multiple lines
+const greet = (name) => {
+  const message = "Hi " + name;
+  return message;
+};
+```
+
+## Great in callbacks
+
+```javascript
+const numbers = [1, 2, 3];
+const doubled = numbers.map(n => n * 2);
+```
+
+## When not to use them
+
+- Object methods that need `this`.
+- Constructors (`new` will fail).
+- Functions that need `arguments`.
+
+## The bottom line
+
+Use arrow functions for short callbacks and utilities. Use regular functions when you need `this`.
+
+=== javascript-arrays-guide
+title: JavaScript Arrays: A Beginner's Guide With Examples
+desc: Learn JavaScript arrays: create them, add and remove items and use map, filter, find and reduce with clear examples for beginners.
+tags: javascript arrays, javascript array methods, javascript map filter reduce, javascript push pop, arrays for beginners
+rel: javascript-for-beginners-guide
+q: What is an array in JavaScript? | An ordered list of values, stored in square brackets and accessed by position starting at zero.
+q: What is the difference between map and filter? | map transforms every item into a new array. filter keeps only items that pass a test.
+q: How do I add to an array? | Use push to add to the end and unshift to add to the start.
+---
+Arrays hold lists of things, and nearly every program uses them.
+
+## Direct answer
+
+A JavaScript array is an ordered list written in square brackets. Items are accessed by index starting at 0. Use `push` and `pop` to add and remove items, and `map`, `filter` and `reduce` to transform lists.
+
+## The basics
+
+```javascript
+const fruits = ["apple", "banana", "cherry"];
+console.log(fruits[0]);     // apple
+console.log(fruits.length); // 3
+
+fruits.push("date");        // add to end
+fruits.pop();               // remove from end
+```
+
+## The big three
+
+```javascript
+const nums = [1, 2, 3, 4, 5];
+
+const doubled = nums.map(n => n * 2);        // [2, 4, 6, 8, 10]
+const evens = nums.filter(n => n % 2 === 0); // [2, 4]
+const sum = nums.reduce((total, n) => total + n, 0); // 15
+```
+
+## Other handy methods
+
+| Method | What it does |
+| :--- | :--- |
+| `find` | first item that passes a test |
+| `includes` | checks if a value exists |
+| `slice` | copies part of an array |
+| `sort` | orders items |
+
+## The bottom line
+
+Learn `map`, `filter` and `reduce` early. They replace many loops.
+
+=== javascript-scope-explained
+title: JavaScript Scope Explained: Global, Function and Block Scope
+desc: Scope decides where variables can be used in JavaScript. Learn global, function and block scope with simple examples and tips for avoiding bugs.
+tags: javascript scope, global scope, function scope, block scope, javascript scope chain
+rel: let-const-var-javascript, javascript-closures-explained
+q: What is scope in JavaScript? | The area of code where a variable can be accessed.
+q: What is the scope chain? | When a variable is not found in the current scope, JavaScript looks in the outer scope, and so on up to the global scope.
+q: Why avoid global variables? | They can be changed from anywhere, which makes bugs harder to track.
+---
+Scope answers the question: "Where can I use this variable?"
+
+## Direct answer
+
+Scope is where a variable is visible. JavaScript has global scope, function scope and block scope. Variables declared with `let` and `const` are block-scoped, so they only exist inside the nearest curly braces. Inner scopes can read variables from outer scopes, but not the other way around.
+
+## Examples
+
+```javascript
+const globalName = "everywhere";
+
+function demo() {
+  const functionName = "inside function";
+  if (true) {
+    const blockName = "inside block";
+    console.log(globalName, functionName, blockName);
+  }
+  console.log(blockName); // error
+}
+```
+
+## The scope chain
+
+If JavaScript cannot find a variable in the current scope, it checks the one outside it, and so on until it reaches global.
+
+## Tips
+
+- Keep variables as local as possible.
+- Avoid global variables.
+- Use `const` and `let` instead of `var`.
+
+## The bottom line
+
+Smaller scopes mean fewer surprises.
+
+=== javascript-closures-explained
+title: JavaScript Closures Explained Simply With Examples
+desc: A closure is a function that remembers variables from where it was created. Learn closures with simple examples, common uses and a classic loop bug.
+tags: javascript closures, closures explained, what is a closure, closure examples, javascript closure interview question
+rel: javascript-scope-explained
+q: What is a closure in JavaScript? | A function that keeps access to variables from the scope in which it was created, even after that outer function has finished.
+q: What are closures used for? | Private data, function factories, counters and callbacks.
+q: Why are closures asked in interviews? | They show whether you understand scope and how functions work.
+---
+Closures sound scary, but the idea is simple: a function remembers where it came from.
+
+## Direct answer
+
+A closure is a function bundled with the variables around it when it was created. Even after the outer function returns, the inner function can still use those variables. Closures let you keep private state and build function factories.
+
+## A counter
+
+```javascript
+function makeCounter() {
+  let count = 0;
+  return function () {
+    count = count + 1;
+    return count;
+  };
+}
+
+const counter = makeCounter();
+console.log(counter()); // 1
+console.log(counter()); // 2
+```
+
+`count` is not accessible from outside, yet the returned function can use it.
+
+## Function factory
+
+```javascript
+function multiplier(factor) {
+  return n => n * factor;
+}
+const double = multiplier(2);
+console.log(double(5)); // 10
+```
+
+## Common use cases
+
+- Private variables
+- Event handlers that need context
+- Partial application and configuration
+
+## The bottom line
+
+Every function you return from another function can be a closure. Practise with counters and factories.
+
+=== javascript-promises-explained
+title: JavaScript Promises Explained: then, catch and Real Examples
+desc: Promises represent a value that will arrive later. Learn pending, fulfilled and rejected states, then and catch, chaining and Promise.all with simple examples.
+tags: javascript promises, what is a promise, promise then catch, promise all, asynchronous javascript
+rel: async-await-javascript
+q: What is a promise in JavaScript? | An object representing the eventual result of an asynchronous operation, either a value or an error.
+q: What are the promise states? | Pending, fulfilled and rejected.
+q: What is the difference between then and await? | Both handle a promise result. await lets you write asynchronous code that reads like synchronous code.
+---
+Some things take time: network requests, timers, files. Promises handle the waiting.
+
+## Direct answer
+
+A promise is an object that represents a result that will arrive later. It starts as pending and becomes either fulfilled with a value or rejected with an error. Use `.then()` for success, `.catch()` for failure and `Promise.all()` to wait for several at once.
+
+## Example
+
+```javascript
+fetch("https://api.example.com/users")
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error("Failed:", error));
+```
+
+## Creating a promise
+
+```javascript
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+wait(1000).then(() => console.log("One second later"));
+```
+
+## Waiting for many
+
+```javascript
+Promise.all([fetch(urlA), fetch(urlB)]).then(([a, b]) => {
+  console.log("Both done");
+});
+```
+
+## The bottom line
+
+Promises are the foundation of asynchronous JavaScript. Next, learn [async and await](/blog/async-await-javascript).
+
+=== async-await-javascript
+title: async and await in JavaScript: A Beginner's Guide
+desc: async and await make asynchronous JavaScript look like normal code. Learn the syntax, error handling with try and catch and how to run tasks in parallel.
+tags: async await, javascript async await, async await example, how does async await work, javascript asynchronous
+rel: javascript-promises-explained
+q: What does async do? | It marks a function as asynchronous so it always returns a promise.
+q: What does await do? | It pauses the async function until a promise settles, then returns the result.
+q: How do I handle errors with await? | Wrap the await calls in try and catch.
+---
+async and await let you write asynchronous code that reads from top to bottom.
+
+## Direct answer
+
+Put `async` before a function to make it return a promise. Inside it, use `await` before a promise to wait for its result. Handle errors with `try` and `catch`. It is syntax built on top of [promises](/blog/javascript-promises-explained).
+
+## Example
+
+```javascript
+async function getUser(id) {
+  try {
+    const response = await fetch(`https://api.example.com/users/${id}`);
+    const user = await response.json();
+    console.log(user.name);
+  } catch (error) {
+    console.error("Something went wrong", error);
+  }
+}
+
+getUser(1);
+```
+
+## Run things in parallel
+
+```javascript
+const [users, posts] = await Promise.all([
+  fetch("/users").then(r => r.json()),
+  fetch("/posts").then(r => r.json()),
+]);
+```
+
+Awaiting one after another waits for each in turn. `Promise.all` runs them together.
+
+## Common mistakes
+
+- Forgetting `await`, so you get a promise instead of data.
+- Using `await` outside an async function (top-level await works only in modules).
+- Not handling errors.
+
+## The bottom line
+
+Use `async`, `await` and `try/catch` for readable asynchronous code.
+
+=== what-is-json
+title: What Is JSON? A Beginner's Guide With Examples
+desc: JSON is a text format for storing and sending data. Learn the syntax, how to parse and stringify it in JavaScript and common mistakes beginners make.
+tags: json, what is json, json example, json parse stringify, json format
+rel: javascript-for-beginners-guide
+q: What is JSON? | JavaScript Object Notation, a lightweight text format for representing data as key-value pairs and lists.
+q: How do I convert JSON to a JavaScript object? | Use JSON.parse(text).
+q: How do I convert an object to JSON? | Use JSON.stringify(object).
+---
+JSON is how most websites and apps send data to each other.
+
+## Direct answer
+
+JSON (JavaScript Object Notation) is a text format for data made of key-value pairs, lists, strings, numbers, booleans and null. In JavaScript, `JSON.parse()` turns JSON text into an object and `JSON.stringify()` turns an object into JSON text.
+
+## Example
+
+```json
+{
+  "name": "Ada",
+  "age": 28,
+  "skills": ["math", "code"],
+  "active": true
+}
+```
+
+## Rules
+
+- Keys must be in double quotes.
+- Strings use double quotes, not single.
+- No trailing commas.
+- No comments.
+
+## In JavaScript
+
+```javascript
+const text = '{"name":"Ada","age":28}';
+const obj = JSON.parse(text);
+console.log(obj.name); // Ada
+
+const back = JSON.stringify(obj);
+```
+
+## Common mistakes
+
+- Using single quotes.
+- Leaving a trailing comma.
+- Trying to parse something that is already an object.
+
+## The bottom line
+
+JSON is simple, readable and everywhere. Learn the rules once and you can read most APIs.
+
+=== javascript-this-keyword
+title: The this Keyword in JavaScript: How It Works With Examples
+desc: this changes depending on how a function is called. Learn the rules for global, method, arrow, constructor and event handler contexts, plus call and bind.
+tags: javascript this keyword, this in javascript, what is this in javascript, this keyword explained, call apply bind
+rel: javascript-arrow-functions
+q: What does this refer to in JavaScript? | It refers to the object that is calling the function. The value depends on how the function is called.
+q: Why is this undefined in my function? | A method was probably detached from its object or called without a receiver.
+q: How do I fix this problems? | Use arrow functions, bind the function or call it as a method on the object.
+---
+Most beginners find `this` confusing because it is decided at call time.
+
+## Direct answer
+
+In JavaScript, `this` refers to the object that calls the function. In a method call it is the object before the dot. In a regular function in strict mode it is undefined. Arrow functions do not have their own `this`, they use the one from where they were written.
+
+## The main cases
+
+```javascript
+const person = {
+  name: "Ada",
+  greet() {
+    console.log(this.name);
+  },
+};
+
+person.greet(); // Ada
+
+const fn = person.greet;
+fn(); // this is not person here
+```
+
+## Fixes
+
+```javascript
+const bound = person.greet.bind(person);
+bound(); // Ada
+```
+
+Arrow functions inherit `this`:
+
+```javascript
+const timer = {
+  seconds: 0,
+  start() {
+    setInterval(() => {
+      this.seconds++;
+    }, 1000);
+  },
+};
+```
+
+## Quick rules
+
+1. `obj.method()` means `this` is `obj`.
+2. `new Fn()` means `this` is the new object.
+3. Arrow functions use outer `this`.
+4. `call`, `apply` and `bind` set `this` explicitly.
+
+## The bottom line
+
+Look at how a function is called, not where it is written, except for arrow functions.
+
+=== debugging-javascript
+title: How to Debug JavaScript: Console, Breakpoints and Common Bugs
+desc: Learn to debug JavaScript with console.log, browser DevTools, breakpoints and a simple process for finding and fixing common errors.
+tags: javascript debugging, how to debug javascript, chrome devtools debugging, console log debugging, javascript breakpoints
+rel: javascript-for-beginners-guide
+q: How do I debug JavaScript? | Use console.log for quick checks, browser DevTools breakpoints to pause and inspect code, and read error messages carefully.
+q: What is a breakpoint? | A marker that pauses your code at a certain line so you can inspect variables.
+q: What are common JavaScript errors? | ReferenceError, TypeError and SyntaxError.
+---
+Debugging is a skill, not a talent.
+
+## Direct answer
+
+To debug JavaScript, read the error message, check the line number, use `console.log` to inspect values and use your browser's DevTools to set breakpoints and step through code. Change one thing at a time and re-run.
+
+## A simple process
+
+1. **Reproduce** the bug reliably.
+2. **Read the error** in the console.
+3. **Find the line.**
+4. **Log values** around the problem.
+5. **Form a guess** and test it.
+6. **Fix and re-run.**
+
+## Tools
+
+```javascript
+console.log("value:", value);
+console.table(items);
+console.error("problem");
+debugger; // pauses when DevTools is open
+```
+
+In DevTools, open **Sources**, click a line number to add a breakpoint and use the step buttons.
+
+## Common errors
+
+| Error | Meaning |
+| :--- | :--- |
+| `ReferenceError` | variable not defined |
+| `TypeError` | wrong kind of value, such as calling undefined |
+| `SyntaxError` | code not valid |
+
+## The bottom line
+
+Slow down, make one change at a time and let the tools show you what is happening.
+
+=== es6-features-javascript
+title: ES6 Features Every JavaScript Beginner Should Know
+desc: ES6 modernised JavaScript. Learn let and const, arrow functions, template literals, destructuring, spread, modules and default parameters with examples.
+tags: javascript es6, es6 features, es6 tutorial, modern javascript, destructuring spread
+rel: let-const-var-javascript, javascript-arrow-functions
+q: What is ES6? | The 2015 update to JavaScript that added features such as let, const, arrow functions, classes and modules.
+q: Is ES6 the same as modern JavaScript? | It started modern JavaScript. More features have been added yearly since.
+q: Which ES6 features matter most? | let and const, arrow functions, template literals, destructuring and modules.
+---
+ES6 changed how people write JavaScript.
+
+## Direct answer
+
+ES6, also called ES2015, is a major JavaScript update that introduced `let` and `const`, arrow functions, template literals, destructuring, the spread operator, classes and modules. Most modern code uses them.
+
+## Key features
+
+```javascript
+// template literals
+const name = "Ada";
+console.log(`Hello ${name}`);
+
+// destructuring
+const { age, city } = { age: 28, city: "Lagos" };
+const [first, second] = [10, 20];
+
+// spread
+const a = [1, 2];
+const b = [...a, 3]; // [1, 2, 3]
+
+// default parameters
+function greet(name = "friend") {
+  return `Hi ${name}`;
+}
+
+// modules
+export const pi = 3.14;
+import { pi } from "./math.js";
+```
+
+## Why it matters
+
+These features make code shorter and clearer. They are used in nearly every framework and tutorial you will meet.
+
+## The bottom line
+
+Learn these seven features first and you will read most modern JavaScript comfortably.

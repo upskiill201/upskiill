@@ -71,11 +71,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why add a picture to the words?',
         options: [
-          { text: 'Words plus a visual give you two ways to remember it' },
           { text: 'Because some people are visual learners', why: 'That is the learning styles myth. Words plus pictures help everyone.' },
           { text: 'It looks nicer in your notes', why: 'Maybe, but that is not why it works.' },
+          { text: 'Words plus a visual give you two ways to remember it' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'sortGroups',
@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         message: "I did the words and the picture for circuits. Do I really need the test part? I think I've got it.",
         prompt: 'What should Kofi say?',
         options: [
-          { text: "Yes. Feeling like you've got it isn't the same as remembering it. The test shows you." },
           { text: 'No, if you feel it, you know it.', why: "That's the same trap as rereading." },
+          { text: "Yes. Feeling like you've got it isn't the same as remembering it. The test shows you." },
           { text: 'Do the words again instead.', why: 'That is rereading.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -126,11 +126,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: "Kofi can't write the one summary line without looking. What does that tell him?",
         options: [
-          { text: 'Come back to this topic tomorrow' },
           { text: 'He is bad at chemistry', why: 'It just means it hasn\'t stuck yet. That is normal.' },
           { text: 'Copy the summary from the AI', why: 'That skips the test.' },
+          { text: 'Come back to this topic tomorrow' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',

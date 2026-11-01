@@ -1,0 +1,96 @@
+/* The live page under the HTML editor (components/code/HtmlPad.tsx). Tokens only. */
+
+.preview {
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--bg-card);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 8px 8px 16px;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-section);
+}
+
+.barTitle {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.devices {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+.device {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.deviceOn {
+  background: var(--color-brand);
+  color: var(--text-on-blue);
+}
+
+.stage {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  /* The page is the learner's: a plain white sheet whatever the app theme. */
+  background: var(--bg-page);
+}
+
+.frame {
+  display: block;
+  border: 0;
+  flex-shrink: 0;
+  transform-origin: top center;
+  background: white;
+}
+
+/* Shown when the learner taps a link in the preview: where it would go. */
+.linkNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 16px;
+  border-top: 2px solid var(--border);
+  background: var(--bg-section);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.linkNote svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-brand);
+}
+
+.linkHref {
+  font-family: var(--font-mono, monospace);
+  color: var(--text-primary);
+  word-break: break-all;
+}

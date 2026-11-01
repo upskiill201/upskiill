@@ -37,7 +37,7 @@ const GROUPS: { title: string; lead: string; ids: string[] }[] = [
   {
     title: 'Course platforms',
     lead: 'Video courses and certificates.',
-    ids: ['udemy', 'coursera', 'linkedin-learning', 'datacamp', 'skillshare'],
+    ids: ['udemy', 'coursera', 'linkedin-learning', 'datacamp', 'skillshare', 'pluralsight'],
   },
 ];
 

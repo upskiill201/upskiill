@@ -1,0 +1,75 @@
+---
+title: "TypeScript Enums: How They Work and What to Use Instead"
+description: "Learn numeric and string enums in TypeScript, how they compile, their drawbacks and when to use union types or const objects instead."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [enums typescript, typescript enum, string enum, typescript enum vs union, const enum]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "TypeScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript for Beginners course"
+faq:
+  - question: "What is an enum in TypeScript?"
+    answer: "A named set of constants, such as directions or statuses."
+  - question: "Are enums recommended?"
+    answer: "They work, but many teams prefer string literal unions or const objects because they are simpler and add no runtime code."
+  - question: "What is the difference between numeric and string enums?"
+    answer: "Numeric enums map names to numbers and can be reversed. String enums map names to strings."
+---
+
+Enums give names to related values.
+
+## Direct answer
+
+An enum is a named group of constants. Numeric enums assign numbers starting at 0, and string enums assign text. Enums produce real JavaScript code. Many developers prefer union types of string literals for simplicity.
+
+## Examples
+
+```typescript
+enum Status {
+  Active = "ACTIVE",
+  Inactive = "INACTIVE",
+}
+
+function setStatus(s: Status) {}
+setStatus(Status.Active);
+```
+
+## The union alternative
+
+```typescript
+type Status = "active" | "inactive";
+function setStatus(s: Status) {}
+setStatus("active");
+```
+
+## Const object alternative
+
+```typescript
+const Status = { Active: "active", Inactive: "inactive" } as const;
+type StatusType = typeof Status[keyof typeof Status];
+```
+
+## Which to choose
+
+- Union types for most cases.
+- Enums when you want a named object with values at runtime and your team prefers them.
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 20 lessons, and you can start free.
+
+## The bottom line
+
+Both work. Follow your team's convention.
+
+## More guides
+
+- [TypeScript Strict Mode](/blog/typescript-strict-mode)
+- [any vs unknown in TypeScript](/blog/any-vs-unknown-typescript)
+- [TypeScript With React](/blog/typescript-with-react)
+- [Typescript union types](/blog/typescript-union-types)
+- [TypeScript for Beginners course](/courses/typescript-for-beginners)

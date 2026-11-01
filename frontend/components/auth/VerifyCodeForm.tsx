@@ -8,7 +8,8 @@
 
 import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { CheckCircle2, Mail } from 'lucide-react';
+import { Art } from '@/components/art/Art';
+import { Glyph } from '@/components/art/Glyph';
 import { extractErrorMessage } from '@/lib/apiError';
 import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -98,12 +99,11 @@ export default function VerifyCodeForm({
   return (
     <div className={`${styles.form} ${styles.center}`}>
       <motion.span
-        className={styles.sentBadge}
         initial={reduce ? false : { scale: 0.4, rotate: -12 }}
         animate={{ scale: 1, rotate: 0 }}
         transition={{ type: 'spring', stiffness: 380, damping: 14 }}
       >
-        <Mail size={40} strokeWidth={2.5} aria-hidden="true" />
+        <Art name="envelope" size={112} />
       </motion.span>
       <h1 className={styles.formTitle}>I sent you a code!</h1>
       <p className={styles.formSub}>
@@ -140,7 +140,7 @@ export default function VerifyCodeForm({
       <p className={styles.hint}>
         {resent && countdown > 0 && (
           <span className={styles.hintOk}>
-            <CheckCircle2 size={14} aria-hidden="true" /> Code resent.{' '}
+            <Glyph name="check" size={14} strokeWidth={3.6} /> Code resent.{' '}
           </span>
         )}
         {countdown > 0 ? (

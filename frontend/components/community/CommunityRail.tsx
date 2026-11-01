@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Users, GraduationCap, Crown, Trophy } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Avatar from '@/components/ui/Avatar';
 import ProfileLink from './ProfileLink';
 import RankMedal from '@/components/leaderboard/RankMedal';
@@ -50,17 +50,17 @@ export default function CommunityRail({
         )}
         {community.course && (
           <Link href={courseHomeHref(community.course.id)} className={styles.railLink}>
-            <GraduationCap size={16} strokeWidth={2.5} /> Go to the course
+            <Glyph name="cap" size={16} strokeWidth={2.5} /> Go to the course
           </Link>
         )}
         <div className={styles.rolePill}>
           {community.isModerator ? (
             <>
-              <Crown size={15} strokeWidth={2.5} /> You teach this course
+              <Glyph name="crown" size={15} strokeWidth={2.5} /> You teach this course
             </>
           ) : (
             <>
-              <Users size={15} strokeWidth={2.5} /> You&apos;re a member · {adminCount} admin{adminCount === 1 ? '' : 's'}
+              <Glyph name="users" size={15} strokeWidth={2.5} /> You&apos;re a member · {adminCount} admin{adminCount === 1 ? '' : 's'}
             </>
           )}
         </div>
@@ -117,7 +117,7 @@ export default function CommunityRail({
         ) : (
           <>
             <p className={styles.emptyRail}>
-              <Trophy size={15} style={{ verticalAlign: '-2px', marginRight: 6 }} />
+              <Glyph name="trophy" size={15} style={{ verticalAlign: '-2px', marginRight: 6 }} />
               No points scored yet. Post, answer a question, or get a like — the first board is
               yours to take.
             </p>

@@ -1,0 +1,73 @@
+---
+title: "HTML Attributes Explained: href, src, alt, class, id and More"
+description: "Learn the most useful HTML attributes: href, src, alt, class, id, type, placeholder and data attributes, with examples and best practices."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [html attributes, html attributes list, href src alt, html class and id, data attributes]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "HTML & CSS for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/html-and-css-for-beginners
+  label: "See the HTML & CSS for Beginners course"
+faq:
+  - question: "What is an HTML attribute?"
+    answer: "Extra information added to an HTML tag, written as name=\"value\"."
+  - question: "What is the alt attribute for?"
+    answer: "It provides text for images so screen readers and search engines understand them, and it appears if the image fails to load."
+  - question: "What is the difference between class and id?"
+    answer: "A class can be used on many elements. An id must be unique."
+---
+
+Attributes tell elements how to behave.
+
+## Direct answer
+
+HTML attributes add information to elements, such as where a link goes (`href`), which image to show (`src`), a description of an image (`alt`) and names for styling or scripting (`class` and `id`). Write them inside the opening tag as `name="value"`.
+
+## Common attributes
+
+| Attribute | Used on | Purpose |
+| :--- | :--- | :--- |
+| `href` | `a` | link destination |
+| `src` | `img`, `script` | file source |
+| `alt` | `img` | text alternative |
+| `class` | any | group for styling |
+| `id` | any | unique identifier |
+| `type` | `input`, `button` | kind of control |
+| `placeholder` | `input` | hint text |
+| `required` | `input` | must be filled |
+| `target` | `a` | where to open the link |
+| `data-*` | any | store custom data |
+
+## Examples
+
+```html
+<a href="/about" target="_blank" rel="noopener">About</a>
+<img src="team.jpg" alt="Our team at the launch event" width="600" height="400">
+<input type="email" placeholder="you@example.com" required>
+<button data-action="save">Save</button>
+```
+
+## Good habits
+
+- Always write meaningful `alt` text, or `alt=""` for decorative images.
+- Add `rel="noopener"` with `target="_blank"`.
+- Use lowercase and quote values.
+
+## Where Teyro fits
+
+Teyro's [HTML & CSS for Beginners](/courses/html-and-css-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Attributes are the settings of HTML. Learn the common ones and the rest is lookup.
+
+## More guides
+
+- [Semantic HTML Explained](/blog/semantic-html-explained)
+- [CSS Selectors Explained](/blog/css-selectors-guide)
+- [CSS Grid Explained](/blog/css-grid-explained)
+- [Html tutorial for beginners](/blog/html-tutorial-for-beginners)
+- [HTML & CSS for Beginners course](/courses/html-and-css-for-beginners)

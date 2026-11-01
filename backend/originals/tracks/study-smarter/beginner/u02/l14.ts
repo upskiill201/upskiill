@@ -116,11 +116,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is a disagreement "a gift"?',
         options: [
-          { text: 'Finding the cause teaches you something neither explanation did' },
           { text: 'It proves the AI is useless', why: 'The AI helped find the cause.' },
           { text: 'It means you can skip the question', why: 'It means you should dig into it.' },
+          { text: 'Finding the cause teaches you something neither explanation did' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'fillBlank',

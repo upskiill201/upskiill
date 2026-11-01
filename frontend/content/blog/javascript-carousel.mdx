@@ -1,0 +1,86 @@
+---
+title: "How to Build a Simple Image Carousel With JavaScript"
+description: "Build an image carousel with HTML, CSS and JavaScript: previous and next buttons, dots, keyboard support and accessibility tips."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [javascript carousel, image slider javascript, how to make a carousel, simple slider, javascript project]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Interactive Web Pages with JavaScript turns this into short, playable lessons. Free to start."
+  href: /courses/interactive-web-pages-with-javascript
+  label: "See the Interactive Web Pages with JavaScript course"
+faq:
+  - question: "How do I make an image slider in JavaScript?"
+    answer: "Keep an index of the current slide, show that slide and update the index when the buttons are clicked."
+  - question: "Should I use a library?"
+    answer: "A small custom carousel is a good learning project. For complex needs, a well-maintained library can save time."
+  - question: "How do I make a carousel accessible?"
+    answer: "Use buttons with labels, support keyboard navigation and avoid autoplay that cannot be paused."
+---
+
+A carousel is a good way to practise state and the DOM.
+
+## Direct answer
+
+Keep an array of slides and a current index. Show the active slide, hide the others and change the index with next and previous buttons. Wrap around at the ends and give controls clear labels.
+
+## HTML
+
+```html
+<div class="carousel">
+  <button id="prev" aria-label="Previous slide">Prev</button>
+  <img id="slide" src="img1.jpg" alt="Slide 1">
+  <button id="next" aria-label="Next slide">Next</button>
+</div>
+```
+
+## JavaScript
+
+```javascript
+const slides = [
+  { src: "img1.jpg", alt: "Slide 1" },
+  { src: "img2.jpg", alt: "Slide 2" },
+  { src: "img3.jpg", alt: "Slide 3" },
+];
+let index = 0;
+const img = document.querySelector("#slide");
+
+function show() {
+  img.src = slides[index].src;
+  img.alt = slides[index].alt;
+}
+
+document.querySelector("#next").addEventListener("click", () => {
+  index = (index + 1) % slides.length;
+  show();
+});
+document.querySelector("#prev").addEventListener("click", () => {
+  index = (index - 1 + slides.length) % slides.length;
+  show();
+});
+```
+
+## Improve it
+
+- Add dots to jump to a slide.
+- Support arrow keys.
+- Add swipe on touch devices.
+- Avoid autoplay, or let users pause it.
+
+## Where Teyro fits
+
+Teyro's [Interactive Web Pages with JavaScript](/courses/interactive-web-pages-with-javascript) course turns this into short lessons you can play in a few minutes a day. It has 37 lessons, and you can start free.
+
+## The bottom line
+
+State plus render is a pattern you will use everywhere.
+
+## More guides
+
+- [JavaScript Event Listeners](/blog/javascript-event-listeners)
+- [querySelector and querySelectorAll in JavaScript Explained](/blog/queryselector-explained)
+- [localStorage in JavaScript](/blog/javascript-localstorage)
+- [Javascript event listeners](/blog/javascript-event-listeners)
+- [Interactive Web Pages with JavaScript course](/courses/interactive-web-pages-with-javascript)

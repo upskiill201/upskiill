@@ -8,8 +8,10 @@ import {
   IsObject,
 } from 'class-validator';
 import { Role } from '@prisma/client';
+import { NormalizeEmail } from './normalize-email';
 
 export class SignupDto {
+  @NormalizeEmail()
   @IsEmail()
   @IsNotEmpty()
   email: string;

@@ -101,7 +101,7 @@ Phases are stored as independent JSON arrays (`learnBlocks`, `applyBlocks`, `ref
 - **Asset Paths:**
   - Logo: `frontend/public/Teyro Logo.png`
   - Streak Icon: `/Icons/burn.png` | XP: `/Icons/gem.png` | Hearts: `/Icons/heart.png`
-- **Icons:** Only `lucide-react` (UI) and `react-icons/fa` (brand/social). No other icon sets or raw emojis.
+- **Icons (founder protocol, 2026-10-23):** never stock icons. No `lucide-react` or any icon pack in new or touched UI: draw Teyro's own in `frontend/components/art` (`Art` for illustrations, `Glyph` for small UI glyphs). Only third-party brand logos may come from `react-icons/fa`. No raw emojis.
 - **Component States:** Every data component must implement Loading (skeletons), Error, Empty, and Success states.
 - **Phase One Guard:** AI generation/assist features are Phase Two. Render UI placeholders only.
 
@@ -115,5 +115,5 @@ Phases are stored as independent JSON arrays (`learnBlocks`, `applyBlocks`, `ref
 | **API / Networking** | Hardcoding API URLs; unversioned routes; unvalidated DTOs; unverified webhook signatures. |
 | **Uploads** | Streaming file bytes through NestJS backend; unchunked large video uploads. |
 | **Auth** | Storing JWTs in `localStorage`; exposing password hashes / credentials; skipping controller guards. |
-| **UI / Design** | Hardcoding hex colors; unauthorized icon libraries; calling currency "gems"; shipping AI features in Phase 1. |
+| **UI / Design** | Hardcoding hex colors; stock icons (lucide or any icon pack) instead of Teyro's own art; calling currency "gems"; shipping AI features in Phase 1. |
 | **Git** | Direct pushes to `main` branch. All work goes through feature branches and PRs. |

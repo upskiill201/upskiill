@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import useSWR from 'swr';
-import { AlertCircle, Lock } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { motion, useReducedMotion } from 'framer-motion';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
@@ -63,7 +63,7 @@ export default function LeaderboardPanel({
   if (error && !bundle) {
     return (
       <div className={shared.errorBanner}>
-        <AlertCircle size={26} />
+        <Glyph name="alert" size={26} />
         <span>{error instanceof Error ? error.message : 'Could not load the leaderboards.'}</span>
         <Button variant="outline" onClick={() => void mutate()}>
           Try again
@@ -161,7 +161,7 @@ export default function LeaderboardPanel({
                 <span
                   className={`${styles.rungIcon} ${current ? styles.rungIconCurrent : reached ? styles.rungIconReached : ''}`}
                 >
-                  {reached ? rung.level : <Lock size={14} strokeWidth={2.75} />}
+                  {reached ? rung.level : <Glyph name="lock" size={14} strokeWidth={2.75} />}
                 </span>
                 <div className={styles.rungBody}>
                   <div className={`${styles.rungName} ${reached ? '' : styles.rungNameLocked}`}>{rung.name}</div>

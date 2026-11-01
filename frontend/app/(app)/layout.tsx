@@ -8,6 +8,7 @@ import { RewardAnimationProvider } from "../../context/RewardAnimationContext";
 import { HeraldProvider } from "../../context/HeraldContext";
 import NoticeHost from "../../components/awareness/NoticeHost";
 import AppTour from "../../components/tour/AppTour";
+import PushSoundListener from "../../components/push/PushSoundListener";
 import ThemeSync from "../../components/theme/ThemeSync";
 import { StreakProvider } from "../../context/StreakContext";
 import {
@@ -31,6 +32,8 @@ import StreakNewsWatcher from "../../components/streak/StreakNewsWatcher";
 import { ShopEngineProvider } from "../../context/ShopEngineContext";
 import ShopEngine from "../../components/shop-engine/ShopEngine";
 import ReferralClaimer from "../../components/referral/ReferralClaimer";
+// "Add a photo first?" before buddy requests, squads, duels and posts
+import PhotoAskHost from "../../components/avatar/PhotoAskHost";
 
 /**
  * Rounded display font for the Celebration Engine scenes (Duolingo-style bubbly
@@ -70,10 +73,9 @@ const baloo2 = Baloo_2({
  * celebration rather than stacking a second full-page takeover, and
  * RewardAnimation/Herald/Streak sit inside Gamification because they read it.
  *
- * CartProvider, SWRProvider, PostHog, the service worker registrar and the
+ * SWRProvider, PostHog, the service worker registrar and the
  * push *navigation* listener stay in the root layout: they are needed on public
- * routes too (Header and CourseCard call useCart, which throws without its
- * provider, and a notification tap must route from whatever page is open).
+ * routes too (a notification tap must route from whatever page is open).
  */
 export default function AppGroupLayout({
   children,
@@ -104,12 +106,14 @@ export default function AppGroupLayout({
                     <ShopEngine />
                     <DailyRewardWatcher />
                     <ReferralClaimer />
+                    <PhotoAskHost />
                     <LeagueResultWatcher />
                     <LeaderboardRankWatcher />
                     <ReminderAskWatcher />
                     <StreakNewsWatcher />
                     {/* Notices (lib/awareness) and the streak/spin reveal portals */}
                     <NoticeHost />
+                    <PushSoundListener />
                     <AppTour />
                     <TeyroLoaderProvider>{children}</TeyroLoaderProvider>
                   </ShopEngineProvider>

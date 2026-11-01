@@ -1,4 +1,4 @@
-import { TrendingUp } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { pickImprovementInsufficientLine } from '@/lib/tey/analyticsVoice';
 import type { DashboardResponse } from '../types';
 
@@ -6,7 +6,7 @@ export function ImprovementTrend({ improvement }: { improvement: DashboardRespon
   return (
     <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
       <div className="flex items-center gap-2 mb-3">
-        <TrendingUp size={18} color="#22C55E" />
+        <Glyph name="trendUp" size={18} color="var(--success-green)" />
         <h2 className="text-sm font-extrabold text-[#1F2A44]">Am I Improving?</h2>
       </div>
 
@@ -18,7 +18,7 @@ export function ImprovementTrend({ improvement }: { improvement: DashboardRespon
             <p className="text-2xl font-extrabold text-[#94A3B8]">{improvement.fromPct}%</p>
             <p className="text-[11px] font-semibold text-[#94A3B8]">Earlier lessons</p>
           </div>
-          <TrendingUp size={20} color="#22C55E" />
+          <Glyph name="trendUp" size={20} color="var(--success-green)" />
           <div className="text-center">
             <p className="text-2xl font-extrabold text-[#22C55E]">{improvement.toPct}%</p>
             <p className="text-[11px] font-semibold text-[#94A3B8]">Recent lessons</p>

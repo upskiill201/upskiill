@@ -1,0 +1,81 @@
+---
+title: "Arrays in C: Declare, Initialize and Loop Through Them"
+description: "Learn arrays in C: declaring, initializing, indexing, looping, passing to functions and the dangers of going out of bounds."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [c arrays, arrays in c, c array example, array in c programming, c array length]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "C for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/c-for-beginners
+  label: "See the C for Beginners course"
+faq:
+  - question: "How do I declare an array in C?"
+    answer: "Write the type, name and size, such as int numbers[5]."
+  - question: "How do I get the length of an array?"
+    answer: "Use sizeof(array) divided by sizeof(array[0]), but only where the array has not decayed to a pointer."
+  - question: "What happens if I go out of bounds?"
+    answer: "The behaviour is undefined. It might crash or silently corrupt data."
+---
+
+Arrays are a block of items of the same type, stored side by side.
+
+## Direct answer
+
+A C array is a fixed-size list of items of the same type, indexed from 0. Declare it with `type name[size]`, access items with `name[index]` and loop with a `for` loop. C does not check bounds, so you must keep indexes within range.
+
+## Example
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    int scores[5] = {90, 85, 70, 60, 100};
+    int total = 0;
+
+    for (int i = 0; i < 5; i++) {
+        total += scores[i];
+    }
+    printf("Average: %d\n", total / 5);
+    return 0;
+}
+```
+
+## Length of an array
+
+```c
+int n = sizeof(scores) / sizeof(scores[0]);
+```
+
+This works in the function where the array was declared. When you pass an array to a function, it becomes a pointer, so pass the length too.
+
+## Passing to functions
+
+```c
+void print_all(int arr[], int n) {
+    for (int i = 0; i < n; i++) printf("%d ", arr[i]);
+}
+```
+
+## Pitfalls
+
+- Reading or writing past the end causes undefined behaviour.
+- Arrays do not know their own length.
+
+## Where Teyro fits
+
+Teyro's [C for Beginners](/courses/c-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 78 lessons, and you can start free.
+
+## The bottom line
+
+Keep track of size and stay in bounds.
+
+## More guides
+
+- [Strings in C](/blog/c-strings-guide)
+- [malloc and free in C](/blog/malloc-and-free)
+- [Memory Management in C](/blog/c-memory-management)
+- [Pointers in c](/blog/pointers-in-c)
+- [C for Beginners course](/courses/c-for-beginners)

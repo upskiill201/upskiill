@@ -14,23 +14,30 @@
  *    pays +15 Coins (the server's rule), instead of a chest that didn't exist.
  */
 
-import { Check, Clock, RefreshCw } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/swr';
+import { useHydrated } from '@/components/studio/useHydrated';
 import { dailyQuestsKey, isClaimed, isDone, timeLeftToday, type DailyQuestsPayload } from '@/lib/quests/dailyQuests';
 import { DailyQuestList } from './DailyQuestList';
 
 export function DailyQuestsCard({ variant = 'rail' }: { variant?: 'rail' | 'page' }) {
-  const { data, error, isLoading, mutate } = useSWR<DailyQuestsPayload>(dailyQuestsKey(), fetcher, {
+  const { data: cached, error, isLoading: fetching, mutate } = useSWR<DailyQuestsPayload>(dailyQuestsKey(), fetcher, {
     revalidateOnFocus: true,
   });
+  // The persisted SWR cache (and the browser's clock and time zone) exist
+  // only on the client: read them after hydration, so the server's render
+  // and the first client render agree.
+  const hydrated = useHydrated();
+  const data = hydrated ? cached : undefined;
+  const isLoading = !hydrated || fetching;
   const quests = Array.isArray(data?.missions) ? data!.missions : [];
 
-  // "7 hours" left today — refreshed each minute.
-  const [left, setLeft] = useState(() => timeLeftToday(new Date(), data?.resetAt));
+  // "7 hours" left today — refreshed each minute (blank until hydrated).
+  const [left, setLeft] = useState('');
   useEffect(() => {
     const tick = () => setLeft(timeLeftToday(new Date(), data?.resetAt));
     tick();
@@ -55,7 +62,7 @@ export function DailyQuestsCard({ variant = 'rail' }: { variant?: 'rail' | 'page
           Daily Quests
         </h2>
         <span className="inline-flex items-center gap-1 text-[13px] font-extrabold" style={{ color: 'var(--warning)' }}>
-          <Clock className="w-4 h-4 stroke-[2.6]" aria-hidden="true" />
+          <Glyph name="clock" size={16} strokeWidth={2.6} />
           {left}
         </span>
       </header>
@@ -81,7 +88,7 @@ export function DailyQuestsCard({ variant = 'rail' }: { variant?: 'rail' | 'page
             onClick={() => void mutate()}
             className="mt-3 inline-flex items-center gap-1.5 rounded-[12px] px-4 py-2 text-[13.5px] font-extrabold text-[var(--color-brand)] hover:bg-[var(--light-blue-bg)] cursor-pointer"
           >
-            <RefreshCw className="w-4 h-4" aria-hidden="true" />
+            <Glyph name="refresh" size={16} strokeWidth={2.6} />
             Try again
           </button>
         </div>
@@ -105,7 +112,7 @@ export function DailyQuestsCard({ variant = 'rail' }: { variant?: 'rail' | 'page
         >
           {allClaimed ? (
             <>
-              <Check className="w-4 h-4 stroke-[3]" aria-hidden="true" />
+              <Glyph name="check" size={16} />
               All done for today — new quests in {left}.
             </>
           ) : (

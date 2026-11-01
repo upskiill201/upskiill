@@ -193,6 +193,8 @@ export interface LearningPath {
   sections: PathSection[];
   enrolled: boolean;
   completedLessons: string[];
+  /** Originals: skipped by passing Jump ahead or placement. Open, but never counted as done. */
+  testedOutLessons?: string[];
   access: { hasAccess: boolean; freePreviewLessonIds: string[] };
   /** Teyro Originals only (track, level, next level, hearts rule); null for creator courses. */
   original?: OriginalInfo | null;

@@ -1,0 +1,84 @@
+---
+title: "Pointers in C Explained for Beginners With Simple Examples"
+description: "Pointers store memory addresses. Learn what they are, the & and * operators, pointers and arrays, passing by pointer and common beginner mistakes."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [pointers in c, c pointers, what is a pointer in c, pointer examples, c programming pointers]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "C for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/c-for-beginners
+  label: "See the C for Beginners course"
+faq:
+  - question: "What is a pointer in C?"
+    answer: "A variable that stores the memory address of another variable."
+  - question: "What do the & and * operators do?"
+    answer: "& gets the address of a variable. * dereferences a pointer, meaning it accesses the value at that address."
+  - question: "Why are pointers useful?"
+    answer: "They allow functions to change variables, work with arrays and strings efficiently and manage dynamic memory."
+---
+
+Pointers are the idea that makes C feel different, and once you see it, it is simpler than it looks.
+
+## Direct answer
+
+A pointer is a variable that holds a memory address. Use `&` to get an address and `*` to follow a pointer to the value it points to. Pointers let functions modify variables, work with arrays and strings and manage memory manually.
+
+## The basics
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    int x = 10;
+    int *p = &x;      // p holds the address of x
+
+    printf("%d\n", x);   // 10
+    printf("%p\n", (void *)p); // an address
+    printf("%d\n", *p);  // 10, the value at that address
+
+    *p = 20;             // changes x
+    printf("%d\n", x);   // 20
+    return 0;
+}
+```
+
+## Passing by pointer
+
+```c
+void increment(int *n) {
+    *n = *n + 1;
+}
+
+int main(void) {
+    int a = 5;
+    increment(&a);
+    printf("%d\n", a); // 6
+    return 0;
+}
+```
+
+## Common mistakes
+
+- Using a pointer before it points to anything.
+- Dereferencing `NULL`.
+- Forgetting that `*` in a declaration means "pointer to".
+
+## Where Teyro fits
+
+Teyro's [C for Beginners](/courses/c-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 78 lessons, and you can start free.
+
+## The bottom line
+
+Think of a pointer as a house address. The address is not the house, but it tells you where to go.
+
+## More guides
+
+- [Arrays in C](/blog/c-arrays-guide)
+- [Strings in C](/blog/c-strings-guide)
+- [malloc and free in C](/blog/malloc-and-free)
+- [C programming course free online](/blog/c-programming-course-free-online)
+- [Learn c programming for beginners](/blog/learn-c-programming-for-beginners)
+- [C for Beginners course](/courses/c-for-beginners)

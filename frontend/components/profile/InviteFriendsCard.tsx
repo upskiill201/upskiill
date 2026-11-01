@@ -9,8 +9,9 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import useSWR from 'swr';
-import { Check, Copy, Share2 } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import { FaWhatsapp } from 'react-icons/fa';
 import { fetcher } from '@/lib/swr';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -18,11 +19,12 @@ import { playHaptic } from '@/lib/haptics';
 import type { ReferralSummary } from './types';
 import styles from './Profile.module.css';
 
+import { AvatarFill } from '@/components/ui/Avatar';
 export default function InviteFriendsCard() {
   const { data, error, isLoading, mutate } = useSWR<ReferralSummary>('/api/referrals/me', fetcher);
   const [copied, setCopied] = useState(false);
 
-  const link = data && typeof window !== 'undefined' ? `${window.location.origin}/signup?ref=${data.code}` : '';
+  const link = data && typeof window !== 'undefined' ? `${window.location.origin}/i/${data.code}` : '';
   const message = data
     ? `I'm learning on Teyro and it's actually fun. Join with my link and we'll both get ${data.reward.coins} coins when you finish your first lesson: ${link}`
     : '';
@@ -80,7 +82,7 @@ export default function InviteFriendsCard() {
           <div className={styles.linkBox}>
             <span className={styles.linkText}>{link.replace(/^https?:\/\//, '')}</span>
             <button type="button" className={styles.copyBtn} onClick={() => void copy()}>
-              {copied ? <Check size={14} strokeWidth={3} /> : <Copy size={14} strokeWidth={2.75} />}
+              {copied ? <Glyph name="check" size={14} strokeWidth={3} /> : <Glyph name="copy" size={14} strokeWidth={2.75} />}
               {copied ? 'Copied' : 'Copy'}
             </button>
           </div>
@@ -95,9 +97,17 @@ export default function InviteFriendsCard() {
               <FaWhatsapp size={18} aria-hidden="true" /> WhatsApp
             </a>
             <button type="button" className={styles.shareBtn} onClick={() => void share()}>
-              <Share2 size={16} strokeWidth={2.75} aria-hidden="true" /> Share
+              <Glyph name="share" size={16} strokeWidth={2.75} /> Share
             </button>
           </div>
+
+          <Link
+            href="/dashboard/ambassador"
+            className="mt-3 inline-flex items-center gap-2 text-[14px] font-extrabold text-[var(--color-brand)]"
+            onClick={() => playSound('navTap', 2)}
+          >
+            Get Teyro Pro free with friends <Glyph name="chevron" size={14} strokeWidth={2.8} />
+          </Link>
 
           <div className={styles.inviteStats}>
             <div className={styles.inviteStat}>
@@ -118,12 +128,9 @@ export default function InviteFriendsCard() {
             <ul className={styles.friendList}>
               {data.friends.slice(0, 5).map((f) => (
                 <li key={f.id} className={styles.personRow}>
-                  {f.avatarUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- user avatar, any host
-                    <img src={f.avatarUrl} alt="" className={styles.personAvatar} />
-                  ) : (
-                    <span className={styles.personAvatar}>{f.name.charAt(0).toUpperCase()}</span>
-                  )}
+                  <span className={styles.personAvatar}>
+                    <AvatarFill src={f.avatarUrl} seed={f.id} name={f.name} />
+                  </span>
                   <span className={styles.personText}>
                     <span className={styles.personName}>{f.name}</span>
                     <span className={styles.personSub}>

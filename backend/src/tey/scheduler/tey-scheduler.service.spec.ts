@@ -8,6 +8,7 @@ import { TeySchedulerService } from './tey-scheduler.service';
 import { TeyDeliveryService } from '../delivery/tey-delivery.service';
 import { CourseUnlockJourney } from '../notify/course-unlock.journey';
 import { FirstLessonJourney } from '../notify/first-lesson.journey';
+import { ProBillingJourney } from '../notify/pro-billing.journey';
 
 const learner = (
   over: Partial<LearnerStateSnapshot> = {},
@@ -113,6 +114,7 @@ describe('TeySchedulerService', () => {
         { provide: TeyDeliveryService, useValue: delivery },
         { provide: CourseUnlockJourney, useValue: unlockJourney },
         { provide: FirstLessonJourney, useValue: { process: jest.fn().mockResolvedValue({ sent: true }) } },
+        { provide: ProBillingJourney, useValue: { process: jest.fn().mockResolvedValue({ sent: true }) } },
       ],
     }).compile();
 

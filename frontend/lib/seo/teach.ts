@@ -1,6 +1,5 @@
 import data from '@/content/seo/teach-data.json';
-import { calculateCoursePricingLadder } from '@/lib/pricing-engine';
-import { FOUNDING_OPEN, STUDIO_ENTRY } from '@/lib/launch';
+import { FOUNDING_OPEN, POOL_PER_YEARLY_LEARNER_USD, PRO_YEARLY_PER_MONTH_USD, STUDIO_ENTRY } from '@/lib/launch';
 
 /**
  * Creator-recruitment location pages: /teach/<skill>/<place>.
@@ -14,7 +13,8 @@ import { FOUNDING_OPEN, STUDIO_ENTRY } from '@/lib/launch';
 
 export type TeachSkill = 'coding' | 'ai';
 export const TEACH_SKILLS: TeachSkill[] = ['coding', 'ai'];
-export const CREATOR_SHARE_PCT = 70; // backend EarningsService default agreement
+// Creators are paid from the Teyro Pro pool (lib/launch.ts).
+export { CREATOR_POOL_PCT, PRO_MONTHLY_USD, PRO_YEARLY_USD } from '@/lib/launch';
 export const MIN_PAYOUT_USD = 50;
 export const CLEARING_DAYS = 14;
 // While Teyro Studio is closed (lib/launch.ts) applying goes to the /teach apply form.
@@ -22,13 +22,14 @@ export const APPLY_HREF = STUDIO_ENTRY.href;
 export const APPLY_LABEL = STUDIO_ENTRY.gated ? 'Apply as a Founding Creator' : FOUNDING_OPEN ? 'Join as a Founding Creator' : 'Apply to teach';
 
 /**
- * A worked example, always labelled as one — never a promise. Paid courses are
- * subscriptions: one price becomes a monthly plan (lib/pricing-engine), and the
- * creator keeps their share of every monthly payment.
+ * A worked example, always labelled as one — never a promise. A Pro learner
+ * on the yearly plan pays $5.00 a month; half of it is the creators' pool,
+ * shared by minutes. One who spends all their learning time in your course
+ * that month sends you about $2.50 (before card fees and tax).
  */
-export const EXAMPLE_PRICE_USD = 60; // the creator's price = the yearly plan
-export const EXAMPLE_MONTHLY_USD = calculateCoursePricingLadder(EXAMPLE_PRICE_USD).monthly.price;
-export const EXAMPLE_KEEP_USD = Math.round(EXAMPLE_MONTHLY_USD * CREATOR_SHARE_PCT) / 100;
+export const EXAMPLE_PRO_MONTH_USD = PRO_YEARLY_PER_MONTH_USD;
+export const EXAMPLE_KEEP_USD = POOL_PER_YEARLY_LEARNER_USD;
+
 
 export const SKILL_COPY: Record<
   TeachSkill,

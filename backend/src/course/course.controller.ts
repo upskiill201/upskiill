@@ -81,6 +81,31 @@ export class CourseController {
       req.user.id as string,
       id,
       lessonId,
+      req.user.role === 'ADMIN',
+    );
+  }
+
+  /**
+   * The learner pressed Start on a lesson. Free learners spend one of
+   * today's free lessons here (and need a heart); everyone else passes.
+   * 403 { requiresPro, reason } opens the matching paywall.
+   */
+  @UseGuards(AuthGuard('jwt'))
+  @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @HttpCode(200)
+  @Post(':id/lessons/:lessonId/start')
+  async startLesson(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Param('lessonId') lessonId: string,
+    @Body('timezoneOffset') timezoneOffset?: number,
+  ) {
+    return this.courseService.startLesson(
+      req.user.id as string,
+      id,
+      lessonId,
+      Number(timezoneOffset) || 0,
+      req.user.role === 'ADMIN',
     );
   }
 
@@ -123,6 +148,9 @@ export class CourseController {
     @Body('quizScorePct') quizScorePct?: number,
     @Body('correctAnswers') correctAnswers?: number,
     @Body('missedBlockIds') missedBlockIds?: unknown,
+    @Body('bestCombo') bestCombo?: number,
+    @Body('hintsUsed') hintsUsed?: number,
+    @Body('skipped') skipped?: number,
   ) {
     return await this.courseService.markLessonComplete(
       req.user.id as string,
@@ -135,6 +163,11 @@ export class CourseController {
       typeof quizScorePct === 'number' ? quizScorePct : undefined,
       typeof correctAnswers === 'number' ? correctAnswers : undefined,
       Array.isArray(missedBlockIds) ? (missedBlockIds as string[]) : undefined,
+      {
+        bestCombo: typeof bestCombo === 'number' ? bestCombo : undefined,
+        hintsUsed: typeof hintsUsed === 'number' ? hintsUsed : undefined,
+        skipped: typeof skipped === 'number' ? skipped : undefined,
+      },
     );
   }
 

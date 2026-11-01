@@ -1,0 +1,449 @@
+=== active-vs-passive-voice
+title: Active vs Passive Voice: How to Choose for Clear Writing
+desc: Active voice names who does the action, passive voice hides or delays it. Learn the difference, examples, when passive is fine and how to fix it.
+tags: active vs passive voice, active voice, passive voice, passive voice examples, clear writing at work
+rel: plain-language-writing-guide
+q: What is the difference between active and passive voice? | In active voice the subject does the action. In passive voice the subject receives it.
+q: Is passive voice wrong? | No. It is useful when the doer is unknown or unimportant, but overuse can make writing vague.
+q: How do I spot passive voice? | Look for a form of "to be" plus a past participle, as in "was approved".
+---
+Who did what? Active voice answers it.
+
+## Direct answer
+
+In active voice, the subject performs the action: "The team approved the plan." In passive voice, the subject receives it: "The plan was approved by the team." Prefer active voice for clear, direct writing, and use passive when the actor is unknown or unimportant.
+
+## Examples
+
+| Passive | Active |
+| :--- | :--- |
+| The report was written by Sam. | Sam wrote the report. |
+| Mistakes were made. | We made mistakes. |
+| The server was restarted. | Ops restarted the server. |
+
+## When passive is fine
+
+- The doer is unknown: "The window was broken."
+- The action matters more: "Your order has been shipped."
+- Diplomacy: "The deadline was missed" (use sparingly and honestly).
+
+## How to fix it
+
+1. Find "was", "were", "been" plus a verb.
+2. Ask who did it.
+3. Move that person to the front.
+
+## The bottom line
+
+Active voice is usually shorter, clearer and more accountable.
+
+=== email-etiquette-at-work
+title: Email Etiquette at Work: 12 Rules for Clear, Professional Emails
+desc: Twelve email etiquette rules: subject lines, greetings, brevity, reply-all, tone, attachments and follow-ups, with before and after examples.
+tags: email etiquette, professional email etiquette, work email tips, how to write professional emails, email manners
+rel: email-subject-lines, bluf-bottom-line-up-front
+q: What makes a professional email? | A clear subject, a short message with the main point first, a polite tone and a clear next step.
+q: When should I use reply all? | Only when everyone needs the information.
+q: How soon should I reply? | Many workplaces expect a reply within a working day. Acknowledge quickly if you need more time.
+---
+Email is where most workplace reputations are made quietly.
+
+## Direct answer
+
+Write a clear subject line, lead with your main point, keep it short, be polite, check names and attachments, avoid unnecessary reply-all and end with a clear next step. Re-read before sending.
+
+## 12 rules
+
+1. Write a specific subject line.
+2. Greet the person by name.
+3. Put the point in the first line.
+4. Keep paragraphs short.
+5. Use bullets for lists.
+6. Be polite, not wordy.
+7. Check tone, since writing can sound colder than intended.
+8. Attach files you mention.
+9. Use reply-all sparingly.
+10. Do not write angry emails. Wait.
+11. End with a clear ask and date.
+12. Proofread.
+
+## Before and after
+
+**Before:** "Hi, any update?"
+**After:** "Hi Sam, could you share the draft by Thursday 3pm so I can review it before Friday's meeting?"
+
+## The bottom line
+
+Clear, kind, short.
+
+=== bottom-line-up-front-writing
+title: Writing Summaries at Work: Put the Main Point First
+desc: Open every report, update and email with the conclusion. Learn a three-line summary format, examples and how to tighten rambling drafts.
+tags: writing summaries, executive summary, how to write a summary at work, summary template, concise reports
+rel: bluf-bottom-line-up-front
+q: What is an executive summary? | A short overview at the start of a document that gives the main points, findings and recommendations.
+q: How long should it be? | Usually a paragraph or a few bullets.
+q: What should it include? | The purpose, key findings, recommendation and next step.
+---
+Busy readers read the top. Make it count.
+
+## Direct answer
+
+A work summary should give the conclusion, the key reasons and the next step in a few lines at the top. Write it last, then check that someone who reads only the summary could act.
+
+## A three-line format
+
+1. **What:** the conclusion or recommendation.
+2. **Why:** two or three key reasons.
+3. **Next:** what you need and by when.
+
+## Example
+
+"We should switch to the new supplier. It is 12 percent cheaper and delivers two days faster. Approval is needed by 30 June to avoid renewal fees."
+
+## Tighten a draft
+
+- Cut introductions.
+- Delete repeated points.
+- Replace long phrases with short ones.
+
+## The bottom line
+
+If the reader stops after three lines, they should still know what to do.
+
+=== editing-tips-for-writers
+title: 12 Editing Tips to Make Your Writing Shorter and Clearer
+desc: Edit your own work: cut filler, use shorter words, vary sentence length, read aloud, check one idea per paragraph and delete the first paragraph.
+tags: editing tips, how to edit your own writing, self editing, tighten writing, writing improvement
+rel: concise-writing-tips, proofreading-checklist
+q: How do I edit my own writing? | Leave it for a while, read it aloud, cut unnecessary words and check structure before polishing details.
+q: What should I cut first? | Introductions, repeated points and empty phrases.
+q: Should I edit and write at the same time? | Better to draft first, then edit.
+---
+First drafts are for ideas. Edits are for readers.
+
+## Direct answer
+
+To edit well, draft first, leave it, then edit in passes: structure, clarity, brevity and finally typos. Read aloud, cut filler, replace long words with short ones and make sure each paragraph has one idea.
+
+## 12 tips
+
+1. Write first, edit later.
+2. Let it rest.
+3. Read aloud.
+4. Cut the first paragraph if it only warms up.
+5. Delete "very", "really", "just".
+6. Prefer short words.
+7. Use active voice.
+8. One idea per paragraph.
+9. Split long sentences.
+10. Replace jargon with plain words.
+11. Check facts and numbers.
+12. Proofread last.
+
+## A pass system
+
+| Pass | Focus |
+| :--- | :--- |
+| 1 | structure and order |
+| 2 | clarity |
+| 3 | brevity |
+| 4 | typos |
+
+## The bottom line
+
+Writing is rewriting.
+
+=== hemingway-editor-guide
+title: Hemingway Editor: How to Use It and Its Limits
+desc: Hemingway Editor highlights long sentences, adverbs and passive voice. Learn how to use readability tools well, what to ignore and better habits.
+tags: hemingway editor, readability tools, hemingway app, writing tools, grade level writing
+rel: editing-tips-for-writers, plain-language-writing-guide
+q: What does Hemingway Editor do? | It highlights hard-to-read sentences, adverbs, passive voice and gives a readability grade.
+q: Should I follow every suggestion? | No. Treat them as prompts. Your judgement decides.
+q: What reading level should I aim for? | For general audiences, plain language that is easy to read is a good aim.
+---
+A readability tool is a mirror, not a boss.
+
+## Direct answer
+
+Readability tools such as Hemingway Editor flag long sentences, complex words, adverbs and passive voice, and estimate a reading grade. Use them to spot problems, then decide for yourself. Aim for clear sentences, not a perfect score.
+
+## How to use it
+
+1. Paste your draft.
+2. Fix very hard sentences first.
+3. Replace complex words where simpler ones work.
+4. Review passive voice.
+5. Keep technical terms if your reader needs them.
+
+## What to ignore
+
+- Suggestions that remove needed nuance.
+- Adverbs that add meaning.
+
+## The bottom line
+
+Use tools to see your writing more clearly. Keep your voice.
+
+=== grammarly-and-writing-assistants
+title: Grammarly and AI Writing Assistants: Helpful Tools or Crutches?
+desc: Writing assistants check grammar and suggest rewrites. Learn what they do well, where they mislead, privacy points and how to keep your own voice.
+tags: grammarly, ai writing assistant, grammar checker, writing tools at work, grammar tools privacy
+rel: editing-tips-for-writers, proofreading-checklist
+q: Do grammar checkers make you a better writer? | They help catch errors. You improve most when you understand why a suggestion is made.
+q: Are writing assistants safe for work documents? | Check your organisation's policy and the tool's data handling before using it with confidential text.
+q: Can they change my meaning? | Yes. Review each suggestion, especially rewrites.
+---
+Good tools, with a human check.
+
+## Direct answer
+
+Grammar checkers and AI writing assistants catch spelling, grammar and clarity problems and suggest rewrites. Use them as a second pair of eyes, review every suggestion and keep confidential text out of unapproved tools. Learn from the corrections to improve your own writing.
+
+## What they do well
+
+- Typos and basic grammar.
+- Consistency of tone.
+- Shortening wordy sentences.
+
+## Cautions
+
+- Suggestions can change your meaning.
+- Tone suggestions can flatten your voice.
+- Privacy: check policies.
+
+## Best practice
+
+1. Write first.
+2. Run the tool.
+3. Accept only what you agree with.
+4. Re-read the final version.
+
+## The bottom line
+
+Let tools catch the small errors. You own the message.
+
+=== concise-writing-tips
+title: Concise Writing: 15 Ways to Cut Words Without Losing Meaning
+desc: Fifteen practical ways to write concisely at work: replace phrases, cut filler, merge sentences and use lists, with before and after examples.
+tags: concise writing, how to write concisely, cut words, brevity in writing, wordy phrases
+rel: editing-tips-for-writers, active-vs-passive-voice
+q: What is concise writing? | Writing that uses only the words needed to deliver a clear message.
+q: Does shorter always mean better? | No. Keep what the reader needs. Cut what they do not.
+q: What are common wordy phrases? | "In order to", "due to the fact that" and "at this point in time".
+---
+Every extra word is a small tax on the reader.
+
+## Direct answer
+
+Write concisely by cutting filler words and phrases, replacing long phrases with short ones, using active voice, removing repetition and using lists for steps. Check that each sentence earns its place.
+
+## Replacements
+
+| Wordy | Concise |
+| :--- | :--- |
+| in order to | to |
+| due to the fact that | because |
+| at this point in time | now |
+| a large number of | many |
+| has the ability to | can |
+| in the event that | if |
+
+## 15 tips (short list)
+
+1. Cut introductions.
+2. Delete "very" and "really".
+3. Prefer verbs to noun phrases.
+4. Use active voice.
+5. Merge repeated sentences.
+6. Use bullets for lists.
+7. Limit sentences to one idea.
+8. Remove "I think" where you are sure.
+9. Replace jargon.
+10. Use numbers.
+11. Cut qualifiers.
+12. Remove redundant pairs ("each and every").
+13. Start with the point.
+14. Delete the last sentence if it repeats.
+15. Read aloud.
+
+## The bottom line
+
+Write the thought, then trim the extras.
+
+=== slack-message-etiquette
+title: Slack and Chat Message Etiquette: How to Write Clear Work Messages
+desc: Write better chat messages at work: lead with the ask, avoid single-word pings, use threads, respect time zones and keep tone friendly.
+tags: slack messages, workplace chat etiquette, slack etiquette, how to write a slack message, team chat tips
+rel: email-etiquette-at-work, concise-writing-tips
+q: How should I write a work chat message? | State the context, the question or ask and any deadline in one message.
+q: Should I just say hi first? | Better to include your question in the first message so the person can answer when free.
+q: When should I use threads? | For replies to specific messages so channels stay readable.
+---
+Chat is fast, which makes it easy to be unclear.
+
+## Direct answer
+
+Write chat messages that can be answered without a back-and-forth: include context, your question or request and any deadline. Use threads, mention people only when needed and respect working hours and time zones.
+
+## Do this
+
+- "Hi Sam, could you review the draft in the shared folder by 3pm? I need to send it to the client at 4."
+
+## Not this
+
+- "Hi" and then waiting.
+- "Quick question?" with no question.
+
+## Good habits
+
+1. Use threads.
+2. Use channels, not DMs, for shared information.
+3. Mention only the people who need to act.
+4. Avoid long messages. Move complex topics to a call or document.
+5. Be kind in tone, since text lacks voice.
+
+## The bottom line
+
+One message, one clear ask.
+
+=== email-subject-lines
+title: Email Subject Lines That Get Opened: Formulas and Examples
+desc: Write email subject lines that are clear and get opened: be specific, put key words first, state any action or deadline and avoid spammy phrases.
+tags: email subject lines, subject line examples, good email subject lines, professional email subject, subject line tips
+rel: email-etiquette-at-work
+q: What makes a good subject line? | It is specific, short and tells the reader what the email is about and whether action is needed.
+q: How long should it be? | Keep it short enough to read on a phone, often under about 50 characters.
+q: Should I use "urgent"? | Only when it is. Overuse reduces trust.
+---
+The subject is the first, and sometimes only, thing read.
+
+## Direct answer
+
+A good subject line is specific, short and action-oriented. Put key information first and say if action is needed and by when. Avoid vague words like "Hi" or "Question" and avoid spammy phrases.
+
+## Formulas
+
+- **Action + deadline:** "Approve budget by Friday"
+- **Topic + detail:** "Project Atlas: launch date moved to 14 May"
+- **Question:** "Can you attend the 3pm review?"
+- **FYI:** "FYI: new expense policy"
+
+## Before and after
+
+| Before | After |
+| :--- | :--- |
+| Update | Sales update: Q2 results attached |
+| Meeting | Moving Monday's meeting to 3pm |
+| Request | Need your sign-off on invoice 1042 by Thu |
+
+## The bottom line
+
+Tell the reader why they should open it.
+
+=== writing-style-guide-for-teams
+title: How to Create a Writing Style Guide for Your Team
+desc: A style guide keeps team writing consistent. Learn what to include: voice, words to use and avoid, formatting, examples and how to keep it short and usable.
+tags: writing style guide, team style guide, tone of voice guide, company writing guidelines, content style guide
+rel: plain-language-writing-guide
+q: What is a writing style guide? | A short document that sets rules and examples for how your team writes, such as tone, terminology and formatting.
+q: How long should it be? | Short enough to be used, often a few pages.
+q: What should it include? | Voice, preferred and avoided words, formatting rules, examples and a quick checklist.
+---
+Consistency builds trust, and a style guide makes it easier.
+
+## Direct answer
+
+A writing style guide sets your team's voice, preferred words, formatting rules and examples. Keep it short, show good and bad examples and update it as you learn. Make it easy to find and use.
+
+## What to include
+
+1. **Voice:** friendly, direct, plain.
+2. **Word list:** terms to use and avoid.
+3. **Formatting:** headings, dates, numbers, capitalisation.
+4. **Examples:** before and after.
+5. **Checklist:** a quick final check.
+
+## Example entries
+
+| Instead of | Write |
+| :--- | :--- |
+| utilise | use |
+| customers (not "users") | customers |
+| ASAP | give a date |
+
+## The bottom line
+
+A page that people use beats a book that nobody reads.
+
+=== proofreading-checklist
+title: Proofreading Checklist: How to Catch Errors Before You Send
+desc: A proofreading checklist for work documents: names, numbers, dates, spelling, links and formatting, plus tricks like reading backwards.
+tags: proofreading, proofreading checklist, how to proofread, proofreading tips, check writing for errors
+rel: editing-tips-for-writers
+q: What should I check when proofreading? | Names, numbers, dates, spelling, grammar, links, formatting and consistency.
+q: How do I spot my own errors? | Take a break, read aloud, change the font or read backwards.
+q: Is spellcheck enough? | No. It misses correct words used wrongly, such as "there" and "their".
+---
+A small error can undermine a big message.
+
+## Direct answer
+
+To proofread, wait before checking, read slowly or aloud, check names, numbers, dates and links and look for correct words used wrongly. Use tools as help, not as the last line of defence.
+
+## Checklist
+
+- [ ] Names and titles spelled correctly
+- [ ] Numbers, dates and currencies right
+- [ ] Links work
+- [ ] Attachments included
+- [ ] Spelling and grammar checked
+- [ ] Consistent formatting
+- [ ] Tone suits the reader
+- [ ] Subject line makes sense
+
+## Tricks
+
+1. Read aloud.
+2. Read backwards, sentence by sentence.
+3. Change the font or print it.
+4. Ask a colleague for a quick check on important documents.
+
+## The bottom line
+
+Slow down for the last check.
+
+=== tone-of-voice-at-work
+title: Tone of Voice in Workplace Writing: How to Sound Clear and Kind
+desc: Tone shapes how your message lands. Learn how to adjust formality, warmth and directness in emails and chats, with harsh and friendly examples.
+tags: tone of voice, workplace tone, professional tone examples, email tone, how to sound friendly at work
+rel: email-etiquette-at-work, writing-style-guide-for-teams
+q: What is tone of voice in writing? | The attitude your words convey, such as friendly, formal, urgent or neutral.
+q: How do I make an email sound friendly? | Use greetings, thank people, be specific and kind and avoid blunt commands.
+q: Can text sound rude by accident? | Yes. Without voice and expression, short messages can feel cold.
+---
+The same facts can sound helpful or harsh.
+
+## Direct answer
+
+Tone is how your message sounds to the reader. To keep it clear and kind, greet people, say please and thanks, be specific rather than blunt and read your message from the reader's point of view before sending.
+
+## Examples
+
+| Harsh | Friendly and clear |
+| :--- | :--- |
+| Send it now. | Could you send it by 3pm today? Thanks. |
+| You did this wrong. | I noticed the figures differ from the template. Could we check them together? |
+| Why was this late? | Can you help me understand what delayed this, so we can plan better? |
+
+## Tips
+
+1. Match the formality to the reader.
+2. Be direct without being sharp.
+3. Avoid sarcasm in text.
+4. Read it aloud.
+
+## The bottom line
+
+Be clear about the ask and kind about the delivery.

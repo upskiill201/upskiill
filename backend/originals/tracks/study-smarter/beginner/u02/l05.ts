@@ -24,11 +24,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'A new topic makes no sense at all. What is the most likely cause?',
         options: [
-          { text: 'A gap in an older topic it is built on' },
           { text: 'You are bad at the subject', why: 'Usually it is one missing building block.' },
+          { text: 'A gap in an older topic it is built on' },
           { text: 'The textbook is wrong', why: 'Possible, but rarely the reason.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -66,11 +66,11 @@ const lesson: OriginalLesson = {
         message: "The AI said reactions are like a football team. So the atoms in water are still hydrogen gas and oxygen gas, just standing together?",
         prompt: 'What should Kofi say?',
         options: [
-          { text: "That's where the analogy breaks. The atoms rearrange into a new substance. Water isn't a mix of the two gases." },
           { text: 'Yes, exactly.', why: 'That is the analogy taken too far.' },
           { text: 'Analogies are useless.', why: 'It helped. It just has a limit.' },
+          { text: "That's where the analogy breaks. The atoms rearrange into a new substance. Water isn't a mix of the two gases." },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'mcq',

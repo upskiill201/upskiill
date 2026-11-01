@@ -95,11 +95,11 @@ const lesson: OriginalLesson = {
         message: 'The AI gave me code. Should I just paste it in?',
         prompt: "What's Arjun's best advice?",
         options: [
-          { text: 'Read it line by line until you could explain each line. Then type it yourself and run it.' },
           { text: 'Yes, AI code is always right.', why: 'AI can be wrong, and pasting teaches you nothing.' },
+          { text: 'Read it line by line until you could explain each line. Then type it yourself and run it.' },
           { text: 'Never look at AI code.', why: 'Reading and understanding it is fine. Blind pasting is the problem.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'typeAnswer',
@@ -119,11 +119,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why is the Run button "the judge" when you use AI?',
         options: [
-          { text: 'AI can sound sure and still be wrong; running the code shows what it really does' },
           { text: 'Because AI never makes mistakes', why: 'It does make mistakes, which is why you run it.' },
           { text: 'It is not; AI is the judge', why: 'The code\'s real output is what counts.' },
+          { text: 'AI can sound sure and still be wrong; running the code shows what it really does' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

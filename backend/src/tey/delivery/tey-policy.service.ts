@@ -40,6 +40,8 @@ export interface PrefFlags {
   leagueUpdates: boolean;
   courseOffers: boolean;
   creatorActivity: boolean;
+  communityActivity: boolean;
+  networkActivity: boolean;
 }
 
 /**
@@ -164,6 +166,8 @@ export class TeyPolicyService {
         leagueUpdates: true,
         courseOffers: true,
         creatorActivity: true,
+        communityActivity: true,
+        networkActivity: true,
         quietHoursStart: 1290,
         quietHoursEnd: 480,
         maxPerDay: 4,

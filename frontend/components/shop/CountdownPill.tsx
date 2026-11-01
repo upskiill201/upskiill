@@ -10,7 +10,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Clock } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import styles from './CountdownPill.module.css';
 
 function format(ms: number): string {
@@ -50,7 +50,7 @@ export default function CountdownPill({
 
   return (
     <span className={styles.pill}>
-      <Clock size={13} strokeWidth={2.6} />
+      <Glyph name="clock" size={13} strokeWidth={2.6} />
       {label} <strong>{format(remaining)}</strong>
     </span>
   );

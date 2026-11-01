@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@600;700&display=block" rel="stylesheet" />
+<style>
+  /* Teyro Originals cover: React Native for Beginners (Order Up, Film 1). A still frame
+     of a motion scene: App.tsx on the left, Pho Real's app live on a phone, an order
+     ticket flying out, version chips. No Tey, no logos. */
+  :root {
+    --brand: #0172FD;
+    --brand-dark: #0060D9;
+    --brand-deep: #0050B3;
+    --ink: #071233;
+    --purple: #9333EA;
+    --green: #22C55E;
+    --green-dark: #16A34A;
+    --amber: #F59E0B;
+    --amber-dark: #B45309;
+    --yellow: #FFD43B;
+    --rust: #9A3412;
+    --rust-dark: #6B2209;
+    --cream: #FFF7ED;
+    --white: #FFFFFF;
+    --mist: #E8F1FF;
+    --code-fg: #E6ECF8;
+    --code-muted: #6B7A9C;
+    --code-tag: #7FB6FF;
+    --code-attr: #C4A6FF;
+    --code-str: #7EE2A0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 1000px; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--brand); overflow: hidden; position: relative; }
+
+  .blob { position: absolute; border-radius: 50%; background: var(--brand-dark); }
+  .speed { position: absolute; height: 10px; border-radius: 999px; background: var(--white); transform: rotate(-18deg); transform-origin: left center; }
+  .ring { position: absolute; border-radius: 50%; border: 6px solid var(--white); }
+
+  .copy { position: absolute; left: 100px; top: 150px; width: 640px; z-index: 5; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--white); color: var(--purple);
+    font-weight: 800; font-size: 26px; letter-spacing: .08em; text-transform: uppercase;
+    padding: 14px 26px; border-radius: 999px; box-shadow: 0 6px 0 var(--brand-deep);
+  }
+  .pill i { width: 14px; height: 14px; border-radius: 50%; background: var(--purple); display: inline-block; }
+  h1 { margin-top: 40px; color: var(--white); font-weight: 800; font-size: 122px; line-height: .95; letter-spacing: -0.035em; }
+  h1 em { font-style: normal; display: inline-block; margin-top: 18px; font-size: 72px; letter-spacing: -0.02em; color: var(--ink); background: var(--yellow); padding: 6px 22px 12px; border-radius: 24px; box-shadow: 0 8px 0 var(--amber-dark); }
+  .sub { margin-top: 40px; color: var(--mist); font-weight: 700; font-size: 32px; line-height: 1.3; width: 600px; }
+
+  .stage { position: absolute; left: 760px; top: 50px; width: 800px; height: 900px; transform: rotate(-4deg); }
+
+  /* Editor */
+  .editor {
+    position: absolute; left: 0; top: 150px; width: 430px; height: 410px;
+    background: var(--ink); border-radius: 30px; box-shadow: 0 12px 0 #030a1f; overflow: hidden;
+  }
+  .editor .bar { display: flex; align-items: center; gap: 10px; padding: 18px 22px; border-bottom: 2px solid #142252; }
+  .editor .bar i { width: 14px; height: 14px; border-radius: 50%; display: block; }
+  .editor .file { margin-left: 12px; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 20px; color: var(--code-muted); }
+  .code { padding: 18px 24px; font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 21px; line-height: 1.6; color: var(--code-fg); white-space: pre; }
+  .k { color: var(--code-attr); } .t { color: var(--code-tag); } .s { color: var(--code-str); } .m { color: var(--code-muted); }
+  .caret { display: inline-block; width: 3px; height: 24px; background: var(--yellow); vertical-align: -4px; }
+
+  /* Phone */
+  .phone {
+    position: absolute; left: 400px; top: 40px; width: 360px; height: 720px;
+    background: var(--ink); border-radius: 56px; padding: 14px; box-shadow: 0 14px 0 #030a1f;
+  }
+  .screen { width: 100%; height: 100%; border-radius: 44px; background: var(--cream); overflow: hidden; padding: 64px 26px 26px; position: relative; }
+  .notch { position: absolute; left: 50%; top: 14px; width: 110px; height: 28px; margin-left: -55px; border-radius: 999px; background: var(--ink); }
+  .title { font-weight: 800; font-size: 42px; color: var(--rust); letter-spacing: -0.02em; }
+  .tag { margin-top: 4px; font-weight: 700; font-size: 18px; color: var(--ink); opacity: .75; }
+  .section { margin-top: 24px; font-weight: 800; font-size: 15px; letter-spacing: .12em; color: var(--rust); }
+  .item {
+    margin-top: 12px; display: flex; align-items: center; gap: 14px; background: var(--white);
+    border-radius: 18px; padding: 12px; box-shadow: 0 4px 0 #f1dcc7;
+  }
+  .bowl { width: 52px; height: 52px; border-radius: 14px; flex: none; position: relative; overflow: hidden; }
+  .bowl.pho { background: radial-gradient(circle at 50% 60%, #f4c27a 0 38%, #d97706 39% 46%, #fde7c7 47%); }
+  .bowl.bm { background: linear-gradient(160deg, #f6d29b 0 45%, #7cb342 46% 56%, #e8a85c 57%); }
+  .bowl.cof { background: linear-gradient(180deg, #fde7c7 0 25%, #8d5a2b 26% 80%, #fde7c7 81%); }
+  .name { flex: 1; font-weight: 800; font-size: 19px; color: var(--ink); }
+  .price { font-weight: 800; font-size: 19px; color: var(--rust); }
+  .btn { position: absolute; left: 26px; right: 26px; bottom: 30px; height: 66px; border-radius: 18px; background: var(--rust); box-shadow: 0 6px 0 var(--rust-dark); color: var(--white); font-weight: 800; font-size: 22px; display: flex; align-items: center; justify-content: center; }
+  .tap { position: absolute; left: 250px; bottom: 44px; width: 44px; height: 44px; border-radius: 50%; border: 5px solid var(--white); opacity: .9; }
+  .tap2 { position: absolute; left: 236px; bottom: 30px; width: 72px; height: 72px; border-radius: 50%; border: 4px solid var(--white); opacity: .4; }
+
+  /* Order ticket flying out */
+  .ticket {
+    position: absolute; left: 640px; top: 300px; width: 210px; padding: 18px 20px; background: var(--white);
+    border-radius: 18px; box-shadow: 0 8px 0 var(--brand-deep); transform: rotate(10deg); z-index: 4;
+  }
+  .ticket .lbl { font-weight: 800; font-size: 15px; letter-spacing: .12em; color: var(--green-dark); text-transform: uppercase; }
+  .ticket .num { font-weight: 800; font-size: 46px; color: var(--ink); line-height: 1.05; }
+  .ticket .st { margin-top: 6px; display: inline-block; background: var(--green); color: var(--white); font-weight: 800; font-size: 16px; padding: 5px 12px; border-radius: 999px; box-shadow: 0 3px 0 var(--green-dark); }
+  .ghost { opacity: .22; box-shadow: none !important; }
+  .ghost * { visibility: hidden; }
+
+  /* Chips */
+  .chip { position: absolute; padding: 14px 22px; border-radius: 18px; font-weight: 800; font-size: 26px; color: var(--white); white-space: nowrap; }
+  .ver { background: var(--purple); box-shadow: 0 6px 0 #6B21A8; }
+  .both { background: var(--green); box-shadow: 0 6px 0 var(--green-dark); }
+  .spark { position: absolute; }
+</style>
+</head>
+<body>
+  <div class="blob" style="width:820px;height:820px;right:-220px;top:-300px;opacity:.55"></div>
+  <div class="blob" style="width:540px;height:540px;left:-220px;bottom:-280px;opacity:.45"></div>
+  <div class="speed" style="left:-40px;top:930px;width:420px;opacity:.10"></div>
+  <div class="speed" style="left:300px;top:960px;width:260px;opacity:.16"></div>
+  <div class="speed" style="left:1380px;top:920px;width:260px;opacity:.12"></div>
+  <div class="ring" style="width:150px;height:150px;left:690px;top:780px;opacity:.12"></div>
+  <div class="ring" style="width:60px;height:60px;left:1520px;top:60px;opacity:.25"></div>
+
+  <div class="copy">
+    <span class="pill"><i></i>Teyro Original · Coding</span>
+    <h1>React Native<br/><em>for Beginners</em></h1>
+    <p class="sub">Order Up: build a real phone app for a food truck, screen by screen.</p>
+  </div>
+
+  <div class="stage">
+    <div class="editor">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="file">App.tsx</span></div>
+      <div class="code"><span class="k">export default function</span> <span class="t">App</span>() {
+  <span class="k">return</span> (
+    &lt;<span class="t">View</span>&gt;
+      &lt;<span class="t">Text</span>&gt;Pho Real&lt;/<span class="t">Text</span>&gt;
+      &lt;<span class="t">MenuItem</span>
+        <span class="k">name</span>=<span class="s">"Large pho"</span>
+        <span class="k">price</span>={<span class="s">13.5</span>} /&gt;
+    &lt;/<span class="t">View</span>&gt;<span class="caret"></span>
+  );
+}</div>
+    </div>
+
+    <div class="phone">
+      <div class="screen">
+        <div class="notch"></div>
+        <div class="title">Pho Real</div>
+        <div class="tag">Order ahead. Skip the line.</div>
+        <div class="section">PHO</div>
+        <div class="item"><span class="bowl pho"></span><span class="name">Large pho</span><span class="price">$13.50</span></div>
+        <div class="item"><span class="bowl bm"></span><span class="name">Banh mi</span><span class="price">$9.00</span></div>
+        <div class="section">DRINKS</div>
+        <div class="item"><span class="bowl cof"></span><span class="name">Iced coffee</span><span class="price">$4.75</span></div>
+        <div class="btn">Order ahead</div>
+        <div class="tap2"></div>
+        <div class="tap"></div>
+      </div>
+    </div>
+
+    <div class="ticket ghost" style="left:150px;top:612px;transform:rotate(-14deg)"><div class="lbl">x</div></div>
+    <div class="ticket ghost" style="left:180px;top:600px;transform:rotate(-11deg)"><div class="lbl">x</div></div>
+    <div class="ticket" style="left:212px;top:588px;transform:rotate(-8deg)">
+      <div class="lbl">Order</div>
+      <div class="num">#41</div>
+      <div class="st">Ready</div>
+    </div>
+
+    <div class="chip ver" style="left:-10px;top:620px;transform:rotate(-6deg)">v0.1 → v0.5</div>
+    <div class="chip both" style="left:60px;top:70px;transform:rotate(5deg)">Android + iPhone</div>
+
+    <svg class="spark" style="left:770px;top:20px" width="54" height="54" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#fff"/></svg>
+    <svg class="spark" style="left:360px;top:700px" width="40" height="40" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#FFD43B"/></svg>
+  </div>
+</body>
+</html>

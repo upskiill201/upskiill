@@ -1,0 +1,64 @@
+---
+title: "How to Review AI-Generated Code: A Practical Checklist"
+description: "AI code can look right and be wrong. Use this review checklist for correctness, security, tests, edge cases and maintainability before you merge."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [code review ai generated, review ai code, ai generated code checklist, ai code quality, reviewing copilot code]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Working with AI Coding Agents turns this into short, playable lessons. Free to start."
+  href: /courses/working-with-ai-coding-agents
+  label: "See the Working with AI Coding Agents course"
+faq:
+  - question: "Should I review AI-generated code?"
+    answer: "Yes. Treat it like code from a new teammate: read it, run it, test it and question it before it ships."
+  - question: "What should I check first?"
+    answer: "Does it do what you asked, does it run, and does it handle errors and edge cases?"
+  - question: "How do I catch security problems?"
+    answer: "Look for hard-coded secrets, unvalidated input, unsafe queries and unnecessary dependencies, and run a scanner where you can."
+---
+
+AI writes confident code. Confidence is not correctness.
+
+## Direct answer
+
+Review AI-generated code the way you would review a new colleague's pull request: read every change, run it, test it, check edge cases and security, and make sure it fits your project's style. Ask the AI to explain anything you do not understand, and do not merge code you cannot explain.
+
+## A checklist
+
+1. **Does it solve the actual problem?** Compare with your request.
+2. **Run it.** Do not trust code that has not run.
+3. **Read the diff** line by line.
+4. **Look for hidden changes:** extra files, removed code, changed config.
+5. **Check edge cases:** empty input, null, very large input.
+6. **Check errors:** are failures handled sensibly?
+7. **Check security:** secrets, input validation, authentication, queries.
+8. **Check dependencies:** are new packages needed and real?
+9. **Write or run tests** that would fail if the code were wrong.
+10. **Check style and naming** against your project.
+
+## Common AI mistakes
+
+- Calling functions or packages that do not exist.
+- Out-of-date API usage.
+- Over-engineered solutions.
+- Passing tests by weakening them.
+
+## Where Teyro fits
+
+Teyro's [Working with AI Coding Agents](/courses/working-with-ai-coding-agents) course turns this into short lessons you can play in a few minutes a day. It has 60 lessons, and you can start free.
+
+## The bottom line
+
+You are responsible for the code you ship, whoever wrote it.
+
+## More guides
+
+- [What Is a Context Window? Why It Matters for AI Coding](/blog/what-is-a-context-window)
+- [AI Hallucinations in Code](/blog/ai-hallucinations-in-code)
+- [Model Context Protocol (MCP) Explained for Beginners](/blog/model-context-protocol-explained)
+- [Ai generated code quality](/blog/ai-generated-code-quality)
+- [How to learn ai coding](/blog/how-to-learn-ai-coding)
+- [Working with AI Coding Agents course](/courses/working-with-ai-coding-agents)

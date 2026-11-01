@@ -52,11 +52,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why order notes by syllabus line instead of by date?',
         options: [
-          { text: 'Revision follows the syllabus, so you can find each topic instantly' },
           { text: 'Dates are hard to read', why: 'Not the reason.' },
           { text: 'Teachers check the order', why: 'It is for you, at revision time.' },
+          { text: 'Revision follows the syllabus, so you can find each topic instantly' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -80,11 +80,11 @@ const lesson: OriginalLesson = {
         variant: 'pickPrompt',
         prompt: 'Which request helps Clinton set up his index?',
         options: [
-          { text: '[syllabus] Turn this into an index table with columns: syllabus line, colour, page.' },
           { text: 'Organise my life.', why: 'Too vague, and not something it can do.' },
+          { text: '[syllabus] Turn this into an index table with columns: syllabus line, colour, page.' },
           { text: 'Fill in my colours for me.', why: 'Only he knows how well he knows each line.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',

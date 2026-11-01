@@ -1,0 +1,116 @@
+---
+title: "What Is SQL? A Tutorial for Beginners With Examples"
+description: "What SQL is and what it's used for, with simple examples of SELECT, WHERE, GROUP BY and JOIN so you can read and write your first queries."
+publishedDate: "2026-10-25"
+category: skill-building
+tags: [what is sql, sql tutorial for beginners, sql tutorial, sql tutorial with examples, sql for beginners, what is sql for beginners, sql query for beginners]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Run these queries yourself"
+  text: "SQL and Databases for Beginners runs real SQL in your browser, with a cinema booking database. 50 lessons, free to start."
+  href: /courses/sql-and-databases-for-beginners
+  label: "See the SQL course"
+faq:
+  - question: "What is SQL?"
+    answer: "Structured Query Language, the standard language for asking questions of and changing data in relational databases."
+  - question: "What is SQL used for?"
+    answer: "Getting data out of databases, summarising it, and adding or changing records. It's behind most apps and many analyst jobs."
+  - question: "Is SQL hard to learn?"
+    answer: "The core reads like English and is one of the easier languages to start with. Joins and design take practice."
+  - question: "What is the difference between SQL and a database?"
+    answer: "A database stores data in tables. SQL is the language you use to talk to it."
+---
+
+Almost every app you use stores information in a database. SQL is how you ask it questions.
+
+## Direct answer
+
+SQL (Structured Query Language) is the standard language for working with relational databases, which store data in tables of rows and columns. With a few commands you can read data (`SELECT`), filter it (`WHERE`), summarise it (`GROUP BY`) and combine tables (`JOIN`).
+
+## A table
+
+A database table looks like a spreadsheet:
+
+| id | film | seats_sold | price |
+| ---: | :--- | ---: | ---: |
+| 1 | Starlight | 120 | 9 |
+| 2 | Moonrise | 80 | 8 |
+| 3 | Sunset | 150 | 9 |
+
+## Core commands
+
+### Read everything
+
+```sql
+SELECT * FROM shows;
+```
+
+### Pick columns and filter
+
+```sql
+SELECT film, seats_sold
+FROM shows
+WHERE seats_sold > 100;
+```
+
+### Sort
+
+```sql
+SELECT film FROM shows ORDER BY seats_sold DESC;
+```
+
+### Summarise
+
+```sql
+SELECT price, SUM(seats_sold) AS total_seats
+FROM shows
+GROUP BY price;
+```
+
+### Combine two tables
+
+```sql
+SELECT customers.name, bookings.seat
+FROM bookings
+JOIN customers ON customers.id = bookings.customer_id;
+```
+
+### Change data
+
+```sql
+INSERT INTO shows (film, seats_sold, price) VALUES ('Aurora', 0, 9);
+UPDATE shows SET price = 10 WHERE film = 'Moonrise';
+```
+
+Always use `WHERE` with `UPDATE` and `DELETE`, or you'll change every row.
+
+## Where SQL is used
+
+- Apps and websites
+- Business reports and dashboards
+- Finance, health, logistics
+- Data analysis. See [how to become a data scientist](/blog/how-to-become-a-data-scientist).
+
+## Different database systems
+
+SQLite, MySQL, PostgreSQL and SQL Server differ slightly, but the core is the same.
+
+## Next steps
+
+Learn in order with [how to learn SQL for beginners](/blog/how-to-learn-sql-for-beginners), practise with [SQL practice for beginners](/blog/sql-practice-for-beginners).
+
+## Where Teyro fits
+
+Teyro's [SQL and Databases for Beginners](/courses/sql-and-databases-for-beginners) runs real SQLite in your browser: you query a cinema's booking database in every lesson. It is free to start.
+
+## The bottom line
+
+SQL is a short list of ideas that cover most of what you'll do. Learn them by running them.
+
+## More SQL guides
+
+- [How to learn SQL for beginners](/blog/how-to-learn-sql-for-beginners)
+- [Free SQL courses for beginners](/blog/sql-course-free-for-beginners)
+- [SQL practice for beginners](/blog/sql-practice-for-beginners)
+- [SQL course](/courses/sql-and-databases-for-beginners)

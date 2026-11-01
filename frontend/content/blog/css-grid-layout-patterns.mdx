@@ -1,0 +1,98 @@
+---
+title: "5 CSS Grid Layout Patterns Every Beginner Should Know"
+description: "Five practical CSS Grid layouts with code: holy grail page, responsive cards, sidebar, masonry-like columns and a centred hero."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [css grid layout, css grid examples, grid layout patterns, holy grail layout, responsive grid]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Responsive Web Design with CSS turns this into short, playable lessons. Free to start."
+  href: /courses/responsive-web-design-with-css
+  label: "See the Responsive Web Design with CSS course"
+faq:
+  - question: "What are common CSS Grid layouts?"
+    answer: "Page layouts with header, sidebar, main and footer, responsive card grids and centred content."
+  - question: "How do I centre something with Grid?"
+    answer: "Use display grid with place-items center on the container."
+  - question: "Can Grid replace frameworks?"
+    answer: "For layout, often yes, though you may still use frameworks for components."
+---
+
+Five patterns cover most pages.
+
+## Direct answer
+
+The most useful CSS Grid layouts are the page layout with named areas, auto-fitting card grids, sidebar layouts, equal-height columns and centred content. Each takes only a few lines.
+
+## 1. Page layout
+
+```css
+.page {
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "sidebar main"
+    "footer footer";
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+header { grid-area: header; }
+aside  { grid-area: sidebar; }
+main   { grid-area: main; }
+footer { grid-area: footer; }
+```
+
+## 2. Responsive cards
+
+```css
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+```
+
+## 3. Sidebar that stacks on mobile
+
+```css
+.layout { display: grid; gap: 24px; }
+@media (min-width: 800px) {
+  .layout { grid-template-columns: 1fr 300px; }
+}
+```
+
+## 4. Centre anything
+
+```css
+.center {
+  display: grid;
+  place-items: center;
+  min-height: 60vh;
+}
+```
+
+## 5. Full-bleed within a column
+
+```css
+.wrap { display: grid; grid-template-columns: 1fr min(65ch, 100%) 1fr; }
+.wrap > * { grid-column: 2; }
+.wrap > .full { grid-column: 1 / -1; }
+```
+
+## Where Teyro fits
+
+Teyro's [Responsive Web Design with CSS](/courses/responsive-web-design-with-css) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Learn these five and you can build most layouts.
+
+## More guides
+
+- [CSS Media Queries Explained](/blog/css-media-queries-explained)
+- [The Viewport Meta Tag](/blog/viewport-meta-tag)
+- [CSS Breakpoints](/blog/css-breakpoints-guide)
+- [Css grid explained](/blog/css-grid-explained)
+- [Responsive Web Design with CSS course](/courses/responsive-web-design-with-css)

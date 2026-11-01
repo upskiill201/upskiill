@@ -1,0 +1,82 @@
+---
+title: "CSS Variables (Custom Properties): A Beginner's Guide"
+description: "Learn how to define and use CSS variables with --name and var(), scope them, set fallbacks and use them for themes like dark mode."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [css variables, css custom properties, var function css, css theme variables, css root]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "HTML & CSS for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/html-and-css-for-beginners
+  label: "See the HTML & CSS for Beginners course"
+faq:
+  - question: "What are CSS variables?"
+    answer: "Named values defined with a double hyphen that you can reuse with the var function."
+  - question: "Where should I define them?"
+    answer: "Usually on :root so they apply across the whole page."
+  - question: "Can JavaScript change them?"
+    answer: "Yes, with element.style.setProperty."
+---
+
+Change a colour once, and it updates everywhere.
+
+## Direct answer
+
+CSS variables, officially custom properties, are defined with `--name: value` and used with `var(--name)`. Define them on `:root` for global use. They can be overridden in any element and are ideal for colours, spacing and themes.
+
+## Example
+
+```css
+:root {
+  --brand: #3d5afe;
+  --space: 16px;
+}
+
+.button {
+  background: var(--brand);
+  padding: var(--space);
+}
+
+.card {
+  --space: 24px;           /* overrides inside .card */
+  padding: var(--space);
+}
+```
+
+## Fallbacks
+
+```css
+color: var(--text-color, #222);
+```
+
+## Themes
+
+```css
+:root { --bg: #fff; --text: #111; }
+[data-theme="dark"] { --bg: #111; --text: #eee; }
+body { background: var(--bg); color: var(--text); }
+```
+
+## Change with JavaScript
+
+```javascript
+document.documentElement.style.setProperty("--brand", "#e91e63");
+```
+
+## Where Teyro fits
+
+Teyro's [HTML & CSS for Beginners](/courses/html-and-css-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 100 lessons, and you can start free.
+
+## The bottom line
+
+Variables make styles consistent and themes easy.
+
+## More guides
+
+- [CSS Position Explained](/blog/css-positioning-explained)
+- [CSS Units](/blog/css-units-rem-em-px)
+- [CSS Pseudo-Classes](/blog/css-pseudo-classes)
+- [Dark mode toggle javascript](/blog/dark-mode-toggle-javascript)
+- [HTML & CSS for Beginners course](/courses/html-and-css-for-beginners)

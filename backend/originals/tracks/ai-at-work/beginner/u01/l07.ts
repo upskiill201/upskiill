@@ -57,11 +57,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Ada wrote "make it a bit funny" and got forced jokes. What is the better move?',
         options: [
-          { text: 'Paste an update she liked and say "match this tone"' },
           { text: 'Write "make it MUCH funnier"', why: 'Louder words, same problem: "funny" means different things.' },
+          { text: 'Paste an update she liked and say "match this tone"' },
           { text: 'Give up on tone', why: 'Tone is fixable with an example.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'orderLines',
@@ -92,11 +92,11 @@ const lesson: OriginalLesson = {
         message: 'Love your last newsletter intro! Could the next one sound like that too?',
         prompt: 'Which request should Ada give the AI?',
         options: [
-          { text: 'Here is last month\'s intro Lucía liked: [intro]. Write this month\'s in the same tone and length, about the new sign-up flow.' },
           { text: 'Write a newsletter intro Lucía will like.', why: 'The AI has never seen what Lucía liked.' },
           { text: 'Copy last month\'s intro exactly.', why: 'Same style, yes; same words, no.' },
+          { text: 'Here is last month\'s intro Lucía liked: [intro]. Write this month\'s in the same tone and length, about the new sign-up flow.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'typeAnswer',

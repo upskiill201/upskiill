@@ -14,7 +14,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Check } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import SceneShell from '../SceneShell';
 import { CountUpNumber } from '../ScenePrimitives';
 import styles from '../Scene.module.css';
@@ -149,7 +149,7 @@ export default function DailyRewardScene({ scene, onAdvance }: Props) {
               <span className={styles.drDayLabel}>{isToday ? 'Today' : `Day ${d.day}`}</span>
               <span className={styles.drDayIcon}>
                 {past ? (
-                  <Check size={22} strokeWidth={3.5} aria-hidden="true" />
+                  <Glyph name="check" size={22} strokeWidth={3.5} />
                 ) : (
                   <Image
                     src={d.chest ? '/Icons/tressure-chest-locked.png' : '/Icons/Coin.png'}

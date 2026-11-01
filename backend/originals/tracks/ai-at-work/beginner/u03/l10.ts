@@ -62,11 +62,11 @@ const lesson: OriginalLesson = {
         message: "Your devs say the fix 'is in a PR'. Is that a press release?",
         prompt: 'Which reply?',
         options: [
-          { text: "Ha, no! Here PR means 'pull request': a proposed code change waiting for review. It should be live by Friday." },
           { text: 'Yes, a press release.', why: 'Wrong context.' },
+          { text: "Ha, no! Here PR means 'pull request': a proposed code change waiting for review. It should be live by Friday." },
           { text: 'It is in a PR.', why: 'Repeats the jargon.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'matchPairs',
@@ -118,11 +118,11 @@ const lesson: OriginalLesson = {
         message: "Contract v3 is 'just tidied up', we promise!",
         prompt: 'What should Ada do?',
         options: [
-          { text: 'Get a change list from v2 to v3 with before/after quotes, and check money, dates and obligations herself.' },
           { text: 'Sign it.', why: '"Tidied up" can hide real changes.' },
           { text: 'Ignore v3.', why: 'It still needs reviewing.' },
+          { text: 'Get a change list from v2 to v3 with before/after quotes, and check money, dates and obligations herself.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'orderLines',
@@ -178,11 +178,11 @@ const lesson: OriginalLesson = {
         message: "I need to understand 'conversion funnels' before a meeting in an hour. Help?",
         prompt: 'Which approach?',
         options: [
-          { text: 'Say your level, ask for a simple explanation and analogy, explain it back, then a 3-question quiz.' },
           { text: 'Read a summary once.', why: 'Feels like understanding, often is not.' },
           { text: 'Skip it and nod in the meeting.', why: 'Costly later.' },
+          { text: 'Say your level, ask for a simple explanation and analogy, explain it back, then a 3-question quiz.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'tapBuild',

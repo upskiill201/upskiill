@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { Glyph } from '@/components/art/Glyph';
 import styles from './Accordion.module.css';
 
 interface AccordionItem {
@@ -36,10 +36,9 @@ export default function Accordion({ items }: AccordionProps) {
             aria-controls={`accordion-content-${index}`}
           >
             <span className={styles.question}>{item.question}</span>
-            <ChevronDown 
+            <Glyph name="chevronDown" 
               className={styles.chevron} 
               size={20}
-              aria-hidden="true"
             />
           </button>
           

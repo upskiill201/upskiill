@@ -1,0 +1,526 @@
+=== numpy-for-beginners
+title: NumPy for Beginners: Arrays, Math and Slicing Explained
+desc: NumPy provides fast arrays for numerical work in Python. Learn how to create arrays, do maths on them, slice, reshape and use common functions.
+tags: numpy, numpy for beginners, numpy arrays, numpy tutorial, python numerical computing
+rel: what-is-data-science-for-beginners, learn-data-science-from-scratch
+q: What is NumPy? | A Python library for fast numerical computing built around the array object.
+q: Why use NumPy instead of lists? | Arrays are faster and support operations on whole arrays at once.
+q: How do I install it? | Run pip install numpy.
+---
+NumPy is the foundation of Python's data tools.
+
+## Direct answer
+
+NumPy provides the `ndarray`, a fast array that supports maths on whole arrays without loops. It underpins pandas, scikit-learn and many other data libraries. Learn how to create arrays, slice them and use functions like `mean` and `sum`.
+
+## Basics
+
+```python
+import numpy as np
+
+a = np.array([1, 2, 3, 4])
+print(a * 2)          # [2 4 6 8]
+print(a.mean())       # 2.5
+
+m = np.array([[1, 2, 3], [4, 5, 6]])
+print(m.shape)        # (2, 3)
+print(m[0, 1])        # 2
+print(m[:, 1])        # [2 5]
+print(m.reshape(3, 2))
+```
+
+## Handy functions
+
+| Function | Purpose |
+| :--- | :--- |
+| `np.arange(0, 10, 2)` | range of numbers |
+| `np.zeros((2, 3))` | array of zeros |
+| `np.random.rand(3)` | random numbers |
+| `a.sum()`, `a.max()` | summaries |
+
+## Boolean filtering
+
+```python
+a = np.array([5, 12, 7, 20])
+print(a[a > 6])       # [12  7 20]
+```
+
+## The bottom line
+
+Think in arrays, not loops.
+
+=== matplotlib-for-beginners
+title: Matplotlib for Beginners: Line, Bar and Scatter Charts in Python
+desc: Learn Matplotlib basics: making line, bar, scatter and histogram plots, adding titles and labels, and saving figures, with short code examples.
+tags: matplotlib, matplotlib tutorial, python charts, matplotlib for beginners, data visualization python
+rel: what-is-data-science-for-beginners
+q: What is Matplotlib? | A Python library for creating static, animated and interactive charts.
+q: How do I make a simple chart? | Import matplotlib.pyplot, call plot or bar with your data, add labels and call show.
+q: How do I save a chart? | Use plt.savefig with a file name.
+---
+Charts turn numbers into understanding.
+
+## Direct answer
+
+Matplotlib creates charts in Python. Import `matplotlib.pyplot` as `plt`, call a plotting function such as `plot`, `bar`, `scatter` or `hist`, add a title and axis labels and show or save the figure.
+
+## Examples
+
+```python
+import matplotlib.pyplot as plt
+
+months = ["Jan", "Feb", "Mar", "Apr"]
+sales = [120, 150, 90, 180]
+
+plt.plot(months, sales, marker="o")
+plt.title("Monthly sales")
+plt.xlabel("Month")
+plt.ylabel("Units")
+plt.show()
+```
+
+```python
+plt.bar(months, sales)
+plt.scatter([1, 2, 3, 4], [2, 4, 5, 8])
+plt.hist([1, 2, 2, 3, 3, 3, 4])
+```
+
+## Good chart habits
+
+1. Choose the right chart: line for trends, bar for comparisons, scatter for relationships.
+2. Label axes and add units.
+3. Keep it simple.
+4. Use colour with purpose and check accessibility.
+5. Save with `plt.savefig("chart.png", dpi=150)`.
+
+## The bottom line
+
+A clear chart often communicates more than a table.
+
+=== exploratory-data-analysis
+title: Exploratory Data Analysis (EDA): A Step-by-Step Guide for Beginners
+desc: EDA is how you get to know a dataset before modelling. Learn the steps: shape, types, missing values, distributions, outliers and relationships.
+tags: exploratory data analysis, eda, eda python, pandas eda, data exploration
+rel: pandas-for-beginners, learn-data-science-from-scratch
+q: What is exploratory data analysis? | The process of examining and summarising a dataset to understand its structure, quality and patterns before further analysis.
+q: What should I check first? | Size, column types, missing values and basic statistics.
+q: Which tools are used? | Python with pandas and plotting libraries, or spreadsheets for small data.
+---
+Meet your data before you model it.
+
+## Direct answer
+
+Exploratory data analysis is looking at a dataset to understand its structure, quality and patterns. Check the shape and types, summarise numbers, find missing values and outliers, look at distributions and explore relationships between columns. It guides cleaning and modelling.
+
+## Steps with pandas
+
+```python
+import pandas as pd
+
+df = pd.read_csv("data.csv")
+
+df.shape
+df.head()
+df.info()
+df.describe()
+df.isna().sum()
+df["city"].value_counts()
+df.corr(numeric_only=True)
+```
+
+## What to look for
+
+1. **Shape:** how many rows and columns?
+2. **Types:** are numbers stored as text?
+3. **Missing values:** how many, and why?
+4. **Distributions:** skewed, odd peaks?
+5. **Outliers:** errors or real extremes?
+6. **Relationships:** which columns move together?
+
+## Plot it
+
+```python
+df["price"].hist()
+df.plot.scatter(x="size", y="price")
+```
+
+## The bottom line
+
+Time spent on EDA saves time and mistakes later.
+
+=== jupyter-notebook-guide
+title: Jupyter Notebook for Beginners: How to Install and Use It
+desc: Learn what Jupyter Notebooks are, how to install and open one, run cells, mix code and notes, share notebooks and avoid common pitfalls.
+tags: jupyter notebook, jupyter notebook tutorial, how to use jupyter, python notebook, data science tools
+rel: what-is-data-science-for-beginners
+q: What is a Jupyter Notebook? | An interactive document where you write and run code in cells and combine it with text, charts and notes.
+q: How do I install it? | Run pip install notebook, then jupyter notebook, or use JupyterLab or a hosted service.
+q: What is a kernel? | The engine that runs your code in the notebook.
+---
+Code, results and explanations in one place.
+
+## Direct answer
+
+A Jupyter Notebook is a document made of cells. Code cells run Python and show results below, while text cells hold explanations. It is the standard tool for exploring data and sharing analysis. Install with pip, start it from the terminal and run cells with Shift+Enter.
+
+## Install and start
+
+```bash
+pip install notebook
+jupyter notebook
+```
+
+## Using it
+
+- **Shift+Enter** runs a cell.
+- **Markdown cells** hold headings and notes.
+- **Output** appears under each code cell, including charts.
+
+## Good habits
+
+1. Restart and run all before sharing to check it works top to bottom.
+2. Keep cells small and focused.
+3. Give the notebook a clear title and sections.
+4. Do not store passwords or keys in notebooks.
+
+## Alternatives
+
+JupyterLab, hosted notebooks and editors with notebook support.
+
+## The bottom line
+
+A friendly place to learn and explore. Clean it up before you share it.
+
+=== mean-median-mode
+title: Mean, Median and Mode: Differences, Examples and When to Use Each
+desc: Mean, median and mode summarise data in different ways. Learn how to calculate each, when to use which and why outliers change the mean.
+tags: mean median mode, mean vs median, how to calculate median, average types, statistics basics
+rel: what-is-data-science-for-beginners
+q: What is the difference between mean, median and mode? | Mean is the average, median is the middle value and mode is the most common value.
+q: When is median better than mean? | When data has outliers or is skewed, such as incomes or house prices.
+q: Can there be more than one mode? | Yes. A dataset can have several modes or none.
+---
+Three ways to say "typical", and they can disagree.
+
+## Direct answer
+
+The mean is the sum divided by the count. The median is the middle value when sorted. The mode is the most frequent value. Use the median when data has outliers, because the mean gets pulled toward extreme values.
+
+## Example
+
+Values: 2, 3, 3, 4, 100
+
+- Mean = 112 ÷ 5 = 22.4
+- Median = 3
+- Mode = 3
+
+The 100 pulls the mean up. The median stays near the typical value.
+
+## In Python
+
+```python
+import statistics as st
+
+data = [2, 3, 3, 4, 100]
+print(st.mean(data), st.median(data), st.mode(data))
+```
+
+## Which to use
+
+| Situation | Use |
+| :--- | :--- |
+| Symmetric data | mean |
+| Skewed or outliers | median |
+| Categories | mode |
+
+## The bottom line
+
+Always look at the data's shape before choosing an average.
+
+=== correlation-vs-causation
+title: Correlation vs Causation: Why Related Does Not Mean Caused
+desc: Two things moving together does not prove one causes the other. Learn confounders, famous examples, how to test causes and why it matters for data science.
+tags: correlation vs causation, correlation does not equal causation, spurious correlation, confounding variable, data science thinking
+rel: what-is-data-science-for-beginners
+q: What is the difference between correlation and causation? | Correlation means two variables move together. Causation means one produces a change in the other.
+q: What is a confounding variable? | A hidden factor that influences both variables, creating a misleading link.
+q: How can you test for causation? | Randomised experiments are the strongest method. Observational data needs careful design and caution.
+---
+Ice cream sales and sunburn rise together. Ice cream does not cause sunburn.
+
+## Direct answer
+
+Correlation shows that two variables move together. Causation means that changing one produces a change in the other. A third factor, a confounder, can cause both, as hot weather drives both ice cream sales and sunburn. Randomised experiments are the best way to show cause.
+
+## Why correlations mislead
+
+- **Confounders:** a hidden driver.
+- **Coincidence:** random patterns in many variables.
+- **Reverse causation:** the effect may cause the "cause".
+
+## How to be careful
+
+1. Ask what else could explain the link.
+2. Check whether the cause came before the effect.
+3. Look for experiments or natural experiments.
+4. Be cautious with language: "is associated with", not "causes".
+
+## In Python
+
+```python
+df[["hours", "score"]].corr()
+```
+
+## The bottom line
+
+A correlation is a clue, not a conclusion.
+
+=== data-analyst-vs-data-scientist
+title: Data Analyst vs Data Scientist: Differences, Skills and Paths
+desc: Compare data analysts and data scientists: tasks, tools, skills, education and how to move from one to the other, to choose your path.
+tags: data analyst vs data scientist, data analyst, data scientist, data career paths, analytics careers
+rel: how-to-become-a-data-scientist, what-is-data-science-for-beginners
+q: What is the difference between a data analyst and a data scientist? | Analysts mostly answer questions about past and current data with reports and dashboards. Scientists often build predictive models and experiments.
+q: Which is easier to start with? | Many people start as analysts, since the entry skills are SQL, spreadsheets and visualisation.
+q: Do I need a degree? | Not always, but many employers expect evidence of skills through projects or experience.
+---
+The titles overlap, and companies use them differently.
+
+## Direct answer
+
+A data analyst typically cleans data, writes queries, builds reports and dashboards and explains what happened and why. A data scientist often builds statistical or machine learning models and runs experiments to predict or optimise. Both use SQL and Python, with scientists leaning more on statistics and modelling.
+
+## Comparison
+
+| | Data analyst | Data scientist |
+| :--- | :--- | :--- |
+| Focus | reporting and insight | modelling and prediction |
+| Core tools | SQL, spreadsheets, BI tools | Python, statistics, ML libraries |
+| Output | dashboards, analyses | models, experiments |
+| Entry path | common starting point | often after analyst or technical role |
+
+## Skills to build
+
+1. SQL.
+2. Spreadsheets.
+3. Python and pandas.
+4. Statistics.
+5. Communication.
+
+## The bottom line
+
+Start with analysis skills. Add modelling as you grow. Check actual job descriptions in your area.
+
+=== handling-missing-data
+title: How to Handle Missing Data: Drop, Fill or Flag?
+desc: Missing values affect analysis. Learn the types of missingness, options like dropping, filling and flagging and pandas code for each, with cautions.
+tags: missing data, handle missing values pandas, fillna dropna, data cleaning missing values, imputation
+rel: exploratory-data-analysis, pandas-for-beginners
+q: How do I find missing values in pandas? | Use df.isna().sum() to count missing values per column.
+q: Should I delete rows with missing values? | Only if few rows are affected and the missingness is random. Otherwise you may bias results.
+q: What is imputation? | Filling missing values with estimates such as the mean, median or a model prediction.
+---
+Empty cells are information too.
+
+## Direct answer
+
+To handle missing data, first understand why it is missing. Then choose: drop rows or columns if few are affected, fill values with a sensible estimate such as the median, or add a flag column showing that a value was missing. Document your choice because it can affect results.
+
+## pandas examples
+
+```python
+import pandas as pd
+
+df.isna().sum()                       # count missing per column
+df.dropna(subset=["price"])           # drop rows missing price
+df["age"] = df["age"].fillna(df["age"].median())
+df["income_missing"] = df["income"].isna()
+```
+
+## Choosing a strategy
+
+| Situation | Option |
+| :--- | :--- |
+| A few rows missing | drop |
+| Numeric, skewed | fill with median |
+| Category | fill with "unknown" |
+| Missingness itself informative | add a flag |
+
+## Cautions
+
+- Fill using training data only if you are building a model.
+- Do not fill blindly. Ask why the value is missing.
+
+## The bottom line
+
+Look, decide, document.
+
+=== pandas-dataframe-guide
+title: pandas DataFrame: A Beginner's Guide to Rows, Columns and Filters
+desc: Learn pandas DataFrames: creating them, selecting columns and rows, filtering, sorting, adding columns and grouping, with clear examples.
+tags: dataframe, pandas dataframe, pandas tutorial, pandas filter rows, python data analysis
+rel: pandas-for-beginners, exploratory-data-analysis
+q: What is a DataFrame? | A table-like data structure in pandas with labelled rows and columns.
+q: How do I select a column? | Use df followed by the column name in square brackets.
+q: How do I filter rows? | Use a condition inside square brackets, such as df[df["age"] > 30].
+---
+If you know spreadsheets, you already understand DataFrames.
+
+## Direct answer
+
+A pandas DataFrame is a table with labelled rows and columns. Create one from a dictionary or CSV, select columns with `df["name"]`, filter rows with conditions, add columns by assignment and summarise with `groupby`.
+
+## Examples
+
+```python
+import pandas as pd
+
+df = pd.DataFrame({
+    "name": ["Ada", "Ben", "Chi"],
+    "age": [28, 35, 22],
+    "city": ["Lagos", "Accra", "Lagos"],
+})
+
+df["age"]                         # one column
+df[["name", "city"]]              # several columns
+df[df["age"] > 25]                # filter rows
+df.sort_values("age")             # sort
+df["age_next_year"] = df["age"] + 1
+df.groupby("city")["age"].mean()  # average age per city
+```
+
+## Common tasks
+
+| Task | Code |
+| :--- | :--- |
+| Read CSV | `pd.read_csv("file.csv")` |
+| First rows | `df.head()` |
+| Summary | `df.describe()` |
+| Rename | `df.rename(columns={...})` |
+
+## The bottom line
+
+DataFrames are the workhorse of data analysis in Python.
+
+=== pandas-for-beginners
+title: pandas for Beginners: Load, Clean and Summarise Data in Python
+desc: A beginner path through pandas: load a CSV, inspect it, clean columns, handle duplicates and missing values and create a first summary.
+tags: pandas, pandas for beginners, pandas tutorial, python data analysis, clean data with pandas
+rel: pandas-dataframe-guide, exploratory-data-analysis
+q: What is pandas? | A Python library for working with tabular data using DataFrames.
+q: How do I load a CSV file? | Use pd.read_csv with the file path.
+q: What should I do first with a new dataset? | Look at the first rows, column types, missing values and summary statistics.
+---
+pandas turns messy files into answers.
+
+## Direct answer
+
+pandas is Python's main library for tabular data. Load a file with `pd.read_csv`, inspect it with `head`, `info` and `describe`, clean column names, fix types, remove duplicates, handle missing values and then group and summarise.
+
+## A first workflow
+
+```python
+import pandas as pd
+
+df = pd.read_csv("sales.csv")
+df.head()
+df.info()
+
+df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
+df = df.drop_duplicates()
+df["date"] = pd.to_datetime(df["date"])
+df["revenue"] = df["revenue"].fillna(0)
+
+summary = df.groupby("region")["revenue"].sum().sort_values(ascending=False)
+print(summary)
+```
+
+## Habits
+
+1. Keep the raw file untouched.
+2. Write cleaning steps as code.
+3. Check results after each step.
+4. Save the cleaned data separately.
+
+## The bottom line
+
+Load, inspect, clean, summarise. Repeat on every dataset.
+
+=== detect-outliers
+title: Outliers: How to Detect Them and What to Do With Them
+desc: Outliers are values far from the rest. Learn how to spot them with box plots and the IQR rule, and when to keep, fix or remove them.
+tags: outliers, how to detect outliers, iqr rule, box plot outliers, data cleaning
+rel: exploratory-data-analysis, mean-median-mode
+q: What is an outlier? | A data point that is very different from most of the others.
+q: How do I detect outliers? | Use box plots, the IQR rule or z-scores, and look at the data.
+q: Should I always remove them? | No. They may be errors or important real events. Investigate first.
+---
+Some outliers are mistakes. Some are the story.
+
+## Direct answer
+
+An outlier is a value far from the rest of the data. Detect them with box plots, the interquartile range (IQR) rule or z-scores, then investigate. Remove or correct them if they are errors. Keep them if they are real and relevant.
+
+## The IQR rule
+
+A value is a potential outlier if it is below Q1 minus 1.5 times IQR or above Q3 plus 1.5 times IQR.
+
+```python
+q1 = df["price"].quantile(0.25)
+q3 = df["price"].quantile(0.75)
+iqr = q3 - q1
+low, high = q1 - 1.5 * iqr, q3 + 1.5 * iqr
+outliers = df[(df["price"] < low) | (df["price"] > high)]
+```
+
+## What to do
+
+| Cause | Action |
+| :--- | :--- |
+| Data entry error | fix or remove |
+| Different group | analyse separately |
+| Real extreme | keep, consider robust methods |
+
+## The bottom line
+
+Investigate before you delete.
+
+=== kaggle-for-beginners
+title: Kaggle for Beginners: Datasets, Notebooks and Competitions
+desc: A beginner guide to Kaggle: finding datasets, running notebooks, learning from others, joining competitions and building a portfolio.
+tags: kaggle, kaggle for beginners, kaggle datasets, kaggle notebooks, data science portfolio
+rel: ml-projects-for-beginners, how-to-become-a-data-scientist
+q: What is Kaggle? | An online platform for data science with datasets, notebooks, courses and competitions.
+q: Is Kaggle free? | The core features are free to use. Check the site for current details.
+q: Do I need to compete? | No. Many people use datasets and notebooks to learn.
+---
+A playground with real data.
+
+## Direct answer
+
+Kaggle is a platform for data science learning. You can find datasets, run notebooks in the browser, read other people's solutions and join competitions. Start with a beginner dataset and a public notebook, then try your own analysis.
+
+## How to start
+
+1. **Create an account.**
+2. **Explore datasets** and pick a small, clean one.
+3. **Open a public notebook** and run it.
+4. **Change something** and see what happens.
+5. **Write your own notebook** with clear explanations.
+6. **Try a beginner competition** when ready.
+
+## Benefits
+
+- Free practice data and compute.
+- Examples to learn from.
+- A portfolio of notebooks.
+
+## Tips
+
+- Explain your reasoning in text.
+- Do not just copy top solutions.
+- Check dataset licences.
+
+## The bottom line
+
+Use Kaggle to practise and to show your work.

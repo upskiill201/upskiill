@@ -1,0 +1,98 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "teyro-backend",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": [
+        "/c",
+        "cd /d C:\\Users\\HP\\upskiill\\backend && node --env-file=.env --max-old-space-size=3072 node_modules/@nestjs/cli/bin/nest.js start --watch"
+      ],
+      "port": 3001
+    },
+    {
+      "name": "teyro-frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--prefix",
+        "frontend"
+      ],
+      "port": 3000
+    },
+    {
+      "name": "originals-frontend",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": [
+        "/c",
+        "cd /d C:\\Users\\HP\\upskiill\\.claude\\worktrees\\originals\\frontend && npx next dev -p 3005"
+      ],
+      "port": 3005
+    },
+    {
+      "name": "certificates-frontend",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": [
+        "/c",
+        "cd /d C:\\Users\\HP\\upskiill\\.claude\\worktrees\\certificates\\frontend && npx next dev -p 3006"
+      ],
+      "port": 3006
+    },
+    {
+      "name": "typescript-frontend",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": [
+        "/c",
+        "cd /d C:\\Users\\HP\\upskiill\\.claude\\worktrees\\typescript\\frontend && npx next dev -p 3007"
+      ],
+      "port": 3007
+    },
+    {
+      "name": "main-frontend-3008",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": [
+        "/c",
+        "cd /d C:\\Users\\HP\\upskiill\\frontend && npx next dev -p 3008"
+      ],
+      "port": 3008
+    },
+    {
+      "name": "sql-original-3009",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": [
+        "/c",
+        "cd /d C:\\Users\\HP\\upskiill\\frontend && npx next dev -p 3009"
+      ],
+      "port": 3009
+    },
+    {
+      "name": "js-original-proto",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "C:/Users/HP/AppData/Local/Temp/claude/C--Users-HP-upskiill/adbb52ae-8f2a-4302-b680-9a40c175dafc/scratchpad/serve.mjs",
+        "C:/Users/HP/AppData/Local/Temp/claude/C--Users-HP-upskiill/adbb52ae-8f2a-4302-b680-9a40c175dafc/scratchpad/proto",
+        "3011"
+      ],
+      "port": 3011
+    },
+    {
+      "name": "js-original-3012",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": [
+        "/c",
+        "cd /d C:\\Users\\HP\\AppData\\Local\\Temp\\claude\\C--Users-HP-upskiill\\adbb52ae-8f2a-4302-b680-9a40c175dafc\\scratchpad\\tree\\frontend && npx next dev -p 3012 --webpack"
+      ],
+      "port": 3012
+    },
+    {
+      "name": "c-original-3014",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": [
+        "/c",
+        "cd /d C:\\Users\\HP\\AppData\\Local\\Temp\\claude\\C--Users-HP-upskiill\\187192de-e1bb-4de4-bed7-9937eb8f5af4\\scratchpad\\tree\\frontend && npx next dev -p 3014 --webpack"
+      ],
+      "port": 3014
+    }
+  ]
+}

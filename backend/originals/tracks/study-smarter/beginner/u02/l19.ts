@@ -93,11 +93,11 @@ const lesson: OriginalLesson = {
         message: 'I passed 4 checks but failed "say why" for the quadratic formula. Am I OK?',
         prompt: 'What should Kofi say?',
         options: [
-          { text: 'Nearly! That failed check tells you exactly what to study next: ask the AI why each step works.' },
           { text: '4 out of 5, you are done.', why: 'The failed check is a clear signal of what to study.' },
           { text: 'Start the whole topic again.', why: 'Just the one check needs work.' },
+          { text: 'Nearly! That failed check tells you exactly what to study next: ask the AI why each step works.' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'matchPairs',

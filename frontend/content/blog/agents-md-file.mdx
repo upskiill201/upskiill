@@ -1,0 +1,76 @@
+---
+title: "What Is an AGENTS.md File? Give Your AI Coding Agent Project Rules"
+description: "AGENTS.md and similar files give coding agents your project's commands, conventions and rules. Learn what to include and how to keep it useful."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [agents md, agents.md, claude md, ai coding project rules, ai agent instructions file]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "Working with AI Coding Agents turns this into short, playable lessons. Free to start."
+  href: /courses/working-with-ai-coding-agents
+  label: "See the Working with AI Coding Agents course"
+faq:
+  - question: "What is AGENTS.md?"
+    answer: "A plain text or markdown file in your repository that tells AI coding agents how your project works."
+  - question: "What should I put in it?"
+    answer: "Build and test commands, folder structure, coding conventions, things to avoid and how to run checks."
+  - question: "How long should it be?"
+    answer: "Short and specific. Long files waste context and are often ignored."
+---
+
+New teammates read the README. AI agents read instruction files.
+
+## Direct answer
+
+An agent instruction file, such as `AGENTS.md` or a tool-specific equivalent, lives in your repository and tells AI coding agents how to work on your project. Include setup, build and test commands, conventions and rules, keep it concise and update it when practices change.
+
+## What to include
+
+- **Commands:** install, run, test, lint.
+- **Structure:** where code and tests live.
+- **Conventions:** naming, formatting, patterns to follow.
+- **Do not:** files not to edit, risky operations.
+- **Definition of done:** tests pass, lint clean.
+
+## Example
+
+```markdown
+# Project notes
+
+## Commands
+- Install: `npm install`
+- Test: `npm test`
+- Lint: `npm run lint`
+
+## Conventions
+- TypeScript strict mode.
+- Components live in `src/components`.
+
+## Rules
+- Never edit `generated/`.
+- Add a test for every bug fix.
+```
+
+## Tips
+
+- Be specific and short.
+- Review it like code.
+- Keep secrets out of it.
+
+## Where Teyro fits
+
+Teyro's [Working with AI Coding Agents](/courses/working-with-ai-coding-agents) course turns this into short lessons you can play in a few minutes a day. It has 60 lessons, and you can start free.
+
+## The bottom line
+
+A small file that saves a lot of repeated instructions.
+
+## More guides
+
+- [AI Coding Security Risks](/blog/ai-coding-security-risks)
+- [Git Worktrees for AI Agents](/blog/git-worktrees-for-ai-agents)
+- [Refactoring With AI](/blog/ai-refactoring-guide)
+- [What are ai coding agents](/blog/what-are-ai-coding-agents)
+- [Working with AI Coding Agents course](/courses/working-with-ai-coding-agents)

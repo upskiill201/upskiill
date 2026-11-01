@@ -13,6 +13,137 @@ export interface PlaygroundExample {
   code: string;
 }
 
+/** TypeScript starters for the playground's TypeScript mode (type-checked, strict). */
+export const TS_EXAMPLES: PlaygroundExample[] = [
+  {
+    id: 'ts-hello',
+    label: 'Hello',
+    code: `// Change the name and press Run.
+const name: string = "Grace";
+console.log(\`Hello, \${name}!\`);
+`,
+  },
+  {
+    id: 'ts-types',
+    label: 'Catch a bug',
+    code: `// TypeScript checks this before it runs.
+// Fix the line it points at.
+let sessions: number = 3;
+sessions = "four";
+console.log(sessions);
+`,
+  },
+  {
+    id: 'ts-shape',
+    label: 'A booking',
+    code: `type Status = "booked" | "cancelled";
+
+interface Booking {
+  code: string;
+  time: string;
+  status: Status;
+}
+
+const today: Booking[] = [
+  { code: "P-014", time: "10:00", status: "booked" },
+  { code: "P-022", time: "11:00", status: "cancelled" },
+];
+
+for (const b of today) {
+  console.log(\`\${b.time}  \${b.code}  \${b.status}\`);
+}
+`,
+  },
+];
+
+/** Web page starters for the playground's HTML & CSS mode (live preview, no scripts). */
+export const HTML_EXAMPLES: PlaygroundExample[] = [
+  {
+    id: 'html-hello',
+    label: 'Hello',
+    code: `<h1>Hello, I'm Kofi</h1>
+<p>Change my name to yours and watch the page change.</p>
+`,
+  },
+  {
+    id: 'html-styled',
+    label: 'With style',
+    code: `<style>
+  body { font-family: sans-serif; background: #071233; color: white; padding: 24px; }
+  h1 { color: #ff9600; }
+</style>
+
+<h1>Mensah Beats</h1>
+<p>Beats made on a phone in Accra.</p>
+`,
+  },
+  {
+    id: 'html-card',
+    label: 'A card',
+    code: `<style>
+  .card { border: 3px solid #0172fd; border-radius: 16px; padding: 16px; max-width: 280px; }
+  .card h2 { margin: 0 0 8px; }
+</style>
+
+<div class="card">
+  <h2>Sunrise in Osu</h2>
+  <p>Beat 1 · 92 BPM</p>
+  <audio controls src="beat-1.mp3"></audio>
+</div>
+`,
+  },
+];
+
+/** React Native: a screen on the phone preview (lib/code/rnRunner.ts). */
+export const RN_EXAMPLES: PlaygroundExample[] = [
+  {
+    id: 'rn-hello',
+    label: 'Hello',
+    code: `import { View, Text, StyleSheet } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={styles.screen}>
+      <Text style={styles.title}>Hello from my phone</Text>
+      <Text>Change the words and watch the app change.</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, padding: 24, justifyContent: 'center' },
+  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 8 },
+});
+`,
+  },
+  {
+    id: 'rn-counter',
+    label: 'A button',
+    code: `import { useState } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+
+export default function App() {
+  const [count, setCount] = useState(0);
+  return (
+    <View style={styles.screen}>
+      <Text style={styles.count}>{count}</Text>
+      <Pressable style={styles.button} onPress={() => setCount(count + 1)}>
+        <Text style={styles.label}>Tap me</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  count: { fontSize: 64, fontWeight: 'bold' },
+  button: { backgroundColor: '#0172fd', paddingVertical: 14, paddingHorizontal: 32, borderRadius: 14 },
+  label: { color: 'white', fontSize: 18, fontWeight: 'bold' },
+});
+`,
+  },
+];
+
 export const EXAMPLES: PlaygroundExample[] = [
   {
     id: 'hello',

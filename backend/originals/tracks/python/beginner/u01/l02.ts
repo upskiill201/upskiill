@@ -81,11 +81,11 @@ const lesson: OriginalLesson = {
         code: 'print(7 * 24)',
         language: 'python',
         options: [
-          { text: '168' },
           { text: '7 * 24', why: 'Without quotes, Python works the sum out.' },
           { text: '724', why: '* means multiply, not "join together".' },
+          { text: '168' },
         ],
-        answer: 0,
+        answer: 2,
       },
       {
         kind: 'writeCode',
@@ -112,11 +112,11 @@ const lesson: OriginalLesson = {
         kind: 'mcq',
         prompt: 'Why does print(365 * 24) show a number, but print("365 * 24") shows the sum itself?',
         options: [
-          { text: 'Without quotes Python works it out; with quotes it is just text' },
           { text: 'Quotes make Python do maths faster', why: 'Quotes turn it into text, so no maths happens.' },
+          { text: 'Without quotes Python works it out; with quotes it is just text' },
           { text: 'It is random', why: 'Python is never random about this. Quotes mean text.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'chatReply',

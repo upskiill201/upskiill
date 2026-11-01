@@ -550,3 +550,105 @@ a.primary {
   text-underline-offset: 3px;
   cursor: pointer;
 }
+
+/* ─── Sign back in (the account this device remembers) ──────────────────── */
+.saved {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: 18px;
+  background: var(--bg-card);
+  box-shadow: 0 4px 0 var(--border);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.15s ease;
+}
+.saved:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 var(--border);
+}
+.savedOn {
+  border-color: color-mix(in srgb, var(--color-brand) 60%, white);
+  background: var(--color-band);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--color-brand) 60%, white);
+}
+.savedAvatar {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  overflow: hidden;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--brand-purple);
+  color: var(--bg-card);
+  font-size: 20px;
+  font-weight: 800;
+}
+.savedText {
+  flex: 1;
+  min-width: 0;
+}
+.savedName {
+  display: block;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+.savedEmail {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.savedChev {
+  flex: none;
+  color: var(--border-strong);
+}
+.savedRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: -4px;
+}
+.linkBtn {
+  padding: 4px 2px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--color-brand);
+  cursor: pointer;
+}
+.linkMuted {
+  color: var(--text-muted);
+}
+
+/* ─── Welcome back (between a good log in and the app) ─────────────────── */
+.welcomeBack {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--bg-page);
+  text-align: center;
+}
+.welcomeBackTitle {
+  margin: 0;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--color-ink);
+}

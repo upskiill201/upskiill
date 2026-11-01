@@ -99,11 +99,11 @@ const lesson: OriginalLesson = {
         message: "I'm totally lost on electromagnetism. I've watched three videos on it.",
         prompt: 'What should Kofi suggest?',
         options: [
-          { text: "Ask the AI what electromagnetism is built on, then quiz yourself on each part. The gap's probably underneath." },
           { text: 'Watch a fourth video.', why: 'Same topic, same gap underneath.' },
+          { text: "Ask the AI what electromagnetism is built on, then quiz yourself on each part. The gap's probably underneath." },
           { text: 'Skip it, it is only one topic.', why: 'Other topics will be built on it too.' },
         ],
-        answer: 0,
+        answer: 1,
       },
       {
         kind: 'sortGroups',

@@ -1,0 +1,68 @@
+---
+title: "TypeScript Type Inference: When You Do Not Need to Write Types"
+description: "TypeScript can work out many types for you. Learn how inference works, when to add annotations and common situations where inference gets it wrong."
+publishedDate: "2026-10-26"
+category: skill-building
+tags: [type inference, typescript type inference, typescript annotations, infer types, typescript best practices]
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Learn it by playing"
+  text: "TypeScript for Beginners turns this into short, playable lessons. Free to start."
+  href: /courses/typescript-for-beginners
+  label: "See the TypeScript for Beginners course"
+faq:
+  - question: "What is type inference?"
+    answer: "TypeScript working out the type of a value from how it is created or used, without you writing it."
+  - question: "When should I add a type annotation?"
+    answer: "For function parameters, public APIs, empty arrays or objects, and when inference is too broad or wrong."
+  - question: "Does inference make code less safe?"
+    answer: "No. Inferred types are checked just like written ones."
+---
+
+You do not have to annotate everything.
+
+## Direct answer
+
+Type inference means TypeScript works out types from your code. `let n = 5` is inferred as `number`. Let inference do the work for local variables and return values, and add annotations on function parameters, exported APIs and places where the inferred type is too wide.
+
+## Examples
+
+```typescript
+let count = 5;            // number
+const name = "Ada";       // "Ada" (literal)
+const nums = [1, 2, 3];   // number[]
+
+function add(a: number, b: number) {
+  return a + b;           // return type inferred as number
+}
+```
+
+## When to annotate
+
+```typescript
+const items: string[] = [];          // empty array needs help
+function greet(user: User): string { // parameters need types
+  return `Hi ${user.name}`;
+}
+```
+
+## Tip
+
+Hover over a variable in your editor to see what TypeScript inferred.
+
+## Where Teyro fits
+
+Teyro's [TypeScript for Beginners](/courses/typescript-for-beginners) course turns this into short lessons you can play in a few minutes a day. It has 20 lessons, and you can start free.
+
+## The bottom line
+
+Annotate boundaries, infer the middle.
+
+## More guides
+
+- [tsconfig.json Explained](/blog/tsconfig-explained)
+- [TypeScript Type Guards and Narrowing Explained](/blog/typescript-type-guards)
+- [TypeScript Enums](/blog/typescript-enums)
+- [Typescript tutorial for beginners](/blog/typescript-tutorial-for-beginners)
+- [TypeScript for Beginners course](/courses/typescript-for-beginners)
