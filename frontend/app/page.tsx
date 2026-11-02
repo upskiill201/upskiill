@@ -33,7 +33,6 @@ import {
 } from '@/components/homepage/v3/Sections';
 import { LaunchSection } from '@/components/launch/LaunchSections';
 import IntroVideo from '@/components/homepage/v3/IntroVideo';
-import HomeCourses from '@/components/homepage/v3/HomeCourses';
 import s from '@/components/homepage/v3/Home.module.css';
 
 /**
@@ -47,7 +46,7 @@ const baloo2 = Baloo_2({
   display: 'swap',
 });
 
-// The courses section reads the live catalogue; refresh it every five minutes.
+// The intro video link comes from HQ; refresh it every five minutes.
 export const revalidate = 300;
 
 const TITLE = 'Teyro — The fun and effective way to learn skills';
@@ -75,7 +74,6 @@ export default function Home() {
       <HowItWorks />
       <IntroVideo />
       <Tracks />
-      <HomeCourses />
       {/* StayRelevant ("Learn for the job market") and WhyItWorks ("Why Teyro works")
           are hidden for now (founder, 2026-10-18). The components stay in
           Sections.tsx; add them back here to bring them back. */}

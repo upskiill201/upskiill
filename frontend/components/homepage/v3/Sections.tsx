@@ -1,7 +1,11 @@
 /**
- * Homepage sections (v3). Hero, how it works, skills, alternating feature
+ * Homepage sections (v3). Hero, how it works, topics, alternating feature
  * rows, get the app, audience, creators, FAQ, final CTA. The job: a visitor
  * understands what Teyro is and starts a lesson without scrolling far.
+ *
+ * Framing (founder, 2026-11-02): the learner picks a topic and their course
+ * is built for them, around their goal and level. Never present a shelf of
+ * ready-made courses here: no catalogue grid, no "see courses".
  *
  * Tactile rule (founder, 2026-10-29): only buttons that do something get the
  * 3D bottom edge. Cards, chips and badges are flat.
@@ -56,10 +60,10 @@ export function Hero() {
             The fun and <em>effective</em> way to learn skills.
           </h1>
           <p className={s.lead}>
-            Teyro turns real skills into short lessons you play like a game. Pick one, practise it in minutes, and
-            streaks, leagues and friends bring you back tomorrow.
+            Pick a topic and Teyro builds your course around you: your goal, your level, your time. Short lessons you
+            play like a game, with streaks, leagues and friends that bring you back tomorrow.
           </p>
-          <ul className={s.heroSkills} aria-label="What you can learn">
+          <ul className={s.heroSkills} aria-label="Topics you can learn">
             {SKILLS.map((skill) => (
               <li key={skill.id}>
                 <a href={`#skill-${skill.id}`} className={s.heroSkill}>
@@ -106,25 +110,25 @@ export { LaunchBadges };
 // ─── How it works: what Teyro is, in three steps ─────────────────────────────
 //
 // Right under the hero, so someone who has never heard of Teyro knows what it
-// is before they scroll past one screen: pick a skill, play a short lesson,
-// come back tomorrow. Laid out as the app's own learning path (dotted trail,
+// is before they scroll past one screen: pick a topic, tell Tey about you, get
+// a course built around your answers. Laid out as the app's own learning path (dotted trail,
 // numbered stops) rather than a row of feature cards.
 
 const STEPS: { art: ArtName; title: string; line: string }[] = [
   {
     art: 'target',
-    title: 'Pick a skill',
-    line: 'Coding, AI, money, leadership and more. Tell Tey your level and you start at the right lesson.',
+    title: 'Pick a topic',
+    line: 'Coding, AI, money, leadership, speaking up and more. Choose what you want to get better at.',
   },
   {
-    art: 'clock',
-    title: 'Play a short lesson',
-    line: 'Learn one idea, then use it straight away. Every answer is checked the moment you give it.',
+    art: 'signpost',
+    title: 'Tell Tey about you',
+    line: 'Your goal, what you already know and how much time you have each day. That is all it takes.',
   },
   {
     art: 'trophy',
-    title: 'Come back tomorrow',
-    line: 'Keep your streak, climb your league and finish the course with a certificate.',
+    title: 'Get your course',
+    line: 'Built around your answers and starting where you are, in short lessons you play like a game.',
   },
 ];
 
@@ -135,11 +139,11 @@ export function HowItWorks() {
         <Reveal className={s.sectionHead}>
           <span className={s.eyebrow}>How Teyro works</span>
           <h2 id="how-title" className={`${s.display} ${s.h2}`}>
-            Learn a real skill <em>like you&apos;d play a game.</em>
+            Your course, <em>built for you.</em>
           </h2>
           <p className={s.lead}>
-            Teyro is a learning app. Every course is cut into short lessons where you practise from the first minute,
-            and the game around it keeps you coming back until you finish.
+            Teyro is a learning app that shapes every course around the person taking it. You practise from the first
+            minute, and streaks, leagues and friends keep you coming back until you finish.
           </p>
         </Reveal>
         <ol className={s.steps}>
@@ -166,13 +170,13 @@ export function HowItWorks() {
 
 // ─── Skills ──────────────────────────────────────────────────────────────────
 //
-// What Teyro teaches today, one card per subject (lib/courses/subjects.ts,
-// shared with the /courses catalogue). Coding and AI link to their /learn-*
-// hubs; the rest to their section of the catalogue.
+// The topics a learner can pick, one card per subject (lib/courses/subjects.ts).
+// Each card starts learning rather than opening a catalogue: the course is
+// built after the learner picks.
 
 const SKILLS = SUBJECTS.map((subject) => ({
   ...subject,
-  href: subject.id === 'coding' ? '/learn-coding' : subject.id === 'ai' ? '/learn-ai' : `/courses#${subject.id}`,
+  href: START_HREF,
 }));
 
 export function Tracks() {
@@ -180,11 +184,11 @@ export function Tracks() {
     <section className={s.band} id="tracks" aria-labelledby="tracks-title">
       <div className={s.wrap}>
         <Reveal className={s.sectionHead}>
-          <span className={s.eyebrow}>What you can learn</span>
+          <span className={s.eyebrow}>Topics</span>
           <h2 id="tracks-title" className={`${s.display} ${s.h2}`}>
-            Way more than code. <em>Pick a skill and go.</em>
+            Way more than code. <em>Pick a topic and go.</em>
           </h2>
-          <p className={s.lead}>{SKILLS.length} subjects, all taught the same way: short lessons, real practice, a streak to keep.</p>
+          <p className={s.lead}>Whichever you pick, your course is built around your goal and your level.</p>
         </Reveal>
         <div className={s.skills}>
           {SKILLS.map((skill, i) => (
@@ -202,13 +206,13 @@ export function Tracks() {
                 <ul className={s.skillCourses}>
                   {skill.examples.map((course) => (
                     <li key={course}>
-                      <Glyph name="book" size={16} strokeWidth={2.75} />
+                      <Glyph name="check" size={16} strokeWidth={3} />
                       {course}
                     </li>
                   ))}
                 </ul>
                 <span className={s.skillCta}>
-                  See courses <Glyph name="arrow" size={18} strokeWidth={3} />
+                  Start this topic <Glyph name="arrow" size={18} strokeWidth={3} />
                 </span>
               </Link>
             </Reveal>
@@ -396,7 +400,7 @@ export function Certificates() {
           Finish it. <em>Prove it.</em>
         </>
       }
-      copy="Complete every lesson of any Teyro course and you earn a certificate of achievement: your real name, the skills you practised, your XP and best streak, and a credential ID anyone can check."
+      copy="Finish your course and you earn a certificate of achievement: your real name, the skills you practised, your XP and best streak, and a credential ID anyone can check."
       points={[
         'Your real name, confirmed by you before it prints',
         'A QR code and link that verify it in seconds',
@@ -651,12 +655,12 @@ const FAQ = [
   {
     question: 'Is Teyro free?',
     answer:
-      'Yes, you can start free. Many courses are free end to end; paid courses let you try the first two lessons free before you decide.',
+      'Yes, you can start learning for free.',
   },
   {
     question: 'What can I learn?',
     answer:
-      'Coding, AI, data, personal finance, leadership, communication, negotiation, business and career skills. Teyro Originals cover each of these, and new courses arrive all the time.',
+      'Coding, AI, data, personal finance, leadership, communication, negotiation, business and career skills. Pick a topic, tell Tey your goal and level, and your course is built around you.',
   },
   {
     question: 'Do I need any experience?',
@@ -670,7 +674,7 @@ const FAQ = [
   {
     question: 'Do I get a certificate?',
     answer:
-      'Yes. Finish every lesson of a course and you get a certificate with your name, the skills you practised and a credential ID anyone can verify. Download it, print it or add it to LinkedIn.',
+      'Yes. Finish your course and you get a certificate with your name, the skills you practised and a credential ID anyone can verify. Download it, print it or add it to LinkedIn.',
   },
   {
     question: 'How do I get the app?',
