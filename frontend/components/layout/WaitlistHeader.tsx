@@ -32,7 +32,6 @@ const NAV_LINKS: NavLink[] = [
   { label: 'How it works', anchor: '#how-it-works' },
   { label: 'Leagues', anchor: '#leagues' },
   { label: 'Get the app', href: '/download' },
-  { label: 'For creators', href: '/teach' },
   { label: 'Blog', href: '/blog' },
 ];
 
