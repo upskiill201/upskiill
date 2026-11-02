@@ -19,9 +19,9 @@ const COLUMNS: { title: string; links: [string, string][] }[] = [
       ['Learn coding', '/learn-coding'],
       ['Learn AI', '/learn-ai'],
       ['Learn online', '/learn-online'],
-      ['How it works', '/#lessons'],
+      ['How it works', '/#how-it-works'],
       ['Leagues', '/#leagues'],
-      [LEARNER_ENTRY.gated ? 'Get notified' : 'Get the app', LEARNER_ENTRY.href],
+      [LEARNER_ENTRY.gated ? 'Get notified' : 'Get the app', LEARNER_ENTRY.gated ? LEARNER_ENTRY.href : '/download'],
     ],
   },
   {
@@ -73,9 +73,9 @@ export default function WaitlistFooter() {
               <TeyMark size={56} />
             </Link>
             <p className={styles.promise}>
-              The fun way to finish learning coding and AI: short daily lessons with streaks, leagues and friends.
+              The fun and effective way to learn skills: short daily lessons with streaks, leagues and friends.
             </p>
-            <Link href={LEARNER_ENTRY.href} className={styles.getApp}>
+            <Link href={LEARNER_ENTRY.gated ? LEARNER_ENTRY.href : '/download'} className={styles.getApp}>
               {LEARNER_ENTRY.gated ? 'Get notified' : 'Get the app'}
             </Link>
           </div>
