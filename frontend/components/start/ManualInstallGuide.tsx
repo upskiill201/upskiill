@@ -17,13 +17,13 @@ import { browserLabel, type PwaBrowser, type PwaPlatform } from '@/lib/pwa/platf
 import { StartButton, StartCard, StartGhostButton, StartHeadline, TeySays, startStyles } from './StartUi';
 import { HomeScreenMock } from './HomeScreenMock';
 
-interface MenuRecipe {
+export interface MenuRecipe {
   icon: React.ReactNode;
   /** Ordered menu path, e.g. ['Tap the ⋮ menu', 'Choose Install app']. */
   path: string[];
 }
 
-function recipeFor(platform: PwaPlatform, browser: PwaBrowser): MenuRecipe {
+export function recipeFor(platform: PwaPlatform, browser: PwaBrowser): MenuRecipe {
   if (platform === 'android') {
     switch (browser) {
       case 'samsung':

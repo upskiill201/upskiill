@@ -1,6 +1,10 @@
 /**
- * Homepage sections (v3). Coddy's layout — hero, tracks, alternating feature
- * rows, audience, creators, FAQ, final CTA — in Duolingo's chunky style.
+ * Homepage sections (v3). Hero, how it works, skills, alternating feature
+ * rows, get the app, audience, creators, FAQ, final CTA. The job: a visitor
+ * understands what Teyro is and starts a lesson without scrolling far.
+ *
+ * Tactile rule (founder, 2026-10-29): only buttons that do something get the
+ * 3D bottom edge. Cards, chips and badges are flat.
  *
  * Copy rule: say what Teyro does for the learner (finish what you start),
  * and only claim what ships. No invented user counts, ratings or quotes.
@@ -13,6 +17,7 @@ import { SUBJECTS } from '@/lib/courses/subjects';
 import Accordion from '@/components/ui/Accordion';
 import { Glyph } from '@/components/art/Glyph';
 import LaunchBadges from '@/components/homepage/v2/LaunchBadges';
+import { FaAndroid, FaApple } from 'react-icons/fa';
 import { APP_LAUNCHES, LEARNER_ENTRY, STUDIO_OPENS } from '@/lib/launch';
 import {
   FriendsVisual,
@@ -31,6 +36,8 @@ import s from './Home.module.css';
 export const START_HREF = LEARNER_ENTRY.href;
 export const LOGIN_HREF = '/login?mode=signin';
 const START_LABEL = LEARNER_ENTRY.label;
+/** The hero's button says exactly what happens next once the app is open. */
+const HERO_START_LABEL = LEARNER_ENTRY.gated ? LEARNER_ENTRY.label : 'Start learning free';
 
 // ─── Hero ────────────────────────────────────────────────────────────────────
 
@@ -49,8 +56,8 @@ export function Hero() {
             The fun and <em>effective</em> way to learn skills.
           </h1>
           <p className={s.lead}>
-            Coding, AI, money, leadership, communication and more, in short daily lessons with streaks, leagues and
-            friends that keep you coming back until you actually finish.
+            Teyro turns real skills into short lessons you play like a game. Pick one, practise it in minutes, and
+            streaks, leagues and friends bring you back tomorrow.
           </p>
           <ul className={s.heroSkills} aria-label="What you can learn">
             {SKILLS.map((skill) => (
@@ -64,7 +71,7 @@ export function Hero() {
           </ul>
           <div className={s.heroActions}>
             <Link href={START_HREF} className={s.btn}>
-              {START_LABEL}
+              {HERO_START_LABEL}
             </Link>
             {LEARNER_ENTRY.gated ? (
               <a href="#how-it-works" className={s.btnGhost}>
@@ -81,11 +88,11 @@ export function Hero() {
               <Glyph name="check" size={16} strokeWidth={4} /> Free to start
             </span>
             <span>
-              <Glyph name="check" size={16} strokeWidth={4} /> Bite-sized lessons
+              <Glyph name="check" size={16} strokeWidth={4} /> Lessons in minutes
             </span>
-            <span>
-              <Glyph name="check" size={16} strokeWidth={4} /> No app store needed
-            </span>
+            <Link href="/download" className={s.heroNoteLink}>
+              <Glyph name="check" size={16} strokeWidth={4} /> On phone and computer
+            </Link>
           </div>
         </div>
         <HeroPhone />
@@ -95,6 +102,67 @@ export function Hero() {
 }
 
 export { LaunchBadges };
+
+// ─── How it works: what Teyro is, in three steps ─────────────────────────────
+//
+// Right under the hero, so someone who has never heard of Teyro knows what it
+// is before they scroll past one screen: pick a skill, play a short lesson,
+// come back tomorrow. Laid out as the app's own learning path (dotted trail,
+// numbered stops) rather than a row of feature cards.
+
+const STEPS: { art: ArtName; title: string; line: string }[] = [
+  {
+    art: 'target',
+    title: 'Pick a skill',
+    line: 'Coding, AI, money, leadership and more. Tell Tey your level and you start at the right lesson.',
+  },
+  {
+    art: 'clock',
+    title: 'Play a short lesson',
+    line: 'Learn one idea, then use it straight away. Every answer is checked the moment you give it.',
+  },
+  {
+    art: 'trophy',
+    title: 'Come back tomorrow',
+    line: 'Keep your streak, climb your league and finish the course with a certificate.',
+  },
+];
+
+export function HowItWorks() {
+  return (
+    <section className={`${s.band} ${s.tint}`} id="how-it-works" aria-labelledby="how-title">
+      <div className={s.wrap}>
+        <Reveal className={s.sectionHead}>
+          <span className={s.eyebrow}>How Teyro works</span>
+          <h2 id="how-title" className={`${s.display} ${s.h2}`}>
+            Learn a real skill <em>like you&apos;d play a game.</em>
+          </h2>
+          <p className={s.lead}>
+            Teyro is a learning app. Every course is cut into short lessons where you practise from the first minute,
+            and the game around it keeps you coming back until you finish.
+          </p>
+        </Reveal>
+        <ol className={s.steps}>
+          {STEPS.map((step, i) => (
+            <Reveal key={step.title} delay={i * 0.1} className={s.step}>
+              <span className={s.stepArt}>
+                <Art name={step.art} size={56} />
+                <span className={s.stepNum}>{i + 1}</span>
+              </span>
+              <h3 className={`${s.display} ${s.h3}`}>{step.title}</h3>
+              <p>{step.line}</p>
+            </Reveal>
+          ))}
+        </ol>
+        <Reveal className={s.center} delay={0.2}>
+          <Link href={START_HREF} className={s.btn} style={{ marginTop: 48 }}>
+            {HERO_START_LABEL}
+          </Link>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
 
 // ─── Skills ──────────────────────────────────────────────────────────────────
 //
@@ -116,10 +184,7 @@ export function Tracks() {
           <h2 id="tracks-title" className={`${s.display} ${s.h2}`}>
             Way more than code. <em>Pick a skill and go.</em>
           </h2>
-          <p className={s.lead}>
-            Every course is built the Teyro way: short lessons, real practice from the first minute, and a streak that
-            keeps you going.
-          </p>
+          <p className={s.lead}>{SKILLS.length} subjects, all taught the same way: short lessons, real practice, a streak to keep.</p>
         </Reveal>
         <div className={s.skills}>
           {SKILLS.map((skill, i) => (
@@ -439,19 +504,53 @@ export function Features() {
         flip
         tint
       />
-      <Split
-        id="app"
-        eyebrow="On your phone"
-        title={
-          <>
-            Tey keeps you <em>on track.</em>
-          </>
-        }
-        copy="Put Teyro on your Home Screen in one tap, with no app store. It opens instantly and reminds you before your streak runs out."
-        points={['Installs to your Home Screen on iPhone and Android', 'A friendly nudge on days you haven’t practised', 'Opens in a tap, works offline']}
-        visual={<RemindersVisual />}
-      />
     </>
+  );
+}
+
+// ─── Get the app ─────────────────────────────────────────────────────────────
+//
+// One band that says Teyro is on every device and sends each visitor to
+// /download, which shows the install for the device they're holding.
+
+const DEVICES = [
+  { id: 'ios', label: 'iPhone & iPad', icon: <FaApple size={26} /> },
+  { id: 'android', label: 'Android', icon: <FaAndroid size={26} /> },
+  { id: 'desktop', label: 'Computer', icon: <Art name="laptop" size={30} /> },
+];
+
+export function GetTheApp() {
+  return (
+    <section className={s.band} id="app" aria-labelledby="app-title">
+      <div className={`${s.wrap} ${s.split}`}>
+        <Reveal className={s.splitCopy}>
+          <span className={s.eyebrow}>Get the app</span>
+          <h2 id="app-title" className={`${s.display} ${s.h2}`}>
+            Teyro on every <em>screen you own.</em>
+          </h2>
+          <p className={s.lead}>
+            Install Teyro on your phone or computer in a few seconds, straight from your browser. It opens in a tap,
+            works offline and reminds you before your streak runs out.
+          </p>
+          <ul className={s.devices} aria-label="Devices Teyro runs on">
+            {DEVICES.map((d) => (
+              <li key={d.id}>
+                <Link href={`/download#${d.id}`} className={s.device}>
+                  {d.icon}
+                  {d.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <Link href="/download" className={s.btn}>
+            <Glyph name="download" size={20} strokeWidth={3} /> Get the app
+          </Link>
+        </Reveal>
+        <Reveal delay={0.1} className={s.splitVisual}>
+          <RemindersVisual />
+        </Reveal>
+      </div>
+    </section>
   );
 }
 
@@ -574,9 +673,9 @@ const FAQ = [
       'Yes. Finish every lesson of a course and you get a certificate with your name, the skills you practised and a credential ID anyone can verify. Download it, print it or add it to LinkedIn.',
   },
   {
-    question: 'Do I need to download an app?',
+    question: 'How do I get the app?',
     answer:
-      'No app store needed. Teyro runs in your browser and installs to your Home Screen on iPhone and Android in one tap, where it opens instantly and works offline.',
+      'Open teyro.app/download on your iPhone, Android phone or computer and it shows the install for that device. It takes a few seconds, there is no app store to go through, and you can also just learn in your browser.',
   },
   {
     question: 'Can I teach on Teyro?',

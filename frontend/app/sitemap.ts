@@ -41,6 +41,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
+      // Get the app: shows the install for the visitor's device.
+      url: 'https://teyro.app/download',
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
       url: 'https://teyro.app/blog',
       changeFrequency: 'daily',
       priority: 0.9,
