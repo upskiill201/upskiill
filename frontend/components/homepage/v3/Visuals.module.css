@@ -110,7 +110,6 @@
 .choice {
   padding: 12px 14px;
   border: 2px solid var(--border);
-  border-bottom-width: 4px;
   border-radius: 14px;
   background: var(--bg-card);
   font-size: 14px;
@@ -173,7 +172,6 @@
   gap: 14px;
   padding: 14px 16px;
   border: 2px solid color-mix(in srgb, var(--tone) 35%, var(--border));
-  border-bottom-width: 4px;
   border-radius: 18px;
   background: color-mix(in srgb, var(--tone) 7%, var(--bg-card));
 }
@@ -199,7 +197,6 @@
   place-items: center;
   border-radius: 999px;
   background: var(--tone);
-  box-shadow: 0 4px 0 color-mix(in srgb, var(--tone) 70%, black);
   color: var(--bg-card);
   font-size: 18px;
   font-weight: 800;
@@ -224,7 +221,6 @@
   padding: 16px 20px;
   border-radius: 22px;
   background: var(--warning);
-  box-shadow: 0 5px 0 color-mix(in srgb, var(--warning) 70%, black);
   color: var(--bg-card);
 }
 
@@ -565,7 +561,6 @@
   gap: 8px;
   padding: 12px;
   border: 2px solid color-mix(in srgb, var(--warning) 45%, var(--bg-card));
-  border-bottom-width: 4px;
   border-radius: 16px;
   background: color-mix(in srgb, var(--warning) 10%, var(--bg-card));
   color: color-mix(in srgb, var(--warning) 70%, black);
@@ -608,7 +603,6 @@
   place-items: center;
   border-radius: 999px;
   background: var(--warning);
-  box-shadow: 0 4px 0 color-mix(in srgb, var(--warning) 70%, black);
   color: var(--bg-card);
 }
 

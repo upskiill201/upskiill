@@ -12,7 +12,6 @@
   display: flex;
   flex-direction: column;
   border: 2px solid var(--border);
-  border-bottom-width: 4px;
   border-radius: 16px;
   background: var(--bg-card);
   overflow: hidden;

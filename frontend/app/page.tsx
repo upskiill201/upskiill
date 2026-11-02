@@ -1,8 +1,10 @@
 /**
  * Teyro homepage — the page that turns new traffic into learners.
  *
- * Coddy's structure (hero with the app, tracks, alternating feature rows,
- * who it's for, creators, FAQ, final CTA) in Duolingo's chunky style. Every
+ * Order follows one job: understand what Teyro is, then start learning. Hero
+ * (with the button), how it works in three steps, skills and live courses to
+ * start from, then the features, the app download, who it's for, FAQ. Creators
+ * are reached from the footer (Teach on Teyro), not a homepage section. Every
  * visual is drawn from the rebuilt app and shows someone succeeding with it:
  * a 128-day streak, #1 in the league, a correct answer, today's quests done.
  *
@@ -20,18 +22,17 @@ import { Baloo_2 } from 'next/font/google';
 import {
   Audience,
   Certificates,
-  Creators,
   Faq,
   Features,
   FinalCta,
+  GetTheApp,
   Hero,
+  HowItWorks,
   LaunchBadges,
   Tracks,
 } from '@/components/homepage/v3/Sections';
 import { LaunchSection } from '@/components/launch/LaunchSections';
 import IntroVideo from '@/components/homepage/v3/IntroVideo';
-import GetNotified from '@/components/homepage/v3/GetNotified';
-import HomeCourses from '@/components/homepage/v3/HomeCourses';
 import s from '@/components/homepage/v3/Home.module.css';
 
 /**
@@ -45,7 +46,7 @@ const baloo2 = Baloo_2({
   display: 'swap',
 });
 
-// The courses section reads the live catalogue; refresh it every five minutes.
+// The intro video link comes from HQ; refresh it every five minutes.
 export const revalidate = 300;
 
 const TITLE = 'Teyro — The fun and effective way to learn skills';
@@ -68,20 +69,19 @@ export default function Home() {
         <style>{`[data-reveal]{opacity:1!important;transform:none!important}`}</style>
       </noscript>
       <Hero />
-      <IntroVideo />
       <LaunchBadges />
       <LaunchSection />
+      <HowItWorks />
+      <IntroVideo />
       <Tracks />
-      <HomeCourses />
       {/* StayRelevant ("Learn for the job market") and WhyItWorks ("Why Teyro works")
           are hidden for now (founder, 2026-10-18). The components stay in
           Sections.tsx; add them back here to bring them back. */}
       <Features />
       <Certificates />
+      <GetTheApp />
       <Audience />
-      <Creators />
       <Faq />
-      <GetNotified />
       <FinalCta />
     </main>
   );

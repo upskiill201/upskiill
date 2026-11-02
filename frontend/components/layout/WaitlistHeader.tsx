@@ -28,11 +28,10 @@ interface NavLink {
 }
 
 const NAV_LINKS: NavLink[] = [
-  { label: 'Courses', href: '/courses' },
-  { label: 'How it works', anchor: '#lessons' },
+  { label: 'Topics', anchor: '#tracks' },
+  { label: 'How it works', anchor: '#how-it-works' },
   { label: 'Leagues', anchor: '#leagues' },
-  { label: 'Community', anchor: '#community' },
-  { label: 'For creators', href: '/teach' },
+  { label: 'Get the app', href: '/download' },
   { label: 'Blog', href: '/blog' },
 ];
 
