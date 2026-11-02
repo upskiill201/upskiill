@@ -681,11 +681,6 @@ const FAQ = [
     answer:
       'Open teyro.app/download on your iPhone, Android phone or computer and it shows the install for that device. It takes a few seconds, there is no app store to go through, and you can also just learn in your browser.',
   },
-  {
-    question: 'Can I teach on Teyro?',
-    answer:
-      'Yes. Creators build courses in Teyro Studio, publish them free or paid, and get a community and analytics for every course.',
-  },
 ];
 
 // Answered first while the app is closed — it is also what search and AI

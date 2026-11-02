@@ -3,7 +3,8 @@
  *
  * Order follows one job: understand what Teyro is, then start learning. Hero
  * (with the button), how it works in three steps, skills and live courses to
- * start from, then the features, the app download, who it's for, FAQ. Every
+ * start from, then the features, the app download, who it's for, FAQ. Creators
+ * are reached from the footer (Teach on Teyro), not a homepage section. Every
  * visual is drawn from the rebuilt app and shows someone succeeding with it:
  * a 128-day streak, #1 in the league, a correct answer, today's quests done.
  *
@@ -21,7 +22,6 @@ import { Baloo_2 } from 'next/font/google';
 import {
   Audience,
   Certificates,
-  Creators,
   Faq,
   Features,
   FinalCta,
@@ -81,7 +81,6 @@ export default function Home() {
       <Certificates />
       <GetTheApp />
       <Audience />
-      <Creators />
       <Faq />
       <FinalCta />
     </main>
