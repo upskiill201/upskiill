@@ -15,6 +15,14 @@ on:
         description: 'Type DEPLOY to confirm you have tested this on staging'
         required: true
         type: string
+      originals:
+        description: 'Teyro Originals to publish: only the courses changed since the last successful deploy, or all of them'
+        required: false
+        type: choice
+        default: changed
+        options:
+          - changed
+          - all
 
 jobs:
   validate:
@@ -34,10 +42,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: validate
     environment: production   # requires approval from a GitHub Environment protection rule
+    permissions:
+      actions: read     # find the last successful deploy (Publish Teyro Originals)
+      contents: read
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history, so the Originals loader can diff against the last deploy
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -86,11 +99,32 @@ jobs:
         # The loader checks every lesson first, runs every lesson's Python, and
         # refuses to write if anything fails; it is upsert-only and never deletes
         # (backend/scripts/originals.ts).
+        #
+        # Founder decision 2026-11-03: publish only the courses being pushed (a
+        # full run takes 30–60 minutes). The loader diffs against the commit of
+        # the last successful production deploy and rewrites only the Tracks
+        # whose files changed; a change to shared course code, an unknown commit,
+        # no earlier successful deploy, or the "all" input republishes every
+        # course, which is always safe because the loader never deletes.
         working-directory: backend
         env:
           DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
           DIRECT_URL: ${{ secrets.PRODUCTION_DIRECT_URL }}
-        run: npm run originals -- --write --publish
+          GH_TOKEN: ${{ github.token }}
+          ORIGINALS_INPUT: ${{ github.event.inputs.originals }}
+        run: |
+          SINCE=""
+          if [ "$ORIGINALS_INPUT" != "all" ]; then
+            SINCE=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow deploy-production.yml --status success \
+              --limit 1 --json headSha --jq '.[0].headSha // empty' || true)
+          fi
+          if [ -n "$SINCE" ]; then
+            echo "Publishing the Originals changed since the last successful deploy ($SINCE)."
+            npm run originals -- --write --publish --changed-since "$SINCE"
+          else
+            echo "Publishing ALL Originals (input: ${ORIGINALS_INPUT:-changed}; no earlier successful deploy used)."
+            npm run originals -- --write --publish
+          fi
 
       - name: Announce deploy
         run: |

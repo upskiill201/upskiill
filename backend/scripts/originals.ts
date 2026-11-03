@@ -3,7 +3,9 @@
  *
  *   npm run originals                      check every Track (no database)
  *   npm run originals -- --track ai-at-work
- *   npm run originals -- --export          + write preview JSON for /dev/originals
+ *   npm run originals -- --track ai-at-work,python   several Tracks
+ *   npm run originals -- --changed-since <sha>       only Tracks changed since <sha>
+ *   npm run originals -- --export       + write preview JSON for /dev/originals
  *   npm run originals -- --write           + upsert into the database (as drafts)
  *   npm run originals -- --write --publish + make the courses visible to learners
  *
@@ -14,13 +16,22 @@
  *
  * Deploys publish automatically: deploy-staging.yml and deploy-production.yml
  * run `npm run originals -- --write --publish` once the new backend is up, so
- * nobody loads courses by hand (founder, 2026-10-14).
+ * nobody loads courses by hand (founder, 2026-10-14). Since 2026-11-03 they
+ * pass `--changed-since <sha of the last successful deploy>`, so a deploy only
+ * rewrites the Tracks whose files changed (a full run takes 30–60 minutes).
+ *
+ * --changed-since reads `git diff --name-only <sha> HEAD`. A Track's files are
+ * originals/tracks/<name>.ts and originals/tracks/<name>/**. Anything else that
+ * shapes the courses (the rest of originals/, src/originals, src/lesson, this
+ * script), an unknown sha or a failed diff selects EVERY Track: the loader is
+ * upsert-only, so a full run is always the safe fallback.
  *
  * Writes need --write; the default run only checks. The local .env points at
  * the STAGING database, so --write changes staging.
  */
 import './load-env';
-import { mkdirSync, writeFileSync } from 'fs';
+import { execFileSync } from 'child_process';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { tracks } from '../originals';
@@ -43,7 +54,12 @@ const option = (name: string) => {
 const WRITE = flag('write');
 const PUBLISH = flag('publish');
 const EXPORT = flag('export');
-const ONLY = option('track');
+const ONLY = option('track')
+  ?.split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+const sinceArg = option('changed-since');
+const CHANGED_SINCE = flag('changed-since') ? (sinceArg && !sinceArg.startsWith('--') ? sinceArg : '') : undefined;
 const AUTHOR_EMAIL = process.env.ORIGINALS_AUTHOR_EMAIL ?? 'originals@teyro.app';
 
 function report(track: OriginalTrackDef, codeIssues: LintIssue[] = []): boolean {
@@ -288,14 +304,81 @@ async function write(prisma: PrismaClient, track: OriginalTrackDef, instructorId
   }
 }
 
+const TRACKS_DIR = 'backend/originals/tracks/';
+// Changes here can alter every course, so they republish all of them.
+const SHARED = ['backend/originals/', 'backend/src/originals/', 'backend/src/lesson/', 'backend/scripts/originals.ts'];
+
+/** The Tracks whose files changed since `sha`, or every Track when that can't be told safely. */
+function changedTracks(sha: string): OriginalTrackDef[] {
+  const all = (why: string) => {
+    console.log(`--changed-since ${sha || '(none)'}: ${why}, so checking and loading ALL ${tracks.length} Tracks.`);
+    return tracks;
+  };
+  if (!sha) return all('no sha given');
+  const repo = join(__dirname, '..', '..');
+  let files: string[];
+  try {
+    execFileSync('git', ['rev-parse', '--verify', '--quiet', `${sha}^{commit}`], { cwd: repo, stdio: 'ignore' });
+    files = execFileSync('git', ['diff', '--name-only', sha, 'HEAD'], { cwd: repo, encoding: 'utf8' })
+      .split('\n')
+      .map((f) => f.trim())
+      .filter(Boolean);
+  } catch {
+    return all('that commit is unknown here or git diff failed');
+  }
+
+  const changedByName = new Map<string, string[]>(); // <name> → its changed files
+  for (const file of files) {
+    if (file.startsWith(TRACKS_DIR)) {
+      const rest = file.slice(TRACKS_DIR.length);
+      const slash = rest.indexOf('/');
+      if (slash < 0 && !rest.endsWith('.ts')) return all(`${file} changed (not a Track file)`);
+      const name = slash >= 0 ? rest.slice(0, slash) : rest.slice(0, -'.ts'.length);
+      changedByName.set(name, [...(changedByName.get(name) ?? []), file]);
+    } else if (SHARED.some((p) => (p.endsWith('/') ? file.startsWith(p) : file === p))) {
+      return all(`${file} changed (shared by every course)`);
+    }
+  }
+
+  const selected: OriginalTrackDef[] = [];
+  const reasons: string[] = [];
+  for (const [name, changed] of changedByName) {
+    const file = join(repo, `${TRACKS_DIR}${name}.ts`);
+    if (!existsSync(file)) return all(`${changed[0]} changed and there is no ${TRACKS_DIR}${name}.ts`);
+    // The explicit .ts path: <name>/ sits beside <name>.ts and must not win.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const slug = (require(file) as { default?: OriginalTrackDef }).default?.slug;
+    const track = tracks.find((t) => t.slug === slug);
+    if (!track) return all(`${TRACKS_DIR}${name}.ts is not a Track registered in originals/index.ts`);
+    if (!selected.includes(track)) selected.push(track);
+    reasons.push(`  ${track.slug}: ${changed[0]} changed${changed.length > 1 ? ` (+${changed.length - 1} more file(s))` : ''}`);
+  }
+  console.log(`--changed-since ${sha}: ${files.length} changed file(s), ${selected.length} Track(s) selected.`);
+  reasons.forEach((r) => console.log(r));
+  return selected;
+}
+
 async function main() {
   if (process.env.NODE_ENV === 'production') {
     throw new Error('Refusing to load Originals with NODE_ENV=production (CLAUDE.md §7).');
   }
   if (PUBLISH && !WRITE) throw new Error('--publish only works together with --write.');
 
-  const selected = ONLY ? tracks.filter((t) => t.slug === ONLY) : tracks;
-  if (selected.length === 0) throw new Error(ONLY ? `No Track "${ONLY}".` : 'No Tracks registered in originals/index.ts.');
+  if (ONLY && CHANGED_SINCE !== undefined) throw new Error('Use --track or --changed-since, not both.');
+  let selected = tracks;
+  if (ONLY) {
+    const missing = ONLY.filter((slug) => !tracks.some((t) => t.slug === slug));
+    if (missing.length) throw new Error(`No Track ${missing.map((s) => `"${s}"`).join(', ')}.`);
+    selected = tracks.filter((t) => ONLY.includes(t.slug));
+  } else if (CHANGED_SINCE !== undefined) {
+    selected = changedTracks(CHANGED_SINCE);
+    if (selected.length === 0) {
+      console.log(`No Originals changed since ${CHANGED_SINCE}: nothing to publish.`);
+      return;
+    }
+  }
+  if (selected.length === 0) throw new Error('No Tracks registered in originals/index.ts.');
+  const isSelected = (slug: string) => selected.some((t) => t.slug === slug);
 
   let ok = true;
   for (const track of selected) {
@@ -305,7 +388,7 @@ async function main() {
     ok = report(track, await verifyTrackCode(track)) && ok;
   }
   // The AI Stack's practice toolkit (teyro_ai.py) and shop data: lessons depend on its exact behaviour.
-  if (!ONLY || ONLY === 'the-ai-stack') {
+  if (isSelected('the-ai-stack')) {
     console.log('\n(checking the teyro_ai practice toolkit...)');
     const toolkit = (await verifyTrackCode(toolkitSelfTestTrack())).filter((i) => i.level === 'error');
     for (const i of toolkit) console.log(`  ✗ teyro_ai toolkit: ${i.message}`);
@@ -313,7 +396,7 @@ async function main() {
     ok = toolkit.length === 0 && ok;
   }
   // Working with AI Coding Agents' practice agent (teyro_agent.py) and its Delivery Board project.
-  if (!ONLY || ONLY === 'working-with-ai-coding-agents') {
+  if (isSelected('working-with-ai-coding-agents')) {
     console.log('\n(checking the teyro_agent practice agent...)');
     const agent = (await verifyTrackCode(agentSelfTestTrack())).filter((i) => i.level === 'error');
     for (const i of agent) console.log(`  ✗ teyro_agent: ${i.message}`);
