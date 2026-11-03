@@ -333,6 +333,81 @@
 .groupHead:first-child {
   margin-top: 4px;
 }
+.labelHot {
+  margin-left: 8px;
+  top: -1px;
+}
+
+/* A topic that opens to show its courses. */
+.topics {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.topic {
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 20px;
+  background: var(--bg-card, var(--bg-page));
+  overflow: hidden;
+  transition: border-color 150ms ease;
+}
+.topicOpen {
+  border-color: var(--color-brand);
+}
+.topicHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px 10px 10px;
+  text-align: left;
+  background: transparent;
+  cursor: pointer;
+}
+.topicHead:focus-visible {
+  outline: 3px solid var(--color-brand);
+  outline-offset: -3px;
+  border-radius: 18px;
+}
+.topicName {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+.topicCount {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+.topicChev {
+  flex: none;
+  color: var(--text-secondary);
+  transform: rotate(90deg);
+  transition: transform 200ms ease;
+}
+.topicOpen .topicChev {
+  transform: rotate(-90deg);
+  color: var(--color-brand);
+}
+.topicBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 12px 14px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .topicChev {
+    transition: none;
+  }
+}
 .cover {
   position: relative;
   width: 64px;

@@ -11,6 +11,7 @@ import { useEffect, useState, type ButtonHTMLAttributes, type ReactNode } from '
 import { playTypingKey } from '@/lib/audio/onboardingAudio';
 import { Art, type ArtName } from '@/components/art/Art';
 import { Glyph } from '@/components/art/Glyph';
+import { HotBadge } from './HotBadge';
 import css from './kit.module.css';
 
 // ── Top bar ───────────────────────────────────────────────────────────────
@@ -170,6 +171,8 @@ export function Choice(props: {
   layout?: 'row' | 'tile' | 'small';
   index?: number;
   chevron?: boolean;
+  /** A course from lib/courses/hot.ts: the HOT sticker beside the label. */
+  hot?: boolean;
   className?: string;
 }) {
   const reduce = useReducedMotion();
@@ -196,7 +199,10 @@ export function Choice(props: {
         </span>
       ))}
       <span className={layout === 'row' ? css.text : undefined}>
-        <span className={css.label}>{props.label}</span>
+        <span className={css.label}>
+          {props.label}
+          {props.hot && <HotBadge className={css.labelHot} />}
+        </span>
         {props.sub && <span className={css.sub}>{props.sub}</span>}
       </span>
       {props.meta && <span className={css.meta}>{props.meta}</span>}

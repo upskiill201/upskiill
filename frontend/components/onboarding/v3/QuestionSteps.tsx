@@ -7,10 +7,14 @@
  * screen, Teyro's own illustrations on every answer, a tap is an answer.
  */
 
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { FaAppStoreIos, FaGoogle, FaInstagram, FaLinkedinIn, FaTiktok, FaYoutube } from 'react-icons/fa';
 import { Art, topicArt, type ArtName } from '@/components/art/Art';
+import { Glyph } from '@/components/art/Glyph';
+import { HotFlame } from '@/components/kit/HotBadge';
+import { isHotCourse } from '@/lib/courses/hot';
 import { GOALS } from '@/lib/onboarding/goals';
 import type { CatalogCourse } from '@/lib/onboarding/v3/catalog';
 import { DAILY_OPTIONS, EXPERIENCE_OPTIONS, SOURCE_OPTIONS, TIME_OPTIONS } from '@/lib/onboarding/v3/flow';
@@ -32,11 +36,17 @@ function topicRank(category: string) {
  * Duolingo lists what you can learn, not a catalogue: the subject and its
  * picture, no cover, no chapter or lesson counts. The course itself takes
  * shape as Tey learns about them over the next screens (founder, 2026-10-27).
+ * Hot courses sit on top; every category is a dropdown that opens to its
+ * topics (founder, 2026-11-03).
  */
 export function LearnStep(props: { courses: CatalogCourse[]; selected?: string; onPick: (course: CatalogCourse) => void }) {
   const groups = new Map<string, CatalogCourse[]>();
   for (const c of props.courses) groups.set(c.category, [...(groups.get(c.category) ?? []), c]);
   const ordered = [...groups.entries()].sort((a, b) => topicRank(a[0]) - topicRank(b[0]) || a[0].localeCompare(b[0]));
+  const hot = props.courses.filter(isHotCourse);
+  const selectedCategory = props.courses.find((c) => c.id === props.selected)?.category;
+  const [open, setOpen] = useState<string | null>(selectedCategory ?? null);
+  const reduce = useReducedMotion();
   // Two courses that shorten to the same subject keep their full titles.
   const counts = new Map<string, number>();
   for (const c of props.courses) {
@@ -51,31 +61,81 @@ export function LearnStep(props: { courses: CatalogCourse[]; selected?: string; 
     const a = topicArt(c.title);
     return a === 'book' ? topicArt(c.category) : a;
   };
-  let n = 0;
+  const choice = (c: CatalogCourse, index: number) => (
+    <Choice
+      key={c.id}
+      index={index}
+      selected={props.selected === c.id}
+      onSelect={() => props.onPick(c)}
+      label={subjectOf(c)}
+      hot={isHotCourse(c)}
+      chevron
+      art={artOf(c)}
+      artSize={44}
+    />
+  );
   return (
-    <div role="radiogroup" aria-label="I want to learn">
-      {ordered.map(([category, courses]) => (
-        <section key={category} aria-label={category}>
+    <div>
+      {hot.length > 0 && (
+        <section aria-label="Hot right now">
           <h2 className={css.groupHead}>
-            <Art name={topicArt(category)} size={34} />
-            {category}
+            <HotFlame size={30} />
+            Hot right now
           </h2>
-          <div className={css.choices}>
-            {courses.map((c) => (
-              <Choice
-                key={c.id}
-                index={n++}
-                selected={props.selected === c.id}
-                onSelect={() => props.onPick(c)}
-                label={subjectOf(c)}
-                chevron
-                art={artOf(c)}
-                artSize={44}
-              />
-            ))}
+          <div className={css.choices} role="radiogroup" aria-label="Hot right now">
+            {hot.map((c, i) => choice(c, i))}
           </div>
         </section>
-      ))}
+      )}
+      <h2 className={css.groupHead}>All topics</h2>
+      <div className={css.topics}>
+        {ordered.map(([category, courses]) => {
+          const isOpen = open === category;
+          const bodyId = `learn-topic-${category.replace(/\W+/g, '-').toLowerCase()}`;
+          return (
+            <section key={category} className={`${css.topic} ${isOpen ? css.topicOpen : ''}`}>
+              <button
+                type="button"
+                className={css.topicHead}
+                aria-expanded={isOpen}
+                aria-controls={bodyId}
+                onClick={(e) => {
+                  setOpen(isOpen ? null : category);
+                  if (isOpen) return;
+                  // Once it has opened, bring the whole topic into view.
+                  const topic = e.currentTarget.parentElement;
+                  window.setTimeout(() => topic?.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' }), 260);
+                }}
+              >
+                <Art name={topicArt(category)} size={44} />
+                <span className={css.topicName}>
+                  {category}
+                  <span className={css.topicCount}>
+                    {courses.length} {courses.length === 1 ? 'topic' : 'topics'}
+                  </span>
+                </span>
+                <Glyph name="chevron" size={20} className={css.topicChev} />
+              </button>
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    id={bodyId}
+                    initial={reduce ? false : { height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                    transition={{ duration: 0.22, ease: 'easeOut' }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <div className={css.topicBody} role="radiogroup" aria-label={category}>
+                      {[...courses].sort((a, b) => Number(isHotCourse(b)) - Number(isHotCourse(a))).map((c, i) => choice(c, i))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }
