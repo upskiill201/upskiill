@@ -4,7 +4,7 @@ import type { OriginalLesson } from '../../../../src/originals/originals-authori
 const lesson: OriginalLesson = {
   key: 'l06',
   title: `How Ben Franklin Quit Arguing`,
-  summary: `As a young man, Benjamin Franklin was insufferable: he contradicted everyone and nobody wanted him around. An old friend told him so to his face. What Franklin did next made him one of the most persuasive men in history.`,
+  summary: `A timber salesman knew the inspector rejecting his whole shipment was wrong, and never said so once. Then meet young Ben Franklin, so insufferable his friends avoided him, and the habit that made him one of history's great persuaders.`,
   minutes: 12,
   outcomes: [
     `Replace fixed-opinion words with softer ones`,
@@ -12,15 +12,6 @@ const lesson: OriginalLesson = {
     `Let people find the mistake themselves through questions`,
   ],
   learn: [
-    {
-      kind: `reading`,
-      title: `The rebuke`,
-      html:
-        `<p>When Ben Franklin was a blundering young man, an old Quaker friend took him aside and told him some hard truths. Ben, you're impossible. Your opinions slap everyone who disagrees. Your friends enjoy themselves more when you're not around. You know so much that nobody can tell you anything, and nobody will try. So you'll never know more than you do now, which is very little.</p>` +
-        `<p>One of the finest things about Franklin is how he took it. He was big enough to see it was true, and that he was heading for social disaster. So he changed.</p>` +
-        `<p>He made a rule never to contradict anyone directly, and never to state his own views as fixed truth. He banned words like "certainly" and "undoubtedly" and used "I think", "I imagine" or "it seems to me at present" instead. When someone said something he thought was wrong, he denied himself the pleasure of contradicting them. He'd say that in some cases their opinion would be right, but here it seemed to him a little different.</p>` +
-        `<p>Conversations became more pleasant. His ideas were accepted more easily. He was less embarrassed when he turned out to be wrong, and found it easier to win people round when he was right. In time it became so natural that, he said, nobody had heard a dogmatic word from him in fifty years. He wasn't a good speaker, he admitted, but he usually carried his point.</p>`,
-    },
     {
       kind: `story`,
       title: `The lumber inspector`,
@@ -37,6 +28,15 @@ const lesson: OriginalLesson = {
           { text: `They agreed to split the cost`, outcome: `They paid every penny, and the goodwill saved was worth even more.` },
         ],
       },
+    },
+    {
+      kind: `reading`,
+      title: `The rebuke`,
+      html:
+        `<p>When Ben Franklin was a blundering young man, an old Quaker friend took him aside and told him some hard truths. Ben, you're impossible. Your opinions slap everyone who disagrees. Your friends enjoy themselves more when you're not around. You know so much that nobody can tell you anything, and nobody will try. So you'll never know more than you do now, which is very little.</p>` +
+        `<p>One of the finest things about Franklin is how he took it. He was big enough to see it was true, and that he was heading for social disaster. So he changed.</p>` +
+        `<p>He made a rule never to contradict anyone directly, and never to state his own views as fixed truth. He banned words like "certainly" and "undoubtedly" and used "I think", "I imagine" or "it seems to me at present" instead. When someone said something he thought was wrong, he denied himself the pleasure of contradicting them. He'd say that in some cases their opinion would be right, but here it seemed to him a little different.</p>` +
+        `<p>Conversations became more pleasant. His ideas were accepted more easily. He was less embarrassed when he turned out to be wrong, and found it easier to win people round when he was right. In time it became so natural that, he said, nobody had heard a dogmatic word from him in fifty years. He wasn't a good speaker, he admitted, but he usually carried his point.</p>`,
     },
     {
       kind: `callout`,

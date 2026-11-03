@@ -13,6 +13,21 @@ const lesson: OriginalLesson = {
   ],
   learn: [
     {
+      kind: `myth`,
+      statements: [
+        {
+          text: `If you've broken a rule, it's smartest to say nothing until you're caught.`,
+          isFact: false,
+          explain: `Wait, and you face their criticism. Get in first, and you usually face their mercy. You're about to see it happen.`,
+        },
+        {
+          text: `Criticism is easier to hear from your own mouth than from someone else's.`,
+          isFact: true,
+          explain: `Carnegie asks: isn't it far easier to listen to self-criticism than to bear condemnation from someone else?`,
+        },
+      ],
+    },
+    {
       kind: `story`,
       title: `Rex and the mounted policeman`,
       beats: [

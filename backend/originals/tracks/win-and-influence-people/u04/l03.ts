@@ -17,8 +17,7 @@ const lesson: OriginalLesson = {
       title: `Keeping a disagreement from becoming an argument`,
       steps: [
         { title: `Welcome the disagreement`, body: `If two partners always agree, one of them isn't needed. A point you hadn't considered may save you from a serious mistake.` },
-        { title: `Distrust your first reaction`, body: `Our first instinct is to defend. It may be you at your worst, not your best.` },
-        { title: `Control your temper`, body: `You can measure a person by what makes them angry.` },
+        { title: `Distrust your first reaction, and keep your temper`, body: `Our first instinct is to defend. It may be you at your worst, not your best. And remember: you can measure a person by what makes them angry.` },
         { title: `Listen first`, body: `Let them finish. Don't resist, defend or debate. Build bridges, not higher walls.` },
         { title: `Look for agreement`, body: `When they've finished, start with the points you agree on.` },
         { title: `Be honest`, body: `Find where you can admit you were wrong, and say so. It disarms people.` },
@@ -116,14 +115,10 @@ const lesson: OriginalLesson = {
         answer: 0,
       },
       {
-        kind: `mcq`,
-        prompt: `What was the opera singer's marriage rule?`,
-        options: [
-          { text: `Never go to bed angry`, why: `A good rule, but not his.` },
-          { text: `When one shouts, the other listens` },
-          { text: `Always let her win`, why: `It was about listening.` },
-        ],
-        answer: 1,
+        kind: `typeAnswer`,
+        prompt: `The opera singer's marriage rule: when one shouts, the other ________. (one word)`,
+        answers: [`listens`],
+        placeholder: `One word`,
       },
       {
         kind: `mcq`,
