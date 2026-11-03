@@ -1,5 +1,6 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './win-and-influence-people/u01';
+import u02 from './win-and-influence-people/u02';
 
 /**
  * Win and Influence People — built only from Dale Carnegie's "How to Win
@@ -35,8 +36,8 @@ const track: OriginalTrackDef = {
         'Correct and lead people without offending them',
       ],
       skills: ['Getting along with people', 'Listening', 'Persuasion', 'Handling disagreement', 'Giving feedback', 'Leadership'],
-      upcomingUnits: 9,
-      units: [u01],
+      upcomingUnits: 8,
+      units: [u01, u02],
     },
   ],
 };
