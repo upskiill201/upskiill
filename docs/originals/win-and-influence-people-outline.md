@@ -269,9 +269,14 @@ The book is still under copyright. Ideas, principles and historical facts are fr
 - Exercises, scenarios, explanations and microcopy are ours.
 - Course details credit the source: "Built on the principles of Dale Carnegie's *How to Win Friends and Influence People*." The founder decides on wording before launch.
 
-## 8. Next steps
+## 8. Status (2026-11-03)
 
-1. Founder approves title, structure and voice.
-2. Write Chapter 1 in full (Lesson 1 first, to set the bar).
-3. Cover art and course details.
-4. HOT label: done in code by slug `win-and-influence-people` (`frontend/lib/courses/hot.ts`).
+- **All 100 lessons written** in `backend/originals/tracks/win-and-influence-people/u01`–`u10`; the checker passes with 0 errors and 0 warnings. Some lesson titles were tightened while writing; the files are the source of truth.
+- Committed on `feat/win-and-influence-people`, not pushed, not loaded into the database.
+- HOT label: done in code by slug `win-and-influence-people` (`frontend/lib/courses/hot.ts`).
+
+**Still to do**
+1. Cover art (`thumbnailUrl`) and a course-details check.
+2. Founder read-through of a few lessons in `/dev/originals`.
+3. Load as a draft (`npm run originals -- --track win-and-influence-people --write`), then publish.
+4. Founder decides the credit line for the book in the course details.
