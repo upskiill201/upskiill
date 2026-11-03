@@ -25,6 +25,8 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Art, topicArt, type ArtName } from '@/components/art/Art';
 import { Glyph } from '@/components/art/Glyph';
+import { HotBadge } from '@/components/kit/HotBadge';
+import { isHotCourse } from '@/lib/courses/hot';
 import { LearnerRail } from '@/components/layout/LearnerRail';
 import { useHydrated } from '@/components/studio/useHydrated';
 import { fetcher } from '@/lib/swr';
@@ -437,6 +439,7 @@ function TopicRow({
       <span className={styles.rowText}>
         <span className={styles.rowName}>
           {name}
+          {isHotCourse(course) && <HotBadge />}
           {course.isOriginal && (
             <span className={styles.original} title="Teyro Original">
               <Glyph name="sparkle" size={12} strokeWidth={3} />

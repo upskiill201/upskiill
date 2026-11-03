@@ -39,10 +39,11 @@ import aiEverydayProductivity from './tracks/ai-everyday-productivity';
 import getHiredGetAhead from './tracks/get-hired-get-ahead';
 import codingAgents from './tracks/coding-agents';
 import reactNative from './tracks/react-native';
+import winAndInfluencePeople from './tracks/win-and-influence-people';
 
 /**
  * Every Teyro Original the loader knows about (scripts/originals.ts).
  * Add a Track here once its file exists. Tracks with no units yet are
  * checked but never loaded.
  */
-export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, typescript, htmlCss, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, machineLearning, aiStack, getHiredGetAhead, codingAgents, validateBusinessIdea, priceProduct, negotiationBeginners, difficultNegotiations, conflictAtWork, acingJobInterviews, clearWritingAtWork, speakLikeACeo, budgeting, saveMoney, impulseBuying, needsWants, longTermWealth, investmentRisk, scamsFraud, aiEverydayProductivity, sqlDatabases, javascript, cProgramming, vibeCoding, reactNative, formatTour];
+export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, python, typescript, htmlCss, corporateJargon, smallTalk, makePeopleListen, elevatorPitch, leadershipForBeginners, leadWithoutBoss, setClearExpectations, motivateTeam, dataScience, machineLearning, aiStack, getHiredGetAhead, codingAgents, validateBusinessIdea, priceProduct, negotiationBeginners, difficultNegotiations, conflictAtWork, acingJobInterviews, clearWritingAtWork, speakLikeACeo, budgeting, saveMoney, impulseBuying, needsWants, longTermWealth, investmentRisk, scamsFraud, aiEverydayProductivity, sqlDatabases, javascript, cProgramming, vibeCoding, reactNative, winAndInfluencePeople, formatTour];
