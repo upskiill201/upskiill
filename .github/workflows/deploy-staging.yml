@@ -7,15 +7,31 @@ on:
   push:
     branches:
       - staging
+  # Manual re-run, e.g. to republish every Teyro Original on staging.
+  workflow_dispatch:
+    inputs:
+      originals:
+        description: 'Teyro Originals to publish: only the courses changed since the last successful deploy, or all of them'
+        required: false
+        type: choice
+        default: changed
+        options:
+          - changed
+          - all
 
 jobs:
   deploy-staging-backend:
     name: Deploy Backend to Staging
     runs-on: ubuntu-latest
+    permissions:
+      actions: read     # find the last successful deploy (Publish Teyro Originals)
+      contents: read
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history, so the Originals loader can diff against the last deploy
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -63,8 +79,25 @@ jobs:
         # production), so nobody loads courses by hand. The loader checks every
         # lesson and runs its Python first, refuses to write if anything fails,
         # and is upsert-only: it never deletes (backend/scripts/originals.ts).
+        # Like production (founder, 2026-11-03), it only rewrites the Tracks
+        # changed since the last successful staging deploy; shared course code,
+        # an unknown commit, no earlier success or the "all" input republish all.
         working-directory: backend
         env:
           DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
           DIRECT_URL: ${{ secrets.STAGING_DIRECT_URL }}
-        run: npm run originals -- --write --publish
+          GH_TOKEN: ${{ github.token }}
+          ORIGINALS_INPUT: ${{ github.event.inputs.originals }}
+        run: |
+          SINCE=""
+          if [ "$ORIGINALS_INPUT" != "all" ]; then
+            SINCE=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow deploy-staging.yml --status success \
+              --limit 1 --json headSha --jq '.[0].headSha // empty' || true)
+          fi
+          if [ -n "$SINCE" ]; then
+            echo "Publishing the Originals changed since the last successful deploy ($SINCE)."
+            npm run originals -- --write --publish --changed-since "$SINCE"
+          else
+            echo "Publishing ALL Originals (input: ${ORIGINALS_INPUT:-changed}; no earlier successful deploy used)."
+            npm run originals -- --write --publish
+          fi
