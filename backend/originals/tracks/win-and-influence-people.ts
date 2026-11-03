@@ -3,6 +3,7 @@ import u01 from './win-and-influence-people/u01';
 import u02 from './win-and-influence-people/u02';
 import u03 from './win-and-influence-people/u03';
 import u04 from './win-and-influence-people/u04';
+import u05 from './win-and-influence-people/u05';
 
 /**
  * Win and Influence People — built only from Dale Carnegie's "How to Win
@@ -38,8 +39,8 @@ const track: OriginalTrackDef = {
         'Correct and lead people without offending them',
       ],
       skills: ['Getting along with people', 'Listening', 'Persuasion', 'Handling disagreement', 'Giving feedback', 'Leadership'],
-      upcomingUnits: 6,
-      units: [u01, u02, u03, u04],
+      upcomingUnits: 5,
+      units: [u01, u02, u03, u04, u05],
     },
   ],
 };
